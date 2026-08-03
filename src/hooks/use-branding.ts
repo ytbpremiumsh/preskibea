@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import logoAsset from "@/assets/logo-prestasi-kita.png.asset.json";
+import defaultLogo from "@/assets/logo-prestasi-kita.png";
 
-const defaultLogo = logoAsset.url;
 
 
 export type BrandingSettings = {
