@@ -34,6 +34,7 @@ import { Route as BerkasUmumRouteImport } from './routes/berkas.umum'
 import { Route as BerkasTerkirimRouteImport } from './routes/berkas.terkirim'
 import { Route as BerkasPrestasiRouteImport } from './routes/berkas.prestasi'
 import { Route as BerkasEkonomiRouteImport } from './routes/berkas.ekonomi'
+import { Route as BagikanPosterYatimRouteImport } from './routes/bagikan-poster.yatim'
 import { Route as BagikanPosterUmumRouteImport } from './routes/bagikan-poster.umum'
 import { Route as BagikanPosterPrestasiRouteImport } from './routes/bagikan-poster.prestasi'
 import { Route as BagikanPosterEkonomiRouteImport } from './routes/bagikan-poster.ekonomi'
@@ -192,6 +193,11 @@ const BerkasPrestasiRoute = BerkasPrestasiRouteImport.update({
 const BerkasEkonomiRoute = BerkasEkonomiRouteImport.update({
   id: '/berkas/ekonomi',
   path: '/berkas/ekonomi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BagikanPosterYatimRoute = BagikanPosterYatimRouteImport.update({
+  id: '/bagikan-poster/yatim',
+  path: '/bagikan-poster/yatim',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BagikanPosterUmumRoute = BagikanPosterUmumRouteImport.update({
@@ -400,6 +406,7 @@ export interface FileRoutesByFullPath {
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
   '/bagikan-poster/umum': typeof BagikanPosterUmumRoute
+  '/bagikan-poster/yatim': typeof BagikanPosterYatimRoute
   '/berkas/ekonomi': typeof BerkasEkonomiRouteWithChildren
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
   '/berkas/terkirim': typeof BerkasTerkirimRoute
@@ -460,6 +467,7 @@ export interface FileRoutesByTo {
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
   '/bagikan-poster/umum': typeof BagikanPosterUmumRoute
+  '/bagikan-poster/yatim': typeof BagikanPosterYatimRoute
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
@@ -518,6 +526,7 @@ export interface FileRoutesById {
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
   '/bagikan-poster/umum': typeof BagikanPosterUmumRoute
+  '/bagikan-poster/yatim': typeof BagikanPosterYatimRoute
   '/berkas/ekonomi': typeof BerkasEkonomiRouteWithChildren
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
   '/berkas/terkirim': typeof BerkasTerkirimRoute
@@ -581,6 +590,7 @@ export interface FileRouteTypes {
     | '/bagikan-poster/ekonomi'
     | '/bagikan-poster/prestasi'
     | '/bagikan-poster/umum'
+    | '/bagikan-poster/yatim'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
     | '/berkas/terkirim'
@@ -641,6 +651,7 @@ export interface FileRouteTypes {
     | '/bagikan-poster/ekonomi'
     | '/bagikan-poster/prestasi'
     | '/bagikan-poster/umum'
+    | '/bagikan-poster/yatim'
     | '/berkas/terkirim'
     | '/donasi/terima-kasih'
     | '/pendaftaran/ekonomi'
@@ -698,6 +709,7 @@ export interface FileRouteTypes {
     | '/bagikan-poster/ekonomi'
     | '/bagikan-poster/prestasi'
     | '/bagikan-poster/umum'
+    | '/bagikan-poster/yatim'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
     | '/berkas/terkirim'
@@ -740,6 +752,7 @@ export interface RootRouteChildren {
   BagikanPosterEkonomiRoute: typeof BagikanPosterEkonomiRoute
   BagikanPosterPrestasiRoute: typeof BagikanPosterPrestasiRoute
   BagikanPosterUmumRoute: typeof BagikanPosterUmumRoute
+  BagikanPosterYatimRoute: typeof BagikanPosterYatimRoute
   BerkasEkonomiRoute: typeof BerkasEkonomiRouteWithChildren
   BerkasPrestasiRoute: typeof BerkasPrestasiRouteWithChildren
   BerkasTerkirimRoute: typeof BerkasTerkirimRoute
@@ -931,6 +944,13 @@ declare module '@tanstack/react-router' {
       path: '/berkas/ekonomi'
       fullPath: '/berkas/ekonomi'
       preLoaderRoute: typeof BerkasEkonomiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bagikan-poster/yatim': {
+      id: '/bagikan-poster/yatim'
+      path: '/bagikan-poster/yatim'
+      fullPath: '/bagikan-poster/yatim'
+      preLoaderRoute: typeof BagikanPosterYatimRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bagikan-poster/umum': {
@@ -1299,6 +1319,7 @@ const rootRouteChildren: RootRouteChildren = {
   BagikanPosterEkonomiRoute: BagikanPosterEkonomiRoute,
   BagikanPosterPrestasiRoute: BagikanPosterPrestasiRoute,
   BagikanPosterUmumRoute: BagikanPosterUmumRoute,
+  BagikanPosterYatimRoute: BagikanPosterYatimRoute,
   BerkasEkonomiRoute: BerkasEkonomiRouteWithChildren,
   BerkasPrestasiRoute: BerkasPrestasiRouteWithChildren,
   BerkasTerkirimRoute: BerkasTerkirimRoute,
