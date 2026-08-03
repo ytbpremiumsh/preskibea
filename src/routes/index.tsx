@@ -212,7 +212,7 @@ function Index() {
 
 function MiniStat({ icon, value, label, highlight }: { icon: React.ReactNode; value: string; label: string; highlight?: boolean }) {
   return (
-    <div className={`rounded-2xl border p-3.5 ${highlight ? "border-transparent bg-primary text-primary-foreground" : "border-border bg-card text-foreground"}`}>
+    <div className={`rounded-2xl border-2 border-ink p-3.5 ${highlight ? "bg-primary text-primary-foreground" : "bg-card text-foreground"}`}>
       <div className={`flex items-center gap-1.5 text-[11px] font-semibold ${highlight ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
         {icon} {label}
       </div>
