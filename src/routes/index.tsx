@@ -12,13 +12,13 @@ import { AdSlot } from "@/components/ads/AdSlot";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Beasiswa Pendidikan Prestasi Kita Section #3" },
+      { title: "Beasiswa Pendidikan Prestasi Kita Batch #8" },
       { name: "description", content: "Program beasiswa nasional untuk SMP, SMA/SMK/MA, dan Mahasiswa. Total beasiswa Rp17.000.000/semester. Tidak dipungut biaya." },
-      { property: "og:title", content: "Beasiswa Pendidikan Prestasi Kita Section #3" },
+      { property: "og:title", content: "Beasiswa Pendidikan Prestasi Kita Batch #8" },
       { property: "og:description", content: "Beasiswa Prestasi, Ekonomi, Umum & Yatim untuk pelajar dan mahasiswa Indonesia. Total Rp17.000.000 per semester, tanpa biaya pendaftaran." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Beasiswa Pendidikan Prestasi Kita Section #3" },
+      { name: "twitter:title", content: "Beasiswa Pendidikan Prestasi Kita Batch #8" },
       { name: "twitter:description", content: "Beasiswa Prestasi, Ekonomi, Umum & Yatim untuk pelajar dan mahasiswa Indonesia. Tanpa biaya pendaftaran." },
     ],
   }),
@@ -45,7 +45,7 @@ function Index() {
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground/75 shadow-card">
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--gold)]" />
-              Prestasi Kita 2026 · Section #3
+              Prestasi Kita 2026 · Batch #8
             </span>
 
             <h1 className="text-4xl sm:text-5xl lg:text-[3.65rem] font-extrabold leading-[1.03] tracking-tight text-foreground">
@@ -56,7 +56,7 @@ function Index() {
                   <path d="M3 8 Q 75 2, 150 6 T 297 5" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
                 </svg>
               </span>
-              <span className="text-muted-foreground/80"> Section #3</span>
+              <span className="text-muted-foreground/80"> Batch #8</span>
             </h1>
 
             <p className="max-w-xl text-base md:text-lg text-muted-foreground">
@@ -102,7 +102,7 @@ function Index() {
                 <span className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[var(--gold)]" />
                 <span className="h-2.5 w-2.5 rounded-full bg-primary/40" />
-                <span className="ml-3 text-[11px] font-semibold text-muted-foreground">Beasiswa Prestasi Kita · Section #3</span>
+                <span className="ml-3 text-[11px] font-semibold text-muted-foreground">Beasiswa Prestasi Kita · Batch #8</span>
               </div>
               <div className="overflow-hidden rounded-3xl bg-secondary/50">
                 <img

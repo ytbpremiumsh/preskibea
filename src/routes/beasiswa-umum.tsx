@@ -4,9 +4,9 @@ import { CategoryPage } from "@/components/CategoryPage";
 export const Route = createFileRoute("/beasiswa-umum")({
   head: () => ({
     meta: [
-      { title: "Beasiswa Umum — Prestasi Kita Section #3" },
+      { title: "Beasiswa Umum — Prestasi Kita Batch #8" },
       { name: "description", content: "Jalur beasiswa umum untuk seluruh pelajar dan mahasiswa Indonesia, tanpa syarat prestasi maupun kondisi ekonomi tertentu." },
-      { property: "og:title", content: "Beasiswa Umum — Prestasi Kita Section #3" },
+      { property: "og:title", content: "Beasiswa Umum — Prestasi Kita Batch #8" },
       { property: "og:description", content: "Jalur terbuka untuk semua pelajar & mahasiswa Indonesia." },
     ],
   }),

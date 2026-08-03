@@ -4,9 +4,9 @@ import { CategoryPage } from "@/components/CategoryPage";
 export const Route = createFileRoute("/beasiswa-yatim")({
   head: () => ({
     meta: [
-      { title: "Beasiswa Yatim — Prestasi Kita Section #3" },
+      { title: "Beasiswa Yatim — Prestasi Kita Batch #8" },
       { name: "description", content: "Jalur beasiswa khusus bagi anak yatim, piatu, dan yatim piatu yang sedang menempuh pendidikan di Indonesia." },
-      { property: "og:title", content: "Beasiswa Yatim — Prestasi Kita Section #3" },
+      { property: "og:title", content: "Beasiswa Yatim — Prestasi Kita Batch #8" },
       { property: "og:description", content: "Jalur khusus untuk anak yatim, piatu, dan yatim piatu." },
     ],
   }),
