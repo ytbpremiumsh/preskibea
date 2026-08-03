@@ -237,12 +237,7 @@ function CategoryCard({ tag, icon, title, desc, to, variant }: { tag: string; ic
   const isDark = variant === "dark";
   return (
     <div
-      className={`group relative overflow-hidden rounded-[1.75rem] border p-8 transition-all duration-300 hover:-translate-y-1 ${
-        isDark
-          ? "border-transparent text-primary-foreground shadow-soft"
-          : "border-border bg-card text-foreground shadow-card hover:shadow-soft"
-      }`}
-      style={isDark ? { background: "var(--gradient-primary)" } : undefined}
+      className={`group relative overflow-hidden p-8 ${isDark ? "card-block-dark" : "card-block"}`}
     >
       <div className={`absolute -top-16 -right-16 h-48 w-48 rounded-full blur-3xl ${isDark ? "bg-[var(--gold)]/25" : "bg-primary/10"}`} />
       <div className="relative">
