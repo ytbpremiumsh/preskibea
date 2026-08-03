@@ -255,36 +255,6 @@
   background-color: var(--card);
   box-shadow: 4px 4px 0 0 var(--ink);
 }
-@utility btn-block {
-  border: 2px solid var(--ink);
-  box-shadow: 4px 4px 0 0 var(--ink);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-
-  &:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 0 var(--ink);
-  }
-  &:active {
-    transform: translate(1px, 1px);
-    box-shadow: 2px 2px 0 0 var(--ink);
-  }
-}
-@utility btn-block-sm {
-  border: 2px solid var(--ink);
-  box-shadow: 3px 3px 0 0 var(--ink);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-
-  &:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 0 var(--ink);
-  }
-  &:active {
-    transform: translate(1px, 1px);
-    box-shadow: 1px 1px 0 0 var(--ink);
-  }
-}
-
-
 
 
 @utility container-page {
