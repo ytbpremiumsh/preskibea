@@ -35,11 +35,11 @@ type WaConfig = {
 };
 
 const DEFAULT_TEMPLATES: WaTemplates = {
-  pendaftaran_user: `*Kejar Prestasi*\n\nHalo {nama}, pendaftaran {jenis} Anda telah kami terima.\n\n🔑 *KODE PENDAFTAR ANDA:*\n*{token}*\n\n_Simpan kode ini baik-baik. Kode wajib digunakan saat:_\n• Mengirim berkas pendukung\n• Mengecek status pendaftaran\n\nLangkah berikutnya: silakan kirim berkas pendukung melalui menu *Kirim Berkas* di website dan masukkan kode di atas.\n\nTerima kasih.`,
-  pendaftaran_admin: `*Pendaftar Baru — Kejar Prestasi*\n\nNama: {nama}\nJenis: {jenis}\nKode: {token}\nEmail: {email}\nWhatsApp: {whatsapp}`,
-  berkas_user: `*Kejar Prestasi*\n\nHalo {nama}, berkas {jenis} Anda ({jumlah_berkas} file) berhasil kami terima dan sedang dalam tahap verifikasi.\n\n🔑 Kode Pendaftar: *{token}*\nEmail: {email}\n\nGunakan kode di atas untuk *Cek Status* pendaftaran Anda di website. Kami akan menghubungi Anda kembali setelah proses verifikasi selesai.\n\nTerima kasih.`,
-  berkas_admin: `*Berkas Masuk — Kejar Prestasi*\n\nNama: {nama}\nJenis: {jenis}\nKode: {token}\nEmail: {email}\nJumlah file: {jumlah_berkas}`,
-  status_user: `*Kejar Prestasi*\n\nHalo {nama}, status pendaftaran {jenis} Anda saat ini: *{status}*.\n\n🔑 Kode Pendaftar: *{token}*\n\nTerima kasih.`,
+  pendaftaran_user: `*Prestasi Kita*\n\nHalo {nama}, pendaftaran {jenis} Anda telah kami terima.\n\n🔑 *KODE PENDAFTAR ANDA:*\n*{token}*\n\n_Simpan kode ini baik-baik. Kode wajib digunakan saat:_\n• Mengirim berkas pendukung\n• Mengecek status pendaftaran\n\nLangkah berikutnya: silakan kirim berkas pendukung melalui menu *Kirim Berkas* di website dan masukkan kode di atas.\n\nTerima kasih.`,
+  pendaftaran_admin: `*Pendaftar Baru — Prestasi Kita*\n\nNama: {nama}\nJenis: {jenis}\nKode: {token}\nEmail: {email}\nWhatsApp: {whatsapp}`,
+  berkas_user: `*Prestasi Kita*\n\nHalo {nama}, berkas {jenis} Anda ({jumlah_berkas} file) berhasil kami terima dan sedang dalam tahap verifikasi.\n\n🔑 Kode Pendaftar: *{token}*\nEmail: {email}\n\nGunakan kode di atas untuk *Cek Status* pendaftaran Anda di website. Kami akan menghubungi Anda kembali setelah proses verifikasi selesai.\n\nTerima kasih.`,
+  berkas_admin: `*Berkas Masuk — Prestasi Kita*\n\nNama: {nama}\nJenis: {jenis}\nKode: {token}\nEmail: {email}\nJumlah file: {jumlah_berkas}`,
+  status_user: `*Prestasi Kita*\n\nHalo {nama}, status pendaftaran {jenis} Anda saat ini: *{status}*.\n\n🔑 Kode Pendaftar: *{token}*\n\nTerima kasih.`,
 };
 
 const DEFAULT: WaConfig = {
@@ -62,7 +62,7 @@ function AdminWhatsApp() {
   const [qrMsg, setQrMsg] = useState<string>("");
   const [qrLoading, setQrLoading] = useState(false);
   const [testNumber, setTestNumber] = useState("");
-  const [testMsg, setTestMsg] = useState("Halo, ini pesan tes dari Kejar Prestasi.");
+  const [testMsg, setTestMsg] = useState("Halo, ini pesan tes dari Prestasi Kita.");
   const [testing, setTesting] = useState(false);
   const [connected, setConnected] = useState<boolean | null>(null);
   const [statusLoading, setStatusLoading] = useState(false);

@@ -24,7 +24,7 @@ const alumni = [
     name: "Rahma Fitri Nurhidayah",
     school: "Peraih Beasiswa",
     year: "SECTION #2 - 2023",
-    quote: "Kejar Prestasi memberi dukungan nyata yang membuat saya semakin termotivasi.",
+    quote: "Prestasi Kita memberi dukungan nyata yang membuat saya semakin termotivasi.",
   },
   {
     img: a4,
@@ -46,7 +46,7 @@ export function AlumniSection() {
           Mereka Sudah Lebih Dulu Meraih
         </h2>
         <p className="mt-3 text-muted-foreground">
-          Cerita singkat dari penerima Beasiswa Kejar Prestasi pada gelombang sebelumnya.
+          Cerita singkat dari penerima Beasiswa Prestasi Kita pada gelombang sebelumnya.
         </p>
       </div>
 

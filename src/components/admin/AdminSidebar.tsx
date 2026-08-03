@@ -123,7 +123,7 @@ export function AdminSidebar() {
                 Admin Panel
               </p>
               <p className="text-[11px] font-medium text-sidebar-foreground/60">
-                Kejar Prestasi
+                Prestasi Kita
               </p>
             </div>
           )}

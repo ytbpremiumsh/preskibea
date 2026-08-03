@@ -14,7 +14,7 @@ function VpsInstallPage() {
         icon={Server}
         badge="VPS · aaPanel · Nginx"
         title="Instalasi di VPS (aaPanel & Standar)"
-        desc="Deploy Kejar Prestasi ke VPS Linux melalui aaPanel atau instalasi standar. Build hasilnya dipublikasikan sebagai static site di webroot Nginx."
+        desc="Deploy Prestasi Kita ke VPS Linux melalui aaPanel atau instalasi standar. Build hasilnya dipublikasikan sebagai static site di webroot Nginx."
       />
 
       {/* Arsitektur */}

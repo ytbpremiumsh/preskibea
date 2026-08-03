@@ -40,7 +40,7 @@ const PLACEHOLDERS = [
   { k: "whatsapp", desc: "Nomor WA" },
   { k: "count", desc: "Jumlah berkas" },
   { k: "year", desc: "Tahun saat ini" },
-  { k: "site_name", desc: "Kejar Prestasi" },
+  { k: "site_name", desc: "Prestasi Kita" },
 ];
 
 const DEFAULT_REGISTRATION: TplValue = {
@@ -105,7 +105,7 @@ const SAMPLE_VALUES: Record<string, string> = {
   whatsapp: "08123456789",
   count: "5",
   year: String(new Date().getFullYear()),
-  site_name: "Kejar Prestasi",
+  site_name: "Prestasi Kita",
 };
 
 function applySample(str: string) {

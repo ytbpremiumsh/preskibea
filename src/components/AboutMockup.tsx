@@ -26,7 +26,7 @@ export function AboutMockup() {
           Tentang Program
         </span>
         <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-foreground">
-          Apa itu Beasiswa Kejar Prestasi?
+          Apa itu Beasiswa Prestasi Kita?
         </h2>
         <p className="mt-3 text-muted-foreground">
           Program beasiswa pendidikan nasional untuk mendukung pelajar Indonesia meraih

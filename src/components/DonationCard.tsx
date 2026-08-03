@@ -19,7 +19,7 @@ const DEFAULTS: Required<Omit<DonationConfig, "enabled">> & { enabled: boolean }
   title: "Dukung Program Ini",
   subtitle: "Opsional. Tidak memengaruhi seleksi.",
   description:
-    "Program Beasiswa Kejar Prestasi berjalan berkat dukungan banyak orang baik. Donasi sekecil apapun sangat berarti.",
+    "Program Beasiswa Prestasi Kita berjalan berkat dukungan banyak orang baik. Donasi sekecil apapun sangat berarti.",
   presets: [10000, 25000, 50000, 100000],
   min_amount: 10000,
   max_amount: 10000000,

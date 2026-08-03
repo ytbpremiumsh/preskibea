@@ -37,7 +37,7 @@ const DEF_DON: DonationCfg = {
   title: "Dukung Program Ini",
   subtitle: "Opsional. Tidak memengaruhi seleksi.",
   description:
-    "Program Beasiswa Kejar Prestasi berjalan berkat dukungan banyak orang baik.",
+    "Program Beasiswa Prestasi Kita berjalan berkat dukungan banyak orang baik.",
   presets: [10000, 25000, 50000, 100000],
   min_amount: 10000,
   max_amount: 10000000,

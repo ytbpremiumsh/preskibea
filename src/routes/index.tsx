@@ -12,7 +12,7 @@ import { AdSlot } from "@/components/ads/AdSlot";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Beasiswa Pendidikan Kejar Prestasi Section #3" },
+      { title: "Beasiswa Pendidikan Prestasi Kita Section #3" },
       { name: "description", content: "Program beasiswa nasional untuk SD, SMP, SMA/SMK/MA, dan Mahasiswa. Total beasiswa Rp17.000.000/semester. Tidak dipungut biaya." },
     ],
   }),
@@ -38,7 +38,7 @@ function Index() {
             <h1 className="relative text-3xl sm:text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground">
               <span className="block">Beasiswa</span>
               <span className="relative inline-block bg-gradient-to-br from-primary via-[oklch(0.55_0.22_290)] to-[oklch(0.45_0.22_280)] bg-clip-text text-transparent drop-shadow-[0_2px_12px_oklch(0.55_0.22_290/0.25)]">
-                Kejar Prestasi
+                Prestasi Kita
                 <svg aria-hidden="true" viewBox="0 0 200 8" preserveAspectRatio="none" className="absolute -bottom-1 left-0 h-1.5 w-full text-primary/60">
                   <path d="M2 5 Q 50 1, 100 4 T 198 4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
                 </svg>
@@ -54,7 +54,7 @@ function Index() {
           <div className="order-2 lg:order-2 relative">
             <img
               src={heroImg}
-              alt="Ilustrasi siswa Indonesia penerima beasiswa Kejar Prestasi"
+              alt="Ilustrasi siswa Indonesia penerima beasiswa Prestasi Kita"
               width={1024}
               height={1024}
               className="w-full h-auto max-w-md mx-auto lg:max-w-none"
@@ -69,7 +69,7 @@ function Index() {
             <h1 className="hidden lg:block relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight text-foreground">
               <span className="block">Beasiswa</span>
               <span className="relative inline-block bg-gradient-to-br from-primary via-[oklch(0.55_0.22_290)] to-[oklch(0.45_0.22_280)] bg-clip-text text-transparent drop-shadow-[0_4px_24px_oklch(0.55_0.22_290/0.3)]">
-                Kejar Prestasi
+                Prestasi Kita
                 <svg aria-hidden="true" viewBox="0 0 300 10" preserveAspectRatio="none" className="absolute -bottom-2 left-0 h-2 w-full text-primary/60">
                   <path d="M2 6 Q 75 1, 150 5 T 298 5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
                 </svg>

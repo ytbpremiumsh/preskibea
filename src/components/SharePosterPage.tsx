@@ -18,7 +18,7 @@ export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const label = isGold ? "Beasiswa Ekonomi" : "Beasiswa Prestasi";
   const url = typeof window !== "undefined" ? window.location.origin + (isGold ? "/beasiswa-ekonomi" : "/beasiswa-prestasi") : "https://kejarprestasi.id";
 
-  const defaultCaption = `🎓✨ BEASISWA PENDIDIKAN KEJAR PRESTASI — SECTION #3 ✨🎓
+  const defaultCaption = `🎓✨ BEASISWA PENDIDIKAN PRESTASI KITA — SECTION #3 ✨🎓
 
 Halo Sobat Pejuang Pendidikan! 👋
 Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
@@ -34,7 +34,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 • Mengikuti seluruh ketentuan yang berlaku
 
 🎁 Benefit Penerima:
-• Sertifikat resmi Beasiswa Kejar Prestasi
+• Sertifikat resmi Beasiswa Prestasi Kita
 • Merchandise eksklusif (Plakat, Kaos, Block Note, Goodie Bag, dll)
 • Video motivasi & sesi pembinaan penerima
 
@@ -42,16 +42,16 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 📷 Info lengkap: @kejarprestasi_id
 📞 0812 8001 0302
 
-⚠️ Hati-hati terhadap penipuan yang mengatasnamakan Kejar Prestasi.
+⚠️ Hati-hati terhadap penipuan yang mengatasnamakan Prestasi Kita.
 
-#KejarPrestasi #BeasiswaPendidikan #BeasiswaIndonesia #BeasiswaPelajar #BeasiswaMahasiswa #KejarPrestasiSection3`;
+#PrestasiKita #BeasiswaPendidikan #BeasiswaIndonesia #BeasiswaPelajar #BeasiswaMahasiswa #PrestasiKitaSection3`;
 
   const [cfg, setCfg] = useState<PosterCfg>({
     image_url: defaultPoster,
     download_url: defaultPoster,
     caption: defaultCaption,
     wa_number: "6281280010302",
-    wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Kejar Prestasi.",
+    wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Prestasi Kita.",
   });
 
   useEffect(() => {
@@ -171,7 +171,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
           <div className="rounded-2xl overflow-hidden bg-muted">
             <img
               src={cfg.image_url}
-              alt={`Poster Beasiswa Kejar Prestasi ${label}`}
+              alt={`Poster Beasiswa Prestasi Kita ${label}`}
               className="w-full h-auto block"
               loading="lazy"
             />

@@ -11,8 +11,8 @@ import { Loader2, ShieldCheck, Mail, Lock, KeyRound, ArrowLeft, Sparkles } from 
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Login Admin — Beasiswa Kejar Prestasi" },
-      { name: "description", content: "Akses dashboard admin program Beasiswa Pendidikan Kejar Prestasi." },
+      { title: "Login Admin — Beasiswa Prestasi Kita" },
+      { name: "description", content: "Akses dashboard admin program Beasiswa Pendidikan Prestasi Kita." },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),

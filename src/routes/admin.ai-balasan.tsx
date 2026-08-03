@@ -313,7 +313,7 @@ function AdminAiBalasan() {
                   <Input
                     value={behavior.persona_name}
                     onChange={(e) => setBehavior({ ...behavior, persona_name: e.target.value })}
-                    placeholder="Asisten Kejar Prestasi"
+                    placeholder="Asisten Prestasi Kita"
                   />
                 </div>
                 <div>

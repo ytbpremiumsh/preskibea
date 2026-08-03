@@ -4,7 +4,7 @@ import { ArrowRight, HeartHandshake, Trophy } from "lucide-react";
 export const Route = createFileRoute("/daftar")({
   head: () => ({
     meta: [
-      { title: "Pilih Jalur Pendaftaran — Kejar Prestasi" },
+      { title: "Pilih Jalur Pendaftaran — Prestasi Kita" },
       { name: "description", content: "Pilih jalur beasiswa: Prestasi atau Ekonomi sebelum mengisi formulir pendaftaran." },
     ],
   }),

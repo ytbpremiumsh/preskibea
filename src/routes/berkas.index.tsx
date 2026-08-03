@@ -4,7 +4,7 @@ import { ArrowRight, FileText, HeartHandshake, Trophy } from "lucide-react";
 export const Route = createFileRoute("/berkas/")({
   head: () => ({
     meta: [
-      { title: "Pilih Kategori Pengiriman Berkas — Kejar Prestasi" },
+      { title: "Pilih Kategori Pengiriman Berkas — Prestasi Kita" },
       { name: "description", content: "Pilih kategori beasiswa untuk mengirimkan berkas pendukung." },
     ],
   }),

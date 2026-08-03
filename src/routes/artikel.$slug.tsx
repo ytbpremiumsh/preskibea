@@ -30,15 +30,15 @@ export const Route = createFileRoute("/artikel/$slug")({
   head: ({ loaderData, params }) => {
     const a = loaderData?.article;
     if (!a) {
-      return { meta: [{ title: "Artikel — Kejar Prestasi" }] };
+      return { meta: [{ title: "Artikel — Prestasi Kita" }] };
     }
     const url = `https://prestasi-emas.lovable.app/artikel/${params.slug}`;
     const desc = (a.excerpt ?? "").slice(0, 160);
     const meta = [
-      { title: `${a.title} — Kejar Prestasi` },
+      { title: `${a.title} — Prestasi Kita` },
       { name: "description", content: desc },
-      { name: "author", content: a.author ?? "Tim Kejar Prestasi" },
-      { name: "keywords", content: `${a.category}, beasiswa, ${a.title}, kejar prestasi` },
+      { name: "author", content: a.author ?? "Tim Prestasi Kita" },
+      { name: "keywords", content: `${a.category}, beasiswa, ${a.title}, prestasi kita` },
       { property: "og:type", content: "article" },
       { property: "og:title", content: a.title },
       { property: "og:description", content: desc },
@@ -61,10 +61,10 @@ export const Route = createFileRoute("/artikel/$slug")({
       image: a.cover_url ? [a.cover_url] : undefined,
       datePublished: a.published_at,
       dateModified: a.published_at,
-      author: { "@type": "Person", name: a.author ?? "Tim Kejar Prestasi" },
+      author: { "@type": "Person", name: a.author ?? "Tim Prestasi Kita" },
       publisher: {
         "@type": "Organization",
-        name: "Kejar Prestasi",
+        name: "Prestasi Kita",
         logo: { "@type": "ImageObject", url: "https://prestasi-emas.lovable.app/favicon.ico" },
       },
       mainEntityOfPage: { "@type": "WebPage", "@id": url },
@@ -235,7 +235,7 @@ function ArticleDetail() {
         <div className="mt-12 rounded-2xl border border-border bg-primary/5 p-6 text-center">
           <h3 className="text-lg font-bold text-foreground">Siap meraih beasiswa impianmu?</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Daftar sekarang di program beasiswa Kejar Prestasi dan mulai langkah pertamamu.
+            Daftar sekarang di program beasiswa Prestasi Kita dan mulai langkah pertamamu.
           </p>
           <Link
             to="/daftar"

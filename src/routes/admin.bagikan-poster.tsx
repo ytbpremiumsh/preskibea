@@ -27,7 +27,7 @@ type SharePosterSettings = {
   ekonomi: PosterCfg;
 };
 
-const DEF_CAPTION = (label: string, url: string) => `🎓✨ BEASISWA PENDIDIKAN KEJAR PRESTASI — SECTION #3 ✨🎓
+const DEF_CAPTION = (label: string, url: string) => `🎓✨ BEASISWA PENDIDIKAN PRESTASI KITA — SECTION #3 ✨🎓
 
 Halo Sobat Pejuang Pendidikan! 👋
 Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
@@ -40,7 +40,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 📷 Info lengkap: @kejarprestasi_id
 📞 0812 8001 0302
 
-#KejarPrestasi #BeasiswaPendidikan`;
+#PrestasiKita #BeasiswaPendidikan`;
 
 const DEF: SharePosterSettings = {
   prestasi: {
@@ -48,14 +48,14 @@ const DEF: SharePosterSettings = {
     download_url: "",
     caption: DEF_CAPTION("Beasiswa Prestasi", "https://kejarprestasi.id/beasiswa-prestasi"),
     wa_number: "6281280010302",
-    wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Kejar Prestasi.",
+    wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Prestasi Kita.",
   },
   ekonomi: {
     image_url: "",
     download_url: "",
     caption: DEF_CAPTION("Beasiswa Ekonomi", "https://kejarprestasi.id/beasiswa-ekonomi"),
     wa_number: "6281280010302",
-    wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Kejar Prestasi.",
+    wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Prestasi Kita.",
   },
 };
 

@@ -68,17 +68,17 @@ const benefits = [
   {
     icon: Award,
     title: "Sertifikat Beasiswa",
-    desc: "Sertifikat resmi penerima beasiswa langsung dari Kejar Prestasi.",
+    desc: "Sertifikat resmi penerima beasiswa langsung dari Prestasi Kita.",
   },
   {
     icon: Users,
     title: "Kontingen Ambassador",
-    desc: "Peluang menjadi Kontingen Ambassador Program Kejar Prestasi.",
+    desc: "Peluang menjadi Kontingen Ambassador Program Prestasi Kita.",
   },
   {
     icon: Briefcase,
     title: "Akses Magang",
-    desc: "Kesempatan magang di Kejar Prestasi Indonesia dan jaringan partner.",
+    desc: "Kesempatan magang di Prestasi Kita Indonesia dan jaringan partner.",
   },
 ];
 

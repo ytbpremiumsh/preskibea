@@ -21,17 +21,17 @@ const BENEFIT_IMAGE_URL =
 
 const benefitList = [
   { strong: "Dana Pendidikan Beasiswa", rest: "" },
-  { strong: "Merchandise menarik", rest: " dari Kejar Prestasi." },
-  { strong: "Sertifikat Beasiswa", rest: " by Kejar Prestasi." },
+  { strong: "Merchandise menarik", rest: " dari Prestasi Kita." },
+  { strong: "Sertifikat Beasiswa", rest: " by Prestasi Kita." },
   {
     prefix: "Peluang Menjadi ",
     strong: "Kontingen Ambassador",
-    rest: " Program Kejar Prestasi.",
+    rest: " Program Prestasi Kita.",
   },
   {
     prefix: "Dapatkan ",
     strong: "Akses Magang",
-    rest: " di Kejar Prestasi Indonesia dan Partner.",
+    rest: " di Prestasi Kita Indonesia dan Partner.",
   },
 ];
 
@@ -141,7 +141,7 @@ export function CategoryPage({
           <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-secondary/30">
             <img
               src={BENEFIT_IMAGE_URL}
-              alt="Benefit Beasiswa Kejar Prestasi"
+              alt="Benefit Beasiswa Prestasi Kita"
               loading="lazy"
               decoding="async"
               width={1200}

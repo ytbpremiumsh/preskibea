@@ -98,7 +98,7 @@ function pickText(p: Record<string, unknown>): string | null {
 
 function mediaFallbackText(p: Record<string, unknown>): string | null {
   if (!hasMediaPayload(p)) return null;
-  return "Peserta mengirim gambar/screenshot bukti share poster Beasiswa Kejar Prestasi melalui WhatsApp/Instagram/Grup WA. Balas dengan ucapan terima kasih karena bukti share poster sudah dikirim, lalu arahkan peserta untuk lanjut ke tahapan Pengiriman Berkas di www.kejarprestasi.id dengan Kode Token dan format PDF atau JPG.";
+  return "Peserta mengirim gambar/screenshot bukti share poster Beasiswa Prestasi Kita melalui WhatsApp/Instagram/Grup WA. Balas dengan ucapan terima kasih karena bukti share poster sudah dikirim, lalu arahkan peserta untuk lanjut ke tahapan Pengiriman Berkas di www.kejarprestasi.id dengan Kode Token dan format PDF atau JPG.";
 }
 
 const SHARE_POSTER_KEYWORDS = [
@@ -178,7 +178,7 @@ async function callAI(behavior: Behavior, provider: Provider | null, kb: Kb[], u
     headers: {
       "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json",
-      ...(vendor === "openrouter" ? { "HTTP-Referer": "https://prestasi-emas.lovable.app", "X-Title": "Kejar Prestasi AI" } : {}),
+      ...(vendor === "openrouter" ? { "HTTP-Referer": "https://prestasi-emas.lovable.app", "X-Title": "Prestasi Kita AI" } : {}),
     },
     body: JSON.stringify({
       model,
