@@ -57,6 +57,7 @@ import { Route as AdminAdsenseRouteImport } from './routes/admin.adsense'
 import { Route as BerkasUmumIndexRouteImport } from './routes/berkas.umum.index'
 import { Route as BerkasPrestasiIndexRouteImport } from './routes/berkas.prestasi.index'
 import { Route as BerkasEkonomiIndexRouteImport } from './routes/berkas.ekonomi.index'
+import { Route as BerkasUmumUploadRouteImport } from './routes/berkas.umum.upload'
 import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
 import { Route as BerkasEkonomiUploadRouteImport } from './routes/berkas.ekonomi.upload'
 import { Route as AdminInstalasiVpsRouteImport } from './routes/admin.instalasi.vps'
@@ -302,6 +303,11 @@ const BerkasEkonomiIndexRoute = BerkasEkonomiIndexRouteImport.update({
   path: '/',
   getParentRoute: () => BerkasEkonomiRoute,
 } as any)
+const BerkasUmumUploadRoute = BerkasUmumUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => BerkasUmumRoute,
+} as any)
 const BerkasPrestasiUploadRoute = BerkasPrestasiUploadRouteImport.update({
   id: '/upload',
   path: '/upload',
@@ -373,6 +379,7 @@ export interface FileRoutesByFullPath {
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
+  '/berkas/umum/upload': typeof BerkasUmumUploadRoute
   '/berkas/ekonomi/': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi/': typeof BerkasPrestasiIndexRoute
   '/berkas/umum/': typeof BerkasUmumIndexRoute
@@ -423,6 +430,7 @@ export interface FileRoutesByTo {
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
+  '/berkas/umum/upload': typeof BerkasUmumUploadRoute
   '/berkas/ekonomi': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi': typeof BerkasPrestasiIndexRoute
   '/berkas/umum': typeof BerkasUmumIndexRoute
@@ -478,6 +486,7 @@ export interface FileRoutesById {
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
+  '/berkas/umum/upload': typeof BerkasUmumUploadRoute
   '/berkas/ekonomi/': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi/': typeof BerkasPrestasiIndexRoute
   '/berkas/umum/': typeof BerkasUmumIndexRoute
@@ -534,6 +543,7 @@ export interface FileRouteTypes {
     | '/admin/instalasi/vps'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
+    | '/berkas/umum/upload'
     | '/berkas/ekonomi/'
     | '/berkas/prestasi/'
     | '/berkas/umum/'
@@ -584,6 +594,7 @@ export interface FileRouteTypes {
     | '/admin/instalasi/vps'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
+    | '/berkas/umum/upload'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
     | '/berkas/umum'
@@ -638,6 +649,7 @@ export interface FileRouteTypes {
     | '/admin/instalasi/vps'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
+    | '/berkas/umum/upload'
     | '/berkas/ekonomi/'
     | '/berkas/prestasi/'
     | '/berkas/umum/'
@@ -1008,6 +1020,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BerkasEkonomiIndexRouteImport
       parentRoute: typeof BerkasEkonomiRoute
     }
+    '/berkas/umum/upload': {
+      id: '/berkas/umum/upload'
+      path: '/upload'
+      fullPath: '/berkas/umum/upload'
+      preLoaderRoute: typeof BerkasUmumUploadRouteImport
+      parentRoute: typeof BerkasUmumRoute
+    }
     '/berkas/prestasi/upload': {
       id: '/berkas/prestasi/upload'
       path: '/upload'
@@ -1122,10 +1141,12 @@ const BerkasPrestasiRouteWithChildren = BerkasPrestasiRoute._addFileChildren(
 )
 
 interface BerkasUmumRouteChildren {
+  BerkasUmumUploadRoute: typeof BerkasUmumUploadRoute
   BerkasUmumIndexRoute: typeof BerkasUmumIndexRoute
 }
 
 const BerkasUmumRouteChildren: BerkasUmumRouteChildren = {
+  BerkasUmumUploadRoute: BerkasUmumUploadRoute,
   BerkasUmumIndexRoute: BerkasUmumIndexRoute,
 }
 
