@@ -58,6 +58,7 @@ import { Route as AdminArtikelRouteImport } from './routes/admin.artikel'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminAiBalasanRouteImport } from './routes/admin.ai-balasan'
 import { Route as AdminAdsenseRouteImport } from './routes/admin.adsense'
+import { Route as BerkasYatimIndexRouteImport } from './routes/berkas.yatim.index'
 import { Route as BerkasUmumIndexRouteImport } from './routes/berkas.umum.index'
 import { Route as BerkasPrestasiIndexRouteImport } from './routes/berkas.prestasi.index'
 import { Route as BerkasEkonomiIndexRouteImport } from './routes/berkas.ekonomi.index'
@@ -312,6 +313,11 @@ const AdminAdsenseRoute = AdminAdsenseRouteImport.update({
   path: '/adsense',
   getParentRoute: () => AdminRoute,
 } as any)
+const BerkasYatimIndexRoute = BerkasYatimIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BerkasYatimRoute,
+} as any)
 const BerkasUmumIndexRoute = BerkasUmumIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -392,7 +398,7 @@ export interface FileRoutesByFullPath {
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/berkas/umum': typeof BerkasUmumRouteWithChildren
-  '/berkas/yatim': typeof BerkasYatimRoute
+  '/berkas/yatim': typeof BerkasYatimRouteWithChildren
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
@@ -411,6 +417,7 @@ export interface FileRoutesByFullPath {
   '/berkas/ekonomi/': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi/': typeof BerkasPrestasiIndexRoute
   '/berkas/umum/': typeof BerkasUmumIndexRoute
+  '/berkas/yatim/': typeof BerkasYatimIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -447,7 +454,6 @@ export interface FileRoutesByTo {
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
   '/bagikan-poster/umum': typeof BagikanPosterUmumRoute
   '/berkas/terkirim': typeof BerkasTerkirimRoute
-  '/berkas/yatim': typeof BerkasYatimRoute
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
@@ -466,6 +472,7 @@ export interface FileRoutesByTo {
   '/berkas/ekonomi': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi': typeof BerkasPrestasiIndexRoute
   '/berkas/umum': typeof BerkasUmumIndexRoute
+  '/berkas/yatim': typeof BerkasYatimIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -507,7 +514,7 @@ export interface FileRoutesById {
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/berkas/umum': typeof BerkasUmumRouteWithChildren
-  '/berkas/yatim': typeof BerkasYatimRoute
+  '/berkas/yatim': typeof BerkasYatimRouteWithChildren
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
@@ -526,6 +533,7 @@ export interface FileRoutesById {
   '/berkas/ekonomi/': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi/': typeof BerkasPrestasiIndexRoute
   '/berkas/umum/': typeof BerkasUmumIndexRoute
+  '/berkas/yatim/': typeof BerkasYatimIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -587,6 +595,7 @@ export interface FileRouteTypes {
     | '/berkas/ekonomi/'
     | '/berkas/prestasi/'
     | '/berkas/umum/'
+    | '/berkas/yatim/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -623,7 +632,6 @@ export interface FileRouteTypes {
     | '/bagikan-poster/prestasi'
     | '/bagikan-poster/umum'
     | '/berkas/terkirim'
-    | '/berkas/yatim'
     | '/donasi/terima-kasih'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
@@ -642,6 +650,7 @@ export interface FileRouteTypes {
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
     | '/berkas/umum'
+    | '/berkas/yatim'
   id:
     | '__root__'
     | '/'
@@ -701,6 +710,7 @@ export interface FileRouteTypes {
     | '/berkas/ekonomi/'
     | '/berkas/prestasi/'
     | '/berkas/umum/'
+    | '/berkas/yatim/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -722,7 +732,7 @@ export interface RootRouteChildren {
   BerkasPrestasiRoute: typeof BerkasPrestasiRouteWithChildren
   BerkasTerkirimRoute: typeof BerkasTerkirimRoute
   BerkasUmumRoute: typeof BerkasUmumRouteWithChildren
-  BerkasYatimRoute: typeof BerkasYatimRoute
+  BerkasYatimRoute: typeof BerkasYatimRouteWithChildren
   DonasiTerimaKasihRoute: typeof DonasiTerimaKasihRoute
   PendaftaranEkonomiRoute: typeof PendaftaranEkonomiRoute
   PendaftaranPrestasiRoute: typeof PendaftaranPrestasiRoute
@@ -1079,6 +1089,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdsenseRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/berkas/yatim/': {
+      id: '/berkas/yatim/'
+      path: '/'
+      fullPath: '/berkas/yatim/'
+      preLoaderRoute: typeof BerkasYatimIndexRouteImport
+      parentRoute: typeof BerkasYatimRoute
+    }
     '/berkas/umum/': {
       id: '/berkas/umum/'
       path: '/'
@@ -1234,6 +1251,18 @@ const BerkasUmumRouteWithChildren = BerkasUmumRoute._addFileChildren(
   BerkasUmumRouteChildren,
 )
 
+interface BerkasYatimRouteChildren {
+  BerkasYatimIndexRoute: typeof BerkasYatimIndexRoute
+}
+
+const BerkasYatimRouteChildren: BerkasYatimRouteChildren = {
+  BerkasYatimIndexRoute: BerkasYatimIndexRoute,
+}
+
+const BerkasYatimRouteWithChildren = BerkasYatimRoute._addFileChildren(
+  BerkasYatimRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
@@ -1253,7 +1282,7 @@ const rootRouteChildren: RootRouteChildren = {
   BerkasPrestasiRoute: BerkasPrestasiRouteWithChildren,
   BerkasTerkirimRoute: BerkasTerkirimRoute,
   BerkasUmumRoute: BerkasUmumRouteWithChildren,
-  BerkasYatimRoute: BerkasYatimRoute,
+  BerkasYatimRoute: BerkasYatimRouteWithChildren,
   DonasiTerimaKasihRoute: DonasiTerimaKasihRoute,
   PendaftaranEkonomiRoute: PendaftaranEkonomiRoute,
   PendaftaranPrestasiRoute: PendaftaranPrestasiRoute,
