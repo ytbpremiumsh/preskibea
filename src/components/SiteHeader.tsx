@@ -33,13 +33,13 @@ export function SiteHeader() {
           <img src={headerLogo} alt="Logo Prestasi Kita" className="h-9 w-auto md:h-10" />
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-1 rounded-full border border-border bg-secondary/60 p-1">
+        <nav className="hidden lg:flex items-center gap-1 rounded-full border-2 border-ink bg-secondary/60 p-1 shadow-[3px_3px_0_0_var(--ink)]">
           {nav.map((n) => (
             <Link
               key={n.to}
               to={n.to}
               className="rounded-full px-4 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
-              activeProps={{ className: "bg-card text-primary shadow-card" }}
+              activeProps={{ className: "bg-card text-primary border-2 border-ink" }}
               activeOptions={{ exact: n.to === "/" }}
             >
               {n.label}
@@ -47,17 +47,17 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-2">
+        <div className="hidden lg:flex items-center gap-3">
           <Link
             to="/cek-status"
-            className="rounded-full px-4 py-2.5 text-sm font-semibold text-foreground/80 transition hover:text-primary"
+            className="btn-block-sm rounded-full bg-card px-4 py-2 text-sm font-semibold text-foreground transition hover:text-primary"
           >
             Cek Status
           </Link>
           <button
             type="button"
             onClick={goToTimeline}
-            className="group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-soft transition hover:opacity-95"
+            className="btn-block group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground"
           >
             Daftar Sekarang
             <ArrowRight size={15} className="transition group-hover:translate-x-0.5" />
@@ -66,11 +66,12 @@ export function SiteHeader() {
 
         <button
           aria-label="Toggle menu"
-          className="lg:hidden rounded-xl border border-border p-2 text-foreground"
+          className="btn-block-sm lg:hidden rounded-xl bg-card p-2 text-foreground"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X size={20} /> : <Menu size={20} />}
         </button>
+
       </div>
 
       {open && (
