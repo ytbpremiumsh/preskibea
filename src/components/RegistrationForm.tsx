@@ -8,9 +8,10 @@ import { STANDARD_REG_COLUMNS } from "@/lib/form-schema";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { sendAppEmail, submitRegistrationFn } from "@/lib/api";
 
-const FALLBACK: Record<"prestasi" | "ekonomi", FormSchema> = {
+const FALLBACK: Record<"prestasi" | "ekonomi" | "umum", FormSchema> = {
   prestasi: { fields: [] },
   ekonomi: { fields: [] },
+  umum: { fields: [] },
 };
 
 async function uploadFile(file: File, prefix: string): Promise<string> {
@@ -85,7 +86,7 @@ function defaultPlaceholder(field: FormField): string {
   return `Masukkan ${field.label.toLowerCase()}`;
 }
 
-export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
+export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umum" }) {
   const navigate = useNavigate();
   const sendEmail = sendAppEmail;
   const [schema, setSchema] = useState<FormSchema>(FALLBACK[kind]);
