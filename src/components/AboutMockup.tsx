@@ -39,7 +39,7 @@ export function AboutMockup() {
         {features.map((f) => (
           <div
             key={f.title}
-            className="group rounded-2xl border border-border bg-card p-6 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition"
+            className="card-block group p-6 transition"
           >
             <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary-soft text-primary group-hover:scale-105 transition">
               <f.icon size={20} />

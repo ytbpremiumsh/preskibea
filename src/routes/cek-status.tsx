@@ -86,7 +86,7 @@ function CekStatusPage() {
           </p>
         </div>
 
-        <div className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
+        <div className="card-block mt-8 p-6 md:p-7">
           <label className="block">
             <span className="text-xs font-medium text-foreground/80">
               Kode Pendaftar<span className="text-destructive"> *</span>
@@ -136,7 +136,7 @@ function StatusResult({ data }: { data: StatusData }) {
   const hasDocs = data.docs.total > 0;
 
   return (
-    <div className="mt-6 rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
+    <div className="card-block mt-6 p-6 md:p-7">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="text-xs uppercase tracking-wide text-muted-foreground">Pendaftar</div>

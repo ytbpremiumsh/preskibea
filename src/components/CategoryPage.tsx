@@ -77,7 +77,7 @@ export function CategoryPage({
       {/* INFO */}
       <section className="container-page py-16 grid lg:grid-cols-2 gap-8 items-start">
         {/* Persyaratan */}
-        <div className="rounded-3xl border border-border bg-card p-8 shadow-card flex flex-col">
+        <div className="card-block p-8 flex flex-col">
           <h2 className="text-2xl font-bold text-foreground">Persyaratan</h2>
           <p className="mt-1 text-sm text-muted-foreground">Pastikan kamu memenuhi seluruh persyaratan berikut.</p>
           <ul className="mt-6 space-y-3">
@@ -134,7 +134,7 @@ export function CategoryPage({
         </div>
 
         {/* Benefit */}
-        <div className="rounded-3xl border border-border bg-card p-8 shadow-card">
+        <div className="card-block p-8">
           <h2 className="text-2xl font-bold text-foreground">Benefit Beasiswa</h2>
           <p className="mt-1 text-sm text-muted-foreground">Total beasiswa Rp17.000.000/semester serta benefit pendukung.</p>
 
@@ -184,7 +184,7 @@ export function CategoryPage({
 
       {/* CTA — Pendaftaran (terpisah dari berkas) */}
       <section className="container-page pb-10">
-        <div className="rounded-3xl border border-border bg-card p-8 md:p-10 shadow-card flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="card-block p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
             <h3 className="text-xl md:text-2xl font-bold text-foreground">Sudah memenuhi persyaratan?</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">Lengkapi formulir pendaftaran beasiswa.</p>

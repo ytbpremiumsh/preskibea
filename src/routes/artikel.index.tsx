@@ -88,7 +88,7 @@ function ArtikelPage() {
               key={a.id}
               to="/artikel/$slug"
               params={{ slug: a.slug }}
-              className="group rounded-2xl border border-border bg-card overflow-hidden shadow-card hover:shadow-soft transition"
+              className="card-block group overflow-hidden transition"
             >
               {a.cover_url && (
                 <div className="aspect-[16/9] overflow-hidden bg-muted">

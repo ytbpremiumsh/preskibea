@@ -59,7 +59,7 @@ export function BenefitsSection() {
         {benefits.map((b) => (
           <div
             key={b.title}
-            className="rounded-3xl border border-border bg-card p-6 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition"
+            className="card-block p-6 transition"
           >
             <div className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${b.accent}`}>
               <b.icon size={20} />

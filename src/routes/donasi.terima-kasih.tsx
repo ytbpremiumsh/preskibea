@@ -112,7 +112,7 @@ function ThanksPage() {
       {/* Stats */}
       {!loading && count > 0 && (
         <section className="mt-12 grid grid-cols-2 gap-4 max-w-2xl mx-auto">
-          <div className="rounded-2xl border border-border bg-card p-5 text-center">
+          <div className="card-flat p-5 text-center">
             <div className="mx-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-primary">
               <Users size={18} />
             </div>
@@ -121,7 +121,7 @@ function ThanksPage() {
             </div>
             <div className="text-xs text-muted-foreground">Donatur baik hati</div>
           </div>
-          <div className="rounded-2xl border border-border bg-card p-5 text-center">
+          <div className="card-flat p-5 text-center">
             <div className="mx-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-primary">
               <Trophy size={18} />
             </div>
@@ -149,7 +149,7 @@ function ThanksPage() {
             {donors.map((d, i) => (
               <li
                 key={i}
-                className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3"
+                className="flex items-center justify-between gap-3 card-flat px-4 py-3"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary text-sm font-bold">

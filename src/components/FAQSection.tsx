@@ -65,7 +65,7 @@ export function FAQSection() {
               className="w-full max-w-xs sm:max-w-sm lg:max-w-md h-auto drop-shadow-xl"
             />
           </div>
-          <div className="rounded-2xl border border-border bg-card p-2 md:p-4 shadow-card">
+          <div className="card-block p-2 md:p-4">
             <Accordion type="single" collapsible className="w-full">
               {faqs.map((f, i) => (
                 <AccordionItem key={i} value={`item-${i}`} className="border-border">

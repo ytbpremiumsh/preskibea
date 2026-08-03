@@ -81,7 +81,7 @@ export function TimelineSection() {
                 <span className="hidden md:flex absolute left-0 top-0 h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold shadow-soft">
                   {i + 1}
                 </span>
-                <div className="rounded-2xl border border-border bg-card p-5 shadow-card w-full">
+                <div className="card-block p-5 w-full">
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <h3 className="font-semibold text-foreground flex items-center gap-2">
                       <span className="md:hidden inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">

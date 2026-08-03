@@ -126,7 +126,7 @@ export function InfoBeasiswaInteraktif() {
       {/* Detail card */}
       <div
         key={current.key}
-        className="mt-6 rounded-3xl border border-border bg-card p-6 md:p-8 shadow-card animate-in fade-in slide-in-from-bottom-2 duration-500"
+        className="card-block mt-6 p-6 md:p-8 animate-in fade-in slide-in-from-bottom-2 duration-500"
       >
         <div className="grid md:grid-cols-[1.1fr_1fr] gap-6">
           <div>

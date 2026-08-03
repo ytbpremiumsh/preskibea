@@ -38,7 +38,7 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
 export function KetentuanBerkasCard({ kind }: { kind: Kind }) {
   const c = content[kind];
   return (
-    <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
+    <div className="card-block p-6 md:p-7">
       <div className="flex items-center gap-2">
         <FileText size={18} className="text-primary" />
         <h2 className="text-base font-bold text-foreground">Ketentuan Berkas</h2>

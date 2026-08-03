@@ -97,7 +97,7 @@ function Index() {
 
           {/* Visual */}
           <div className="relative">
-            <div className="relative rounded-[2rem] border border-border bg-card p-5 shadow-soft">
+            <div className="card-block relative p-5">
               <div className="flex items-center gap-1.5 pb-4">
                 <span className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[var(--gold)]" />
@@ -121,7 +121,7 @@ function Index() {
               </div>
             </div>
 
-            <div className="absolute -left-4 bottom-24 hidden rounded-2xl border border-border bg-card px-4 py-3 shadow-soft xl:block">
+            <div className="card-block absolute -left-4 bottom-24 hidden px-4 py-3 xl:block">
               <div className="flex items-center gap-2 text-xs font-bold text-foreground">
                 <Users size={14} className="text-primary" /> Se-Indonesia
               </div>
@@ -132,7 +132,7 @@ function Index() {
 
         {/* STAT STRIP */}
         <div className="container-page pb-14">
-          <div className="grid grid-cols-2 gap-4 rounded-3xl border border-border bg-card px-6 py-7 shadow-card md:grid-cols-4">
+          <div className="card-block grid grid-cols-2 gap-4 px-6 py-7 md:grid-cols-4">
             {stats.map((s) => (
               <div key={s.label} className="text-center">
                 <div className="text-2xl md:text-3xl font-extrabold text-primary">{s.value}</div>
@@ -212,7 +212,7 @@ function Index() {
 
 function MiniStat({ icon, value, label, highlight }: { icon: React.ReactNode; value: string; label: string; highlight?: boolean }) {
   return (
-    <div className={`rounded-2xl border p-3.5 ${highlight ? "border-transparent bg-primary text-primary-foreground" : "border-border bg-card text-foreground"}`}>
+    <div className={`rounded-2xl border-2 border-ink p-3.5 ${highlight ? "bg-primary text-primary-foreground" : "bg-card text-foreground"}`}>
       <div className={`flex items-center gap-1.5 text-[11px] font-semibold ${highlight ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
         {icon} {label}
       </div>
@@ -237,12 +237,7 @@ function CategoryCard({ tag, icon, title, desc, to, variant }: { tag: string; ic
   const isDark = variant === "dark";
   return (
     <div
-      className={`group relative overflow-hidden rounded-[1.75rem] border p-8 transition-all duration-300 hover:-translate-y-1 ${
-        isDark
-          ? "border-transparent text-primary-foreground shadow-soft"
-          : "border-border bg-card text-foreground shadow-card hover:shadow-soft"
-      }`}
-      style={isDark ? { background: "var(--gradient-primary)" } : undefined}
+      className={`group relative overflow-hidden p-8 ${isDark ? "card-block-dark" : "card-block"}`}
     >
       <div className={`absolute -top-16 -right-16 h-48 w-48 rounded-full blur-3xl ${isDark ? "bg-[var(--gold)]/25" : "bg-primary/10"}`} />
       <div className="relative">

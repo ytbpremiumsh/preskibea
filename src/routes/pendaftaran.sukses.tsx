@@ -112,7 +112,7 @@ function SuksesPage() {
         </div>
 
         {/* Langkah 3: Kirim Berkas */}
-        <div className="mt-6 rounded-3xl border-2 border-border bg-card p-6 md:p-7 shadow-card">
+        <div className="card-block mt-6 p-6 md:p-7">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
               <FileUp size={20} />

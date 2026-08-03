@@ -293,7 +293,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
+          <div className="card-block p-6 md:p-7">
             <h2 className="text-base font-bold text-foreground flex items-center gap-2">
               <KeyRound size={16} className="text-primary" /> Verifikasi Kode Pendaftar
             </h2>
@@ -444,7 +444,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           <KetentuanBerkasCard kind={kind} />
 
           <div
-            className={`rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card transition ${!registrant ? "opacity-60 pointer-events-none select-none" : ""}`}
+            className={`card-block p-6 md:p-7 ${!registrant ? "opacity-60 pointer-events-none select-none" : ""}`}
           >
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
@@ -504,7 +504,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-card">
+          <div className="card-block p-6">
             <h3 className="font-semibold text-foreground">Catatan</h3>
             <ul className="mt-4 space-y-3 text-sm text-foreground/85">
               {[

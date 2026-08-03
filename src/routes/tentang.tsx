@@ -33,7 +33,7 @@ function TentangPage() {
           { icon: <HeartHandshake size={20} />, title: "Meringankan Ekonomi", desc: "Membantu biaya pendidikan bagi pelajar dari keluarga prasejahtera." },
           { icon: <Users size={20} />, title: "Pembinaan Berkelanjutan", desc: "Memberikan mentoring & pendampingan agar penerima terus berkembang." },
         ].map((b) => (
-          <div key={b.title} className="rounded-2xl border border-border bg-card p-6 shadow-card">
+          <div key={b.title} className="card-block p-6">
             <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-primary">{b.icon}</div>
             <h3 className="mt-3 font-semibold text-foreground">{b.title}</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">{b.desc}</p>
@@ -43,7 +43,7 @@ function TentangPage() {
 
       <AdSlot placement="tentang_middle" />
 
-      <section className="mt-12 rounded-2xl border border-border bg-card p-6 md:p-10 shadow-card">
+      <section className="card-block mt-12 p-6 md:p-10">
         <h2 className="text-xl md:text-2xl font-bold text-foreground">Visi & Misi</h2>
         <p className="mt-3 text-muted-foreground">
           Visi: Menjadi gerakan beasiswa yang inklusif dan memberdayakan generasi muda Indonesia.

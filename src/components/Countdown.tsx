@@ -54,7 +54,7 @@ export function Countdown() {
 
   return (
     <div
-      className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 md:p-8 shadow-soft"
+      className="card-block relative overflow-hidden p-6 md:p-8"
       style={{ background: "var(--gradient-hero)" }}
     >
       <div className="absolute -top-16 -right-16 h-48 w-48 rounded-full bg-primary/15 blur-3xl" />
@@ -69,7 +69,7 @@ export function Countdown() {
             {items.map((i) => (
               <div
                 key={i.label}
-                className="rounded-2xl bg-card border border-border px-2 py-4 md:py-5 shadow-card"
+                className="card-block px-2 py-4 md:py-5"
               >
                 <div className="text-3xl md:text-5xl font-extrabold text-primary tabular-nums">
                   {String(i.value).padStart(2, "0")}
