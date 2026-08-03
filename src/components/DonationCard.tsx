@@ -149,7 +149,7 @@ export function DonationCard({
 
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-6 md:p-8 shadow-card">
+    <div className="card-block p-6 md:p-8">
       <div className="flex items-center gap-3">
         <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-soft text-primary">
           <Heart size={20} />

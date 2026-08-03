@@ -97,7 +97,7 @@ function Index() {
 
           {/* Visual */}
           <div className="relative">
-            <div className="relative rounded-[2rem] border border-border bg-card p-5 shadow-soft">
+            <div className="card-block relative p-5">
               <div className="flex items-center gap-1.5 pb-4">
                 <span className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[var(--gold)]" />
@@ -121,7 +121,7 @@ function Index() {
               </div>
             </div>
 
-            <div className="absolute -left-4 bottom-24 hidden rounded-2xl border border-border bg-card px-4 py-3 shadow-soft xl:block">
+            <div className="card-block absolute -left-4 bottom-24 hidden px-4 py-3 xl:block">
               <div className="flex items-center gap-2 text-xs font-bold text-foreground">
                 <Users size={14} className="text-primary" /> Se-Indonesia
               </div>
@@ -132,7 +132,7 @@ function Index() {
 
         {/* STAT STRIP */}
         <div className="container-page pb-14">
-          <div className="grid grid-cols-2 gap-4 rounded-3xl border border-border bg-card px-6 py-7 shadow-card md:grid-cols-4">
+          <div className="card-block grid grid-cols-2 gap-4 px-6 py-7 md:grid-cols-4">
             {stats.map((s) => (
               <div key={s.label} className="text-center">
                 <div className="text-2xl md:text-3xl font-extrabold text-primary">{s.value}</div>

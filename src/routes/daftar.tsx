@@ -42,7 +42,7 @@ function DaftarSelector() {
 
 function CategoryCard({ to, icon, title, desc, cta }: { to: string; icon: React.ReactNode; title: string; desc: string; cta: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-card flex flex-col">
+    <div className="card-block p-6 flex flex-col">
       <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-primary">{icon}</div>
       <h2 className="mt-3 text-xl font-bold text-foreground">{title}</h2>
       <p className="mt-1.5 text-sm text-muted-foreground flex-1">{desc}</p>

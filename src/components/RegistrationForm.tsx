@@ -367,7 +367,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-card">
+          <div className="card-block p-6">
             <h3 className="font-semibold text-foreground">Sebelum mengirim</h3>
             <ul className="mt-4 space-y-3 text-sm text-foreground/85">
               {[
@@ -409,7 +409,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
+    <div className="card-block p-6 md:p-7">
       <h2 className="text-base font-bold text-foreground">{title}</h2>
       <div className="mt-5">{children}</div>
     </div>

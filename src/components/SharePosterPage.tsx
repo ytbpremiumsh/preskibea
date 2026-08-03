@@ -109,7 +109,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
       </div>
 
       {/* KETENTUAN BAGIKAN POSTER — di atas */}
-      <div className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-8 shadow-card">
+      <div className="card-block mt-8 p-6 md:p-8">
         <div className="flex items-center gap-2">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <ListChecks size={18} />
@@ -167,7 +167,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
       {/* POSTER + CAPTION — di bawah */}
       <div className="mt-10 grid lg:grid-cols-[1fr_1.1fr] gap-8 items-start">
         {/* Poster */}
-        <div className="rounded-3xl border border-border bg-card p-4 shadow-card">
+        <div className="card-block p-4">
           <div className="rounded-2xl overflow-hidden bg-muted">
             <img
               src={cfg.image_url}
@@ -194,7 +194,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 
         {/* Caption + share buttons */}
         <div className="space-y-6">
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-card">
+          <div className="card-block p-6">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div>
                 <div className="text-sm font-semibold text-foreground">Caption Resmi</div>
@@ -216,7 +216,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
             </pre>
           </div>
 
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-card">
+          <div className="card-block p-6">
             <div className="text-sm font-semibold text-foreground">Bagikan ke Media Sosial</div>
             <div className="mt-4 grid sm:grid-cols-2 gap-3">
               {links.map((l) => (

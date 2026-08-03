@@ -64,7 +64,7 @@ export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       <AdSlot placement="berkas_top" />
 
       <section className="container-page py-16 grid lg:grid-cols-2 gap-8">
-        <div className="rounded-3xl border border-border bg-card p-8 shadow-card">
+        <div className="card-block p-8">
           <h2 className="text-2xl font-bold text-foreground">Daftar Berkas yang Perlu Disiapkan</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Berkas wajib harus diunggah agar dapat lanjut ke tahap verifikasi.
@@ -81,7 +81,7 @@ export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           </ul>
         </div>
 
-        <div className="rounded-3xl border border-border bg-card p-8 shadow-card">
+        <div className="card-block p-8">
           <h2 className="text-2xl font-bold text-foreground">Catatan Pengiriman</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Beberapa hal yang perlu diperhatikan sebelum mengunggah.
@@ -100,7 +100,7 @@ export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       </section>
 
       <section className="container-page pb-4">
-        <div className="rounded-3xl border border-border bg-card p-8 md:p-10 shadow-card flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="card-block p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
             <h3 className="text-xl md:text-2xl font-bold text-foreground">
               Sudah lengkap semuanya?
