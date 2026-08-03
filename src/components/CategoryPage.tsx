@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake, Users } from "lucide-react";
+import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake, Users, Heart } from "lucide-react";
 import type { ReactNode } from "react";
 import { AdSlot } from "@/components/ads/AdSlot";
 
@@ -42,15 +42,15 @@ export function CategoryPage({
   registerTo,
   shareTo,
 }: {
-  kind: "prestasi" | "ekonomi" | "umum";
+  kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   title: string;
   tagline: string;
   desc: string;
-  registerTo: "/pendaftaran/prestasi" | "/pendaftaran/ekonomi" | "/pendaftaran/umum";
-  shareTo: "/bagikan-poster/prestasi" | "/bagikan-poster/ekonomi" | "/bagikan-poster/umum";
+  registerTo: "/pendaftaran/prestasi" | "/pendaftaran/ekonomi" | "/pendaftaran/umum" | "/pendaftaran/yatim";
+  shareTo: "/bagikan-poster/prestasi" | "/bagikan-poster/ekonomi" | "/bagikan-poster/umum" | "/bagikan-poster/yatim";
 }) {
   const isGold = kind === "ekonomi";
-  const Icon: ReactNode = isGold ? <HeartHandshake /> : kind === "umum" ? <Users /> : <Trophy />;
+  const Icon: ReactNode = isGold ? <HeartHandshake /> : kind === "umum" ? <Users /> : kind === "yatim" ? <Heart /> : <Trophy />;
 
   return (
     <>
@@ -204,7 +204,7 @@ export function CategoryPage({
             </p>
           </div>
           <Link
-            to={kind === "prestasi" ? "/berkas/prestasi" : kind === "ekonomi" ? "/berkas/ekonomi" : "/berkas/umum"}
+            to={kind === "prestasi" ? "/berkas/prestasi" : kind === "ekonomi" ? "/berkas/ekonomi" : kind === "yatim" ? "/berkas/yatim" : "/berkas/umum"}
             className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary transition"
           >
             <FileText size={16} /> Kirim Berkas

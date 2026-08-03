@@ -26,6 +26,15 @@ const docsByKind = {
     "Sertifikat Pendukung Lainnya — opsional",
     "Video Motivasi (link/file) — opsional",
   ],
+  yatim: [
+    "Kartu Pelajar / Kartu Mahasiswa",
+    "Surat Keterangan Yatim / Piatu / Yatim Piatu dari Kelurahan",
+    "Akta Kematian Orang Tua / Surat Keterangan Kematian",
+    "Kartu Keluarga (KK)",
+    "Rapor / Transkrip",
+    "Esai dengan Tema yang Sudah Ditentukan",
+    "Video Motivasi (link/file) — opsional",
+  ],
 } as const;
 
 const tips = [
@@ -34,9 +43,9 @@ const tips = [
   "Gunakan Kode Token yang sama saat pendaftaran",
 ];
 
-export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" }) {
+export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "yatim" }) {
   const docs = docsByKind[kind];
-  const uploadTo = kind === "prestasi" ? "/berkas/prestasi/upload" : kind === "ekonomi" ? "/berkas/ekonomi/upload" : "/berkas/umum/upload";
+  const uploadTo = kind === "prestasi" ? "/berkas/prestasi/upload" : kind === "ekonomi" ? "/berkas/ekonomi/upload" : kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/umum/upload";
 
   return (
     <>
@@ -47,7 +56,7 @@ export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum"
           </Link>
           <div className="mt-4 max-w-3xl">
             <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-              <FileText size={14} /> Pengiriman Berkas {kind === "prestasi" ? "Prestasi" : kind === "ekonomi" ? "Ekonomi" : "Umum"}
+              <FileText size={14} /> Pengiriman Berkas {kind === "prestasi" ? "Prestasi" : kind === "ekonomi" ? "Ekonomi" : kind === "yatim" ? "Yatim" : "Umum"}
             </span>
             <h1 className="mt-4 text-4xl md:text-5xl font-extrabold leading-tight text-foreground">
               Persiapkan Berkas Pendukungmu

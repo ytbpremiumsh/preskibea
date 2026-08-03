@@ -631,7 +631,7 @@ export type Database = {
       doc_review_status: "pending" | "approved" | "rejected"
       donation_status: "pending" | "paid" | "failed" | "expired"
       registration_status: "pending" | "verified" | "approved" | "rejected"
-      scholarship_kind: "prestasi" | "ekonomi" | "umum"
+      scholarship_kind: "prestasi" | "ekonomi" | "umum" | "yatim"
       update_status: "running" | "success" | "failed"
       update_trigger_source: "manual" | "webhook" | "rollback"
     }
@@ -766,7 +766,7 @@ export const Constants = {
       doc_review_status: ["pending", "approved", "rejected"],
       donation_status: ["pending", "paid", "failed", "expired"],
       registration_status: ["pending", "verified", "approved", "rejected"],
-      scholarship_kind: ["prestasi", "ekonomi", "umum"],
+      scholarship_kind: ["prestasi", "ekonomi", "umum", "yatim"],
       update_status: ["running", "success", "failed"],
       update_trigger_source: ["manual", "webhook", "rollback"],
     },
