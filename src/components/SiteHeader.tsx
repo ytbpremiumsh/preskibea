@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { useBranding } from "@/hooks/use-branding";
 
 const nav = [
@@ -20,7 +20,6 @@ export function SiteHeader() {
     if (window.location.pathname !== "/") {
       await navigate({ to: "/" });
     }
-    // Defer to next tick so the section is mounted before scrolling
     setTimeout(() => {
       const el = document.getElementById("timeline");
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -28,19 +27,19 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/85 backdrop-blur">
-      <div className="container-page flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center" aria-label="Prestasi Kita x Atskolla">
-          <img src={headerLogo} alt="Logo Prestasi Kita x Atskolla" className="h-10 w-auto" />
+    <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/80 backdrop-blur-xl">
+      <div className="container-page flex h-[72px] items-center justify-between gap-4">
+        <Link to="/" className="flex shrink-0 items-center" aria-label="Prestasi Kita">
+          <img src={headerLogo} alt="Logo Prestasi Kita" className="h-9 w-auto md:h-10" />
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-7">
+        <nav className="hidden lg:flex items-center gap-1 rounded-full border border-border bg-secondary/60 p-1">
           {nav.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
-              activeProps={{ className: "text-primary" }}
+              className="rounded-full px-4 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+              activeProps={{ className: "bg-card text-primary shadow-card" }}
               activeOptions={{ exact: n.to === "/" }}
             >
               {n.label}
@@ -48,34 +47,41 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-2">
+          <Link
+            to="/cek-status"
+            className="rounded-full px-4 py-2.5 text-sm font-semibold text-foreground/80 transition hover:text-primary"
+          >
+            Cek Status
+          </Link>
           <button
             type="button"
             onClick={goToTimeline}
-            className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+            className="group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-soft transition hover:opacity-95"
           >
             Daftar Sekarang
+            <ArrowRight size={15} className="transition group-hover:translate-x-0.5" />
           </button>
         </div>
 
         <button
           aria-label="Toggle menu"
-          className="lg:hidden rounded-md p-2 text-foreground"
+          className="lg:hidden rounded-xl border border-border p-2 text-foreground"
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? <X size={22} /> : <Menu size={22} />}
+          {open ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
       {open && (
         <div className="lg:hidden border-t border-border bg-background">
-          <div className="container-page py-4 flex flex-col gap-3">
+          <div className="container-page py-4 flex flex-col gap-1">
             {nav.map((n) => (
               <Link
                 key={n.to}
                 to={n.to}
                 onClick={() => setOpen(false)}
-                className="text-sm font-medium py-2 text-foreground/80"
+                className="rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground/80 hover:bg-secondary"
               >
                 {n.label}
               </Link>
@@ -83,9 +89,9 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={goToTimeline}
-              className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+              className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground"
             >
-              Daftar Sekarang
+              Daftar Sekarang <ArrowRight size={15} />
             </button>
           </div>
         </div>

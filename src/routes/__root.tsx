@@ -83,7 +83,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Beasiswa Pendidikan Prestasi Kita Section #3" },
       { name: "description", content: "Program beasiswa nasional untuk pelajar dan mahasiswa Indonesia dengan total beasiswa Rp17.000.000 per semester. Tidak dipungut biaya." },
     ],
+    links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
+      },
+    ],
   }),
+
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,

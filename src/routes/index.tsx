@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Award, HeartHandshake, Trophy, Users, Wallet, Share2, CalendarClock, ArrowRight, CheckCircle2, GraduationCap, Sparkles, FileText } from "lucide-react";
+import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap } from "lucide-react";
 import heroImg from "@/assets/students-hero.png";
 import { Countdown } from "@/components/Countdown";
 import { AboutMockup } from "@/components/AboutMockup";
@@ -14,6 +14,12 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Beasiswa Pendidikan Prestasi Kita Section #3" },
       { name: "description", content: "Program beasiswa nasional untuk SD, SMP, SMA/SMK/MA, dan Mahasiswa. Total beasiswa Rp17.000.000/semester. Tidak dipungut biaya." },
+      { property: "og:title", content: "Beasiswa Pendidikan Prestasi Kita Section #3" },
+      { property: "og:description", content: "Beasiswa Prestasi & Ekonomi untuk pelajar dan mahasiswa Indonesia. Total Rp17.000.000 per semester, tanpa biaya pendaftaran." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Beasiswa Pendidikan Prestasi Kita Section #3" },
+      { name: "twitter:description", content: "Beasiswa Prestasi & Ekonomi untuk pelajar dan mahasiswa Indonesia. Tanpa biaya pendaftaran." },
     ],
   }),
   component: Index,
@@ -21,96 +27,137 @@ export const Route = createFileRoute("/")({
 
 const jenjang = ["SD", "SMP", "SMA/SMK/MA", "Mahasiswa"];
 
+const stats = [
+  { value: "Rp17jt", label: "Total beasiswa per semester" },
+  { value: "2", label: "Jalur: Prestasi & Ekonomi" },
+  { value: "4", label: "Jenjang pendidikan tercakup" },
+  { value: "Rp0", label: "Biaya pendaftaran" },
+];
+
+const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Tanpa Biaya", "Seluruh Indonesia", "Sertifikat Resmi", "Merchandise", "Akses Magang"];
+
 function Index() {
   return (
     <>
       {/* HERO */}
-      <section
-        className="relative overflow-hidden"
-        style={{ background: "var(--gradient-hero)" }}
-      >
-        <div className="container-page py-12 md:py-24 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* Title block — first on mobile, part of left column on desktop */}
-          <div className="order-1 lg:order-1 lg:hidden space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
-              <Sparkles size={14} /> Meraih Pendidikan, Mewujudkan Prestasi
+      <section className="relative overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
+        <div className="container-page py-12 md:py-20 grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground/75 shadow-card">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--gold)]" />
+              Prestasi Kita 2026 · Section #3
             </span>
-            <h1 className="relative text-3xl sm:text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground">
-              <span className="block">Beasiswa</span>
-              <span className="relative inline-block bg-gradient-to-br from-primary via-[oklch(0.55_0.22_290)] to-[oklch(0.45_0.22_280)] bg-clip-text text-transparent drop-shadow-[0_2px_12px_oklch(0.55_0.22_290/0.25)]">
+
+            <h1 className="text-4xl sm:text-5xl lg:text-[3.65rem] font-extrabold leading-[1.03] tracking-tight text-foreground">
+              Raih beasiswa
+              <span className="relative mt-1 block w-fit text-primary">
                 Prestasi Kita
-                <svg aria-hidden="true" viewBox="0 0 200 8" preserveAspectRatio="none" className="absolute -bottom-1 left-0 h-1.5 w-full text-primary/60">
-                  <path d="M2 5 Q 50 1, 100 4 T 198 4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                <svg aria-hidden="true" viewBox="0 0 300 12" preserveAspectRatio="none" className="absolute -bottom-1.5 left-0 h-2.5 w-full text-[var(--gold)]">
+                  <path d="M3 8 Q 75 2, 150 6 T 297 5" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
                 </svg>
               </span>
-              <span className="ml-2">Section</span>{" "}
-              <span className="relative inline-block bg-gradient-to-br from-[oklch(0.75_0.18_80)] to-[oklch(0.55_0.16_60)] bg-clip-text text-transparent">
-                #3
-                <span className="absolute -top-1 -right-2 h-2 w-2 rounded-full bg-[oklch(0.75_0.18_80)] shadow-[0_0_12px_oklch(0.75_0.18_80)]" />
-              </span>
+              <span className="text-muted-foreground/80"> Section #3</span>
             </h1>
-          </div>
 
-          <div className="order-2 lg:order-2 relative">
-            <img
-              src={heroImg}
-              alt="Ilustrasi siswa Indonesia penerima beasiswa Prestasi Kita"
-              width={1024}
-              height={1024}
-              className="w-full h-auto max-w-md mx-auto lg:max-w-none"
-              fetchPriority="high"
-            />
-          </div>
-
-          <div className="order-3 lg:order-1 space-y-6 md:space-y-7 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <span className="hidden lg:inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
-              <Sparkles size={14} /> Meraih Pendidikan, Mewujudkan Prestasi
-            </span>
-            <h1 className="hidden lg:block relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight text-foreground">
-              <span className="block">Beasiswa</span>
-              <span className="relative inline-block bg-gradient-to-br from-primary via-[oklch(0.55_0.22_290)] to-[oklch(0.45_0.22_280)] bg-clip-text text-transparent drop-shadow-[0_4px_24px_oklch(0.55_0.22_290/0.3)]">
-                Prestasi Kita
-                <svg aria-hidden="true" viewBox="0 0 300 10" preserveAspectRatio="none" className="absolute -bottom-2 left-0 h-2 w-full text-primary/60">
-                  <path d="M2 6 Q 75 1, 150 5 T 298 5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                </svg>
-              </span>{" "}
-              <span className="inline-block">Section</span>{" "}
-              <span className="relative inline-block bg-gradient-to-br from-[oklch(0.75_0.18_80)] to-[oklch(0.55_0.16_60)] bg-clip-text text-transparent">
-                #3
-                <span className="absolute -top-1 -right-3 h-2.5 w-2.5 rounded-full bg-[oklch(0.75_0.18_80)] shadow-[0_0_16px_oklch(0.75_0.18_80)]" />
-              </span>
-            </h1>
-            <p className="text-base md:text-lg text-muted-foreground max-w-xl">
-              Program beasiswa pendidikan nasional untuk pelajar dan mahasiswa Indonesia.
-              Tanpa minimal nilai, tanpa biaya pendaftaran.
+            <p className="max-w-xl text-base md:text-lg text-muted-foreground">
+              Program beasiswa pendidikan nasional untuk pelajar dan mahasiswa Indonesia —
+              jalur Prestasi dan Ekonomi, tanpa minimal nilai, tanpa biaya pendaftaran.
             </p>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a
+                href="#timeline"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-soft transition hover:opacity-95"
+              >
+                Daftar sekarang
+                <ArrowRight size={16} className="transition group-hover:translate-x-0.5" />
+              </a>
+              <Link
+                to="/beasiswa-prestasi"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-7 py-3.5 text-sm font-bold text-foreground transition hover:border-primary hover:text-primary"
+              >
+                Lihat persyaratan
+              </Link>
+            </div>
+
+            <p className="text-xs text-muted-foreground">
+              Gratis 100% · tanpa pungutan biaya · seleksi transparan
+            </p>
+
+            <div className="inline-flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-secondary/50 px-4 py-3">
+              <ShieldCheck size={16} className="text-primary" />
+              <span className="text-xs font-semibold text-foreground/80">Terbuka untuk</span>
               {jenjang.map((j) => (
-                <span key={j} className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground/80">
+                <span key={j} className="rounded-full bg-card px-2.5 py-1 text-[11px] font-semibold text-foreground/75 shadow-card">
                   {j}
                 </span>
               ))}
             </div>
+          </div>
 
-            <div className="grid sm:grid-cols-3 gap-3 pt-2">
-              <HighlightCard icon={<Wallet size={18} />} label="Total Beasiswa" value="Rp17.000.000" sub="per semester" highlight />
-              <HighlightCard icon={<Trophy size={18} />} label="Beasiswa" value="Prestasi" sub="Akademik & non-akademik" />
-              <HighlightCard icon={<HeartHandshake size={18} />} label="Beasiswa" value="Ekonomi" sub="Dukungan finansial" />
+          {/* Visual */}
+          <div className="relative">
+            <div className="relative rounded-[2rem] border border-border bg-card p-5 shadow-soft">
+              <div className="flex items-center gap-1.5 pb-4">
+                <span className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[var(--gold)]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-primary/40" />
+                <span className="ml-3 text-[11px] font-semibold text-muted-foreground">Beasiswa Prestasi Kita · Section #3</span>
+              </div>
+              <div className="overflow-hidden rounded-3xl bg-secondary/50">
+                <img
+                  src={heroImg}
+                  alt="Ilustrasi pelajar Indonesia penerima Beasiswa Prestasi Kita"
+                  width={1024}
+                  height={1024}
+                  className="mx-auto w-full max-w-md"
+                  fetchPriority="high"
+                />
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <MiniStat icon={<Wallet size={15} />} value="Rp17.000.000" label="per semester" highlight />
+                <MiniStat icon={<GraduationCap size={15} />} value="SD – Mahasiswa" label="semua jenjang" />
+              </div>
             </div>
 
-            <div className="flex pt-2">
-              <a href="#timeline" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 text-base font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition sm:w-auto sm:min-w-[280px]">
-                Daftar Sekarang <ArrowRight size={18} />
-              </a>
+            <div className="absolute -left-4 bottom-24 hidden rounded-2xl border border-border bg-card px-4 py-3 shadow-soft xl:block">
+              <div className="flex items-center gap-2 text-xs font-bold text-foreground">
+                <Users size={14} className="text-primary" /> Se-Indonesia
+              </div>
             </div>
+
+          </div>
+        </div>
+
+        {/* STAT STRIP */}
+        <div className="container-page pb-14">
+          <div className="grid grid-cols-2 gap-4 rounded-3xl border border-border bg-card px-6 py-7 shadow-card md:grid-cols-4">
+            {stats.map((s) => (
+              <div key={s.label} className="text-center">
+                <div className="text-2xl md:text-3xl font-extrabold text-primary">{s.value}</div>
+                <div className="mt-1 text-xs text-muted-foreground">{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
+      {/* MARQUEE BAND */}
+      <div className="overflow-hidden border-y border-primary/20 py-3.5 text-primary-foreground" style={{ background: "var(--gradient-primary)" }}>
+        <div className="flex w-max animate-marquee gap-8 whitespace-nowrap">
+          {[...marquee, ...marquee, ...marquee, ...marquee].map((m, i) => (
+            <span key={i} className="flex items-center gap-8 text-xs font-bold uppercase tracking-[0.18em]">
+              {m}
+              <Sparkles size={13} className="text-[var(--gold)]" />
+            </span>
+          ))}
+        </div>
+      </div>
+
       <AdSlot placement="after_hero" />
 
-      {/* COUNTDOWN — di atas Kategori Beasiswa */}
+      {/* COUNTDOWN */}
       <section className="container-page pt-16 pb-4">
         <Countdown />
       </section>
@@ -118,9 +165,9 @@ function Index() {
       {/* KATEGORI */}
       <section className="container-page py-16">
         <SectionHeader
-          eyebrow="Kategori Beasiswa"
-          title="Pilih Jalur Beasiswamu"
-          desc="Dua kategori, satu tujuan: membuka akses pendidikan untuk seluruh anak Indonesia."
+          eyebrow="Dua jalur"
+          title="Prestasi atau Ekonomi?"
+          desc="Satu program, dua jalur beasiswa. Pilih yang paling sesuai dengan kondisimu."
         />
 
         <div className="mt-12 grid md:grid-cols-2 gap-6">
@@ -137,48 +184,39 @@ function Index() {
             title="Untuk yang membutuhkan dukungan finansial"
             desc="Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial untuk pendidikan."
             to="/beasiswa-ekonomi"
-            variant="gold"
+            variant="dark"
           />
         </div>
       </section>
 
       <AdSlot placement="after_categories" />
 
-      {/* TENTANG / MOCKUP */}
       <AboutMockup />
 
-      {/* BENEFIT */}
       <BenefitsSection />
 
       <AdSlot placement="after_benefits" />
 
-      {/* PERAIH BEASISWA SEBELUMNYA */}
       <AlumniSection />
 
       <AdSlot placement="after_alumni" />
 
-      {/* TIMELINE */}
       <TimelineSection />
 
-      {/* FAQ */}
       <FAQSection />
-
-
-
 
       <AdSlot placement="after_faq" />
     </>
   );
 }
 
-function HighlightCard({ icon, label, value, sub, highlight }: { icon: React.ReactNode; label: string; value: string; sub: string; highlight?: boolean }) {
+function MiniStat({ icon, value, label, highlight }: { icon: React.ReactNode; value: string; label: string; highlight?: boolean }) {
   return (
-    <div className={`rounded-2xl border p-4 ${highlight ? "border-transparent bg-primary text-primary-foreground shadow-soft" : "border-border bg-card text-foreground shadow-card"}`}>
-      <div className={`flex items-center gap-2 text-xs font-medium ${highlight ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+    <div className={`rounded-2xl border p-3.5 ${highlight ? "border-transparent bg-primary text-primary-foreground" : "border-border bg-card text-foreground"}`}>
+      <div className={`flex items-center gap-1.5 text-[11px] font-semibold ${highlight ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
         {icon} {label}
       </div>
-      <div className="mt-1.5 text-lg font-bold">{value}</div>
-      <div className={`text-xs ${highlight ? "text-primary-foreground/75" : "text-muted-foreground"}`}>{sub}</div>
+      <div className="mt-1 text-sm font-extrabold">{value}</div>
     </div>
   );
 }
@@ -186,40 +224,54 @@ function HighlightCard({ icon, label, value, sub, highlight }: { icon: React.Rea
 function SectionHeader({ eyebrow, title, desc }: { eyebrow: string; title: string; desc: string }) {
   return (
     <div className="text-center max-w-2xl mx-auto">
-      <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">{eyebrow}</span>
+      <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground/75 shadow-card">
+        <span className="h-1.5 w-1.5 rounded-full bg-[var(--gold)]" /> {eyebrow}
+      </span>
       <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-foreground">{title}</h2>
       <p className="mt-3 text-muted-foreground">{desc}</p>
     </div>
   );
 }
 
-function CategoryCard({ tag, icon, title, desc, to, variant }: { tag: string; icon: React.ReactNode; title: string; desc: string; to: "/beasiswa-prestasi" | "/beasiswa-ekonomi"; variant?: "gold" }) {
-  const isGold = variant === "gold";
+function CategoryCard({ tag, icon, title, desc, to, variant }: { tag: string; icon: React.ReactNode; title: string; desc: string; to: "/beasiswa-prestasi" | "/beasiswa-ekonomi"; variant?: "dark" }) {
+  const isDark = variant === "dark";
   return (
-    <div className="group relative overflow-hidden rounded-3xl border border-border bg-card p-8 shadow-card hover:shadow-soft hover:-translate-y-1 transition-all duration-300">
-      <div className={`absolute -top-16 -right-16 h-48 w-48 rounded-full blur-2xl opacity-50 group-hover:opacity-80 transition ${isGold ? "bg-[oklch(0.88_0.16_85)]/60" : "bg-primary/30"}`} />
+    <div
+      className={`group relative overflow-hidden rounded-[1.75rem] border p-8 transition-all duration-300 hover:-translate-y-1 ${
+        isDark
+          ? "border-transparent text-primary-foreground shadow-soft"
+          : "border-border bg-card text-foreground shadow-card hover:shadow-soft"
+      }`}
+      style={isDark ? { background: "var(--gradient-primary)" } : undefined}
+    >
+      <div className={`absolute -top-16 -right-16 h-48 w-48 rounded-full blur-3xl ${isDark ? "bg-[var(--gold)]/25" : "bg-primary/10"}`} />
       <div className="relative">
-        <div className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${isGold ? "bg-[oklch(0.92_0.14_85)] text-gold-foreground" : "bg-primary-soft text-primary"}`}>
+        <div className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${isDark ? "bg-[var(--gold)] text-gold-foreground" : "bg-primary-soft text-primary"}`}>
           {icon}
         </div>
-        <span className={`mt-5 inline-block text-xs font-semibold uppercase tracking-wider ${isGold ? "text-[oklch(0.55_0.16_75)]" : "text-primary"}`}>{tag}</span>
-        <h3 className="mt-2 text-xl md:text-2xl font-bold text-foreground">{title}</h3>
-        <p className="mt-3 text-sm text-muted-foreground">{desc}</p>
+        <span className={`mt-5 inline-block rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${isDark ? "bg-[var(--gold)] text-gold-foreground" : "bg-primary-soft text-primary"}`}>
+          {tag}
+        </span>
+        <h3 className="mt-3 text-xl md:text-2xl font-bold">{title}</h3>
+        <p className={`mt-3 text-sm ${isDark ? "text-primary-foreground/80" : "text-muted-foreground"}`}>{desc}</p>
 
-        <ul className="mt-5 space-y-2 text-sm text-foreground/80">
+        <ul className={`mt-5 space-y-2 text-sm ${isDark ? "text-primary-foreground/90" : "text-foreground/80"}`}>
           {["Terbuka untuk SD, SMP, SMA/SMK/MA, & Mahasiswa", "Tanpa minimal nilai rapor / IPK", "Tidak dipungut biaya"].map((x) => (
-            <li key={x} className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary" /> {x}</li>
+            <li key={x} className="flex items-start gap-2">
+              <CheckCircle2 size={16} className={`mt-0.5 shrink-0 ${isDark ? "text-[var(--gold)]" : "text-primary"}`} /> {x}
+            </li>
           ))}
         </ul>
 
-        <Link to={to} className="mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-95 transition">
-          Lihat Detail <ArrowRight size={16} />
+        <Link
+          to={to}
+          className={`mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition hover:opacity-95 ${
+            isDark ? "bg-[var(--gold)] text-gold-foreground" : "bg-primary text-primary-foreground"
+          }`}
+        >
+          Lihat detail <ArrowRight size={16} />
         </Link>
       </div>
     </div>
   );
 }
-
-// Suppress unused
-void Award;
-void Users;
