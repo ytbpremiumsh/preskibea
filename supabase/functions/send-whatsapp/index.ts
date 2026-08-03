@@ -29,11 +29,11 @@ function normalizeNumber(raw: string): string {
 }
 
 const DEFAULT_TEMPLATES = {
-  pendaftaran_user: `*Kejar Prestasi*\n\nHalo {nama}, pendaftaran {jenis} Anda telah kami terima.\n\n🔑 *KODE PENDAFTAR ANDA:*\n*{token}*\n\n_Simpan kode ini baik-baik. Kode wajib digunakan saat:_\n• Mengirim berkas pendukung\n• Mengecek status pendaftaran\n\nLangkah berikutnya: silakan kirim berkas pendukung melalui menu *Kirim Berkas* di website dan masukkan kode di atas.\n\nTerima kasih.`,
-  pendaftaran_admin: `*Pendaftar Baru — Kejar Prestasi*\n\nNama: {nama}\nJenis: {jenis}\nKode: {token}\nEmail: {email}\nWhatsApp: {whatsapp}`,
-  berkas_user: `*Kejar Prestasi*\n\nBerkas {jenis} dari email {email} ({jumlah_berkas} file) berhasil kami terima dan sedang dalam tahap verifikasi.\n\nKami akan menghubungi Anda kembali setelah proses selesai.`,
-  berkas_admin: `*Berkas Masuk — Kejar Prestasi*\n\nJenis: {jenis}\nEmail: {email}\nJumlah file: {jumlah_berkas}`,
-  status_user: `*Kejar Prestasi*\n\nHalo {nama}, status pendaftaran {jenis} Anda saat ini: *{status}*.`,
+  pendaftaran_user: `*Prestasi Kita*\n\nHalo {nama}, pendaftaran {jenis} Anda telah kami terima.\n\n🔑 *KODE PENDAFTAR ANDA:*\n*{token}*\n\n_Simpan kode ini baik-baik. Kode wajib digunakan saat:_\n• Mengirim berkas pendukung\n• Mengecek status pendaftaran\n\nLangkah berikutnya: silakan kirim berkas pendukung melalui menu *Kirim Berkas* di website dan masukkan kode di atas.\n\nTerima kasih.`,
+  pendaftaran_admin: `*Pendaftar Baru — Prestasi Kita*\n\nNama: {nama}\nJenis: {jenis}\nKode: {token}\nEmail: {email}\nWhatsApp: {whatsapp}`,
+  berkas_user: `*Prestasi Kita*\n\nBerkas {jenis} dari email {email} ({jumlah_berkas} file) berhasil kami terima dan sedang dalam tahap verifikasi.\n\nKami akan menghubungi Anda kembali setelah proses selesai.`,
+  berkas_admin: `*Berkas Masuk — Prestasi Kita*\n\nJenis: {jenis}\nEmail: {email}\nJumlah file: {jumlah_berkas}`,
+  status_user: `*Prestasi Kita*\n\nHalo {nama}, status pendaftaran {jenis} Anda saat ini: *{status}*.`,
 };
 
 function fillTemplate(tpl: string, vars: Record<string, string>): string {
@@ -58,7 +58,7 @@ function buildMessage(p: Payload, tpls: Templates, audience: "user" | "admin"): 
   if (p.type === "pendaftaran") key = audience === "admin" ? "pendaftaran_admin" : "pendaftaran_user";
   else if (p.type === "berkas") key = audience === "admin" ? "berkas_admin" : "berkas_user";
   else if (p.type === "status") key = "status_user";
-  if (!key) return "Test pesan dari Kejar Prestasi.";
+  if (!key) return "Test pesan dari Prestasi Kita.";
   const tpl = tpls[key] || DEFAULT_TEMPLATES[key];
   return fillTemplate(tpl, vars);
 }

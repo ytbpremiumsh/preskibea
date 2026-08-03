@@ -53,13 +53,13 @@ export function SiteFooter() {
           <div className="flex items-center">
             <img
               src={footerLogo}
-              alt="Logo Kejar Prestasi x ATSkolla"
+              alt="Logo Prestasi Kita x ATSkolla"
               className="h-10 w-auto"
               loading="lazy"
             />
           </div>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
-            <strong className="text-foreground">Kejar Prestasi</strong> adalah program beasiswa
+            <strong className="text-foreground">Prestasi Kita</strong> adalah program beasiswa
             nasional yang berkolaborasi dengan <strong className="text-foreground">ATSkolla</strong>{" "}
             untuk mendukung pelajar &amp; mahasiswa Indonesia dalam meraih pendidikan dan mewujudkan
             prestasi.
@@ -156,7 +156,7 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
             <li>
               <Link to="/" className="hover:text-primary transition">
-                Tentang Kejar Prestasi
+                Tentang Prestasi Kita
               </Link>
             </li>
             <li>
@@ -212,9 +212,9 @@ export function SiteFooter() {
           <div className="flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-xs text-destructive">
             <AlertTriangle size={16} className="mt-0.5 shrink-0" />
             <p className="leading-relaxed">
-              <strong>Waspada penipuan!</strong> Seluruh proses pendaftaran Kejar Prestasi{" "}
+              <strong>Waspada penipuan!</strong> Seluruh proses pendaftaran Prestasi Kita{" "}
               <strong>tidak dipungut biaya apapun</strong>. Laporkan setiap penipuan yang
-              mengatasnamakan Kejar Prestasi melalui kontak resmi di atas.
+              mengatasnamakan Prestasi Kita melalui kontak resmi di atas.
             </p>
           </div>
         </div>
@@ -224,7 +224,7 @@ export function SiteFooter() {
       <div className="border-t border-border bg-background">
         <div className="container-page py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
           <div className="text-xs text-muted-foreground">
-            © {year} <span className="text-foreground font-semibold">Kejar Prestasi</span> ×{" "}
+            © {year} <span className="text-foreground font-semibold">Prestasi Kita</span> ×{" "}
             <span className="text-foreground font-semibold">ATSkolla</span>. Seluruh hak cipta dilindungi.
           </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">

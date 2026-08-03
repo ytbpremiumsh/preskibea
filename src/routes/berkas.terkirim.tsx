@@ -11,7 +11,7 @@ export const Route = createFileRoute("/berkas/terkirim")({
   validateSearch: (s) => searchSchema.parse(s),
   head: () => ({
     meta: [
-      { title: "Berkas Terkirim — Kejar Prestasi" },
+      { title: "Berkas Terkirim — Prestasi Kita" },
       { name: "description", content: "Berkas Anda berhasil dikirim dan sedang diverifikasi." },
     ],
   }),

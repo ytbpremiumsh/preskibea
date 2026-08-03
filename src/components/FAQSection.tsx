@@ -10,7 +10,7 @@ import faqIllustration from "@/assets/faq-illustration.png";
 const faqs = [
   {
     q: "Apakah pendaftaran beasiswa ini berbayar?",
-    a: "Tidak. Beasiswa Kejar Prestasi 100% gratis. Tidak ada biaya pendaftaran maupun biaya seleksi dalam bentuk apa pun.",
+    a: "Tidak. Beasiswa Prestasi Kita 100% gratis. Tidak ada biaya pendaftaran maupun biaya seleksi dalam bentuk apa pun.",
   },
   {
     q: "Siapa saja yang boleh mendaftar?",
@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     q: "Bagaimana jika ada kendala saat mendaftar?",
-    a: "Silakan hubungi tim Kejar Prestasi melalui kontak resmi yang tertera pada footer halaman.",
+    a: "Silakan hubungi tim Prestasi Kita melalui kontak resmi yang tertera pada footer halaman.",
   },
 ];
 
@@ -50,7 +50,7 @@ export function FAQSection() {
             Pertanyaan yang Sering Diajukan
           </h2>
           <p className="mt-3 text-muted-foreground">
-            Jawaban singkat untuk pertanyaan paling umum seputar program Beasiswa Kejar Prestasi.
+            Jawaban singkat untuk pertanyaan paling umum seputar program Beasiswa Prestasi Kita.
           </p>
         </div>
 
@@ -58,7 +58,7 @@ export function FAQSection() {
           <div className="flex justify-center">
             <img
               src={faqIllustration}
-              alt="Ilustrasi FAQ Beasiswa Kejar Prestasi"
+              alt="Ilustrasi FAQ Beasiswa Prestasi Kita"
               loading="lazy"
               width={1024}
               height={1024}

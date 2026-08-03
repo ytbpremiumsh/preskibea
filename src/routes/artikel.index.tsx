@@ -7,10 +7,10 @@ import { AdSlot } from "@/components/ads/AdSlot";
 export const Route = createFileRoute("/artikel/")({
   head: () => ({
     meta: [
-      { title: "Artikel — Kejar Prestasi" },
+      { title: "Artikel — Prestasi Kita" },
       { name: "description", content: "Kumpulan artikel seputar beasiswa, tips persiapan, dan kisah inspiratif pendidikan." },
-      { property: "og:title", content: "Artikel — Kejar Prestasi" },
-      { property: "og:description", content: "Kumpulan artikel seputar beasiswa Kejar Prestasi." },
+      { property: "og:title", content: "Artikel — Prestasi Kita" },
+      { property: "og:description", content: "Kumpulan artikel seputar beasiswa Prestasi Kita." },
     ],
   }),
   component: ArtikelPage,
@@ -56,7 +56,7 @@ function ArtikelPage() {
       <header className="max-w-2xl">
         <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">Artikel</span>
         <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Artikel & Kabar Beasiswa</h1>
-        <p className="mt-3 text-muted-foreground">Informasi terbaru, tips, dan inspirasi seputar beasiswa Kejar Prestasi.</p>
+        <p className="mt-3 text-muted-foreground">Informasi terbaru, tips, dan inspirasi seputar beasiswa Prestasi Kita.</p>
       </header>
 
       {!loading && items.length > 0 && (

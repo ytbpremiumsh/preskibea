@@ -10,7 +10,7 @@ import { AdminSidebar } from "@/components/admin/AdminSidebar";
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin Dashboard — Beasiswa Kejar Prestasi" },
+      { title: "Admin Dashboard — Beasiswa Prestasi Kita" },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),

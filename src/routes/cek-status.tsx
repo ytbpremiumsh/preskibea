@@ -9,8 +9,8 @@ type Search = { token?: string };
 export const Route = createFileRoute("/cek-status")({
   head: () => ({
     meta: [
-      { title: "Cek Status Pendaftaran — Beasiswa Kejar Prestasi" },
-      { name: "description", content: "Cek status pendaftaran beasiswa Kejar Prestasi Anda dengan kode pendaftar. Pantau progres berkas dan hasil seleksi." },
+      { title: "Cek Status Pendaftaran — Beasiswa Prestasi Kita" },
+      { name: "description", content: "Cek status pendaftaran beasiswa Prestasi Kita Anda dengan kode pendaftar. Pantau progres berkas dan hasil seleksi." },
       { name: "robots", content: "noindex, follow" },
     ],
   }),

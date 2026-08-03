@@ -17,7 +17,7 @@ const supabaseAdmin = createClient(
 );
 
 const SENDER_DOMAIN = "notify.mail.kejarprestasi.id";
-const FROM_EMAIL = "Kejar Prestasi <noreply@notify.mail.kejarprestasi.id>";
+const FROM_EMAIL = "Prestasi Kita <noreply@notify.mail.kejarprestasi.id>";
 
 const CUSTOMIZABLE: Record<string, string> = {
   "registration-confirmation": "email_template_registration",
@@ -61,7 +61,7 @@ function buildPlaceholders(props: Record<string, unknown>) {
     whatsapp: String((props.whatsapp ?? "") as string),
     count: String((props.count ?? "") as string | number),
     year: String(new Date().getFullYear()),
-    site_name: "Kejar Prestasi",
+    site_name: "Prestasi Kita",
   };
 }
 

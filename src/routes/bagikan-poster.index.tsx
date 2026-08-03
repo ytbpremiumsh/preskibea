@@ -4,7 +4,7 @@ import { ArrowRight, HeartHandshake, Share2, Trophy } from "lucide-react";
 export const Route = createFileRoute("/bagikan-poster/")({
   head: () => ({
     meta: [
-      { title: "Pilih Kategori Poster — Kejar Prestasi" },
+      { title: "Pilih Kategori Poster — Prestasi Kita" },
       { name: "description", content: "Pilih kategori beasiswa untuk membagikan poster ke media sosial." },
     ],
   }),

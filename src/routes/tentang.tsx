@@ -5,10 +5,10 @@ import { AdSlot } from "@/components/ads/AdSlot";
 export const Route = createFileRoute("/tentang")({
   head: () => ({
     meta: [
-      { title: "Tentang — Kejar Prestasi" },
-      { name: "description", content: "Tentang program Beasiswa Kejar Prestasi: visi, misi, dan dampak bagi penerima." },
-      { property: "og:title", content: "Tentang — Kejar Prestasi" },
-      { property: "og:description", content: "Mengenal program Beasiswa Kejar Prestasi." },
+      { title: "Tentang — Prestasi Kita" },
+      { name: "description", content: "Tentang program Beasiswa Prestasi Kita: visi, misi, dan dampak bagi penerima." },
+      { property: "og:title", content: "Tentang — Prestasi Kita" },
+      { property: "og:description", content: "Mengenal program Beasiswa Prestasi Kita." },
     ],
   }),
   component: TentangPage,
@@ -19,9 +19,9 @@ function TentangPage() {
     <main className="container-page py-16">
       <header className="max-w-2xl">
         <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">Tentang Kami</span>
-        <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Tentang Beasiswa Kejar Prestasi</h1>
+        <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Tentang Beasiswa Prestasi Kita</h1>
         <p className="mt-3 text-muted-foreground">
-          Beasiswa Kejar Prestasi hadir untuk mendukung pelajar berprestasi dan
+          Beasiswa Prestasi Kita hadir untuk mendukung pelajar berprestasi dan
           mereka yang membutuhkan dukungan ekonomi agar dapat melanjutkan pendidikan
           dengan lebih ringan dan terarah.
         </p>

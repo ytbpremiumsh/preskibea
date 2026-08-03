@@ -127,7 +127,7 @@ export function MaintenancePage({ config }: { config: MaintenanceConfig }) {
         )}
 
         <p className="mt-12 text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Beasiswa Kejar Prestasi
+          © {new Date().getFullYear()} Beasiswa Prestasi Kita
         </p>
       </main>
     </div>

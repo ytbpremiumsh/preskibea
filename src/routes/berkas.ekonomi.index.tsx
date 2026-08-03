@@ -4,7 +4,7 @@ import { BerkasInfoPage } from "@/components/BerkasInfoPage";
 export const Route = createFileRoute("/berkas/ekonomi/")({
   head: () => ({
     meta: [
-      { title: "Pengiriman Berkas Ekonomi — Kejar Prestasi Section #3" },
+      { title: "Pengiriman Berkas Ekonomi — Prestasi Kita Section #3" },
       { name: "description", content: "Persyaratan & informasi pengiriman berkas Beasiswa Ekonomi." },
     ],
   }),

@@ -15,7 +15,7 @@ function HostingInstallPage() {
         tone="gold"
         badge="Shared Hosting / cPanel"
         title="Tidak Didukung untuk Versi Ini"
-        desc="Aplikasi Kejar Prestasi (TanStack Start SSR) tidak bisa dijalankan di shared hosting cPanel standar."
+        desc="Aplikasi Prestasi Kita (TanStack Start SSR) tidak bisa dijalankan di shared hosting cPanel standar."
       />
 
       <Card className="rounded-2xl border-amber-500/40 bg-amber-500/5 p-6">

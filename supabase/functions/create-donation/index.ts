@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
 
     // Create Mayar invoice
     const expiredAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-    const description = don.title || "Donasi Sukarela — Kejar Prestasi";
+    const description = don.title || "Donasi Sukarela — Prestasi Kita";
     const mayarBody = {
       name,
       email,
