@@ -90,10 +90,11 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={goToTimeline}
-              className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground"
+              className="btn-block mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground"
             >
               Daftar Sekarang <ArrowRight size={15} />
             </button>
+
           </div>
         </div>
       )}
