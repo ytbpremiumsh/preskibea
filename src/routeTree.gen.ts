@@ -13,6 +13,7 @@ import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DaftarRouteImport } from './routes/daftar'
 import { Route as CekStatusRouteImport } from './routes/cek-status'
+import { Route as BeasiswaYatimRouteImport } from './routes/beasiswa-yatim'
 import { Route as BeasiswaUmumRouteImport } from './routes/beasiswa-umum'
 import { Route as BeasiswaPrestasiRouteImport } from './routes/beasiswa-prestasi'
 import { Route as BeasiswaEkonomiRouteImport } from './routes/beasiswa-ekonomi'
@@ -82,6 +83,11 @@ const DaftarRoute = DaftarRouteImport.update({
 const CekStatusRoute = CekStatusRouteImport.update({
   id: '/cek-status',
   path: '/cek-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BeasiswaYatimRoute = BeasiswaYatimRouteImport.update({
+  id: '/beasiswa-yatim',
+  path: '/beasiswa-yatim',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BeasiswaUmumRoute = BeasiswaUmumRouteImport.update({
@@ -341,6 +347,7 @@ export interface FileRoutesByFullPath {
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/beasiswa-umum': typeof BeasiswaUmumRoute
+  '/beasiswa-yatim': typeof BeasiswaYatimRoute
   '/cek-status': typeof CekStatusRoute
   '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
@@ -396,6 +403,7 @@ export interface FileRoutesByTo {
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/beasiswa-umum': typeof BeasiswaUmumRoute
+  '/beasiswa-yatim': typeof BeasiswaYatimRoute
   '/cek-status': typeof CekStatusRoute
   '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
@@ -450,6 +458,7 @@ export interface FileRoutesById {
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/beasiswa-umum': typeof BeasiswaUmumRoute
+  '/beasiswa-yatim': typeof BeasiswaYatimRoute
   '/cek-status': typeof CekStatusRoute
   '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
@@ -508,6 +517,7 @@ export interface FileRouteTypes {
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/beasiswa-umum'
+    | '/beasiswa-yatim'
     | '/cek-status'
     | '/daftar'
     | '/login'
@@ -563,6 +573,7 @@ export interface FileRouteTypes {
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/beasiswa-umum'
+    | '/beasiswa-yatim'
     | '/cek-status'
     | '/daftar'
     | '/login'
@@ -616,6 +627,7 @@ export interface FileRouteTypes {
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/beasiswa-umum'
+    | '/beasiswa-yatim'
     | '/cek-status'
     | '/daftar'
     | '/login'
@@ -673,6 +685,7 @@ export interface RootRouteChildren {
   BeasiswaEkonomiRoute: typeof BeasiswaEkonomiRoute
   BeasiswaPrestasiRoute: typeof BeasiswaPrestasiRoute
   BeasiswaUmumRoute: typeof BeasiswaUmumRoute
+  BeasiswaYatimRoute: typeof BeasiswaYatimRoute
   CekStatusRoute: typeof CekStatusRoute
   DaftarRoute: typeof DaftarRoute
   LoginRoute: typeof LoginRoute
@@ -723,6 +736,13 @@ declare module '@tanstack/react-router' {
       path: '/cek-status'
       fullPath: '/cek-status'
       preLoaderRoute: typeof CekStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/beasiswa-yatim': {
+      id: '/beasiswa-yatim'
+      path: '/beasiswa-yatim'
+      fullPath: '/beasiswa-yatim'
+      preLoaderRoute: typeof BeasiswaYatimRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/beasiswa-umum': {
@@ -1180,6 +1200,7 @@ const rootRouteChildren: RootRouteChildren = {
   BeasiswaEkonomiRoute: BeasiswaEkonomiRoute,
   BeasiswaPrestasiRoute: BeasiswaPrestasiRoute,
   BeasiswaUmumRoute: BeasiswaUmumRoute,
+  BeasiswaYatimRoute: BeasiswaYatimRoute,
   CekStatusRoute: CekStatusRoute,
   DaftarRoute: DaftarRoute,
   LoginRoute: LoginRoute,
