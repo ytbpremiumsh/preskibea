@@ -121,15 +121,12 @@ function Index() {
               </div>
             </div>
 
-            <div className="absolute -left-3 top-8 hidden rounded-2xl border border-border bg-card px-4 py-3 shadow-soft md:block">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Biaya daftar</div>
-              <div className="text-lg font-extrabold text-primary">Rp0</div>
-            </div>
-            <div className="absolute -right-2 bottom-10 hidden rounded-2xl border border-border bg-card px-4 py-3 shadow-soft md:block">
+            <div className="absolute -left-4 bottom-24 hidden rounded-2xl border border-border bg-card px-4 py-3 shadow-soft xl:block">
               <div className="flex items-center gap-2 text-xs font-bold text-foreground">
                 <Users size={14} className="text-primary" /> Se-Indonesia
               </div>
             </div>
+
           </div>
         </div>
 
