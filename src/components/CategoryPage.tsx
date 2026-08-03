@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake } from "lucide-react";
+import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { AdSlot } from "@/components/ads/AdSlot";
 
@@ -50,7 +50,7 @@ export function CategoryPage({
   shareTo: "/bagikan-poster/prestasi" | "/bagikan-poster/ekonomi" | "/bagikan-poster/umum";
 }) {
   const isGold = kind === "ekonomi";
-  const Icon: ReactNode = isGold ? <HeartHandshake /> : <Trophy />;
+  const Icon: ReactNode = isGold ? <HeartHandshake /> : kind === "umum" ? <Users /> : <Trophy />;
 
   return (
     <>

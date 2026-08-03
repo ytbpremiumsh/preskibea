@@ -64,7 +64,7 @@ export function KetentuanBerkasCard({ kind }: { kind: Kind }) {
       <div className="mt-5 grid sm:grid-cols-2 gap-4">
         <Block
           icon={<BookOpen size={16} />}
-          title="Pelajar (SD / SMP / SMA / Gap Year)"
+          title="Pelajar (SMP / SMA / Gap Year)"
           items={c.pelajar}
           tone="primary"
         />

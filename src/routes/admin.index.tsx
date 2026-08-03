@@ -42,7 +42,7 @@ function normalizeJenjang(v: string): string {
   if (u.includes("MA")) return "MA";
   if (u.includes("SMA")) return "SMA";
   if (u.includes("SMP") || u.includes("MTS")) return "SMP";
-    return v || "Lainnya";
+  return v || "Lainnya";
 }
 
 function ChartFallback() {
