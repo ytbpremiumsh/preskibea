@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, FileText, HeartHandshake, Trophy } from "lucide-react";
+import { ArrowRight, FileText, HeartHandshake, Trophy, Users } from "lucide-react";
 
 export const Route = createFileRoute("/berkas/")({
   head: () => ({
@@ -20,9 +20,10 @@ function BerkasSelector() {
         <p className="mt-3 text-muted-foreground">Sesuaikan jalur beasiswa yang kamu daftarkan.</p>
       </header>
 
-      <section className="mt-10 grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      <section className="mt-10 grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
         <Card to="/berkas/prestasi" icon={<Trophy size={20} />} title="Berkas Beasiswa Prestasi" desc="Lihat persyaratan dan unggah berkas untuk jalur prestasi." />
         <Card to="/berkas/ekonomi" icon={<HeartHandshake size={20} />} title="Berkas Beasiswa Ekonomi" desc="Lihat persyaratan dan unggah berkas untuk jalur ekonomi." />
+        <Card to="/berkas/umum" icon={<Users size={20} />} title="Berkas Beasiswa Umum" desc="Lihat persyaratan dan unggah berkas untuk jalur umum." />
       </section>
     </main>
   );

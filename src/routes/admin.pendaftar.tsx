@@ -28,7 +28,7 @@ type Registration = {
   education_level: string;
   school_name: string;
   grade: string;
-  kind: "prestasi" | "ekonomi";
+  kind: "prestasi" | "ekonomi" | "umum";
   status: "pending" | "approved" | "rejected";
   token?: string | null;
   parent_income: string | null;
@@ -54,7 +54,7 @@ function AdminPendaftar() {
   const [docs, setDocs] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
-  const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi">("all");
+  const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi" | "umum">("all");
   const [filterBerkas, setFilterBerkas] = useState<"all" | "submitted" | "pending">("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectedRow, setSelectedRow] = useState<Registration | null>(null);
@@ -284,12 +284,13 @@ function AdminPendaftar() {
           </div>
           <select
             value={filterKind}
-            onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi")}
+            onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi" | "umum")}
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             <option value="all">Semua Kategori</option>
             <option value="prestasi">Prestasi</option>
             <option value="ekonomi">Ekonomi</option>
+            <option value="umum">Umum</option>
           </select>
           <select
             value={filterBerkas}

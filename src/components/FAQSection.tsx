@@ -14,7 +14,7 @@ const faqs = [
   },
   {
     q: "Siapa saja yang boleh mendaftar?",
-    a: "Pelajar SD, SMP, SMA/SMK/MA, dan Mahasiswa aktif di Indonesia, baik untuk jalur Prestasi maupun Ekonomi.",
+    a: "Pelajar SMP, SMA/SMK/MA, dan Mahasiswa aktif di Indonesia, untuk jalur Prestasi, Ekonomi, maupun Umum.",
   },
   {
     q: "Apakah ada minimal nilai rapor atau IPK?",

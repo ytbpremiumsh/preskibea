@@ -16,7 +16,7 @@ import { submitBerkasDocuments, sendAppEmail } from "@/lib/api";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
 
-const defaultDocs: Record<"prestasi" | "ekonomi", DocSlot[]> = {
+const defaultDocs: Record<"prestasi" | "ekonomi" | "umum", DocSlot[]> = {
   prestasi: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
     {
@@ -47,6 +47,12 @@ const defaultDocs: Record<"prestasi" | "ekonomi", DocSlot[]> = {
     { id: "essay", key: "essay", label: "Esai dengan Tema yang Sudah Ditentukan", required: true },
     { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
   ],
+  umum: [
+    { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
+    { id: "transcript", key: "transcript", label: "Rapor / Transkrip Nilai Terakhir", required: true },
+    { id: "essay", key: "essay", label: "Esai dengan Tema yang Sudah Ditentukan", required: true },
+    { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
+  ],
 };
 
 function isValidUrl(v: string) {
@@ -73,9 +79,10 @@ type RegInfo = {
   token?: string | null;
 };
 
-const tokenPrefix = (k: "prestasi" | "ekonomi") => (k === "prestasi" ? "KP-PRE-" : "KP-EKO-");
+const tokenPrefix = (k: "prestasi" | "ekonomi" | "umum") =>
+  k === "prestasi" ? "KP-PRE-" : k === "ekonomi" ? "KP-EKO-" : "KP-UMU-";
 
-export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
+export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" }) {
   const navigate = useNavigate();
   const submitBerkas = submitBerkasDocuments;
   const sendEmail = sendAppEmail;
@@ -129,7 +136,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
     }
     if (!t.startsWith(tokenPrefix(kind))) {
       setSearchError(
-        `Kode tidak sesuai jenis beasiswa. Kode ${kind === "prestasi" ? "Prestasi" : "Ekonomi"} diawali ${tokenPrefix(kind)}`,
+        `Kode tidak sesuai jenis beasiswa. Kode ${kind === "prestasi" ? "Prestasi" : kind === "ekonomi" ? "Ekonomi" : "Umum"} diawali ${tokenPrefix(kind)}`,
       );
       return;
     }
@@ -278,7 +285,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       </Link>
       <div className="mt-4 max-w-3xl">
         <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-          Berkas {kind === "prestasi" ? "Beasiswa Prestasi" : "Beasiswa Ekonomi"}
+          Berkas {kind === "prestasi" ? "Beasiswa Prestasi" : kind === "ekonomi" ? "Beasiswa Ekonomi" : "Beasiswa Umum"}
         </span>
         <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">
           Pengiriman Berkas Pendukung
@@ -355,7 +362,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                 <div>
                   {searchError}{" "}
                   <Link
-                    to={kind === "prestasi" ? "/pendaftaran/prestasi" : "/pendaftaran/ekonomi"}
+                    to={kind === "prestasi" ? "/pendaftaran/prestasi" : kind === "ekonomi" ? "/pendaftaran/ekonomi" : "/pendaftaran/umum"}
                     className="font-semibold underline"
                   >
                     Daftar dulu

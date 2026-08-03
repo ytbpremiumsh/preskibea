@@ -1,12 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake } from "lucide-react";
+import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { AdSlot } from "@/components/ads/AdSlot";
 
 const persyaratan = [
   "Warga Negara Indonesia (WNI)",
   "Tinggal di Indonesia",
-  "Pelajar aktif SD/MI sederajat",
   "Pelajar aktif SMP/MTs sederajat",
   "Pelajar aktif SMA/SMK/MA sederajat",
   "Mahasiswa aktif atau calon mahasiswa D3–S2",
@@ -43,15 +42,15 @@ export function CategoryPage({
   registerTo,
   shareTo,
 }: {
-  kind: "prestasi" | "ekonomi";
+  kind: "prestasi" | "ekonomi" | "umum";
   title: string;
   tagline: string;
   desc: string;
-  registerTo: "/pendaftaran/prestasi" | "/pendaftaran/ekonomi";
-  shareTo: "/bagikan-poster/prestasi" | "/bagikan-poster/ekonomi";
+  registerTo: "/pendaftaran/prestasi" | "/pendaftaran/ekonomi" | "/pendaftaran/umum";
+  shareTo: "/bagikan-poster/prestasi" | "/bagikan-poster/ekonomi" | "/bagikan-poster/umum";
 }) {
   const isGold = kind === "ekonomi";
-  const Icon: ReactNode = isGold ? <HeartHandshake /> : <Trophy />;
+  const Icon: ReactNode = isGold ? <HeartHandshake /> : kind === "umum" ? <Users /> : <Trophy />;
 
   return (
     <>
@@ -201,11 +200,11 @@ export function CategoryPage({
           <div>
             <h3 className="text-xl md:text-2xl font-bold text-foreground">Sudah daftar? Kirim berkas pendukung</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Unggah berkas khusus jalur {kind === "prestasi" ? "Prestasi" : "Ekonomi"}.
+              Unggah berkas khusus jalur {kind === "prestasi" ? "Prestasi" : kind === "ekonomi" ? "Ekonomi" : "Umum"}.
             </p>
           </div>
           <Link
-            to={kind === "prestasi" ? "/berkas/prestasi" : "/berkas/ekonomi"}
+            to={kind === "prestasi" ? "/berkas/prestasi" : kind === "ekonomi" ? "/berkas/ekonomi" : "/berkas/umum"}
             className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary transition"
           >
             <FileText size={16} /> Kirim Berkas

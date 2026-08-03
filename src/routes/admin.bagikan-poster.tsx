@@ -33,7 +33,7 @@ Halo Sobat Pejuang Pendidikan! 👋
 Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 
 💰 Total Beasiswa hingga Rp17.000.000/semester
-📚 Terbuka untuk SD, SMP, SMA/SMK/MA & Mahasiswa
+📚 Terbuka untuk SMP, SMA/SMK/MA & Mahasiswa
 🚫 100% TIDAK DIPUNGUT BIAYA
 
 📌 Daftar sekarang di: ${url}

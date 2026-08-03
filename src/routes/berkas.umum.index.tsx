@@ -1,0 +1,12 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { BerkasInfoPage } from "@/components/BerkasInfoPage";
+
+export const Route = createFileRoute("/berkas/umum/")({
+  head: () => ({
+    meta: [
+      { title: "Pengiriman Berkas Umum — Prestasi Kita Section #3" },
+      { name: "description", content: "Persyaratan & informasi pengiriman berkas Beasiswa Umum." },
+    ],
+  }),
+  component: () => <BerkasInfoPage kind="umum" />,
+});

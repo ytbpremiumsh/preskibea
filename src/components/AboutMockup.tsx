@@ -9,7 +9,7 @@ const features = [
   {
     icon: BookOpen,
     title: "Akses Terbuka",
-    desc: "Terbuka untuk SD, SMP, SMA/SMK/MA, dan Mahasiswa di seluruh Indonesia.",
+    desc: "Terbuka untuk SMP, SMA/SMK/MA, dan Mahasiswa di seluruh Indonesia.",
   },
   {
     icon: Award,

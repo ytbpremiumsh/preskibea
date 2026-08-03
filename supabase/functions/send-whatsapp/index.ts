@@ -13,7 +13,7 @@ type Payload = {
   full_name?: string;
   email?: string;
   whatsapp?: string; // recipient WA number (pendaftar)
-  kind?: "prestasi" | "ekonomi";
+  kind?: "prestasi" | "ekonomi" | "umum";
   doc_count?: number;
   status?: string;
   token?: string;
@@ -44,7 +44,7 @@ type Templates = Partial<typeof DEFAULT_TEMPLATES>;
 
 function buildMessage(p: Payload, tpls: Templates, audience: "user" | "admin"): string {
   if (p.message) return p.message;
-  const jenis = p.kind === "prestasi" ? "Beasiswa Prestasi" : p.kind === "ekonomi" ? "Beasiswa Ekonomi" : "Beasiswa";
+  const jenis = p.kind === "prestasi" ? "Beasiswa Prestasi" : p.kind === "ekonomi" ? "Beasiswa Ekonomi" : p.kind === "umum" ? "Beasiswa Umum" : "Beasiswa";
   const vars = {
     nama: p.full_name ?? "Pendaftar",
     jenis,

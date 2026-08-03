@@ -13,28 +13,28 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Beasiswa Pendidikan Prestasi Kita Section #3" },
-      { name: "description", content: "Program beasiswa nasional untuk SD, SMP, SMA/SMK/MA, dan Mahasiswa. Total beasiswa Rp17.000.000/semester. Tidak dipungut biaya." },
+      { name: "description", content: "Program beasiswa nasional untuk SMP, SMA/SMK/MA, dan Mahasiswa. Total beasiswa Rp17.000.000/semester. Tidak dipungut biaya." },
       { property: "og:title", content: "Beasiswa Pendidikan Prestasi Kita Section #3" },
-      { property: "og:description", content: "Beasiswa Prestasi & Ekonomi untuk pelajar dan mahasiswa Indonesia. Total Rp17.000.000 per semester, tanpa biaya pendaftaran." },
+      { property: "og:description", content: "Beasiswa Prestasi, Ekonomi & Umum untuk pelajar dan mahasiswa Indonesia. Total Rp17.000.000 per semester, tanpa biaya pendaftaran." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Beasiswa Pendidikan Prestasi Kita Section #3" },
-      { name: "twitter:description", content: "Beasiswa Prestasi & Ekonomi untuk pelajar dan mahasiswa Indonesia. Tanpa biaya pendaftaran." },
+      { name: "twitter:description", content: "Beasiswa Prestasi, Ekonomi & Umum untuk pelajar dan mahasiswa Indonesia. Tanpa biaya pendaftaran." },
     ],
   }),
   component: Index,
 });
 
-const jenjang = ["SD", "SMP", "SMA/SMK/MA", "Mahasiswa"];
+const jenjang = ["SMP", "SMA/SMK/MA", "Mahasiswa"];
 
 const stats = [
   { value: "Rp17jt", label: "Total beasiswa per semester" },
-  { value: "2", label: "Jalur: Prestasi & Ekonomi" },
-  { value: "4", label: "Jenjang pendidikan tercakup" },
+  { value: "3", label: "Jalur: Prestasi, Ekonomi & Umum" },
+  { value: "3", label: "Jenjang pendidikan tercakup" },
   { value: "Rp0", label: "Biaya pendaftaran" },
 ];
 
-const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Tanpa Biaya", "Seluruh Indonesia", "Sertifikat Resmi", "Merchandise", "Akses Magang"];
+const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Beasiswa Umum", "Tanpa Biaya", "Seluruh Indonesia", "Sertifikat Resmi", "Merchandise", "Akses Magang"];
 
 function Index() {
   return (
@@ -61,7 +61,7 @@ function Index() {
 
             <p className="max-w-xl text-base md:text-lg text-muted-foreground">
               Program beasiswa pendidikan nasional untuk pelajar dan mahasiswa Indonesia —
-              jalur Prestasi dan Ekonomi, tanpa minimal nilai, tanpa biaya pendaftaran.
+              jalur Prestasi, Ekonomi, dan Umum, tanpa minimal nilai, tanpa biaya pendaftaran.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">
@@ -117,7 +117,7 @@ function Index() {
 
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <MiniStat icon={<Wallet size={15} />} value="Rp17.000.000" label="per semester" highlight />
-                <MiniStat icon={<GraduationCap size={15} />} value="SD – Mahasiswa" label="semua jenjang" />
+                <MiniStat icon={<GraduationCap size={15} />} value="SMP – Mahasiswa" label="semua jenjang" />
               </div>
             </div>
 
@@ -165,12 +165,12 @@ function Index() {
       {/* KATEGORI */}
       <section className="container-page py-16">
         <SectionHeader
-          eyebrow="Dua jalur"
-          title="Prestasi atau Ekonomi?"
-          desc="Satu program, dua jalur beasiswa. Pilih yang paling sesuai dengan kondisimu."
+          eyebrow="Tiga jalur"
+          title="Prestasi, Ekonomi, atau Umum?"
+          desc="Satu program, tiga jalur beasiswa. Pilih yang paling sesuai dengan kondisimu."
         />
 
-        <div className="mt-12 grid md:grid-cols-2 gap-6">
+        <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <CategoryCard
             tag="Beasiswa Prestasi"
             icon={<Trophy />}
@@ -185,6 +185,13 @@ function Index() {
             desc="Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial untuk pendidikan."
             to="/beasiswa-ekonomi"
             variant="dark"
+          />
+          <CategoryCard
+            tag="Beasiswa Umum"
+            icon={<Users />}
+            title="Untuk semua pelajar & mahasiswa aktif"
+            desc="Jalur terbuka tanpa syarat prestasi khusus maupun kriteria ekonomi tertentu. Siapa pun boleh mendaftar."
+            to="/beasiswa-umum"
           />
         </div>
       </section>
@@ -233,7 +240,7 @@ function SectionHeader({ eyebrow, title, desc }: { eyebrow: string; title: strin
   );
 }
 
-function CategoryCard({ tag, icon, title, desc, to, variant }: { tag: string; icon: React.ReactNode; title: string; desc: string; to: "/beasiswa-prestasi" | "/beasiswa-ekonomi"; variant?: "dark" }) {
+function CategoryCard({ tag, icon, title, desc, to, variant }: { tag: string; icon: React.ReactNode; title: string; desc: string; to: "/beasiswa-prestasi" | "/beasiswa-ekonomi" | "/beasiswa-umum"; variant?: "dark" }) {
   const isDark = variant === "dark";
   return (
     <div
@@ -251,7 +258,7 @@ function CategoryCard({ tag, icon, title, desc, to, variant }: { tag: string; ic
         <p className={`mt-3 text-sm ${isDark ? "text-primary-foreground/80" : "text-muted-foreground"}`}>{desc}</p>
 
         <ul className={`mt-5 space-y-2 text-sm ${isDark ? "text-primary-foreground/90" : "text-foreground/80"}`}>
-          {["Terbuka untuk SD, SMP, SMA/SMK/MA, & Mahasiswa", "Tanpa minimal nilai rapor / IPK", "Tidak dipungut biaya"].map((x) => (
+          {["Terbuka untuk SMP, SMA/SMK/MA, & Mahasiswa", "Tanpa minimal nilai rapor / IPK", "Tidak dipungut biaya"].map((x) => (
             <li key={x} className="flex items-start gap-2">
               <CheckCircle2 size={16} className={`mt-0.5 shrink-0 ${isDark ? "text-[var(--gold)]" : "text-primary"}`} /> {x}
             </li>

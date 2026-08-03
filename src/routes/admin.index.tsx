@@ -33,7 +33,7 @@ type LiteRow = {
   created_at: string;
 };
 
-const JENJANG = ["SD", "SMP", "SMA", "SMK", "MA", "Mahasiswa"] as const;
+const JENJANG = ["SMP", "SMA", "SMK", "MA", "Mahasiswa"] as const;
 
 function normalizeJenjang(v: string): string {
   const u = (v || "").toUpperCase();
@@ -42,7 +42,6 @@ function normalizeJenjang(v: string): string {
   if (u.includes("MA")) return "MA";
   if (u.includes("SMA")) return "SMA";
   if (u.includes("SMP") || u.includes("MTS")) return "SMP";
-  if (u.includes("SD") || u.includes("MI")) return "SD";
   return v || "Lainnya";
 }
 

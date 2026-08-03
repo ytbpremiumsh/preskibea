@@ -25,17 +25,17 @@ type Kategori = {
 
 const data: Kategori[] = [
   {
-    key: "sd-smp",
-    label: "SD & SMP Sederajat",
+    key: "smp",
+    label: "SMP Sederajat",
     icon: <Backpack size={20} />,
     nominalEkonomi: "Rp600.000",
     nominalPrestasi: "Rp600.000",
     periode: "per semester",
-    highlight: "Untuk jenjang SD/MI dan SMP/MTs sederajat",
+    highlight: "Untuk jenjang SMP/MTs sederajat",
     fakta: [
       "Berlaku untuk seluruh sekolah di Indonesia",
       "Tanpa minimal nilai rapor",
-      "Jalur prestasi & ekonomi tersedia",
+      "Jalur prestasi, ekonomi & umum tersedia",
     ],
   },
   {
@@ -83,7 +83,7 @@ const benefits = [
 ];
 
 export function InfoBeasiswaInteraktif() {
-  const [active, setActive] = useState<string>("sd-smp");
+  const [active, setActive] = useState<string>("smp");
   const current = data.find((d) => d.key === active)!;
 
   return (

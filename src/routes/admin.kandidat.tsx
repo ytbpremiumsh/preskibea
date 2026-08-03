@@ -46,7 +46,7 @@ function AdminKandidat() {
   const [docs, setDocs] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
-  const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi">("all");
+  const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi" | "umum">("all");
   const [detail, setDetail] = useState<Registration | null>(null);
 
   const load = async () => {
@@ -175,10 +175,11 @@ function AdminKandidat() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, atau sekolah..." className="pl-9" />
           </div>
-          <select value={filterKind} onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi")} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
+          <select value={filterKind} onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi" | "umum")} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
             <option value="all">Semua Kategori</option>
             <option value="prestasi">Prestasi</option>
             <option value="ekonomi">Ekonomi</option>
+            <option value="umum">Umum</option>
           </select>
         </div>
       </Card>

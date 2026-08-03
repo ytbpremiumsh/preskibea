@@ -19,6 +19,13 @@ const docsByKind = {
     "Rapor / Transkrip",
     "Video Motivasi (link/file) — opsional",
   ],
+  umum: [
+    "Kartu Pelajar / Kartu Mahasiswa",
+    "Rapor / Transkrip",
+    "Esai dengan Tema yang Sudah Ditentukan",
+    "Sertifikat Pendukung Lainnya — opsional",
+    "Video Motivasi (link/file) — opsional",
+  ],
 } as const;
 
 const tips = [
@@ -27,9 +34,9 @@ const tips = [
   "Gunakan Kode Token yang sama saat pendaftaran",
 ];
 
-export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
+export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" }) {
   const docs = docsByKind[kind];
-  const uploadTo = kind === "prestasi" ? "/berkas/prestasi/upload" : "/berkas/ekonomi/upload";
+  const uploadTo = kind === "prestasi" ? "/berkas/prestasi/upload" : kind === "ekonomi" ? "/berkas/ekonomi/upload" : "/berkas/umum/upload";
 
   return (
     <>
@@ -40,7 +47,7 @@ export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           </Link>
           <div className="mt-4 max-w-3xl">
             <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-              <FileText size={14} /> Pengiriman Berkas {kind === "prestasi" ? "Prestasi" : "Ekonomi"}
+              <FileText size={14} /> Pengiriman Berkas {kind === "prestasi" ? "Prestasi" : kind === "ekonomi" ? "Ekonomi" : "Umum"}
             </span>
             <h1 className="mt-4 text-4xl md:text-5xl font-extrabold leading-tight text-foreground">
               Persiapkan Berkas Pendukungmu

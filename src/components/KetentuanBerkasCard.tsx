@@ -1,6 +1,6 @@
 import { GraduationCap, BookOpen, FileText, CheckCircle2 } from "lucide-react";
 
-type Kind = "prestasi" | "ekonomi";
+type Kind = "prestasi" | "ekonomi" | "umum";
 
 const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: string[] }> = {
   prestasi: {
@@ -33,6 +33,20 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
       "Sertifikat pendukung lainnya (opsional)",
     ],
   },
+  umum: {
+    pelajar: [
+      "Kartu Pelajar / Surat Keterangan Siswa Aktif",
+      "Rapor semester terakhir",
+    ],
+    mahasiswa: [
+      "Kartu Tanda Mahasiswa (KTM) / Surat Keterangan Aktif Kuliah",
+      "Transkrip Nilai atau Kartu Hasil Studi (KHS)",
+    ],
+    umum: [
+      "Esai dengan tema yang sudah ditentukan",
+      "Sertifikat pendukung lainnya (opsional)",
+    ],
+  },
 };
 
 export function KetentuanBerkasCard({ kind }: { kind: Kind }) {
@@ -50,7 +64,7 @@ export function KetentuanBerkasCard({ kind }: { kind: Kind }) {
       <div className="mt-5 grid sm:grid-cols-2 gap-4">
         <Block
           icon={<BookOpen size={16} />}
-          title="Pelajar (SD / SMP / SMA / Gap Year)"
+          title="Pelajar (SMP / SMA / Gap Year)"
           items={c.pelajar}
           tone="primary"
         />
