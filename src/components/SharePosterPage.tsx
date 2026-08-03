@@ -19,7 +19,7 @@ export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum
   const path = kind === "ekonomi" ? "/beasiswa-ekonomi" : kind === "umum" ? "/beasiswa-umum" : kind === "yatim" ? "/beasiswa-yatim" : "/beasiswa-prestasi";
   const url = typeof window !== "undefined" ? window.location.origin + path : "https://kejarprestasi.id";
 
-  const defaultCaption = `🎓✨ BEASISWA PENDIDIKAN PRESTASI KITA — SECTION #3 ✨🎓
+  const defaultCaption = `🎓✨ BEASISWA PENDIDIKAN PRESTASI KITA — BATCH #8 ✨🎓
 
 Halo Sobat Pejuang Pendidikan! 👋
 Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
@@ -45,7 +45,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 
 ⚠️ Hati-hati terhadap penipuan yang mengatasnamakan Prestasi Kita.
 
-#PrestasiKita #BeasiswaPendidikan #BeasiswaIndonesia #BeasiswaPelajar #BeasiswaMahasiswa #PrestasiKitaSection3`;
+#PrestasiKita #BeasiswaPendidikan #BeasiswaIndonesia #BeasiswaPelajar #BeasiswaMahasiswa #PrestasiKitaBatch8`;
 
   const [cfg, setCfg] = useState<PosterCfg>({
     image_url: defaultPoster,
