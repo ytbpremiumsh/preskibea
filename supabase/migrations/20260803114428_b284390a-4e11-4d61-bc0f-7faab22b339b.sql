@@ -1,0 +1,1 @@
+ALTER TYPE public.scholarship_kind ADD VALUE IF NOT EXISTS 'umum';
