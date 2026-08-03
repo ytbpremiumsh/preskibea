@@ -62,6 +62,7 @@ import { Route as BerkasYatimIndexRouteImport } from './routes/berkas.yatim.inde
 import { Route as BerkasUmumIndexRouteImport } from './routes/berkas.umum.index'
 import { Route as BerkasPrestasiIndexRouteImport } from './routes/berkas.prestasi.index'
 import { Route as BerkasEkonomiIndexRouteImport } from './routes/berkas.ekonomi.index'
+import { Route as BerkasYatimUploadRouteImport } from './routes/berkas.yatim.upload'
 import { Route as BerkasUmumUploadRouteImport } from './routes/berkas.umum.upload'
 import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
 import { Route as BerkasEkonomiUploadRouteImport } from './routes/berkas.ekonomi.upload'
@@ -333,6 +334,11 @@ const BerkasEkonomiIndexRoute = BerkasEkonomiIndexRouteImport.update({
   path: '/',
   getParentRoute: () => BerkasEkonomiRoute,
 } as any)
+const BerkasYatimUploadRoute = BerkasYatimUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => BerkasYatimRoute,
+} as any)
 const BerkasUmumUploadRoute = BerkasUmumUploadRouteImport.update({
   id: '/upload',
   path: '/upload',
@@ -414,6 +420,7 @@ export interface FileRoutesByFullPath {
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
   '/berkas/umum/upload': typeof BerkasUmumUploadRoute
+  '/berkas/yatim/upload': typeof BerkasYatimUploadRoute
   '/berkas/ekonomi/': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi/': typeof BerkasPrestasiIndexRoute
   '/berkas/umum/': typeof BerkasUmumIndexRoute
@@ -469,6 +476,7 @@ export interface FileRoutesByTo {
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
   '/berkas/umum/upload': typeof BerkasUmumUploadRoute
+  '/berkas/yatim/upload': typeof BerkasYatimUploadRoute
   '/berkas/ekonomi': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi': typeof BerkasPrestasiIndexRoute
   '/berkas/umum': typeof BerkasUmumIndexRoute
@@ -530,6 +538,7 @@ export interface FileRoutesById {
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
   '/berkas/umum/upload': typeof BerkasUmumUploadRoute
+  '/berkas/yatim/upload': typeof BerkasYatimUploadRoute
   '/berkas/ekonomi/': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi/': typeof BerkasPrestasiIndexRoute
   '/berkas/umum/': typeof BerkasUmumIndexRoute
@@ -592,6 +601,7 @@ export interface FileRouteTypes {
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
     | '/berkas/umum/upload'
+    | '/berkas/yatim/upload'
     | '/berkas/ekonomi/'
     | '/berkas/prestasi/'
     | '/berkas/umum/'
@@ -647,6 +657,7 @@ export interface FileRouteTypes {
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
     | '/berkas/umum/upload'
+    | '/berkas/yatim/upload'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
     | '/berkas/umum'
@@ -707,6 +718,7 @@ export interface FileRouteTypes {
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
     | '/berkas/umum/upload'
+    | '/berkas/yatim/upload'
     | '/berkas/ekonomi/'
     | '/berkas/prestasi/'
     | '/berkas/umum/'
@@ -1117,6 +1129,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BerkasEkonomiIndexRouteImport
       parentRoute: typeof BerkasEkonomiRoute
     }
+    '/berkas/yatim/upload': {
+      id: '/berkas/yatim/upload'
+      path: '/upload'
+      fullPath: '/berkas/yatim/upload'
+      preLoaderRoute: typeof BerkasYatimUploadRouteImport
+      parentRoute: typeof BerkasYatimRoute
+    }
     '/berkas/umum/upload': {
       id: '/berkas/umum/upload'
       path: '/upload'
@@ -1252,10 +1271,12 @@ const BerkasUmumRouteWithChildren = BerkasUmumRoute._addFileChildren(
 )
 
 interface BerkasYatimRouteChildren {
+  BerkasYatimUploadRoute: typeof BerkasYatimUploadRoute
   BerkasYatimIndexRoute: typeof BerkasYatimIndexRoute
 }
 
 const BerkasYatimRouteChildren: BerkasYatimRouteChildren = {
+  BerkasYatimUploadRoute: BerkasYatimUploadRoute,
   BerkasYatimIndexRoute: BerkasYatimIndexRoute,
 }
 
