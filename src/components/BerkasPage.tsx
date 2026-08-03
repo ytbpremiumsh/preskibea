@@ -16,7 +16,7 @@ import { submitBerkasDocuments, sendAppEmail } from "@/lib/api";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
 
-const defaultDocs: Record<"prestasi" | "ekonomi" | "umum", DocSlot[]> = {
+const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> = {
   prestasi: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
     {
@@ -53,6 +53,15 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum", DocSlot[]> = {
     { id: "essay", key: "essay", label: "Esai dengan Tema yang Sudah Ditentukan", required: true },
     { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
   ],
+  yatim: [
+    { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
+    { id: "orphan_letter", key: "orphan_letter", label: "Surat Keterangan Yatim / Piatu / Yatim Piatu", required: true },
+    { id: "death_cert", key: "death_cert", label: "Akta / Surat Keterangan Kematian Orang Tua", required: true },
+    { id: "family_card", key: "family_card", label: "Kartu Keluarga (KK)", required: true },
+    { id: "transcript", key: "transcript", label: "Rapor / Transkrip Nilai Terakhir", required: true },
+    { id: "essay", key: "essay", label: "Esai dengan Tema yang Sudah Ditentukan", required: true },
+    { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
+  ],
 };
 
 function isValidUrl(v: string) {
@@ -79,10 +88,10 @@ type RegInfo = {
   token?: string | null;
 };
 
-const tokenPrefix = (k: "prestasi" | "ekonomi" | "umum") =>
-  k === "prestasi" ? "KP-PRE-" : k === "ekonomi" ? "KP-EKO-" : "KP-UMU-";
+const tokenPrefix = (k: "prestasi" | "ekonomi" | "umum" | "yatim") =>
+  k === "prestasi" ? "KP-PRE-" : k === "ekonomi" ? "KP-EKO-" : k === "yatim" ? "KP-YAT-" : "KP-UMU-";
 
-export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" }) {
+export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "yatim" }) {
   const navigate = useNavigate();
   const submitBerkas = submitBerkasDocuments;
   const sendEmail = sendAppEmail;
@@ -362,7 +371,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" }) 
                 <div>
                   {searchError}{" "}
                   <Link
-                    to={kind === "prestasi" ? "/pendaftaran/prestasi" : kind === "ekonomi" ? "/pendaftaran/ekonomi" : "/pendaftaran/umum"}
+                    to={kind === "prestasi" ? "/pendaftaran/prestasi" : kind === "ekonomi" ? "/pendaftaran/ekonomi" : kind === "yatim" ? "/pendaftaran/yatim" : "/pendaftaran/umum"}
                     className="font-semibold underline"
                   >
                     Daftar dulu

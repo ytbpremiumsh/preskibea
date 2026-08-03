@@ -30,7 +30,7 @@ async function invoke<T>(fn: string, body: unknown): Promise<T> {
 // ─── Registration ───────────────────────────────────────────────────────────
 
 export type SubmitRegistrationInput = {
-  kind: "prestasi" | "ekonomi" | "umum";
+  kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   full_name: string;
   birth_place: string;
   birth_date: string;
@@ -64,7 +64,7 @@ export async function submitRegistrationFn(args: { data: SubmitRegistrationInput
 
 export type SubmitBerkasInput = {
   token: string;
-  kind: "prestasi" | "ekonomi" | "umum";
+  kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   documents: { key: string; label: string; url: string }[];
 };
 

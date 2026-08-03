@@ -13,10 +13,10 @@ type PosterCfg = {
   wa_message: string;
 };
 
-export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" }) {
+export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "yatim" }) {
   const isGold = kind === "ekonomi";
-  const label = kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "umum" ? "Beasiswa Umum" : "Beasiswa Prestasi";
-  const path = kind === "ekonomi" ? "/beasiswa-ekonomi" : kind === "umum" ? "/beasiswa-umum" : "/beasiswa-prestasi";
+  const label = kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "umum" ? "Beasiswa Umum" : kind === "yatim" ? "Beasiswa Yatim" : "Beasiswa Prestasi";
+  const path = kind === "ekonomi" ? "/beasiswa-ekonomi" : kind === "umum" ? "/beasiswa-umum" : kind === "yatim" ? "/beasiswa-yatim" : "/beasiswa-prestasi";
   const url = typeof window !== "undefined" ? window.location.origin + path : "https://kejarprestasi.id";
 
   const defaultCaption = `🎓✨ BEASISWA PENDIDIKAN PRESTASI KITA — SECTION #3 ✨🎓
@@ -62,7 +62,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
         .select("value")
         .eq("key", "share_poster")
         .maybeSingle();
-      const v = data?.value as { prestasi?: Partial<PosterCfg>; ekonomi?: Partial<PosterCfg>; umum?: Partial<PosterCfg> } | undefined;
+      const v = data?.value as { prestasi?: Partial<PosterCfg>; ekonomi?: Partial<PosterCfg>; umum?: Partial<PosterCfg>; yatim?: Partial<PosterCfg> } | undefined;
       const k = v?.[kind];
       if (k) {
         setCfg((prev) => ({

@@ -1,6 +1,6 @@
 import { GraduationCap, BookOpen, FileText, CheckCircle2 } from "lucide-react";
 
-type Kind = "prestasi" | "ekonomi" | "umum";
+type Kind = "prestasi" | "ekonomi" | "umum" | "yatim";
 
 const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: string[] }> = {
   prestasi: {
@@ -45,6 +45,22 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
     umum: [
       "Esai dengan tema yang sudah ditentukan",
       "Sertifikat pendukung lainnya (opsional)",
+    ],
+  },
+  yatim: {
+    pelajar: [
+      "Kartu Pelajar / Surat Keterangan Siswa Aktif",
+      "Rapor semester terakhir",
+    ],
+    mahasiswa: [
+      "Kartu Tanda Mahasiswa (KTM) / Surat Keterangan Aktif Kuliah",
+      "Transkrip Nilai atau Kartu Hasil Studi (KHS)",
+    ],
+    umum: [
+      "Surat keterangan yatim / piatu / yatim piatu dari kelurahan",
+      "Akta atau surat keterangan kematian orang tua",
+      "Kartu Keluarga (KK)",
+      "Esai dengan tema yang sudah ditentukan",
     ],
   },
 };

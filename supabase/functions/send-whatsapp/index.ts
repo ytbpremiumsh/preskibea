@@ -13,7 +13,7 @@ type Payload = {
   full_name?: string;
   email?: string;
   whatsapp?: string; // recipient WA number (pendaftar)
-  kind?: "prestasi" | "ekonomi" | "umum";
+  kind?: "prestasi" | "ekonomi" | "umum" | "yatim";
   doc_count?: number;
   status?: string;
   token?: string;

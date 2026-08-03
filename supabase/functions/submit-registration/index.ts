@@ -51,7 +51,7 @@ const Input = z.object({
 
 const TOKEN_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
-function generateToken(kind: "prestasi" | "ekonomi" | "umum") {
+function generateToken(kind: "prestasi" | "ekonomi" | "umum" | "yatim") {
   const prefix = kind === "prestasi" ? "KP-PRE-" : kind === "ekonomi" ? "KP-EKO-" : "KP-UMU-";
   const bytes = new Uint8Array(6);
   crypto.getRandomValues(bytes);

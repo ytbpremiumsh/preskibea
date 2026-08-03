@@ -8,7 +8,7 @@ type Search = {
   name?: string;
   email?: string;
   whatsapp?: string;
-  kind?: "prestasi" | "ekonomi" | "umum";
+  kind?: "prestasi" | "ekonomi" | "umum" | "yatim";
   token?: string;
 };
 

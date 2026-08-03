@@ -84,7 +84,7 @@ function AdminBerkas() {
   const [regs, setRegs] = useState<Registration[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
-  const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi" | "umum">("all");
+  const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi" | "umum" | "yatim">("all");
   const [filterStatus, setFilterStatus] = useState<"all" | CandidateStatus>("all");
   const [detail, setDetail] = useState<Group | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -338,7 +338,7 @@ function AdminBerkas() {
           </div>
           <select
             value={filterKind}
-            onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi" | "umum")}
+            onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi" | "umum" | "yatim")}
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             <option value="all">Semua Kategori</option>

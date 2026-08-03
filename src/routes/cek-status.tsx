@@ -22,7 +22,7 @@ export const Route = createFileRoute("/cek-status")({
 
 type StatusData = {
   full_name: string;
-  kind: "prestasi" | "ekonomi" | "umum";
+  kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   status: "pending" | "approved" | "rejected";
   candidate_status: string;
   created_at: string;
