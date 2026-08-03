@@ -254,3 +254,12 @@ html[data-disable-ads="1"] [data-ad-slot] {
 .animate-bounce-soft {
   animation: bounce-soft 1.6s ease-in-out infinite;
 }
+
+/* Marquee band — pita berjalan pada beranda */
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee-x 28s linear infinite;
+}
