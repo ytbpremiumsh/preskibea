@@ -67,14 +67,14 @@ function Index() {
             <div className="flex flex-col sm:flex-row gap-3">
               <a
                 href="#timeline"
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-soft transition hover:opacity-95"
+                className="btn-block group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground"
               >
                 Daftar sekarang
                 <ArrowRight size={16} className="transition group-hover:translate-x-0.5" />
               </a>
               <Link
                 to="/beasiswa-prestasi"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-7 py-3.5 text-sm font-bold text-foreground transition hover:border-primary hover:text-primary"
+                className="btn-block inline-flex items-center justify-center gap-2 rounded-full bg-card px-7 py-3.5 text-sm font-bold text-foreground hover:text-primary"
               >
                 Lihat persyaratan
               </Link>
