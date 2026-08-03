@@ -230,10 +230,11 @@
   background-color: var(--card);
   box-shadow: 6px 6px 0 0 var(--ink);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-@utility card-block:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 9px 9px 0 0 var(--ink);
+
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 9px 9px 0 0 var(--ink);
+  }
 }
 @utility card-block-dark {
   border-radius: 1.75rem;
@@ -242,11 +243,19 @@
   color: var(--primary-foreground);
   box-shadow: 6px 6px 0 0 var(--ink);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 9px 9px 0 0 var(--ink);
+  }
 }
-@utility card-block-dark:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 9px 9px 0 0 var(--ink);
+@utility card-flat {
+  border-radius: 1.25rem;
+  border: 2px solid var(--ink);
+  background-color: var(--card);
+  box-shadow: 4px 4px 0 0 var(--ink);
 }
+
 
 @utility container-page {
   width: 100%;
