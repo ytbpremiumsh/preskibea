@@ -48,7 +48,7 @@ const DEFAULT_REGISTRATION: TplValue = {
   subject: "Pendaftaran {{kind_label}} Berhasil — Kode Token Anda",
   html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#fff;color:#1a1530">
   <h1 style="color:#5B2A9E;margin:0 0 8px">{{site_name}}</h1>
-  <p style="color:#7c7c87;margin:0 0 24px;font-size:12px;letter-spacing:1px;text-transform:uppercase">Beasiswa Section #3</p>
+  <p style="color:#7c7c87;margin:0 0 24px;font-size:12px;letter-spacing:1px;text-transform:uppercase">Beasiswa Batch #8</p>
   <div style="border:1px solid #ece9f5;border-radius:16px;padding:28px">
     <h2>Halo, {{full_name}}!</h2>
     <p>Terima kasih telah mendaftar pada program <strong>{{kind_label}}</strong>. Pendaftaran Anda telah kami terima.</p>
@@ -72,7 +72,7 @@ const DEFAULT_BERKAS: TplValue = {
   subject: "Berkas {{kind_label}} Berhasil Diterima",
   html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#fff;color:#1a1530">
   <h1 style="color:#5B2A9E;margin:0 0 8px">{{site_name}}</h1>
-  <p style="color:#7c7c87;margin:0 0 24px;font-size:12px;letter-spacing:1px;text-transform:uppercase">Beasiswa Section #3</p>
+  <p style="color:#7c7c87;margin:0 0 24px;font-size:12px;letter-spacing:1px;text-transform:uppercase">Beasiswa Batch #8</p>
   <div style="border:1px solid #ece9f5;border-radius:16px;padding:28px">
     <div style="display:inline-block;background:#e8f5ed;border-radius:20px;padding:6px 14px;margin-bottom:16px">
       <span style="font-size:11px;font-weight:800;color:#0e7c4a;letter-spacing:1px">✓ BERKAS DITERIMA</span>

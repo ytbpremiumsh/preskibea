@@ -27,7 +27,7 @@ type SharePosterSettings = {
   ekonomi: PosterCfg;
 };
 
-const DEF_CAPTION = (label: string, url: string) => `🎓✨ BEASISWA PENDIDIKAN PRESTASI KITA — SECTION #3 ✨🎓
+const DEF_CAPTION = (label: string, url: string) => `🎓✨ BEASISWA PENDIDIKAN PRESTASI KITA — BATCH #8 ✨🎓
 
 Halo Sobat Pejuang Pendidikan! 👋
 Saatnya wujudkan mimpi pendidikanmu bersama ${label}!

@@ -80,7 +80,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
-      { title: "Beasiswa Pendidikan Prestasi Kita Section #3" },
+      { title: "Beasiswa Pendidikan Prestasi Kita Batch #8" },
       { name: "description", content: "Program beasiswa nasional untuk pelajar dan mahasiswa Indonesia dengan total beasiswa Rp17.000.000 per semester. Tidak dipungut biaya." },
     ],
     links: [

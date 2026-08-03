@@ -4,9 +4,9 @@ import { CategoryPage } from "@/components/CategoryPage";
 export const Route = createFileRoute("/beasiswa-ekonomi")({
   head: () => ({
     meta: [
-      { title: "Beasiswa Ekonomi — Prestasi Kita Section #3" },
+      { title: "Beasiswa Ekonomi — Prestasi Kita Batch #8" },
       { name: "description", content: "Beasiswa untuk pelajar dan mahasiswa yang membutuhkan dukungan finansial. Total Rp17.000.000/semester." },
-      { property: "og:title", content: "Beasiswa Ekonomi — Prestasi Kita Section #3" },
+      { property: "og:title", content: "Beasiswa Ekonomi — Prestasi Kita Batch #8" },
       { property: "og:description", content: "Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial." },
     ],
   }),

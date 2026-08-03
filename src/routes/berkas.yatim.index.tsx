@@ -4,7 +4,7 @@ import { BerkasInfoPage } from "@/components/BerkasInfoPage";
 export const Route = createFileRoute("/berkas/yatim/")({
   head: () => ({
     meta: [
-      { title: "Pengiriman Berkas Yatim — Prestasi Kita Section #3" },
+      { title: "Pengiriman Berkas Yatim — Prestasi Kita Batch #8" },
       { name: "description", content: "Persyaratan & informasi pengiriman berkas Beasiswa Yatim." },
     ],
   }),

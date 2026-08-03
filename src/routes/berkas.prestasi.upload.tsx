@@ -6,7 +6,7 @@ type Search = { token?: string };
 export const Route = createFileRoute("/berkas/prestasi/upload")({
   head: () => ({
     meta: [
-      { title: "Unggah Berkas Prestasi — Prestasi Kita Section #3" },
+      { title: "Unggah Berkas Prestasi — Prestasi Kita Batch #8" },
       { name: "description", content: "Unggah berkas pendukung Beasiswa Prestasi." },
     ],
   }),

@@ -62,7 +62,7 @@ export function TimelineSection() {
       <div className="container-page py-20">
         <div className="text-center max-w-2xl mx-auto">
           <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-            Timeline Gelombang Section #3
+            Timeline Gelombang Batch #8
           </span>
           <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-foreground">
             Tahapan Seleksi Beasiswa
