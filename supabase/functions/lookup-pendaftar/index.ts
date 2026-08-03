@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
     const tokenRaw = typeof body?.token === "string" ? body.token.trim().toUpperCase() : "";
     const emailRaw = typeof body?.email === "string" ? body.email.trim() : "";
 
-    if (kind !== "prestasi" && kind !== "ekonomi") {
+    if (kind !== "prestasi" && kind !== "ekonomi" && kind !== "umum") {
       return new Response(JSON.stringify({ ok: false, error: "invalid_kind" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
