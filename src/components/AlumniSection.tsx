@@ -54,7 +54,7 @@ export function AlumniSection() {
         {alumni.map((a) => (
           <article
             key={a.name}
-            className="group relative overflow-hidden rounded-3xl border border-border bg-card shadow-card hover:shadow-soft hover:-translate-y-0.5 transition"
+            className="group relative overflow-hidden card-block hover:shadow-soft hover:-translate-y-0.5 transition"
           >
             <div className="aspect-[4/5] overflow-hidden bg-secondary">
               <img
