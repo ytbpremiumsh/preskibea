@@ -23,6 +23,7 @@ import { Route as BerkasIndexRouteImport } from './routes/berkas.index'
 import { Route as BagikanPosterIndexRouteImport } from './routes/bagikan-poster.index'
 import { Route as ArtikelIndexRouteImport } from './routes/artikel.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as PendaftaranYatimRouteImport } from './routes/pendaftaran.yatim'
 import { Route as PendaftaranUmumRouteImport } from './routes/pendaftaran.umum'
 import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran.sukses'
 import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
@@ -134,6 +135,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const PendaftaranYatimRoute = PendaftaranYatimRouteImport.update({
+  id: '/pendaftaran/yatim',
+  path: '/pendaftaran/yatim',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PendaftaranUmumRoute = PendaftaranUmumRouteImport.update({
   id: '/pendaftaran/umum',
@@ -385,6 +391,7 @@ export interface FileRoutesByFullPath {
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
   '/pendaftaran/umum': typeof PendaftaranUmumRoute
+  '/pendaftaran/yatim': typeof PendaftaranYatimRoute
   '/admin/': typeof AdminIndexRoute
   '/artikel/': typeof ArtikelIndexRoute
   '/bagikan-poster/': typeof BagikanPosterIndexRoute
@@ -438,6 +445,7 @@ export interface FileRoutesByTo {
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
   '/pendaftaran/umum': typeof PendaftaranUmumRoute
+  '/pendaftaran/yatim': typeof PendaftaranYatimRoute
   '/admin': typeof AdminIndexRoute
   '/artikel': typeof ArtikelIndexRoute
   '/bagikan-poster': typeof BagikanPosterIndexRoute
@@ -496,6 +504,7 @@ export interface FileRoutesById {
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
   '/pendaftaran/umum': typeof PendaftaranUmumRoute
+  '/pendaftaran/yatim': typeof PendaftaranYatimRoute
   '/admin/': typeof AdminIndexRoute
   '/artikel/': typeof ArtikelIndexRoute
   '/bagikan-poster/': typeof BagikanPosterIndexRoute
@@ -555,6 +564,7 @@ export interface FileRouteTypes {
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
     | '/pendaftaran/umum'
+    | '/pendaftaran/yatim'
     | '/admin/'
     | '/artikel/'
     | '/bagikan-poster/'
@@ -608,6 +618,7 @@ export interface FileRouteTypes {
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
     | '/pendaftaran/umum'
+    | '/pendaftaran/yatim'
     | '/admin'
     | '/artikel'
     | '/bagikan-poster'
@@ -665,6 +676,7 @@ export interface FileRouteTypes {
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
     | '/pendaftaran/umum'
+    | '/pendaftaran/yatim'
     | '/admin/'
     | '/artikel/'
     | '/bagikan-poster/'
@@ -703,6 +715,7 @@ export interface RootRouteChildren {
   PendaftaranPrestasiRoute: typeof PendaftaranPrestasiRoute
   PendaftaranSuksesRoute: typeof PendaftaranSuksesRoute
   PendaftaranUmumRoute: typeof PendaftaranUmumRoute
+  PendaftaranYatimRoute: typeof PendaftaranYatimRoute
   ArtikelIndexRoute: typeof ArtikelIndexRoute
   BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
   BerkasIndexRoute: typeof BerkasIndexRoute
@@ -807,6 +820,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/pendaftaran/yatim': {
+      id: '/pendaftaran/yatim'
+      path: '/pendaftaran/yatim'
+      fullPath: '/pendaftaran/yatim'
+      preLoaderRoute: typeof PendaftaranYatimRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/pendaftaran/umum': {
       id: '/pendaftaran/umum'
@@ -1218,6 +1238,7 @@ const rootRouteChildren: RootRouteChildren = {
   PendaftaranPrestasiRoute: PendaftaranPrestasiRoute,
   PendaftaranSuksesRoute: PendaftaranSuksesRoute,
   PendaftaranUmumRoute: PendaftaranUmumRoute,
+  PendaftaranYatimRoute: PendaftaranYatimRoute,
   ArtikelIndexRoute: ArtikelIndexRoute,
   BagikanPosterIndexRoute: BagikanPosterIndexRoute,
   BerkasIndexRoute: BerkasIndexRoute,
