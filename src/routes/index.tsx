@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap } from "lucide-react";
+import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap, Heart } from "lucide-react";
 import heroImg from "@/assets/students-hero.png";
 import { Countdown } from "@/components/Countdown";
 import { AboutMockup } from "@/components/AboutMockup";
@@ -15,11 +15,11 @@ export const Route = createFileRoute("/")({
       { title: "Beasiswa Pendidikan Prestasi Kita Section #3" },
       { name: "description", content: "Program beasiswa nasional untuk SMP, SMA/SMK/MA, dan Mahasiswa. Total beasiswa Rp17.000.000/semester. Tidak dipungut biaya." },
       { property: "og:title", content: "Beasiswa Pendidikan Prestasi Kita Section #3" },
-      { property: "og:description", content: "Beasiswa Prestasi, Ekonomi & Umum untuk pelajar dan mahasiswa Indonesia. Total Rp17.000.000 per semester, tanpa biaya pendaftaran." },
+      { property: "og:description", content: "Beasiswa Prestasi, Ekonomi, Umum & Yatim untuk pelajar dan mahasiswa Indonesia. Total Rp17.000.000 per semester, tanpa biaya pendaftaran." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Beasiswa Pendidikan Prestasi Kita Section #3" },
-      { name: "twitter:description", content: "Beasiswa Prestasi, Ekonomi & Umum untuk pelajar dan mahasiswa Indonesia. Tanpa biaya pendaftaran." },
+      { name: "twitter:description", content: "Beasiswa Prestasi, Ekonomi, Umum & Yatim untuk pelajar dan mahasiswa Indonesia. Tanpa biaya pendaftaran." },
     ],
   }),
   component: Index,
@@ -29,12 +29,12 @@ const jenjang = ["SMP", "SMA/SMK/MA", "Mahasiswa"];
 
 const stats = [
   { value: "Rp17jt", label: "Total beasiswa per semester" },
-  { value: "3", label: "Jalur: Prestasi, Ekonomi & Umum" },
+  { value: "4", label: "Jalur beasiswa tersedia" },
   { value: "3", label: "Jenjang pendidikan tercakup" },
   { value: "Rp0", label: "Biaya pendaftaran" },
 ];
 
-const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Beasiswa Umum", "Tanpa Biaya", "Seluruh Indonesia", "Sertifikat Resmi", "Merchandise", "Akses Magang"];
+const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Beasiswa Umum", "Beasiswa Yatim", "Tanpa Biaya", "Seluruh Indonesia", "Sertifikat Resmi", "Merchandise", "Akses Magang"];
 
 function Index() {
   return (
@@ -61,7 +61,7 @@ function Index() {
 
             <p className="max-w-xl text-base md:text-lg text-muted-foreground">
               Program beasiswa pendidikan nasional untuk pelajar dan mahasiswa Indonesia —
-              jalur Prestasi, Ekonomi, dan Umum, tanpa minimal nilai, tanpa biaya pendaftaran.
+              jalur Prestasi, Ekonomi, Umum, dan Yatim, tanpa minimal nilai, tanpa biaya pendaftaran.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">
@@ -165,9 +165,9 @@ function Index() {
       {/* KATEGORI */}
       <section className="container-page py-16">
         <SectionHeader
-          eyebrow="Tiga jalur"
-          title="Prestasi, Ekonomi, atau Umum?"
-          desc="Satu program, tiga jalur beasiswa. Pilih yang paling sesuai dengan kondisimu."
+          eyebrow="Empat jalur"
+          title="Prestasi, Ekonomi, Umum, atau Yatim?"
+          desc="Satu program, empat jalur beasiswa. Pilih yang paling sesuai dengan kondisimu."
         />
 
         <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -192,6 +192,14 @@ function Index() {
             title="Untuk semua pelajar & mahasiswa aktif"
             desc="Jalur terbuka tanpa syarat prestasi khusus maupun kriteria ekonomi tertentu. Siapa pun boleh mendaftar."
             to="/beasiswa-umum"
+          />
+          <CategoryCard
+            tag="Beasiswa Yatim"
+            icon={<Heart />}
+            title="Untuk anak yatim, piatu & yatim piatu"
+            desc="Jalur khusus bagi pelajar dan mahasiswa yang telah kehilangan orang tua, agar pendidikan tetap berlanjut."
+            to="/beasiswa-yatim"
+            variant="dark"
           />
         </div>
       </section>
@@ -240,7 +248,7 @@ function SectionHeader({ eyebrow, title, desc }: { eyebrow: string; title: strin
   );
 }
 
-function CategoryCard({ tag, icon, title, desc, to, variant }: { tag: string; icon: React.ReactNode; title: string; desc: string; to: "/beasiswa-prestasi" | "/beasiswa-ekonomi" | "/beasiswa-umum"; variant?: "dark" }) {
+function CategoryCard({ tag, icon, title, desc, to, variant }: { tag: string; icon: React.ReactNode; title: string; desc: string; to: "/beasiswa-prestasi" | "/beasiswa-ekonomi" | "/beasiswa-umum" | "/beasiswa-yatim"; variant?: "dark" }) {
   const isDark = variant === "dark";
   return (
     <div
