@@ -444,7 +444,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           <KetentuanBerkasCard kind={kind} />
 
           <div
-            className={`rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card transition ${!registrant ? "opacity-60 pointer-events-none select-none" : ""}`}
+            className={`card-block p-6 md:p-7 ${!registrant ? "opacity-60 pointer-events-none select-none" : ""}`}
           >
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
