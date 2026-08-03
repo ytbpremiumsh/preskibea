@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, HeartHandshake, Trophy, Users } from "lucide-react";
+import { ArrowRight, HeartHandshake, Trophy, Users, Heart } from "lucide-react";
 
 export const Route = createFileRoute("/daftar")({
   head: () => ({
     meta: [
       { title: "Pilih Jalur Pendaftaran — Prestasi Kita" },
-      { name: "description", content: "Pilih jalur beasiswa: Prestasi, Ekonomi, atau Umum sebelum mengisi formulir pendaftaran." },
+      { name: "description", content: "Pilih jalur beasiswa: Prestasi, Ekonomi, Umum, atau Yatim sebelum mengisi formulir pendaftaran." },
     ],
   }),
   component: DaftarSelector,
@@ -20,7 +20,7 @@ function DaftarSelector() {
         <p className="mt-3 text-muted-foreground">Pilih kategori yang sesuai dengan kondisimu untuk melanjutkan pendaftaran.</p>
       </header>
 
-      <section className="mt-10 grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      <section className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
         <CategoryCard
           to="/beasiswa-prestasi"
           icon={<Trophy size={20} />}
@@ -41,6 +41,13 @@ function DaftarSelector() {
           title="Beasiswa Umum"
           desc="Jalur terbuka untuk semua pelajar & mahasiswa aktif di Indonesia."
           cta="Daftar Umum"
+        />
+        <CategoryCard
+          to="/beasiswa-yatim"
+          icon={<Heart size={20} />}
+          title="Beasiswa Yatim"
+          desc="Jalur khusus bagi anak yatim, piatu, dan yatim piatu."
+          cta="Daftar Yatim"
         />
       </section>
     </main>

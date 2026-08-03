@@ -44,7 +44,7 @@ type Templates = Partial<typeof DEFAULT_TEMPLATES>;
 
 function buildMessage(p: Payload, tpls: Templates, audience: "user" | "admin"): string {
   if (p.message) return p.message;
-  const jenis = p.kind === "prestasi" ? "Beasiswa Prestasi" : p.kind === "ekonomi" ? "Beasiswa Ekonomi" : p.kind === "umum" ? "Beasiswa Umum" : "Beasiswa";
+  const jenis = p.kind === "prestasi" ? "Beasiswa Prestasi" : p.kind === "ekonomi" ? "Beasiswa Ekonomi" : p.kind === "umum" ? "Beasiswa Umum" : p.kind === "yatim" ? "Beasiswa Yatim" : "Beasiswa";
   const vars = {
     nama: p.full_name ?? "Pendaftar",
     jenis,

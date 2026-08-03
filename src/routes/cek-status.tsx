@@ -131,8 +131,8 @@ function CekStatusPage() {
 
 
 function StatusResult({ data }: { data: StatusData }) {
-  const jenis = data.kind === "prestasi" ? "Beasiswa Prestasi" : data.kind === "ekonomi" ? "Beasiswa Ekonomi" : "Beasiswa Umum";
-  const berkasTo = data.kind === "prestasi" ? "/berkas/prestasi/upload" : data.kind === "ekonomi" ? "/berkas/ekonomi/upload" : "/berkas/umum/upload";
+  const jenis = data.kind === "prestasi" ? "Beasiswa Prestasi" : data.kind === "ekonomi" ? "Beasiswa Ekonomi" : data.kind === "yatim" ? "Beasiswa Yatim" : "Beasiswa Umum";
+  const berkasTo = data.kind === "prestasi" ? "/berkas/prestasi/upload" : data.kind === "ekonomi" ? "/berkas/ekonomi/upload" : data.kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/umum/upload";
   const hasDocs = data.docs.total > 0;
 
   return (
@@ -181,7 +181,7 @@ function StatusResult({ data }: { data: StatusData }) {
 
       {!hasDocs && (
         <Link
-          to={berkasTo as "/berkas/prestasi/upload" | "/berkas/ekonomi/upload" | "/berkas/umum/upload"}
+          to={berkasTo as "/berkas/prestasi/upload" | "/berkas/ekonomi/upload" | "/berkas/umum/upload" | "/berkas/yatim/upload"}
           search={{ token: data.token }}
           className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
         >

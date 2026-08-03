@@ -23,7 +23,7 @@ export const Route = createFileRoute("/pendaftaran/sukses")({
     name: typeof s.name === "string" ? s.name : undefined,
     email: typeof s.email === "string" ? s.email : undefined,
     whatsapp: typeof s.whatsapp === "string" ? s.whatsapp : undefined,
-    kind: s.kind === "prestasi" || s.kind === "ekonomi" || s.kind === "umum" ? s.kind : undefined,
+    kind: s.kind === "prestasi" || s.kind === "ekonomi" || s.kind === "umum" || s.kind === "yatim" ? s.kind : undefined,
     token: typeof s.token === "string" ? s.token : undefined,
   }),
   component: SuksesPage,
@@ -31,8 +31,8 @@ export const Route = createFileRoute("/pendaftaran/sukses")({
 
 function SuksesPage() {
   const { name, email, whatsapp, kind, token } = useSearch({ from: "/pendaftaran/sukses" });
-  const berkasTo = kind === "ekonomi" ? "/berkas/ekonomi/upload" : kind === "umum" ? "/berkas/umum/upload" : "/berkas/prestasi/upload";
-  const jenis = kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "prestasi" ? "Beasiswa Prestasi" : kind === "umum" ? "Beasiswa Umum" : "Beasiswa";
+  const berkasTo = kind === "ekonomi" ? "/berkas/ekonomi/upload" : kind === "umum" ? "/berkas/umum/upload" : kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/prestasi/upload";
+  const jenis = kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "prestasi" ? "Beasiswa Prestasi" : kind === "umum" ? "Beasiswa Umum" : kind === "yatim" ? "Beasiswa Yatim" : "Beasiswa";
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
@@ -104,7 +104,7 @@ function SuksesPage() {
             </div>
           </div>
           <Link
-            to={kind === "ekonomi" ? "/bagikan-poster/ekonomi" : kind === "umum" ? "/bagikan-poster/umum" : "/bagikan-poster/prestasi"}
+            to={kind === "ekonomi" ? "/bagikan-poster/ekonomi" : kind === "umum" ? "/bagikan-poster/umum" : kind === "yatim" ? "/bagikan-poster/yatim" : "/bagikan-poster/prestasi"}
             className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
           >
             Bagikan Poster Sekarang <ArrowRight size={16} />
@@ -126,7 +126,7 @@ function SuksesPage() {
             </div>
           </div>
           <Link
-            to={berkasTo as "/berkas/prestasi/upload" | "/berkas/ekonomi/upload" | "/berkas/umum/upload"}
+            to={berkasTo as "/berkas/prestasi/upload" | "/berkas/ekonomi/upload" | "/berkas/umum/upload" | "/berkas/yatim/upload"}
             search={token ? { token } : undefined}
             className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground hover:bg-muted transition"
           >

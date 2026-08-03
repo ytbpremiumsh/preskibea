@@ -27,7 +27,7 @@ const urlOrNull = z.preprocess(
 );
 
 const Input = z.object({
-  kind: z.enum(["prestasi", "ekonomi", "umum"]),
+  kind: z.enum(["prestasi", "ekonomi", "umum", "yatim"]),
   full_name: z.string().trim().min(2).max(200),
   birth_place: z.string().trim().min(1).max(120),
   birth_date: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -52,7 +52,7 @@ const Input = z.object({
 const TOKEN_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
 function generateToken(kind: "prestasi" | "ekonomi" | "umum" | "yatim") {
-  const prefix = kind === "prestasi" ? "KP-PRE-" : kind === "ekonomi" ? "KP-EKO-" : "KP-UMU-";
+  const prefix = kind === "prestasi" ? "KP-PRE-" : kind === "ekonomi" ? "KP-EKO-" : kind === "yatim" ? "KP-YAT-" : "KP-UMU-";
   const bytes = new Uint8Array(6);
   crypto.getRandomValues(bytes);
   return `${prefix}${Array.from(bytes, (b) => TOKEN_CHARS[b % TOKEN_CHARS.length]).join("")}`;

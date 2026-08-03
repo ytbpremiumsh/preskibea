@@ -21,7 +21,7 @@ const Input = z.object({
     .trim()
     .transform((v) => v.toUpperCase())
     .pipe(z.string().regex(/^KP-(PRE|EKO|UMU)-[A-Z0-9]{4,10}$/)),
-  kind: z.enum(["prestasi", "ekonomi", "umum"]),
+  kind: z.enum(["prestasi", "ekonomi", "umum", "yatim"]),
   documents: z
     .array(
       z.object({
@@ -50,7 +50,7 @@ serve(async (req) => {
     }
     const data = parsed.data;
 
-    const expectedPrefix = data.kind === "prestasi" ? "KP-PRE-" : data.kind === "ekonomi" ? "KP-EKO-" : "KP-UMU-";
+    const expectedPrefix = data.kind === "prestasi" ? "KP-PRE-" : data.kind === "ekonomi" ? "KP-EKO-" : data.kind === "yatim" ? "KP-YAT-" : "KP-UMU-";
     if (!data.token.startsWith(expectedPrefix)) {
       return new Response(JSON.stringify({ error: "Kode pendaftar tidak sesuai kategori." }), {
         status: 400,

@@ -3,7 +3,7 @@ import { CheckCircle2, Home, FileText } from "lucide-react";
 import { z } from "zod";
 
 const searchSchema = z.object({
-  kind: z.enum(["prestasi", "ekonomi", "umum"]).optional(),
+  kind: z.enum(["prestasi", "ekonomi", "umum", "yatim"]).optional(),
   count: z.number().optional(),
 });
 

@@ -291,6 +291,7 @@ function AdminPendaftar() {
             <option value="prestasi">Prestasi</option>
             <option value="ekonomi">Ekonomi</option>
             <option value="umum">Umum</option>
+            <option value="yatim">Yatim</option>
           </select>
           <select
             value={filterBerkas}
