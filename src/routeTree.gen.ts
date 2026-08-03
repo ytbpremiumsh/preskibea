@@ -29,6 +29,7 @@ import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran.suks
 import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
 import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
 import { Route as DonasiTerimaKasihRouteImport } from './routes/donasi.terima-kasih'
+import { Route as BerkasYatimRouteImport } from './routes/berkas.yatim'
 import { Route as BerkasUmumRouteImport } from './routes/berkas.umum'
 import { Route as BerkasTerkirimRouteImport } from './routes/berkas.terkirim'
 import { Route as BerkasPrestasiRouteImport } from './routes/berkas.prestasi'
@@ -164,6 +165,11 @@ const PendaftaranEkonomiRoute = PendaftaranEkonomiRouteImport.update({
 const DonasiTerimaKasihRoute = DonasiTerimaKasihRouteImport.update({
   id: '/donasi/terima-kasih',
   path: '/donasi/terima-kasih',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BerkasYatimRoute = BerkasYatimRouteImport.update({
+  id: '/berkas/yatim',
+  path: '/berkas/yatim',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BerkasUmumRoute = BerkasUmumRouteImport.update({
@@ -386,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/berkas/umum': typeof BerkasUmumRouteWithChildren
+  '/berkas/yatim': typeof BerkasYatimRoute
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
@@ -440,6 +447,7 @@ export interface FileRoutesByTo {
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
   '/bagikan-poster/umum': typeof BagikanPosterUmumRoute
   '/berkas/terkirim': typeof BerkasTerkirimRoute
+  '/berkas/yatim': typeof BerkasYatimRoute
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
@@ -499,6 +507,7 @@ export interface FileRoutesById {
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/berkas/umum': typeof BerkasUmumRouteWithChildren
+  '/berkas/yatim': typeof BerkasYatimRoute
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
@@ -559,6 +568,7 @@ export interface FileRouteTypes {
     | '/berkas/prestasi'
     | '/berkas/terkirim'
     | '/berkas/umum'
+    | '/berkas/yatim'
     | '/donasi/terima-kasih'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
@@ -613,6 +623,7 @@ export interface FileRouteTypes {
     | '/bagikan-poster/prestasi'
     | '/bagikan-poster/umum'
     | '/berkas/terkirim'
+    | '/berkas/yatim'
     | '/donasi/terima-kasih'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
@@ -671,6 +682,7 @@ export interface FileRouteTypes {
     | '/berkas/prestasi'
     | '/berkas/terkirim'
     | '/berkas/umum'
+    | '/berkas/yatim'
     | '/donasi/terima-kasih'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
@@ -710,6 +722,7 @@ export interface RootRouteChildren {
   BerkasPrestasiRoute: typeof BerkasPrestasiRouteWithChildren
   BerkasTerkirimRoute: typeof BerkasTerkirimRoute
   BerkasUmumRoute: typeof BerkasUmumRouteWithChildren
+  BerkasYatimRoute: typeof BerkasYatimRoute
   DonasiTerimaKasihRoute: typeof DonasiTerimaKasihRoute
   PendaftaranEkonomiRoute: typeof PendaftaranEkonomiRoute
   PendaftaranPrestasiRoute: typeof PendaftaranPrestasiRoute
@@ -861,6 +874,13 @@ declare module '@tanstack/react-router' {
       path: '/donasi/terima-kasih'
       fullPath: '/donasi/terima-kasih'
       preLoaderRoute: typeof DonasiTerimaKasihRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/berkas/yatim': {
+      id: '/berkas/yatim'
+      path: '/berkas/yatim'
+      fullPath: '/berkas/yatim'
+      preLoaderRoute: typeof BerkasYatimRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/berkas/umum': {
@@ -1233,6 +1253,7 @@ const rootRouteChildren: RootRouteChildren = {
   BerkasPrestasiRoute: BerkasPrestasiRouteWithChildren,
   BerkasTerkirimRoute: BerkasTerkirimRoute,
   BerkasUmumRoute: BerkasUmumRouteWithChildren,
+  BerkasYatimRoute: BerkasYatimRoute,
   DonasiTerimaKasihRoute: DonasiTerimaKasihRoute,
   PendaftaranEkonomiRoute: PendaftaranEkonomiRoute,
   PendaftaranPrestasiRoute: PendaftaranPrestasiRoute,
