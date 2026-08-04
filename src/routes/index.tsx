@@ -165,7 +165,7 @@ function Index() {
       {/* KATEGORI */}
       <section className="container-page py-16">
         <SectionHeader
-          eyebrow="Empat jalur"
+          eyebrow="Kategori Beasiswa"
           title="Prestasi, Ekonomi, Umum, atau Yatim?"
           desc="Satu program, empat jalur beasiswa. Pilih yang paling sesuai dengan kondisimu."
         />
