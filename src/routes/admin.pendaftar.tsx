@@ -496,20 +496,24 @@ function Field({ label, value }: { label: string; value: string }) {
 
 function DocLink({ type, url }: { type: string; url: string }) {
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noreferrer"
-      className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2 hover:bg-muted"
+    <button
+      type="button"
+      onClick={() =>
+        openStoredFile(url).catch((e) =>
+          toast.error(e instanceof Error ? e.message : "Gagal membuka berkas"),
+        )
+      }
+      className="w-full flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2 hover:bg-muted text-left"
     >
       <div className="flex items-center gap-2 text-sm">
         <FileText className="h-4 w-4 text-primary" />
         <span className="font-medium">{type}</span>
       </div>
       <ExternalLink className="h-4 w-4 text-muted-foreground" />
-    </a>
+    </button>
   );
 }
+
 
 function StatCard({ label, value, icon, gradient, iconBg }: { label: string; value: number; icon: ReactNode; gradient: string; iconBg: string }) {
   return (
