@@ -20,7 +20,7 @@ function PosterSelector() {
         <p className="mt-3 text-muted-foreground">Pilih jalur beasiswa yang kamu ikuti untuk mendapatkan poster yang sesuai.</p>
       </header>
 
-      <section className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+      <section className="mt-10 grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
         <Card to="/bagikan-poster/prestasi" icon={<Trophy size={20} />} title="Poster Beasiswa Prestasi" desc="Unduh & bagikan poster untuk jalur prestasi." />
         <Card to="/bagikan-poster/ekonomi" icon={<HeartHandshake size={20} />} title="Poster Beasiswa Ekonomi" desc="Unduh & bagikan poster untuk jalur ekonomi." />
         <Card to="/bagikan-poster/umum" icon={<Users size={20} />} title="Poster Beasiswa Umum" desc="Unduh & bagikan poster untuk jalur umum." />
