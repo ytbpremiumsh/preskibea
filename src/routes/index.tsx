@@ -170,7 +170,7 @@ function Index() {
           desc="Satu program, empat jalur beasiswa. Pilih yang paling sesuai dengan kondisimu."
         />
 
-        <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-12 grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
           <CategoryCard
             tag="Beasiswa Prestasi"
             icon={<Trophy />}

@@ -20,7 +20,7 @@ function DaftarSelector() {
         <p className="mt-3 text-muted-foreground">Pilih kategori yang sesuai dengan kondisimu untuk melanjutkan pendaftaran.</p>
       </header>
 
-      <section className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+      <section className="mt-10 grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
         <CategoryCard
           to="/beasiswa-prestasi"
           icon={<Trophy size={20} />}
