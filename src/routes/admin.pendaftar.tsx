@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, Users, Award, HeartHandshake, FileCheck } from "lucide-react";
 import { toast } from "sonner";
+import { openStoredFile } from "@/lib/storage-url";
 import { exportRowsToXlsx, exportRowsToCsv } from "@/lib/excel-export";
 import { TokenBadge } from "@/components/admin/TokenBadge";
 import { uniqueLatestDocuments } from "@/lib/document-utils";
@@ -499,7 +500,7 @@ function DocLink({ type, url }: { type: string; url: string }) {
     <button
       type="button"
       onClick={() =>
-        openStoredFile(url).catch((e) =>
+        openStoredFile(url).catch((e: unknown) =>
           toast.error(e instanceof Error ? e.message : "Gagal membuka berkas"),
         )
       }

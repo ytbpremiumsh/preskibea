@@ -31,6 +31,7 @@ import {
   HeartHandshake,
 } from "lucide-react";
 import { toast } from "sonner";
+import { openStoredFile } from "@/lib/storage-url";
 import { exportRowsToXlsx } from "@/lib/excel-export";
 import { TokenBadge } from "@/components/admin/TokenBadge";
 import { Checkbox } from "@/components/ui/checkbox";

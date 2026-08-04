@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, Search, Download, RotateCcw, Trophy, RotateCw, X, FileText, ExternalLink, Eye, Users, Award, HeartHandshake } from "lucide-react";
 import { toast } from "sonner";
+import { openStoredFile } from "@/lib/storage-url";
 import { exportRowsToXlsx } from "@/lib/excel-export";
 
 export const Route = createFileRoute("/admin/kandidat")({
