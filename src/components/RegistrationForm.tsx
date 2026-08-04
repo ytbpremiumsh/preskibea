@@ -215,6 +215,12 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       const err = validate(f, values[f.name] ?? "");
       if (err) newErrors[f.name] = err;
     }
+    if (kind === "yatim") {
+      const st = (values.orphan_status ?? "").trim();
+      if (!["Yatim", "Yatim & Piatu"].includes(st)) {
+        newErrors.orphan_status = "Beasiswa Yatim hanya untuk status Yatim atau Yatim & Piatu";
+      }
+    }
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       toast.error("Periksa kembali isian formulir");
