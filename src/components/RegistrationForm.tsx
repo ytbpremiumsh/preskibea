@@ -187,7 +187,6 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
     };
   }, [kind]);
 
-  const isPrestasi = kind === "prestasi";
   const kindLabel =
     kind === "prestasi"
       ? "Beasiswa Prestasi"
@@ -373,7 +372,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
           </Link>
           <div className="mt-4 max-w-3xl">
             <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-              {isPrestasi ? "Beasiswa Prestasi" : "Beasiswa Ekonomi"}
+              {kindLabel}
             </span>
             <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">{title}</h1>
             <p className="mt-2 text-muted-foreground">
