@@ -16,8 +16,12 @@ export const Route = createFileRoute("/admin/formulir")({
 const TABS = [
   { key: "form_pendaftaran_prestasi", label: "Pendaftaran Prestasi", kind: "form" as const },
   { key: "form_pendaftaran_ekonomi", label: "Pendaftaran Ekonomi", kind: "form" as const },
+  { key: "form_pendaftaran_umum", label: "Pendaftaran Umum", kind: "form" as const },
+  { key: "form_pendaftaran_yatim", label: "Pendaftaran Yatim", kind: "form" as const },
   { key: "form_berkas_prestasi", label: "Berkas Prestasi", kind: "berkas" as const },
   { key: "form_berkas_ekonomi", label: "Berkas Ekonomi", kind: "berkas" as const },
+  { key: "form_berkas_umum", label: "Berkas Umum", kind: "berkas" as const },
+  { key: "form_berkas_yatim", label: "Berkas Yatim", kind: "berkas" as const },
 ];
 
 function AdminFormulir() {
