@@ -153,7 +153,7 @@ function PosterEditor({
     setUploading(true);
     const ext = file.name.split(".").pop() || "png";
     const path = `share-poster/${kind}-${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("kp-uploads").upload(path, file, {
+    const { error } = await supabase.storage.from("admin-media").upload(path, file, {
       cacheControl: "3600",
       upsert: true,
     });
@@ -162,7 +162,7 @@ function PosterEditor({
       toast.error(error.message);
       return;
     }
-    const { data } = supabase.storage.from("kp-uploads").getPublicUrl(path);
+    const { data } = supabase.storage.from("admin-media").getPublicUrl(path);
     onChange({ ...value, image_url: data.publicUrl, download_url: value.download_url || data.publicUrl });
     setUploading(false);
     toast.success("Gambar berhasil diunggah");

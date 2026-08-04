@@ -117,10 +117,10 @@ function LogoEditor({
       const ext = file.name.split(".").pop() || "png";
       const path = `branding/${slot}-${Date.now()}.${ext}`;
       const { error } = await supabase.storage
-        .from("kp-uploads")
+        .from("admin-media")
         .upload(path, file, { cacheControl: "3600", upsert: true });
       if (error) throw error;
-      const { data } = supabase.storage.from("kp-uploads").getPublicUrl(path);
+      const { data } = supabase.storage.from("admin-media").getPublicUrl(path);
       onChange(data.publicUrl);
       toast.success("Logo berhasil diunggah");
     } catch (e: unknown) {

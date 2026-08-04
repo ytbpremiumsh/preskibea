@@ -31,6 +31,7 @@ import {
   HeartHandshake,
 } from "lucide-react";
 import { toast } from "sonner";
+import { openStoredFile } from "@/lib/storage-url";
 import { exportRowsToXlsx } from "@/lib/excel-export";
 import { TokenBadge } from "@/components/admin/TokenBadge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -502,16 +503,20 @@ function AdminBerkas() {
                       key={d.id}
                       className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2"
                     >
-                      <a
-                        href={d.file_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-start gap-2 text-sm flex-1 min-w-0"
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openStoredFile(d.file_url).catch((e: unknown) =>
+                            toast.error(e instanceof Error ? e.message : "Gagal membuka berkas"),
+                          )
+                        }
+                        className="flex items-start gap-2 text-sm flex-1 min-w-0 text-left"
                       >
                         <FileText className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                         <span className="font-medium break-words">{d.doc_type}</span>
                         <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
-                      </a>
+                      </button>
+
                       <Button
                         size="icon"
                         variant="ghost"
