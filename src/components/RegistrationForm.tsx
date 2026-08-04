@@ -8,11 +8,66 @@ import { STANDARD_REG_COLUMNS } from "@/lib/form-schema";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { sendAppEmail, submitRegistrationFn } from "@/lib/api";
 
+function f(
+  name: string,
+  label: string,
+  type: FormField["type"],
+  opts: Partial<FormField> = {},
+): FormField {
+  return { id: name, name, label, type, standard: STANDARD_REG_COLUMNS.has(name), ...opts };
+}
+
+const BASE_FIELDS: FormField[] = [
+  f("full_name", "Nama Lengkap", "text", { required: true }),
+  f("email", "Email Aktif", "email", { required: true }),
+  f("whatsapp", "Nomor WhatsApp", "tel", { required: true }),
+  f("birth_place", "Tempat Lahir", "text", { required: true }),
+  f("birth_date", "Tanggal Lahir", "date", { required: true }),
+  f("gender", "Jenis Kelamin", "select", { required: true, options: ["Laki-laki", "Perempuan"] }),
+  f("education_level", "Jenjang Pendidikan", "select", {
+    required: true,
+    options: ["SMP/MTs", "SMA/SMK/MA", "Mahasiswa"],
+  }),
+  f("school_name", "Nama Sekolah / Kampus", "text", { required: true }),
+  f("grade", "Kelas / Semester", "text", { required: true }),
+  f("address", "Alamat Lengkap", "textarea", { required: true }),
+];
+
 const FALLBACK: Record<"prestasi" | "ekonomi" | "umum" | "yatim", FormSchema> = {
-  prestasi: { fields: [] },
-  ekonomi: { fields: [] },
-  umum: { fields: [] },
-  yatim: { fields: [] },
+  prestasi: { fields: [...BASE_FIELDS] },
+  ekonomi: {
+    fields: [
+      ...BASE_FIELDS,
+      f("parent_income", "Penghasilan Orang Tua per Bulan", "select", {
+        required: true,
+        options: [
+          "< Rp1.000.000",
+          "Rp1.000.000 – Rp2.500.000",
+          "Rp2.500.000 – Rp5.000.000",
+          "> Rp5.000.000",
+        ],
+      }),
+      f("dependents", "Jumlah Tanggungan Keluarga", "number", { required: true }),
+    ],
+  },
+  umum: {
+    fields: [
+      ...BASE_FIELDS,
+      f("motivation", "Alasan Mengikuti Beasiswa", "textarea", { required: true }),
+    ],
+  },
+  yatim: {
+    fields: [
+      ...BASE_FIELDS,
+      f("orphan_status", "Status", "select", {
+        required: true,
+        options: ["Yatim", "Yatim & Piatu"],
+      }),
+      f("guardian_name", "Nama Wali / Pengasuh", "text", { required: true }),
+      f("guardian_relation", "Hubungan dengan Wali", "text", { required: true }),
+      f("dependents", "Jumlah Tanggungan Keluarga", "number", { required: false }),
+    ],
+  },
 };
 
 async function uploadFile(file: File, prefix: string): Promise<string> {
