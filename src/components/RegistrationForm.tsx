@@ -166,18 +166,15 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
         if (error) console.error("load form schema error", error);
         if (data?.value && Array.isArray((data.value as FormSchema).fields)) {
           const raw = data.value as FormSchema;
-          const filtered: FormSchema = {
-            ...raw,
-            fields: raw.fields.filter((f) => {
-              if (f.type === "file") return false;
-              if (f.name === "nik") return false;
-              const n = (f.name || "").toLowerCase();
-              const l = (f.label || "").toLowerCase();
-              if (n.includes("prestasi") || l.includes("prestasi utama")) return false;
-              return true;
-            }),
-          };
-          setSchema(filtered);
+          const fields = raw.fields.filter((f) => {
+            if (f.type === "file") return false;
+            if (f.name === "nik") return false;
+            const n = (f.name || "").toLowerCase();
+            const l = (f.label || "").toLowerCase();
+            if (n.includes("prestasi") || l.includes("prestasi utama")) return false;
+            return true;
+          });
+          if (fields.length > 0) setSchema({ ...raw, fields });
         }
       } catch (err) {
         console.error("load form schema exception", err);
@@ -191,7 +188,15 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
   }, [kind]);
 
   const isPrestasi = kind === "prestasi";
-  const title = isPrestasi ? "Pendaftaran Beasiswa Prestasi" : "Pendaftaran Beasiswa Ekonomi";
+  const kindLabel =
+    kind === "prestasi"
+      ? "Beasiswa Prestasi"
+      : kind === "ekonomi"
+        ? "Beasiswa Ekonomi"
+        : kind === "umum"
+          ? "Beasiswa Umum"
+          : "Beasiswa Yatim";
+  const title = `Pendaftaran ${kindLabel}`;
 
   const setVal = (name: string, v: string) => setValues((s) => ({ ...s, [name]: v }));
   const setFile = (name: string, f: File | null) => setFiles((s) => ({ ...s, [name]: f }));
