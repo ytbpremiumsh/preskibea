@@ -278,17 +278,21 @@ function AdminKandidat() {
                 <div className="space-y-1.5">
                   {detailDocs.length === 0 && <div className="text-sm text-muted-foreground">Tidak ada berkas.</div>}
                   {detailDocs.map((f) => (
-                    <a
+                    <button
                       key={f.id}
-                      href={f.file_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-sm hover:bg-muted/60 transition"
+                      type="button"
+                      onClick={() =>
+                        openStoredFile(f.file_url).catch((e: unknown) =>
+                          toast.error(e instanceof Error ? e.message : "Gagal membuka berkas"),
+                        )
+                      }
+                      className="w-full text-left flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-sm hover:bg-muted/60 transition"
                     >
                       <FileText className="h-4 w-4 text-primary shrink-0" />
                       <span className="flex-1 truncate">{f.doc_type}</span>
                       <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
-                    </a>
+                    </button>
+
                   ))}
                 </div>
               </div>
