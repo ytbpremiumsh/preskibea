@@ -145,7 +145,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
     }
     if (!t.startsWith(tokenPrefix(kind))) {
       setSearchError(
-        `Kode tidak sesuai jenis beasiswa. Kode ${kind === "prestasi" ? "Prestasi" : kind === "ekonomi" ? "Ekonomi" : "Umum"} diawali ${tokenPrefix(kind)}`,
+        `Kode tidak sesuai jenis beasiswa. Kode ${kind === "prestasi" ? "Prestasi" : kind === "ekonomi" ? "Ekonomi" : kind === "yatim" ? "Yatim" : "Umum"} diawali ${tokenPrefix(kind)}`,
       );
       return;
     }
