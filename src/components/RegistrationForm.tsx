@@ -363,9 +363,14 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
         console.log("Redirecting to Mayar:", mayarLink);
         toast.info("Mengarahkan ke pembayaran...");
         
-        // Use a direct window.location assignment for the most reliable external redirect
-        // and ensure it happens immediately without a large delay
-        window.location.assign(mayarLink);
+        // Force the redirect to happen as fast as possible
+        // and bypass any possible React lifecycle interruptions
+        try {
+          window.location.assign(mayarLink);
+        } catch (e) {
+          console.error("Redirect error", e);
+          window.location.href = mayarLink;
+        }
         return;
       }
 
