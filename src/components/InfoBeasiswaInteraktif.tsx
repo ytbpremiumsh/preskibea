@@ -35,7 +35,8 @@ const data: Kategori[] = [
     fakta: [
       "Berlaku untuk seluruh sekolah di Indonesia",
       "Tanpa minimal nilai rapor",
-      "Jalur prestasi, ekonomi & umum tersedia",
+      "Jalur prestasi, ekonomi, umum & yatim tersedia",
+      "Pilihan Jalur Fast Track tersedia",
     ],
   },
   {
@@ -50,6 +51,7 @@ const data: Kategori[] = [
       "Berlaku untuk seluruh sekolah & kampus di Indonesia",
       "Tanpa minimal nilai rapor / IPK",
       "Bonus mentoring & pembinaan penerima",
+      "Pilihan Jalur Fast Track tersedia",
     ],
   },
 ];

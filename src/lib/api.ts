@@ -46,6 +46,7 @@ export type SubmitRegistrationInput = {
   dependents?: number | null;
   photo_url?: string | null;
   student_card_url?: string | null;
+  fast_track?: boolean;
   extra?: Record<string, unknown>;
 };
 

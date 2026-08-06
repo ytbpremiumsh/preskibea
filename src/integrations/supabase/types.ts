@@ -373,6 +373,7 @@ export type Database = {
           education_level: string
           email: string
           extra: Json
+          fast_track: boolean | null
           full_name: string
           gender: string
           grade: string
@@ -399,6 +400,7 @@ export type Database = {
           education_level: string
           email: string
           extra?: Json
+          fast_track?: boolean | null
           full_name: string
           gender: string
           grade: string
@@ -425,6 +427,7 @@ export type Database = {
           education_level?: string
           email?: string
           extra?: Json
+          fast_track?: boolean | null
           full_name?: string
           gender?: string
           grade?: string
