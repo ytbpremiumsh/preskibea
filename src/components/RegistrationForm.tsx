@@ -151,6 +151,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [values, setValues] = useState<Record<string, string>>({});
   const [files, setFiles] = useState<Record<string, File | null>>({});
+  const [registrationType, setRegistrationType] = useState<"reguler" | "fast_track">("reguler");
 
   useEffect(() => {
     let cancelled = false;
@@ -240,7 +241,11 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       }
 
       // Build payload mapping standard names to columns; rest into extra
-      const payload: Record<string, unknown> = { kind, status: "approved" };
+      const payload: Record<string, unknown> = { 
+        kind, 
+        status: "approved",
+        fast_track: registrationType === "fast_track" 
+      };
       const extra: Record<string, unknown> = {};
       for (const f of schema.fields) {
         const isFile = f.type === "file";
@@ -401,6 +406,50 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
 
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
+          <Card title="Pilih Tipe Pendaftaran">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                type="button"
+                onClick={() => setRegistrationType("reguler")}
+                className={`flex flex-col items-start p-4 rounded-2xl border-2 transition-all text-left ${
+                  registrationType === "reguler"
+                    ? "border-primary bg-primary-soft/30 shadow-card"
+                    : "border-border bg-card hover:border-primary/50"
+                }`}
+              >
+                <div className="flex items-center gap-2 font-bold text-foreground">
+                  <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${registrationType === "reguler" ? "border-primary" : "border-muted-foreground"}`}>
+                    {registrationType === "reguler" && <span className="h-2 w-2 rounded-full bg-primary" />}
+                  </span>
+                  Jalur Reguler
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Pendaftaran standar dengan persyaratan lengkap (Kirim Poster, Follow IG & TikTok).
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setRegistrationType("fast_track")}
+                className={`flex flex-col items-start p-4 rounded-2xl border-2 transition-all text-left ${
+                  registrationType === "fast_track"
+                    ? "border-primary bg-primary-soft/30 shadow-card"
+                    : "border-border bg-card hover:border-primary/50"
+                }`}
+              >
+                <div className="flex items-center gap-2 font-bold text-foreground">
+                  <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${registrationType === "fast_track" ? "border-primary" : "border-muted-foreground"}`}>
+                    {registrationType === "fast_track" && <span className="h-2 w-2 rounded-full bg-primary" />}
+                  </span>
+                  Jalur Fast Track
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Lolos otomatis tahap Kirim Poster dan tanpa syarat Follow media sosial.
+                </p>
+              </button>
+            </div>
+          </Card>
+
           <Card title="Formulir Pendaftaran">
             <div className="grid sm:grid-cols-2 gap-4">
               {grouped.dataFields.map((f) => (

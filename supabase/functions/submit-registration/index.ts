@@ -46,6 +46,7 @@ const Input = z.object({
   }, z.number().int().min(0).max(50).nullable().optional()),
   photo_url: urlOrNull,
   student_card_url: urlOrNull,
+  fast_track: z.boolean().optional().default(false),
   extra: z.record(z.string(), z.unknown()).optional().default({}),
 });
 
@@ -82,6 +83,7 @@ serve(async (req) => {
         .insert({
           token,
           kind: data.kind,
+          fast_track: data.fast_track,
           status: "approved",
           full_name: data.full_name,
           birth_place: data.birth_place,
