@@ -65,13 +65,13 @@ function Index() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <a
-                href="#timeline"
+              <Link
+                to="/daftar"
                 className="btn-block group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground"
               >
                 Daftar sekarang
                 <ArrowRight size={16} className="transition group-hover:translate-x-0.5" />
-              </a>
+              </Link>
               <Link
                 to="/beasiswa-prestasi"
                 className="btn-block inline-flex items-center justify-center gap-2 rounded-full bg-card px-7 py-3.5 text-sm font-bold text-foreground hover:text-primary"
