@@ -106,4 +106,27 @@ export async function sendTestEmail(args: { data: SendTestEmailInput }) {
   });
 }
 
+// ─── AI Content ─────────────────────────────────────────────────────────────
+
+export type GenerateAiArticleInput = {
+  topic: string;
+  category?: string;
+  tone?: "informal" | "professional" | "persuasive";
+  language?: "id" | "en";
+};
+
+export async function generateAiArticle(input: GenerateAiArticleInput): Promise<{
+  title: string;
+  excerpt: string;
+  content: string;
+  category: string;
+}> {
+  return invoke<{
+    title: string;
+    excerpt: string;
+    content: string;
+    category: string;
+  }>("ai-article-generator", input);
+}
+
 export type _InvokeResult<T> = InvokeResult<T>;
