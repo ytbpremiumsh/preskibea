@@ -31,16 +31,10 @@ export function SiteFooter() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Link
-              to="/beasiswa-prestasi"
-              className="inline-flex items-center gap-2 rounded-full bg-background px-5 py-2.5 text-sm font-semibold text-primary shadow-soft hover:opacity-95 transition"
+              to="/daftar"
+              className="inline-flex items-center gap-2 rounded-full bg-background px-7 py-3 text-sm font-bold text-primary shadow-soft hover:opacity-95 transition"
             >
-              Beasiswa Prestasi
-            </Link>
-            <Link
-              to="/beasiswa-ekonomi"
-              className="inline-flex items-center gap-2 rounded-full bg-background/15 ring-1 ring-background/40 px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-background/25 transition"
-            >
-              Beasiswa Ekonomi
+              Daftar sekarang
             </Link>
           </div>
         </div>
