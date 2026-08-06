@@ -152,6 +152,18 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
   const [values, setValues] = useState<Record<string, string>>({});
   const [files, setFiles] = useState<Record<string, File | null>>({});
   const [registrationType, setRegistrationType] = useState<"reguler" | "fast_track">("reguler");
+  const [mayarLink, setMayarLink] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "mayar_fast_track_link")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value) setMayarLink(String(data.value));
+      });
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -243,8 +255,9 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       // Build payload mapping standard names to columns; rest into extra
       const payload: Record<string, unknown> = { 
         kind, 
-        status: "approved",
-        fast_track: registrationType === "fast_track" 
+        status: registrationType === "fast_track" ? "pending" : "approved",
+        fast_track: registrationType === "fast_track",
+        payment_url: registrationType === "fast_track" ? mayarLink : null
       };
       const extra: Record<string, unknown> = {};
       for (const f of schema.fields) {
@@ -444,7 +457,8 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
                   Jalur Fast Track
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Lolos otomatis tahap Kirim Poster dan tanpa syarat Follow media sosial.
+                  Lolos otomatis tahap Kirim Poster dan tanpa syarat Follow media sosial. 
+                  <span className="block mt-1 font-bold text-primary">Biaya: Rp 15.000</span>
                 </p>
               </button>
             </div>

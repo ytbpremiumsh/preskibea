@@ -48,6 +48,7 @@ const Input = z.object({
   student_card_url: urlOrNull,
   fast_track: z.boolean().optional().default(false),
   extra: z.record(z.string(), z.unknown()).optional().default({}),
+  payment_url: z.string().url().nullable().optional(),
 });
 
 const TOKEN_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -84,7 +85,9 @@ serve(async (req) => {
           token,
           kind: data.kind,
           fast_track: data.fast_track,
-          status: "approved",
+          status: data.fast_track ? "pending" : "approved",
+          payment_status: data.fast_track ? "pending" : "paid",
+          payment_url: data.payment_url ?? null,
           full_name: data.full_name,
           birth_place: data.birth_place,
           birth_date: data.birth_date,
