@@ -1,39 +1,32 @@
-import a1 from "@/assets/peraih-1.png";
-import a2 from "@/assets/peraih-2.png";
-import a3 from "@/assets/peraih-3.png";
-import a4 from "@/assets/peraih-4.png";
+import a1 from "@/assets/peraih-batch7-1.png.asset.json";
+import a2 from "@/assets/peraih-batch7-2.png.asset.json";
+import a3 from "@/assets/peraih-batch7-3.png.asset.json";
 import { Quote, Trophy } from "lucide-react";
 
 const alumni = [
   {
-    img: a1,
-    name: "Fahrana Zarifa Walijismi",
-    school: "Peraih Beasiswa",
-    year: "SECTION #2 - 2023",
+    img: a1.url,
+    name: "Kalaj Nazhiful Haq",
+    school: "Universitas Andalas",
+    year: "BATCH #7 - 2025",
     quote: "Beasiswa ini membantu saya fokus belajar tanpa khawatir biaya pendidikan.",
   },
   {
-    img: a2,
-    name: "Salsabila Aulia Rahmadani",
-    school: "Peraih Beasiswa",
-    year: "SECTION #2 - 2023",
-    quote: "Selain dana, mentoringnya membuka banyak peluang baru bagi saya.",
+    img: a2.url,
+    name: "Amelia Kusuma Suryandari",
+    school: "Universitas Diponegoro",
+    year: "BATCH #7 - 2025",
+    quote: "Selain dana, pembinaannya membuka banyak peluang baru bagi saya.",
   },
   {
-    img: a3,
-    name: "Rahma Fitri Nurhidayah",
-    school: "Peraih Beasiswa",
-    year: "SECTION #2 - 2023",
-    quote: "Prestasi Kita memberi dukungan nyata yang membuat saya semakin termotivasi.",
-  },
-  {
-    img: a4,
-    name: "Wasil Mubarok",
-    school: "Peraih Beasiswa",
-    year: "SECTION #2 - 2023",
+    img: a3.url,
+    name: "Jahwa Aulia Hasan",
+    school: "Peraih Beasiswa Prestasi Kita",
+    year: "BATCH #7 - 2025",
     quote: "Proses seleksinya transparan dan benar-benar tanpa pungutan biaya.",
   },
 ];
+
 
 export function AlumniSection() {
   return (
