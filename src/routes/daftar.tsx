@@ -16,8 +16,8 @@ function DaftarSelector() {
     <main className="container-page py-16">
       <header className="max-w-2xl mx-auto text-center">
         <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">Pendaftaran</span>
-        <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Pilih Kategori Beasiswa</h1>
-        <p className="mt-3 text-muted-foreground">Silakan pilih salah satu kategori beasiswa di bawah ini untuk melanjutkan pendaftaran.</p>
+        <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Pilih Jalur Beasiswa</h1>
+        <p className="mt-3 text-muted-foreground">Pilih kategori yang sesuai dengan kondisimu untuk melanjutkan pendaftaran.</p>
       </header>
 
       <section className="mt-10 grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
