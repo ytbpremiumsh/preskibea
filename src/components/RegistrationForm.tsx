@@ -358,12 +358,11 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       
       // If fast track, redirect to Mayar payment immediately
       if (registrationType === "fast_track" && mayarLink) {
+        console.log("Redirecting to Mayar:", mayarLink);
         toast.info("Mengarahkan ke pembayaran...");
-        setTimeout(() => {
-          if (typeof window !== "undefined") {
-            window.location.href = mayarLink;
-          }
-        }, 1500);
+        
+        // Use a direct window.location assignment for the most reliable external redirect
+        window.location.href = mayarLink;
         return;
       }
 
