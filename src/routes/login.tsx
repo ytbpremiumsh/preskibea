@@ -23,7 +23,7 @@ type Step = "credentials" | "mfa";
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  
   const [step, setStep] = useState<Step>("credentials");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -70,20 +70,10 @@ function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (mode === "signin") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        await proceedAfterPassword();
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: `${window.location.origin}/admin` },
-        });
-        if (error) throw error;
-        toast.success("Akun dibuat. Hubungi admin utama untuk mendapatkan akses dashboard.");
-        setMode("signin");
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      await proceedAfterPassword();
+
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Gagal";
       toast.error(msg);
@@ -145,9 +135,8 @@ function LoginPage() {
               <p className="mt-1 text-sm text-white/80">
                 {step === "mfa"
                   ? "Masukkan kode dari Google Authenticator"
-                  : mode === "signin"
-                  ? "Masuk untuk mengelola pendaftar"
-                  : "Buat akun admin baru"}
+                  : "Masuk untuk mengelola pendaftar"}
+
               </p>
             </div>
           </div>
@@ -187,7 +176,7 @@ function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Minimal 8 karakter"
-                      autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                      autoComplete="current-password"
                       className="h-11 pl-10"
                     />
                   </div>
@@ -202,29 +191,13 @@ function LoginPage() {
                   ) : (
                     <Sparkles className="mr-2 h-4 w-4" />
                   )}
-                  {mode === "signin" ? "Masuk ke Dashboard" : "Daftar Akun"}
+                  Masuk ke Dashboard
                 </Button>
 
-                <div className="relative py-1">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border/60" />
-                  </div>
-                  <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
-                    <span className="bg-card px-3 text-muted-foreground">atau</span>
-                  </div>
-                </div>
+                <p className="text-center text-xs text-muted-foreground">
+                  Akses dashboard terbatas untuk satu akun admin resmi.
+                </p>
 
-                <div className="text-center text-sm text-muted-foreground">
-                  {mode === "signin" ? (
-                    <button type="button" onClick={() => setMode("signup")} className="font-medium text-primary hover:underline">
-                      Belum punya akun? Daftar di sini
-                    </button>
-                  ) : (
-                    <button type="button" onClick={() => setMode("signin")} className="font-medium text-primary hover:underline">
-                      Sudah punya akun? Masuk
-                    </button>
-                  )}
-                </div>
               </form>
             ) : (
               <form onSubmit={verifyMfa} className="space-y-5">
