@@ -42,15 +42,15 @@ function Index() {
       {/* HERO */}
       <section className="relative overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
         <div className="container-page py-12 md:py-20 grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground/75 shadow-card">
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--gold)]" />
               Prestasi Kita 2026 · Batch #8
             </span>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-[3.65rem] font-extrabold leading-[1.03] tracking-tight text-foreground">
+            <h1 className="text-4xl sm:text-5xl lg:text-[3.65rem] font-extrabold leading-[1.03] tracking-tight text-foreground flex flex-col items-center lg:items-start">
               Raih beasiswa
-              <span className="relative mt-1 block w-fit text-primary">
+              <span className="relative mt-1 block w-fit text-primary mx-auto lg:mx-0">
                 Prestasi Kita
                 <svg aria-hidden="true" viewBox="0 0 300 12" preserveAspectRatio="none" className="absolute -bottom-1.5 left-0 h-2.5 w-full text-[var(--gold)]">
                   <path d="M3 8 Q 75 2, 150 6 T 297 5" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
@@ -59,7 +59,7 @@ function Index() {
               <span className="text-muted-foreground/80"> Batch #8</span>
             </h1>
 
-            <p className="max-w-xl text-base md:text-lg text-muted-foreground">
+            <p className="max-w-xl text-base md:text-lg text-muted-foreground mx-auto lg:mx-0">
               Program beasiswa pendidikan nasional untuk pelajar dan mahasiswa Indonesia —
               jalur Prestasi, Ekonomi, Umum, dan Yatim, tanpa minimal nilai, tanpa biaya pendaftaran.
             </p>
@@ -84,14 +84,16 @@ function Index() {
               Gratis 100% · tanpa pungutan biaya · seleksi transparan
             </p>
 
-            <div className="inline-flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-secondary/50 px-4 py-3">
-              <ShieldCheck size={16} className="text-primary" />
-              <span className="text-xs font-semibold text-foreground/80">Terbuka untuk</span>
-              {jenjang.map((j) => (
-                <span key={j} className="rounded-full bg-card px-2.5 py-1 text-[11px] font-semibold text-foreground/75 shadow-card">
-                  {j}
-                </span>
-              ))}
+            <div className="inline-flex items-center gap-2 rounded-2xl border border-border bg-secondary/50 px-3 py-2 sm:px-4 sm:py-3 w-fit">
+              <ShieldCheck size={16} className="text-primary shrink-0" />
+              <span className="text-[10px] sm:text-xs font-semibold text-foreground/80 whitespace-nowrap">Terbuka untuk</span>
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                {jenjang.map((j) => (
+                  <span key={j} className="rounded-full bg-card px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[11px] font-semibold text-foreground/75 shadow-card whitespace-nowrap">
+                    {j}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div className="sm:hidden flex flex-col gap-3">
