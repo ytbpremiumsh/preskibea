@@ -135,9 +135,8 @@ function LoginPage() {
               <p className="mt-1 text-sm text-white/80">
                 {step === "mfa"
                   ? "Masukkan kode dari Google Authenticator"
-                  : mode === "signin"
-                  ? "Masuk untuk mengelola pendaftar"
-                  : "Buat akun admin baru"}
+                  : "Masuk untuk mengelola pendaftar"}
+
               </p>
             </div>
           </div>
@@ -177,7 +176,7 @@ function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Minimal 8 karakter"
-                      autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                      autoComplete="current-password"
                       className="h-11 pl-10"
                     />
                   </div>
@@ -192,7 +191,7 @@ function LoginPage() {
                   ) : (
                     <Sparkles className="mr-2 h-4 w-4" />
                   )}
-                  {mode === "signin" ? "Masuk ke Dashboard" : "Daftar Akun"}
+                  Masuk ke Dashboard
                 </Button>
 
                 <p className="text-center text-xs text-muted-foreground">
