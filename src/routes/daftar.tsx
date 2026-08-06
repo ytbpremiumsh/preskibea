@@ -1,5 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, HeartHandshake, Trophy, Users, Heart } from "lucide-react";
+import ilustrasiPrestasi from "@/assets/jalur-prestasi.jpg";
+import ilustrasiEkonomi from "@/assets/jalur-ekonomi.jpg";
+import ilustrasiUmum from "@/assets/jalur-umum.jpg";
+import ilustrasiYatim from "@/assets/jalur-yatim.jpg";
 
 export const Route = createFileRoute("/daftar")({
   head: () => ({

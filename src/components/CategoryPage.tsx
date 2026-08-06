@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake, Users, Heart } from "lucide-react";
 import type { ReactNode } from "react";
 import { AdSlot } from "@/components/ads/AdSlot";
+import benefitAsset from "@/assets/benefit-prestasi-kita.png.asset.json";
 
 const persyaratan = [
   "Warga Negara Indonesia (WNI)",
@@ -15,8 +16,7 @@ const persyaratan = [
 
 
 
-const BENEFIT_IMAGE_URL =
-  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/1778937083074-Benefit-Prestasi-Kita.png";
+const BENEFIT_IMAGE_URL = benefitAsset.url;
 
 const benefitList = [
   { strong: "Dana Pendidikan Beasiswa", rest: "" },
