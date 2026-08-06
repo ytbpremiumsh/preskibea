@@ -308,7 +308,9 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       }
       payload.extra = extra;
 
-      const { token } = await submitRegistrationFn({ data: payload as never });
+      console.log("Submitting registration payload:", payload);
+      const { token } = await submitRegistrationFn({ data: payload as any });
+      console.log("Registration submitted, token:", token);
 
       // Fire-and-forget WA notification (include token)
       try {
