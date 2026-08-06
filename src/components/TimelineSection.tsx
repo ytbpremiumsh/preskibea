@@ -106,7 +106,11 @@ export function TimelineSection() {
                     <Calendar size={14} className="text-primary shrink-0" />
                     {t.startDate && t.startDate !== t.date ? (
                       <>
-                        {t.title.toLowerCase().includes("pendaftaran") ? `Hingga ${fmt(t.date)}` : `${fmt(t.startDate)} – ${t.singleDay ? fmt(t.date) : `Hingga ${fmt(t.date)}`}`}
+                        {(t.title.toLowerCase().includes("pendaftaran") || 
+                          t.title.toLowerCase().includes("poster") || 
+                          t.title.toLowerCase().includes("berkas")) 
+                          ? `Hingga ${fmt(t.date)}` 
+                          : `${fmt(t.startDate)} – ${t.singleDay ? fmt(t.date) : `Hingga ${fmt(t.date)}`}`}
                       </>
                     ) : t.date ? (
                       t.singleDay ? fmt(t.date) : `Hingga ${fmt(t.date)}`
