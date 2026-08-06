@@ -166,8 +166,8 @@ function Index() {
       <section className="container-page py-16">
         <SectionHeader
           eyebrow="Kategori Beasiswa"
-          title="Prestasi, Ekonomi, Umum, atau Yatim?"
-          desc="Satu program, empat jalur beasiswa. Pilih yang paling sesuai dengan kondisimu."
+          title="Pilih Jalur Beasiswa yang Sesuai"
+          desc="Terdapat empat jalur beasiswa yang bisa kamu pilih sesuai dengan prestasi atau kondisimu."
         />
 
         <div className="mt-12 grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
