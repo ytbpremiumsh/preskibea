@@ -27,7 +27,7 @@ function DaftarSelector() {
           title="Beasiswa Prestasi"
           desc="Untuk pelajar dengan prestasi akademik maupun non-akademik."
           cta="Daftar Prestasi"
-          illustration="https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/Illustration-Prestasi.png"
+          illustration="https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/Illustration-Prestasi.png"
         />
         <CategoryCard
           to="/beasiswa-ekonomi"
@@ -35,7 +35,7 @@ function DaftarSelector() {
           title="Beasiswa Ekonomi"
           desc="Dukungan finansial bagi pelajar dari keluarga prasejahtera."
           cta="Daftar Ekonomi"
-          illustration="https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/Illustration-Ekonomi.png"
+          illustration="https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/Illustration-Ekonomi.png"
         />
         <CategoryCard
           to="/beasiswa-umum"
@@ -43,7 +43,7 @@ function DaftarSelector() {
           title="Beasiswa Umum"
           desc="Jalur terbuka untuk semua pelajar & mahasiswa aktif di Indonesia."
           cta="Daftar Umum"
-          illustration="https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/Illustration-Umum.png"
+          illustration="https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/Illustration-Umum.png"
         />
         <CategoryCard
           to="/beasiswa-yatim"
@@ -51,7 +51,7 @@ function DaftarSelector() {
           title="Beasiswa Yatim"
           desc="Jalur khusus bagi anak yatim, piatu, dan yatim piatu."
           cta="Daftar Yatim"
-          illustration="https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/Illustration-Yatim.png"
+          illustration="https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/Illustration-Yatim.png"
         />
       </section>
     </main>

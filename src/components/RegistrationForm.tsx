@@ -309,8 +309,10 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       payload.extra = extra;
 
       console.log("Submitting registration payload:", payload);
-      const { token } = await submitRegistrationFn({ data: payload as any });
-      console.log("Registration submitted, token:", token);
+      const res = await submitRegistrationFn({ data: payload as any });
+      const token = res?.token;
+      const invoiceUrl = (res as any)?.invoice_url;
+      console.log("Registration submitted, token:", token, "invoice:", invoiceUrl);
 
       // Fire-and-forget WA notification (include token)
       try {
@@ -359,19 +361,20 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       toast.success("Pendaftaran berhasil dikirim!");
       
       // If fast track, redirect to Mayar payment immediately
-      if (registrationType === "fast_track" && mayarLink) {
-        console.log("Redirecting to Mayar:", mayarLink);
-        toast.info("Mengarahkan ke pembayaran...");
-        
-        // Force the redirect to happen as fast as possible
-        // and bypass any possible React lifecycle interruptions
-        try {
-          window.location.assign(mayarLink);
-        } catch (e) {
-          console.error("Redirect error", e);
-          window.location.href = mayarLink;
+      if (registrationType === "fast_track") {
+        const finalRedirectUrl = invoiceUrl || mayarLink;
+        if (finalRedirectUrl) {
+          console.log("Redirecting to Mayar:", finalRedirectUrl);
+          toast.info("Mengarahkan ke pembayaran...");
+          
+          try {
+            window.location.assign(finalRedirectUrl);
+          } catch (e) {
+            console.error("Redirect error", e);
+            window.location.href = finalRedirectUrl;
+          }
+          return;
         }
-        return;
       }
 
       setValues({});
@@ -467,7 +470,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       <section className="container-page py-10 md:py-12">
         <div className="mb-8 overflow-hidden rounded-3xl border border-border shadow-card md:hidden">
           <img
-            src="https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/1778938796974-Header-Kejar-Prestasi--3.jpg"
+            src="https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/1778938796974-Header-Kejar-Prestasi--3.jpg"
             alt={title}
             loading="lazy"
             className="w-full h-auto object-cover"
