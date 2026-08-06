@@ -113,12 +113,17 @@ export function SiteFooter() {
 
 
         {/* Layanan */}
-        <div className="md:col-span-4">
+        <div className="md:col-span-2">
           <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">Layanan</h4>
-          <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 text-sm text-muted-foreground">
+          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
             <li>
               <Link to="/cek-status" className="hover:text-primary transition flex items-center gap-2">
-                <span className="h-1 w-1 rounded-full bg-primary" /> Cek Status Pendaftaran
+                <span className="h-1 w-1 rounded-full bg-primary" /> Cek Status
+              </Link>
+            </li>
+            <li>
+              <Link to="/berkas/prestasi" className="hover:text-primary transition flex items-center gap-2">
+                <span className="h-1 w-1 rounded-full bg-primary" /> Kirim Berkas
               </Link>
             </li>
             <li>
@@ -126,17 +131,12 @@ export function SiteFooter() {
                 <span className="h-1 w-1 rounded-full bg-primary" /> Bagikan Poster
               </Link>
             </li>
-            <li>
-              <Link to="/berkas/prestasi" className="hover:text-primary transition flex items-center gap-2">
-                <span className="h-1 w-1 rounded-full bg-primary" /> Kirim Berkas Administrasi
-              </Link>
-            </li>
           </ul>
         </div>
 
         {/* Bantuan */}
         <div className="md:col-span-3">
-          <h4 className="text-sm font-semibold text-foreground">Bantuan &amp; Informasi</h4>
+          <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">Bantuan &amp; Informasi</h4>
           <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
             <li>
               <Link to="/" className="hover:text-primary transition">
@@ -153,22 +153,12 @@ export function SiteFooter() {
                 Syarat &amp; Ketentuan
               </Link>
             </li>
-            <li>
-              <Link to="/" className="hover:text-primary transition">
-                Kebijakan Privasi
-              </Link>
-            </li>
-            <li>
-              <Link to="/" className="hover:text-primary transition">
-                Laporkan Penipuan
-              </Link>
-            </li>
           </ul>
         </div>
 
         {/* Kontak */}
         <div className="md:col-span-3">
-          <h4 className="text-sm font-semibold text-foreground">Hubungi Kami</h4>
+          <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">Hubungi Kami</h4>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
             <li className="flex items-start gap-3">
               <Phone size={16} className="mt-0.5 text-primary shrink-0" />
