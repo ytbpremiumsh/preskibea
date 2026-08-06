@@ -223,7 +223,7 @@ export function AdminBar() {
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
               <Shield className="h-3.5 w-3.5" />
             </span>
-            <span className="hidden sm:inline">KP Admin</span>
+            <span className="hidden sm:inline">PK Admin</span>
           </Link>
 
           {/* Status badge */}
