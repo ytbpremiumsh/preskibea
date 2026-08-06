@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, Loader2, UploadCloud } from "lucide-react";
+import { ArrowRight, Calendar, CheckCircle2, Loader2, UploadCloud } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { FormField, FormSchema } from "@/lib/form-schema";
@@ -146,6 +146,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
   const navigate = useNavigate();
   const sendEmail = sendAppEmail;
   const [schema, setSchema] = useState<FormSchema>(FALLBACK[kind]);
+  const [isExpired, setIsExpired] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -162,6 +163,26 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       .maybeSingle()
       .then(({ data }) => {
         if (data?.value) setMayarLink(String(data.value));
+      });
+  }, []);
+
+  useEffect(() => {
+    supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "timeline")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value && Array.isArray(data.value)) {
+          const stages = data.value as any[];
+          const regStage = stages.find((s) => s.title.toLowerCase().includes("pendaftaran"));
+          if (regStage?.date) {
+            const deadline = new Date(regStage.date).getTime() + 24 * 60 * 60 * 1000 - 1;
+            if (new Date().getTime() > deadline) {
+              setIsExpired(true);
+            }
+          }
+        }
       });
   }, []);
 
@@ -381,6 +402,24 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
     return (
       <div className="flex items-center justify-center py-24">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (isExpired) {
+    return (
+      <div className="container-page py-24 text-center">
+        <div className="mx-auto w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center text-destructive mb-6">
+          <Calendar size={32} />
+        </div>
+        <h1 className="text-3xl font-extrabold text-foreground">Pendaftaran Ditutup</h1>
+        <p className="mt-4 text-muted-foreground max-w-md mx-auto">
+          Mohon maaf, periode pendaftaran {kindLabel} telah berakhir pada 7 Februari 2027.
+          Pantau terus media sosial kami untuk informasi Batch selanjutnya.
+        </p>
+        <Link to="/" className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft">
+          Kembali ke Beranda
+        </Link>
       </div>
     );
   }
