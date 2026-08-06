@@ -170,37 +170,14 @@ function Index() {
           desc="Satu program, empat jalur beasiswa. Pilih yang paling sesuai dengan kondisimu."
         />
 
-        <div className="mt-12 grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          <CategoryCard
-            tag="Beasiswa Prestasi"
-            icon={<Trophy />}
-            title="Untuk yang berprestasi, akademik & non-akademik"
-            desc="Program beasiswa bagi pelajar dan mahasiswa yang memiliki prestasi akademik maupun non akademik."
-            to="/beasiswa-prestasi"
-          />
-          <CategoryCard
-            tag="Beasiswa Ekonomi"
-            icon={<HeartHandshake />}
-            title="Untuk yang membutuhkan dukungan finansial"
-            desc="Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial untuk pendidikan."
-            to="/beasiswa-ekonomi"
-            variant="dark"
-          />
-          <CategoryCard
-            tag="Beasiswa Umum"
-            icon={<Users />}
-            title="Untuk semua pelajar & mahasiswa aktif"
-            desc="Jalur terbuka tanpa syarat prestasi khusus maupun kriteria ekonomi tertentu. Siapa pun boleh mendaftar."
-            to="/beasiswa-umum"
-          />
-          <CategoryCard
-            tag="Beasiswa Yatim"
-            icon={<Heart />}
-            title="Untuk anak yatim, piatu & yatim piatu"
-            desc="Jalur khusus bagi pelajar dan mahasiswa yang telah kehilangan orang tua, agar pendidikan tetap berlanjut."
-            to="/beasiswa-yatim"
-            variant="dark"
-          />
+        <div className="mt-12 flex justify-center">
+          <Link
+            to="/daftar"
+            className="btn-block group inline-flex items-center justify-center gap-3 rounded-2xl bg-primary px-10 py-5 text-lg font-extrabold text-primary-foreground transition-transform hover:scale-[1.02]"
+          >
+            Daftar Sekarang
+            <ArrowRight size={22} className="transition group-hover:translate-x-1" />
+          </Link>
         </div>
       </section>
 
