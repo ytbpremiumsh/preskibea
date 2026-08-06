@@ -489,7 +489,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
               {[
                 "Pastikan data pribadi sesuai Kartu Pelajar / Kartu Mahasiswa",
                 "Email & WhatsApp aktif",
-                "Tidak dipungut biaya apapun",
+                "Tidak dipungut biaya apapun (Kecuali Jalur Fast Track)",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-2">
                   <CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}
