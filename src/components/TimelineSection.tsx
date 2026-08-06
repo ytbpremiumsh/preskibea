@@ -6,15 +6,15 @@ import { ArrowRight, Calendar, FileText, Share2, Trophy } from "lucide-react";
 export type Stage = { title: string; desc: string; date: string; startDate?: string; singleDay?: boolean };
 
 const fallback: Stage[] = [
-  { title: "Pendaftaran Dibuka", desc: "Calon peserta mengisi formulir pendaftaran beasiswa secara online.", date: "2026-11-16", startDate: "2026-11-16" },
-  { title: "Bagikan Poster", desc: "Peserta membagikan poster beasiswa ke media sosial sebagai bagian dari tahapan seleksi.", date: "2026-11-16", startDate: "2026-11-16" },
-  { title: "Berkas Administrasi", desc: "Peserta mengunggah seluruh berkas pendukung sesuai persyaratan yang ditentukan.", date: "2026-11-16", startDate: "2026-11-16" },
-  { title: "Seleksi Administrasi", desc: "Tim panitia memeriksa kelengkapan data dan keabsahan berkas pendaftar.", date: "2026-11-21", startDate: "2026-11-17" },
-  { title: "Verifikasi", desc: "Validasi akhir terhadap dokumen dan data peserta yang lolos administrasi.", date: "2026-11-27", startDate: "2026-11-22" },
-  { title: "Pengumuman Kandidat", desc: "Pengumuman peserta yang lolos sebagai kandidat dan berhak mengikuti TPA.", date: "2026-11-28", startDate: "2026-11-28", singleDay: true },
-  { title: "Tes Potensi Akademik (TPA)", desc: "Peserta mengikuti tes online serentak untuk mengukur kemampuan akademik.", date: "2026-11-29", startDate: "2026-11-29", singleDay: true },
-  { title: "Pengumuman Finalis", desc: "Pengumuman peserta yang lolos sebagai finalis penerima beasiswa.", date: "2026-12-05", startDate: "2026-12-05", singleDay: true },
-  { title: "Awarding", desc: "Penyerahan beasiswa dan merchandise resmi kepada para penerima.", date: "2026-12-19", startDate: "2026-12-19", singleDay: true },
+  { title: "Pendaftaran Dibuka", desc: "Calon peserta mengisi formulir pendaftaran beasiswa secara online.", date: "2026-08-31", startDate: "2026-08-12" },
+  { title: "Bagikan Poster", desc: "Peserta membagikan poster beasiswa ke media sosial sebagai bagian dari tahapan seleksi.", date: "2026-08-31", startDate: "2026-08-12" },
+  { title: "Berkas Administrasi", desc: "Peserta mengunggah seluruh berkas pendukung sesuai persyaratan yang ditentukan.", date: "2026-08-31", startDate: "2026-08-12" },
+  { title: "Seleksi Administrasi", desc: "Tim panitia memeriksa kelengkapan data dan keabsahan berkas pendaftar.", date: "2026-09-05", startDate: "2026-09-01" },
+  { title: "Verifikasi", desc: "Validasi akhir terhadap dokumen dan data peserta yang lolos administrasi.", date: "2026-09-11", startDate: "2026-09-06" },
+  { title: "Pengumuman Kandidat", desc: "Pengumuman peserta yang lolos sebagai kandidat dan berhak mengikuti TPA.", date: "2026-09-12", startDate: "2026-09-12", singleDay: true },
+  { title: "Tes Potensi Akademik (TPA)", desc: "Peserta mengikuti tes online serentak untuk mengukur kemampuan akademik.", date: "2026-09-13", startDate: "2026-09-13", singleDay: true },
+  { title: "Pengumuman Finalis", desc: "Pengumuman peserta yang lolos sebagai finalis penerima beasiswa.", date: "2026-09-19", startDate: "2026-09-19", singleDay: true },
+  { title: "Awarding", desc: "Penyerahan beasiswa dan merchandise resmi kepada para penerima.", date: "2026-10-03", startDate: "2026-10-03", singleDay: true },
 ];
 
 function fmt(d: string) {
