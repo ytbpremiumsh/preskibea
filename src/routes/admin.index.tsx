@@ -20,10 +20,11 @@ type RecentRow = {
   id: string;
   full_name: string;
   email: string;
-  kind: "prestasi" | "ekonomi";
+  kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   status: string;
   school_name: string;
   education_level: string;
+  fast_track: boolean | null;
   created_at: string;
 };
 
