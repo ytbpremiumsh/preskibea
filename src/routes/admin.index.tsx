@@ -20,16 +20,18 @@ type RecentRow = {
   id: string;
   full_name: string;
   email: string;
-  kind: "prestasi" | "ekonomi";
+  kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   status: string;
   school_name: string;
   education_level: string;
+  fast_track: boolean | null;
   created_at: string;
 };
 
 type LiteRow = {
-  kind: "prestasi" | "ekonomi";
+  kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   education_level: string;
+  fast_track: boolean | null;
   created_at: string;
 };
 
@@ -56,7 +58,7 @@ function ChartFallback() {
 function AdminOverview() {
   const [recent, setRecent] = useState<RecentRow[]>([]);
   const [lite, setLite] = useState<LiteRow[]>([]);
-  const [counts, setCounts] = useState({ total: 0, prestasi: 0, ekonomi: 0, pending: 0, today: 0, docs: 0 });
+  const [counts, setCounts] = useState({ total: 0, prestasi: 0, ekonomi: 0, pending: 0, today: 0, docs: 0, fastTrack: 0 });
   const [loading, setLoading] = useState(true);
   const [notif, setNotif] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
@@ -82,13 +84,14 @@ function AdminOverview() {
         pendingRes,
         todayRes,
         docsRes,
+        fastTrackRes,
       ] = await Promise.all([
         supabase.from("registrations")
-          .select("id,full_name,email,kind,status,school_name,education_level,created_at")
+          .select("id,full_name,email,kind,status,school_name,education_level,created_at,fast_track")
           .order("created_at", { ascending: false })
           .limit(8),
         supabase.from("registrations")
-          .select("kind,education_level,created_at")
+          .select("kind,education_level,created_at,fast_track")
           .gte("created_at", start14.toISOString())
           .limit(5000),
         supabase.from("registrations").select("id", { count: "exact", head: true }),
@@ -97,6 +100,7 @@ function AdminOverview() {
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("registrations").select("id", { count: "exact", head: true }).gte("created_at", startToday.toISOString()),
         supabase.from("documents").select("id", { count: "exact", head: true }),
+        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("fast_track", true),
       ]);
 
       if (!active) return;
@@ -109,6 +113,7 @@ function AdminOverview() {
         pending: pendingRes.count ?? 0,
         today: todayRes.count ?? 0,
         docs: docsRes.count ?? 0,
+        fastTrack: fastTrackRes.count ?? 0,
       });
       setLoading(false);
     };
@@ -126,13 +131,14 @@ function AdminOverview() {
         (payload) => {
           const newRow = payload.new as RecentRow;
           setRecent((prev) => [newRow, ...prev].slice(0, 8));
-          setLite((prev) => [{ kind: newRow.kind, education_level: newRow.education_level, created_at: newRow.created_at }, ...prev]);
+          setLite((prev) => [{ kind: newRow.kind, education_level: newRow.education_level, created_at: newRow.created_at, fast_track: newRow.fast_track }, ...prev]);
           setCounts((c) => ({
             ...c,
             total: c.total + 1,
             today: c.today + 1,
             prestasi: c.prestasi + (newRow.kind === "prestasi" ? 1 : 0),
             ekonomi: c.ekonomi + (newRow.kind === "ekonomi" ? 1 : 0),
+            fastTrack: c.fastTrack + (newRow.fast_track ? 1 : 0),
           }));
           if (notif) {
             toast.success(`Pendaftar baru: ${newRow.full_name}`, {
@@ -178,8 +184,8 @@ function AdminOverview() {
     { name: "Ekonomi", value: counts.ekonomi },
   ], [counts]);
 
-  const last14 = useMemo(() => {
-    const days: { date: string; label: string; count: number }[] = [];
+  const dailyStats = useMemo(() => {
+    const days: { date: string; label: string; count: number; fastTrack: number }[] = [];
     const today = new Date(); today.setHours(0, 0, 0, 0);
     for (let i = 13; i >= 0; i--) {
       const d = new Date(today); d.setDate(d.getDate() - i);
@@ -187,19 +193,24 @@ function AdminOverview() {
         date: d.toISOString().slice(0, 10),
         label: d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" }),
         count: 0,
+        fastTrack: 0,
       });
     }
     const idx = new Map(days.map((d, i) => [d.date, i]));
     for (const r of lite) {
       const k = new Date(r.created_at).toISOString().slice(0, 10);
       const i = idx.get(k);
-      if (i !== undefined) days[i].count++;
+      if (i !== undefined) {
+        days[i].count++;
+        if (r.fast_track) days[i].fastTrack++;
+      }
     }
     return days;
   }, [lite]);
 
   const items = [
     { label: "Total Pendaftar", value: counts.total, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
+    { label: "Pendaftar Fast Track", value: counts.fastTrack, icon: Clock, color: "text-orange-600", bg: "bg-orange-100" },
     { label: "Hari Ini", value: counts.today, icon: Clock, color: "text-emerald-700", bg: "bg-emerald-100" },
     { label: "Beasiswa Prestasi", value: counts.prestasi, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
     { label: "Beasiswa Ekonomi", value: counts.ekonomi, icon: HeartHandshake, color: "text-accent-foreground", bg: "bg-accent/30" },
@@ -227,7 +238,7 @@ function AdminOverview() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {items.map((it) => (
           <Card key={it.label} className="rounded-2xl p-5 shadow-soft">
             <div className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg ${it.bg} ${it.color}`}>
@@ -246,7 +257,7 @@ function AdminOverview() {
           <h2 className="text-base font-semibold text-foreground">Pendaftar per Hari (14 hari terakhir)</h2>
           <div className="mt-4 h-64">
             <Suspense fallback={<ChartFallback />}>
-              {!loading && <LineDaily data={last14} />}
+              {!loading && <LineDaily data={dailyStats} showFastTrack={true} />}
             </Suspense>
           </div>
         </Card>

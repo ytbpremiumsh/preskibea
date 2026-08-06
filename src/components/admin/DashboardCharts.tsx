@@ -42,7 +42,8 @@ function LegendDots({ items }: { items: { name: string; color: string; value?: n
   );
 }
 
-export function LineDaily({ data }: { data: { label: string; count: number }[] }) {
+export function LineDaily({ data, showFastTrack }: { data: { label: string; count: number; fastTrack?: number }[], showFastTrack?: boolean }) {
+  const FAST_TRACK_COLOR = "oklch(0.76 0.17 65)"; // orange
   return (
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart data={data} margin={{ top: 16, right: 12, left: -16, bottom: 0 }}>
@@ -50,6 +51,10 @@ export function LineDaily({ data }: { data: { label: string; count: number }[] }
           <linearGradient id="dailyFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={PRIMARY} stopOpacity={0.28} />
             <stop offset="100%" stopColor={PRIMARY} stopOpacity={0} />
+          </linearGradient>
+          <linearGradient id="fastTrackFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={FAST_TRACK_COLOR} stopOpacity={0.28} />
+            <stop offset="100%" stopColor={FAST_TRACK_COLOR} stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" opacity={0.5} vertical={false} />
@@ -62,10 +67,22 @@ export function LineDaily({ data }: { data: { label: string; count: number }[] }
           stroke={PRIMARY}
           strokeWidth={2.5}
           fill="url(#dailyFill)"
-          name="Pendaftar"
+          name="Total Pendaftar"
           dot={false}
           activeDot={{ r: 5, strokeWidth: 2, stroke: "hsl(var(--background))" }}
         />
+        {showFastTrack && (
+          <Area
+            type="monotone"
+            dataKey="fastTrack"
+            stroke={FAST_TRACK_COLOR}
+            strokeWidth={2.5}
+            fill="url(#fastTrackFill)"
+            name="Fast Track"
+            dot={false}
+            activeDot={{ r: 4, strokeWidth: 2, stroke: "hsl(var(--background))" }}
+          />
+        )}
       </AreaChart>
     </ResponsiveContainer>
   );
