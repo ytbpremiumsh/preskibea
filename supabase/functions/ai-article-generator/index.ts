@@ -42,30 +42,38 @@ Follow these SEO guidelines:
 5. Structure the content for readability (short paragraphs, bullet points).
 6. End with a strong call to action related to Prestasi Kita scholarship.
 
-Format your response as a JSON object with:
+Respond with a valid json object with:
 - title: string
 - excerpt: string (meta description)
 - content: string (Markdown body)
 - category: string (suggested category)`;
 
-    const userPrompt = `Write an article about: ${topic}. ${category ? `The category is ${category}.` : ""}`;
+    const userPrompt = `Write an article about: ${topic}. ${category ? `The category is ${category}.` : ""} Return the result as json.`;
 
-    const response = await fetch("https://connector.lovable.ai/openrouter/chat/completions", {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${lovableApiKey}`,
+        "Lovable-API-Key": lovableApiKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash-001",
+        model: "openai/gpt-5.6-sol",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.8,
       }),
     });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      return new Response(JSON.stringify({ error: `AI gateway error (${response.status}): ${errText}` }), {
+        status: response.status === 429 || response.status === 402 ? response.status : 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
 
     const data = await response.json();
     const resultText = data.choices?.[0]?.message?.content;
