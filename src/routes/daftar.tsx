@@ -20,13 +20,14 @@ function DaftarSelector() {
         <p className="mt-3 text-muted-foreground">Pilih kategori yang sesuai dengan kondisimu untuk melanjutkan pendaftaran.</p>
       </header>
 
-      <section className="mt-10 grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      <section className="mt-12 grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
         <CategoryCard
           to="/beasiswa-prestasi"
           icon={<Trophy size={20} />}
           title="Beasiswa Prestasi"
           desc="Untuk pelajar dengan prestasi akademik maupun non-akademik."
           cta="Daftar Prestasi"
+          illustration="https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/Illustration-Prestasi.png"
         />
         <CategoryCard
           to="/beasiswa-ekonomi"
@@ -34,6 +35,7 @@ function DaftarSelector() {
           title="Beasiswa Ekonomi"
           desc="Dukungan finansial bagi pelajar dari keluarga prasejahtera."
           cta="Daftar Ekonomi"
+          illustration="https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/Illustration-Ekonomi.png"
         />
         <CategoryCard
           to="/beasiswa-umum"
@@ -41,6 +43,7 @@ function DaftarSelector() {
           title="Beasiswa Umum"
           desc="Jalur terbuka untuk semua pelajar & mahasiswa aktif di Indonesia."
           cta="Daftar Umum"
+          illustration="https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/Illustration-Umum.png"
         />
         <CategoryCard
           to="/beasiswa-yatim"
@@ -48,24 +51,55 @@ function DaftarSelector() {
           title="Beasiswa Yatim"
           desc="Jalur khusus bagi anak yatim, piatu, dan yatim piatu."
           cta="Daftar Yatim"
+          illustration="https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/Illustration-Yatim.png"
         />
       </section>
     </main>
   );
 }
 
-function CategoryCard({ to, icon, title, desc, cta }: { to: string; icon: React.ReactNode; title: string; desc: string; cta: string }) {
+function CategoryCard({ 
+  to, 
+  icon, 
+  title, 
+  desc, 
+  cta, 
+  illustration 
+}: { 
+  to: string; 
+  icon: React.ReactNode; 
+  title: string; 
+  desc: string; 
+  cta: string;
+  illustration: string;
+}) {
   return (
-    <div className="card-block p-6 flex flex-col">
-      <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-primary">{icon}</div>
-      <h2 className="mt-3 text-xl font-bold text-foreground">{title}</h2>
-      <p className="mt-1.5 text-sm text-muted-foreground flex-1">{desc}</p>
-      <Link
-        to={to as any}
-        className="mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
-      >
-        {cta} <ArrowRight size={14} />
-      </Link>
+    <div className="card-block group flex flex-col overflow-hidden">
+      <div className="aspect-[16/9] w-full overflow-hidden bg-secondary/30 border-b border-border">
+        <img 
+          src={illustration} 
+          alt={title}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
+      <div className="p-6 flex flex-col flex-1">
+        <div className="flex items-center gap-3">
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
+            {icon}
+          </div>
+          <h2 className="text-xl font-bold text-foreground">{title}</h2>
+        </div>
+        <p className="mt-4 text-sm text-muted-foreground flex-1 leading-relaxed">
+          {desc}
+        </p>
+        <Link
+          to={to as any}
+          className="btn-block mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-soft hover:opacity-95 transition"
+        >
+          {cta} <ArrowRight size={16} />
+        </Link>
+      </div>
     </div>
   );
 }
+
