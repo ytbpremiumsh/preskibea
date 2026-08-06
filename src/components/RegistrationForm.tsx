@@ -337,11 +337,6 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       setValues({});
       setFiles({});
       
-      if (registrationType === "fast_track" && mayarLink) {
-        window.location.href = mayarLink;
-        return;
-      }
-
       try {
         navigate({
           to: "/pendaftaran/sukses",

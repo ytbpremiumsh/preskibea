@@ -89,7 +89,7 @@ type RegInfo = {
 };
 
 const tokenPrefix = (k: "prestasi" | "ekonomi" | "umum" | "yatim") =>
-  k === "prestasi" ? "KP-PRE-" : k === "ekonomi" ? "KP-EKO-" : k === "yatim" ? "KP-YAT-" : "KP-UMU-";
+  k === "prestasi" ? "PK-PRE-" : k === "ekonomi" ? "PK-EKO-" : k === "yatim" ? "PK-YAT-" : "PK-UMU-";
 
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "yatim" }) {
   const navigate = useNavigate();

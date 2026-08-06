@@ -43,8 +43,8 @@ function CekStatusPage() {
       if (!silent) toast.error("Masukkan kode pendaftar");
       return;
     }
-    if (!/^KP-(PRE|EKO)-/.test(t)) {
-      setError("Format kode tidak valid. Contoh: KP-PRE-7F3K9D");
+    if (!/^(PK|KP)-(PRE|EKO|UMU|YAT)-/.test(t)) {
+      setError("Format kode tidak valid. Contoh: PK-PRE-7F3K9D");
       return;
     }
     setLoading(true);
@@ -99,7 +99,7 @@ function CekStatusPage() {
                   value={token}
                   onChange={(e) => { setToken(e.target.value.toUpperCase()); setError(null); }}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleCheck(); } }}
-                  placeholder="KP-PRE-XXXXXX atau KP-EKO-XXXXXX"
+                  placeholder="PK-PRE-XXXXXX atau PK-EKO-XXXXXX"
                   maxLength={20}
                   className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm font-mono tracking-wider text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 />

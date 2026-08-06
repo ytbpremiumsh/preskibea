@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
-import { CheckCircle2, ArrowRight, Heart, FileUp, KeyRound, Copy, Check, Share2 } from "lucide-react";
-import { useState } from "react";
+import { CheckCircle2, ArrowRight, Heart, FileUp, KeyRound, Copy, Check, Share2, CreditCard } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { DonationCard } from "@/components/DonationCard";
 
@@ -31,6 +31,25 @@ export const Route = createFileRoute("/pendaftaran/sukses")({
 
 function SuksesPage() {
   const { name, email, whatsapp, kind, token } = useSearch({ from: "/pendaftaran/sukses" });
+  const [fastTrackPayUrl, setFastTrackPayUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (token && token.includes("-") && (token.startsWith("PK-") || token.startsWith("KP-"))) {
+      // Check if this is a fast track registration needing payment
+      import("@/integrations/supabase/client").then(({ supabase }) => {
+        supabase
+          .from("registrations")
+          .select("fast_track, payment_status, payment_url")
+          .eq("token", token)
+          .maybeSingle()
+          .then(({ data }) => {
+            if (data?.fast_track && data?.payment_status === "pending" && data?.payment_url) {
+              setFastTrackPayUrl(data.payment_url);
+            }
+          });
+      });
+    }
+  }, [token]);
   const berkasTo = kind === "ekonomi" ? "/berkas/ekonomi/upload" : kind === "umum" ? "/berkas/umum/upload" : kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/prestasi/upload";
   const jenis = kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "prestasi" ? "Beasiswa Prestasi" : kind === "umum" ? "Beasiswa Umum" : kind === "yatim" ? "Beasiswa Yatim" : "Beasiswa";
   const [copied, setCopied] = useState(false);
@@ -86,6 +105,30 @@ function SuksesPage() {
             <div className="mt-4 rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:border-amber-900/40 dark:text-amber-200">
               ⚠️ <span className="font-semibold">Simpan kode ini baik-baik.</span> Kode wajib dimasukkan saat <strong>kirim berkas</strong> dan <strong>cek status</strong> pendaftaran. Kode juga sudah kami kirim via WhatsApp.
             </div>
+          </div>
+        )}
+
+        {/* Fast Track Payment CTA */}
+        {fastTrackPayUrl && (
+          <div className="mt-6 rounded-3xl border-2 border-primary bg-primary-soft/30 p-6 md:p-7 shadow-card animate-in fade-in slide-in-from-bottom-2">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <CreditCard size={20} />
+              </div>
+              <div className="flex-1">
+                <div className="text-xs font-bold uppercase tracking-wide text-primary">Pembayaran Fast Track</div>
+                <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Selesaikan Pembayaran</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Kamu memilih jalur <strong>Fast Track</strong>. Silakan selesaikan pembayaran Rp 15.000 agar status pendaftaran otomatis valid (Lolos Kirim Poster & Bebas Follow Sosmed).
+                </p>
+              </div>
+            </div>
+            <a
+              href={fastTrackPayUrl}
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+            >
+              Bayar Sekarang (Rp 15.000) <ArrowRight size={16} />
+            </a>
           </div>
         )}
 
