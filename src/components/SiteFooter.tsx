@@ -114,31 +114,48 @@ export function SiteFooter() {
 
         {/* Program */}
         <div className="md:col-span-2">
-          <h4 className="text-sm font-semibold text-foreground">Program</h4>
+          <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">Jalur Beasiswa</h4>
           <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
             <li>
-              <Link to="/beasiswa-prestasi" className="hover:text-primary transition">
-                Beasiswa Prestasi
+              <Link to="/beasiswa-prestasi" className="hover:text-primary transition flex items-center gap-2">
+                <span className="h-1 w-1 rounded-full bg-primary" /> Beasiswa Prestasi
               </Link>
             </li>
             <li>
-              <Link to="/beasiswa-ekonomi" className="hover:text-primary transition">
-                Beasiswa Ekonomi
+              <Link to="/beasiswa-ekonomi" className="hover:text-primary transition flex items-center gap-2">
+                <span className="h-1 w-1 rounded-full bg-primary" /> Beasiswa Ekonomi
               </Link>
             </li>
             <li>
-              <Link to="/berkas/prestasi" className="hover:text-primary transition">
-                Pengiriman Berkas
+              <Link to="/beasiswa-umum" className="hover:text-primary transition flex items-center gap-2">
+                <span className="h-1 w-1 rounded-full bg-primary" /> Beasiswa Umum
               </Link>
             </li>
             <li>
-              <Link to="/cek-status" className="hover:text-primary transition">
-                Cek Status Pendaftaran
+              <Link to="/beasiswa-yatim" className="hover:text-primary transition flex items-center gap-2">
+                <span className="h-1 w-1 rounded-full bg-primary" /> Beasiswa Yatim
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Layanan */}
+        <div className="md:col-span-2">
+          <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">Layanan</h4>
+          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+            <li>
+              <Link to="/cek-status" className="hover:text-primary transition flex items-center gap-2">
+                <span className="h-1 w-1 rounded-full bg-primary" /> Cek Status
               </Link>
             </li>
             <li>
-              <Link to="/bagikan-poster/prestasi" className="hover:text-primary transition">
-                Bagikan Poster
+              <Link to="/berkas/prestasi" className="hover:text-primary transition flex items-center gap-2">
+                <span className="h-1 w-1 rounded-full bg-primary" /> Kirim Berkas
+              </Link>
+            </li>
+            <li>
+              <Link to="/bagikan-poster/prestasi" className="hover:text-primary transition flex items-center gap-2">
+                <span className="h-1 w-1 rounded-full bg-primary" /> Bagikan Poster
               </Link>
             </li>
           </ul>
