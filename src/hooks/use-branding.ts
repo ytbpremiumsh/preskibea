@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import defaultLogo from "@/assets/logo-prestasi-kita.png";
+import logoAsset from "@/assets/logo-prestasi-kita-atskolla.png.asset.json";
+
+const defaultLogo = logoAsset.url;
 
 
 
