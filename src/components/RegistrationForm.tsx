@@ -362,7 +362,8 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
         toast.info("Mengarahkan ke pembayaran...");
         
         // Use a direct window.location assignment for the most reliable external redirect
-        window.location.href = mayarLink;
+        // and ensure it happens immediately without a large delay
+        window.location.assign(mayarLink);
         return;
       }
 
