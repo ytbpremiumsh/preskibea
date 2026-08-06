@@ -205,26 +205,10 @@ function LoginPage() {
                   {mode === "signin" ? "Masuk ke Dashboard" : "Daftar Akun"}
                 </Button>
 
-                <div className="relative py-1">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border/60" />
-                  </div>
-                  <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
-                    <span className="bg-card px-3 text-muted-foreground">atau</span>
-                  </div>
-                </div>
+                <p className="text-center text-xs text-muted-foreground">
+                  Akses dashboard terbatas untuk satu akun admin resmi.
+                </p>
 
-                <div className="text-center text-sm text-muted-foreground">
-                  {mode === "signin" ? (
-                    <button type="button" onClick={() => setMode("signup")} className="font-medium text-primary hover:underline">
-                      Belum punya akun? Daftar di sini
-                    </button>
-                  ) : (
-                    <button type="button" onClick={() => setMode("signin")} className="font-medium text-primary hover:underline">
-                      Sudah punya akun? Masuk
-                    </button>
-                  )}
-                </div>
               </form>
             ) : (
               <form onSubmit={verifyMfa} className="space-y-5">
