@@ -355,6 +355,18 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       }
 
       toast.success("Pendaftaran berhasil dikirim!");
+      
+      // If fast track, redirect to Mayar payment immediately
+      if (registrationType === "fast_track" && mayarLink) {
+        toast.info("Mengarahkan ke pembayaran...");
+        setTimeout(() => {
+          if (typeof window !== "undefined") {
+            window.location.href = mayarLink;
+          }
+        }, 1500);
+        return;
+      }
+
       setValues({});
       setFiles({});
       
@@ -371,7 +383,6 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
         });
       } catch (navErr) {
         console.error("navigate error", navErr);
-        // Fallback hard navigation if router rejects
         if (typeof window !== "undefined") {
           const params = new URLSearchParams({
             name: String(payload.full_name ?? ""),

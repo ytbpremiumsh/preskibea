@@ -51,6 +51,30 @@ serve(async (req) => {
            .eq("id", reg.id);
          
          console.log(`Registration ${reg.token} marked as paid.`);
+
+         // Fire-and-forget success notification via WhatsApp
+         try {
+           const { data: regDetail } = await supabaseAdmin
+             .from("registrations")
+             .select("full_name, email, whatsapp, kind")
+             .eq("id", reg.id)
+             .single();
+
+           if (regDetail) {
+             await supabaseAdmin.functions.invoke("send-whatsapp", {
+               body: {
+                 type: "pendaftaran_sukses", // Template for successful payment
+                 full_name: regDetail.full_name,
+                 email: regDetail.email,
+                 whatsapp: regDetail.whatsapp,
+                 kind: regDetail.kind,
+                 token: reg.token,
+               },
+             });
+           }
+         } catch (err) {
+           console.error("Failed to send WA success notification:", err.message);
+         }
        }
     }
 
