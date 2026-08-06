@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Loader2, Plus, Pencil, Trash2, X, Save, Eye, FileText } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, X, Save, Eye, FileText, Sparkles } from "lucide-react";
+import { generateAiArticle } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/artikel")({
   head: () => ({ meta: [{ title: "Admin — Artikel" }, { name: "robots", content: "noindex,nofollow" }] }),
@@ -50,6 +51,8 @@ function AdminArtikelPage() {
   const [editing, setEditing] = useState<Partial<Article> | null>(null);
   const [saving, setSaving] = useState(false);
   const [filterCat, setFilterCat] = useState<string>("Semua");
+  const [generating, setGenerating] = useState(false);
+  const [aiTopic, setAiTopic] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -94,6 +97,33 @@ function AdminArtikelPage() {
     toast.success("Artikel disimpan");
     setEditing(null);
     load();
+  };
+
+  const generateWithAi = async () => {
+    if (!aiTopic.trim()) return toast.error("Masukkan topik artikel");
+    setGenerating(true);
+    try {
+      const res = await generateAiArticle({ 
+        topic: aiTopic.trim(), 
+        category: editing?.category || "Tips Beasiswa",
+        tone: "informal",
+        language: "id"
+      });
+      setEditing({
+        ...editing,
+        title: res.title,
+        excerpt: res.excerpt,
+        content: res.content,
+        category: res.category || editing?.category || "Tips Beasiswa",
+        slug: slugify(res.title)
+      });
+      setAiTopic("");
+      toast.success("Artikel berhasil dibuat oleh AI");
+    } catch (err) {
+      toast.error("Gagal membuat artikel: " + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const remove = async (id: string) => {
@@ -183,6 +213,34 @@ function AdminArtikelPage() {
             </div>
 
             <div className="mt-4 space-y-3">
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 mb-4">
+                <label className="text-xs font-bold text-primary flex items-center gap-1.5 mb-2">
+                  <Sparkles className="h-3 w-3" /> Buat Konten dengan AI
+                </label>
+                <div className="flex gap-2">
+                  <Input 
+                    placeholder="Contoh: Tips lolos seleksi berkas beasiswa Batch 8..." 
+                    value={aiTopic}
+                    onChange={(e) => setAiTopic(e.target.value)}
+                    disabled={generating}
+                    className="bg-background"
+                  />
+                  <Button 
+                    type="button" 
+                    variant="default"
+                    onClick={generateWithAi} 
+                    disabled={generating || !aiTopic.trim()}
+                    className="gap-2 shrink-0"
+                  >
+                    {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                    Generate
+                  </Button>
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-2">
+                  AI akan membuat artikel SEO friendly dengan gaya bahasa manusia. Pastikan LOVABLE_API_KEY terkonfigurasi.
+                </p>
+              </div>
+
               <Field label="Judul">
                 <Input
                   value={editing.title ?? ""}
