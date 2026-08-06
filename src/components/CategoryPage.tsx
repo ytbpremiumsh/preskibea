@@ -16,7 +16,7 @@ const persyaratan = [
 
 
 const BENEFIT_IMAGE_URL =
-  "https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/1778936443603-Benefit-Kejar-Prestasi--3.png";
+  "https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/1778937083074-Benefit-Prestasi-Kita.png";
 
 const benefitList = [
   { strong: "Dana Pendidikan Beasiswa", rest: "" },
