@@ -231,7 +231,14 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
           : "Beasiswa Yatim";
   const title = `Pendaftaran ${kindLabel}`;
 
-  const setVal = (name: string, v: string) => setValues((s) => ({ ...s, [name]: v }));
+  const setVal = (name: string, v: string) => {
+    setValues((s) => ({ ...s, [name]: v }));
+    if (name === "orphan_status" && kind === "yatim") {
+      if (!["Yatim", "Yatim & Piatu"].includes(v)) {
+        toast.error("Beasiswa Yatim hanya tersedia untuk status Yatim atau Yatim & Piatu");
+      }
+    }
+  };
   const setFile = (name: string, f: File | null) => setFiles((s) => ({ ...s, [name]: f }));
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -270,6 +277,8 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
         if (f.type !== "file") continue;
         const file = files[f.name];
         if (!file) continue;
+        
+        toast.info(`Mengunggah ${f.label}...`, { duration: 2000 });
         fileUrls[f.name] = await uploadFile(file, `${kind}/${f.name}`);
       }
 
@@ -367,12 +376,18 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
           console.log("Redirecting to Mayar:", finalRedirectUrl);
           toast.info("Mengarahkan ke pembayaran...");
           
-          try {
-            window.location.assign(finalRedirectUrl);
-          } catch (e) {
-            console.error("Redirect error", e);
-            window.location.href = finalRedirectUrl;
-          }
+          setTimeout(() => {
+            try {
+              window.location.assign(finalRedirectUrl);
+            } catch (e) {
+              console.error("Redirect error", e);
+              window.location.href = finalRedirectUrl;
+            }
+          }, 1000);
+          return;
+        } else {
+          toast.error("Gagal membuat link pembayaran. Silakan hubungi admin.");
+          setSubmitting(false);
           return;
         }
       }
