@@ -26,7 +26,7 @@ export function SiteFooter() {
           <div className="text-primary-foreground">
             <h3 className="text-lg md:text-xl font-bold">Siap meraih beasiswamu?</h3>
             <p className="text-sm opacity-90 mt-1">
-              Daftar sekarang — gratis, transparan, dan terbuka untuk pelajar &amp; mahasiswa seluruh Indonesia.
+              Daftar sekarang — Terbuka untuk pelajar &amp; mahasiswa seluruh Indonesia.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
