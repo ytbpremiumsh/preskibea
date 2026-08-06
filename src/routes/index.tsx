@@ -64,7 +64,7 @@ function Index() {
               jalur Prestasi, Ekonomi, Umum, dan Yatim, tanpa minimal nilai, tanpa biaya pendaftaran.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="hidden sm:flex flex-col sm:flex-row gap-3">
               <Link
                 to="/daftar"
                 className="btn-block group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground"
@@ -80,7 +80,7 @@ function Index() {
               </Link>
             </div>
 
-            <p className="text-xs text-muted-foreground">
+            <p className="hidden sm:block text-xs text-muted-foreground">
               Gratis 100% · tanpa pungutan biaya · seleksi transparan
             </p>
 
@@ -92,6 +92,19 @@ function Index() {
                   {j}
                 </span>
               ))}
+            </div>
+
+            <div className="sm:hidden flex flex-col gap-3">
+              <Link
+                to="/daftar"
+                className="btn-block group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground"
+              >
+                Daftar sekarang
+                <ArrowRight size={16} className="transition group-hover:translate-x-0.5" />
+              </Link>
+              <p className="text-center text-[10px] text-muted-foreground">
+                Gratis 100% · tanpa pungutan biaya
+              </p>
             </div>
           </div>
 
