@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
 
     if (tokenRaw) {
       // Validate token format softly: prefix + 6 chars
-      const validFmt = /^KP-(PRE|EKO)-[A-Z0-9]{4,10}$/.test(tokenRaw);
+      const validFmt = /^(PK|KP)-(PRE|EKO|UMU|YAT)-[A-Z0-9]{4,10}$/.test(tokenRaw);
       if (!validFmt) {
         return new Response(JSON.stringify({ ok: false, error: "invalid_token_format" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
