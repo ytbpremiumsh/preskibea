@@ -381,6 +381,8 @@ export type Database = {
           kind: Database["public"]["Enums"]["scholarship_kind"]
           main_achievement: string | null
           parent_income: string | null
+          payment_status: string | null
+          payment_url: string | null
           photo_url: string | null
           school_name: string
           status: Database["public"]["Enums"]["registration_status"]
@@ -408,6 +410,8 @@ export type Database = {
           kind: Database["public"]["Enums"]["scholarship_kind"]
           main_achievement?: string | null
           parent_income?: string | null
+          payment_status?: string | null
+          payment_url?: string | null
           photo_url?: string | null
           school_name: string
           status?: Database["public"]["Enums"]["registration_status"]
@@ -435,6 +439,8 @@ export type Database = {
           kind?: Database["public"]["Enums"]["scholarship_kind"]
           main_achievement?: string | null
           parent_income?: string | null
+          payment_status?: string | null
+          payment_url?: string | null
           photo_url?: string | null
           school_name?: string
           status?: Database["public"]["Enums"]["registration_status"]
