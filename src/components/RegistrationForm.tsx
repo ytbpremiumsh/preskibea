@@ -308,7 +308,9 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       }
       payload.extra = extra;
 
-      const { token } = await submitRegistrationFn({ data: payload as never });
+      console.log("Submitting registration payload:", payload);
+      const { token } = await submitRegistrationFn({ data: payload as any });
+      console.log("Registration submitted, token:", token);
 
       // Fire-and-forget WA notification (include token)
       try {
@@ -358,12 +360,17 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       
       // If fast track, redirect to Mayar payment immediately
       if (registrationType === "fast_track" && mayarLink) {
+        console.log("Redirecting to Mayar:", mayarLink);
         toast.info("Mengarahkan ke pembayaran...");
-        setTimeout(() => {
-          if (typeof window !== "undefined") {
-            window.location.href = mayarLink;
-          }
-        }, 1500);
+        
+        // Force the redirect to happen as fast as possible
+        // and bypass any possible React lifecycle interruptions
+        try {
+          window.location.assign(mayarLink);
+        } catch (e) {
+          console.error("Redirect error", e);
+          window.location.href = mayarLink;
+        }
         return;
       }
 
