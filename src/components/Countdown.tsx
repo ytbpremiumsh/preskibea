@@ -37,13 +37,28 @@ export function Countdown() {
     if (!data?.deadline) return;
     const target = new Date(data.deadline);
     if (isNaN(target.getTime())) return;
-    const tick = () => setT(diff(target));
+
+    // Only show countdown if we are within 20 days of the deadline
+    const now = new Date().getTime();
+    const diffMs = target.getTime() - now;
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+    if (diffDays > 20) {
+      setT((prev) => ({ ...prev, done: false, hidden: true }));
+      return;
+    }
+
+    const tick = () => {
+      const currentDiff = diff(target);
+      setT({ ...currentDiff, hidden: false } as any);
+    };
+    
     tick();
     const i = setInterval(tick, 1000);
     return () => clearInterval(i);
   }, [data?.deadline]);
 
-  if (!data) return null;
+  if (!data || (t as any).hidden) return null;
 
   const items = [
     { label: "Hari", value: t.d },
