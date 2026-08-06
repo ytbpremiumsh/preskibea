@@ -106,7 +106,7 @@ export function SiteFooter() {
               <Youtube size={16} />
             </a>
             <a
-              href="https://wa.me/6287878344426"
+              href="https://wa.me/6281280010302"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"
@@ -188,14 +188,14 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
             <li className="flex items-start gap-3">
               <Phone size={16} className="mt-0.5 text-primary shrink-0" />
-              <a href="tel:+6287878344426" className="hover:text-primary transition">
-                0878-7834-4426
+              <a href="tel:+6281280010302" className="hover:text-primary transition">
+                0812-8001-0302
               </a>
             </li>
             <li className="flex items-start gap-3">
               <Mail size={16} className="mt-0.5 text-primary shrink-0" />
-              <a href="mailto:halo@kejarprestasi.id" className="hover:text-primary transition">
-                halo@kejarprestasi.id
+              <a href="mailto:halo@prestasikita.com" className="hover:text-primary transition">
+                halo@prestasikita.com
               </a>
             </li>
             <li className="flex items-start gap-3">
