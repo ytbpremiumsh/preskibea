@@ -48,7 +48,7 @@ Web publik:  /www/wwwroot/prestasikita.com  (webroot Nginx / aaPanel)
             </ul>
           </Step>
 
-          <Step n={2} title="Clone Repository ke /var/www/kejarprestasi">
+          <Step n={2} title="Clone Repository ke /var/www/prestasikita">
             <CodeBlock
               code={`sudo mkdir -p /var/www
 cd /var/www
@@ -72,7 +72,7 @@ VITE_SUPABASE_PROJECT_ID=xxxxx`}
 
           <Step n={4} title="Install Dependency & Build">
             <CodeBlock
-              code={`cd /var/www/kejarprestasi
+              code={`cd /var/www/prestasikita
 npm install --legacy-peer-deps
 npm run build`}
             />
@@ -83,9 +83,9 @@ npm run build`}
 
           <Step n={5} title="Publikasikan ke Webroot Nginx / aaPanel">
             <CodeBlock
-              code={`rm -rf /www/wwwroot/kejarprestasi.id/*
-cp -r dist/* /www/wwwroot/kejarprestasi.id/
-chown -R www:www /www/wwwroot/kejarprestasi.id
+              code={`rm -rf /www/wwwroot/prestasikita.com/*
+cp -r dist/* /www/wwwroot/prestasikita.com/
+chown -R www:www /www/wwwroot/prestasikita.com
 nginx -s reload`}
             />
             <p className="text-xs text-muted-foreground">
@@ -113,7 +113,7 @@ location ~* \\.(?:css|js|woff2?|ttf|otf|eot|ico|svg|png|jpg|jpeg|gif|webp|avif)$
 }`}
             />
             <p className="text-xs text-muted-foreground">
-              Simpan, lalu jalankan <code className="rounded bg-muted px-1">nginx -t &amp;&amp; nginx -s reload</code>.
+              Simpan, lalu jalankan <code className="rounded bg-muted px-1">nginx -t && nginx -s reload</code>.
             </p>
           </Step>
 
@@ -237,7 +237,7 @@ nginx -s reload`}
               <tr>
                 <td className="py-2 pr-4">Perubahan tidak muncul</td>
                 <td className="py-2 pr-4">Nginx cache / browser cache</td>
-                <td className="py-2"><code>nginx -s reload</code> &amp; clear cache aaPanel</td>
+                <td className="py-2"><code>nginx -s reload</code> & clear cache aaPanel</td>
               </tr>
             </tbody>
           </table>
