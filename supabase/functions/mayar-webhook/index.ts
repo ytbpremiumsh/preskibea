@@ -74,7 +74,7 @@ serve(async (req) => {
             }
 
             // Also send email confirmation on successful payment
-            await supabaseAdmin.functions.invoke("send-email", {
+            await supabaseAdmin.functions.invoke("notify-user", {
               body: {
                 type: "registration",
                 full_name: regDetail.full_name,
@@ -84,6 +84,7 @@ serve(async (req) => {
                 status: "approved"
               },
             });
+
           } catch (err) {
            console.error("Failed to send WA success notification:", err.message);
          }

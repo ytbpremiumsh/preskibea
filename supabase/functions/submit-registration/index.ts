@@ -220,7 +220,7 @@ serve(async (req) => {
 
     // Trigger email notification
     try {
-      await supabaseAdmin.functions.invoke("send-email", {
+      await supabaseAdmin.functions.invoke("notify-user", {
         body: {
           type: "registration",
           full_name: data.full_name,
@@ -233,6 +233,7 @@ serve(async (req) => {
     } catch (emailErr) {
       console.error("Failed to trigger registration email:", emailErr.message);
     }
+
 
     return new Response(
       JSON.stringify({ 
