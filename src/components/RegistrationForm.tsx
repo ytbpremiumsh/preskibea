@@ -495,7 +495,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
               <button
                 type="button"
                 onClick={() => setRegistrationType("reguler")}
-                className={`flex flex-col items-start p-4 rounded-2xl border-2 transition-all text-left ${
+                className={`flex flex-col items-start p-5 rounded-2xl border-2 transition-all text-left ${
                   registrationType === "reguler"
                     ? "border-primary bg-primary-soft/30 shadow-card"
                     : "border-border bg-card hover:border-primary/50"
@@ -505,32 +505,47 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
                   <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${registrationType === "reguler" ? "border-primary" : "border-muted-foreground"}`}>
                     {registrationType === "reguler" && <span className="h-2 w-2 rounded-full bg-primary" />}
                   </span>
-                  Jalur Reguler
+                  Reguler
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Pendaftaran standar dengan persyaratan lengkap (Kirim Poster, Follow IG & TikTok).
-                </p>
+                <ul className="mt-3 space-y-1.5 text-[11px] text-muted-foreground">
+                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-primary" /> Wajib Follow IG & TikTok</li>
+                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-primary" /> Wajib Share Poster</li>
+                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-primary" /> Seleksi Berkas Standar</li>
+                </ul>
+                <div className="mt-4 pt-3 border-t border-border w-full flex justify-between items-center">
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase">Biaya</span>
+                  <span className="text-sm font-bold text-primary">GRATIS</span>
+                </div>
               </button>
 
               <button
                 type="button"
                 onClick={() => setRegistrationType("fast_track")}
-                className={`flex flex-col items-start p-4 rounded-2xl border-2 transition-all text-left ${
+                className={`flex flex-col items-start p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden ${
                   registrationType === "fast_track"
-                    ? "border-primary bg-primary-soft/30 shadow-card"
-                    : "border-border bg-card hover:border-primary/50"
+                    ? "border-[var(--gold)] bg-[var(--gold)]/5 shadow-card"
+                    : "border-border bg-card hover:border-[var(--gold)]/50"
                 }`}
               >
-                <div className="flex items-center gap-2 font-bold text-foreground">
-                  <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${registrationType === "fast_track" ? "border-primary" : "border-muted-foreground"}`}>
-                    {registrationType === "fast_track" && <span className="h-2 w-2 rounded-full bg-primary" />}
-                  </span>
-                  Jalur Fast Track
+                <div className="absolute top-0 right-0 bg-[var(--gold)] text-gold-foreground text-[9px] font-bold px-2 py-0.5 rounded-bl-lg uppercase tracking-tighter">
+                  Prioritas
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Lolos otomatis tahap Kirim Poster dan tanpa syarat Follow media sosial. 
-                  <span className="block mt-1 font-bold text-primary">Biaya: Rp 15.000</span>
-                </p>
+                <div className="flex items-center gap-2 font-bold text-foreground">
+                  <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${registrationType === "fast_track" ? "border-[var(--gold)]" : "border-muted-foreground"}`}>
+                    {registrationType === "fast_track" && <span className="h-2 w-2 rounded-full bg-[var(--gold)]" />}
+                  </span>
+                  Fast Track
+                </div>
+                <ul className="mt-3 space-y-1.5 text-[11px] text-muted-foreground">
+                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-[var(--gold)]" /> Tanpa Follow Media Sosial</li>
+                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-[var(--gold)]" /> Tanpa Share Poster</li>
+                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-[var(--gold)]" /> E-Certificate Batch #8</li>
+                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-[var(--gold)]" /> Akses Webinar Eksklusif</li>
+                </ul>
+                <div className="mt-4 pt-3 border-t border-border w-full flex justify-between items-center">
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase">Donasi</span>
+                  <span className="text-sm font-bold text-[var(--gold)]">Rp15.000</span>
+                </div>
               </button>
             </div>
           </Card>
