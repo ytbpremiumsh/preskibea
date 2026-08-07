@@ -47,14 +47,18 @@ function escapeHtml(s: string) {
 function kindLabel(k?: string) {
   return k === "prestasi"
     ? "Beasiswa Prestasi"
-    : k === "ekonomi"
-      ? "Beasiswa Ekonomi"
-      : "Beasiswa";
+      : k === "ekonomi"
+        ? "Beasiswa Ekonomi"
+        : k === "umum"
+          ? "Beasiswa Umum"
+          : k === "yatim"
+            ? "Beasiswa Yatim"
+            : "Beasiswa";
 }
 
 function buildPlaceholders(props: Record<string, unknown>) {
   return {
-    full_name: String((props.fullName ?? props.full_name ?? "") as string),
+    full_name: String((props.fullName ?? props.full_name ?? props.name ?? "") as string),
     token: String((props.token ?? "") as string),
     kind: String((props.kind ?? "") as string),
     kind_label: kindLabel(props.kind as string | undefined),

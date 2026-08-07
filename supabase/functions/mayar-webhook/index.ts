@@ -25,21 +25,29 @@ serve(async (req) => {
     // Ideally, we include the registration token in the Mayar payment URL as a query param
     // that Mayar returns in the webhook payload.
     
-    const email = body?.customer?.email || body?.email;
-    const status = body?.status; // e.g., 'paid' or 'success'
-    const mobile = body?.customer?.mobile || body?.mobile;
+    const email = (body?.customer?.email || body?.email || body?.data?.customer?.email || body?.data?.email)?.trim();
+    const status = body?.status || body?.data?.status; 
+    const mobile = body?.customer?.mobile || body?.mobile || body?.data?.customer?.mobile;
+    const tokenFromExtra = body?.extraData?.noCustomer || body?.data?.extraData?.noCustomer;
 
-    if (status === "success" || status === "paid" || body?.event === "payment.success") {
-       // Search for the latest pending fast_track registration with this email
-       const { data: reg } = await supabaseAdmin
+    if (status === "success" || status === "paid" || body?.event === "payment.success" || body?.data?.event === "payment.success") {
+       // Search for the latest pending fast_track registration
+       let q = supabaseAdmin
          .from("registrations")
-         .select("id, token")
-         .eq("email", email)
+         .select("id, token, full_name, email, whatsapp, kind")
          .eq("fast_track", true)
          .eq("payment_status", "pending")
-         .order("created_at", { ascending: false })
-         .limit(1)
-         .maybeSingle();
+         .order("created_at", { ascending: false });
+
+       if (tokenFromExtra) {
+         q = q.eq("token", tokenFromExtra);
+       } else if (email) {
+         q = q.eq("email", email);
+       } else {
+         throw new Error("Missing email or token in webhook payload");
+       }
+
+       const { data: reg } = await q.limit(1).maybeSingle();
 
        if (reg) {
          await supabaseAdmin
@@ -52,13 +60,8 @@ serve(async (req) => {
          
          console.log(`Registration ${reg.token} marked as paid.`);
 
-         // Fire-and-forget success notification via WhatsApp
-         try {
-           const { data: regDetail } = await supabaseAdmin
-             .from("registrations")
-             .select("full_name, email, whatsapp, kind")
-             .eq("id", reg.id)
-             .single();
+          try {
+            const regDetail = reg; // Already selected in the updated query above
 
            if (regDetail) {
              await supabaseAdmin.functions.invoke("send-whatsapp", {
