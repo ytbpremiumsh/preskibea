@@ -35,8 +35,8 @@ const TABS: { key: string; settingKey: string; label: string; templateName: "reg
 const PLACEHOLDERS = [
   { k: "full_name", desc: "Nama pendaftar" },
   { k: "token", desc: "Kode pendaftar" },
-  { k: "kind", desc: "prestasi / ekonomi" },
-  { k: "kind_label", desc: "Beasiswa Prestasi / Ekonomi" },
+  { k: "kind", desc: "prestasi / ekonomi / umum / yatim" },
+  { k: "kind_label", desc: "Beasiswa Prestasi / Ekonomi / Umum / Yatim" },
   { k: "whatsapp", desc: "Nomor WA" },
   { k: "count", desc: "Jumlah berkas" },
   { k: "year", desc: "Tahun saat ini" },
