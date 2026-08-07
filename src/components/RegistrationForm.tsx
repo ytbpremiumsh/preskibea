@@ -301,7 +301,6 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
         "birth_place",
         "birth_date",
         "gender",
-        "address",
         "whatsapp",
         "email",
         "education_level",
@@ -310,6 +309,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       ]) {
         if (payload[k] == null) payload[k] = "";
       }
+      if (payload.address == null) payload.address = "-";
       payload.extra = extra;
 
       console.log("Submitting registration payload:", payload);
