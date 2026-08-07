@@ -60,8 +60,8 @@ function buildPlaceholders(props: Record<string, unknown>) {
     kind_label: kindLabel(props.kind as string | undefined),
     whatsapp: String((props.whatsapp ?? "") as string),
     count: String((props.count ?? "") as string | number),
+    site_name: String((props.site_name ?? "Prestasi Kita") as string),
     year: String(new Date().getFullYear()),
-    site_name: "Prestasi Kita",
   };
 }
 
