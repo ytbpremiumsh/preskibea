@@ -10,7 +10,7 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
 
   try {
-    const { type, full_name, email, token, kind, status } = await req.json()
+    const { type, full_name, email, token, kind, status, whatsapp, count } = await req.json()
 
     if (!email || !token) {
       throw new Error("Missing required fields: email and token")
@@ -18,21 +18,38 @@ serve(async (req) => {
 
     console.log(`Attempting to send ${type} email to ${email} for ${full_name}`);
 
-    const result = await sendTemplateEmail(type, email, {
-      templateData: {
-        full_name,
-        token,
-        kind,
-        status,
-        siteName: "Prestasi Kita"
+    // Mapping type to the customizable setting key used by send-app-email
+    const typeMap: Record<string, string> = {
+      "registration": "registration-confirmation",
+      "berkas": "berkas-confirmation"
+    };
+
+    const templateName = typeMap[type] || type;
+
+    const result = await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-app-email`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+        "Content-Type": "application/json",
       },
-      idempotencyKey: `reg-${token}-${Date.now()}`
-    })
+      body: JSON.stringify({
+        templateName,
+        recipientEmail: email,
+        templateData: {
+          full_name,
+          token,
+          kind,
+          status,
+          whatsapp,
+          count,
+        },
+      }),
+    });
 
-    console.log(`Email result for ${token}:`, result);
+    const resJson = await result.json();
 
-    return new Response(JSON.stringify(result), {
-      status: 200,
+    return new Response(JSON.stringify(resJson), {
+      status: result.status,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
