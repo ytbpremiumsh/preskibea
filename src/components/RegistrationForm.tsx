@@ -30,7 +30,6 @@ const BASE_FIELDS: FormField[] = [
   }),
   f("school_name", "Nama Sekolah / Kampus", "text", { required: true }),
   f("grade", "Kelas / Semester", "text", { required: true }),
-  f("address", "Alamat Lengkap", "textarea", { required: true }),
 ];
 
 const FALLBACK: Record<"prestasi" | "ekonomi" | "umum" | "yatim", FormSchema> = {
@@ -51,10 +50,7 @@ const FALLBACK: Record<"prestasi" | "ekonomi" | "umum" | "yatim", FormSchema> = 
     ],
   },
   umum: {
-    fields: [
-      ...BASE_FIELDS,
-      f("motivation", "Alasan Mengikuti Beasiswa", "textarea", { required: true }),
-    ],
+    fields: [...BASE_FIELDS],
   },
   yatim: {
     fields: [
@@ -65,7 +61,6 @@ const FALLBACK: Record<"prestasi" | "ekonomi" | "umum" | "yatim", FormSchema> = 
       }),
       f("guardian_name", "Nama Wali / Pengasuh", "text", { required: true }),
       f("guardian_relation", "Hubungan dengan Wali", "text", { required: true }),
-      f("dependents", "Jumlah Tanggungan Keluarga", "number", { required: false }),
     ],
   },
 };
