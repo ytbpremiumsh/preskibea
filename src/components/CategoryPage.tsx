@@ -116,8 +116,8 @@ export function CategoryPage({
               <CheckCircle2 size={16} /> Tips Persiapan
             </div>
             <p className="mt-2 text-sm leading-relaxed opacity-95">
-              Siapkan dokumen pendukung seperti rapor/transkrip, Kartu Pelajar / Kartu Mahasiswa, dan
-              bukti prestasi atau kondisi ekonomi sebelum mengisi formulir agar prosesnya lebih cepat.
+              Siapkan dokumen pendukung seperti {kind === 'ekonomi' ? 'SKTM, Bukti Penghasilan,' : kind === 'prestasi' ? 'Sertifikat Prestasi, CV,' : 'Rapor/Transkrip,'} Kartu Pelajar / Kartu Mahasiswa, dan
+              Esai sesuai tema sebelum mengisi formulir agar prosesnya lebih cepat.
             </p>
           </div>
 
