@@ -16,6 +16,8 @@ serve(async (req) => {
       throw new Error("Missing required fields: email and token")
     }
 
+    console.log(`Attempting to send ${type} email to ${email} for ${full_name}`);
+
     const result = await sendTemplateEmail(type, email, {
       templateData: {
         full_name,
@@ -26,6 +28,8 @@ serve(async (req) => {
       },
       idempotencyKey: `reg-${token}-${Date.now()}`
     })
+
+    console.log(`Email result for ${token}:`, result);
 
     return new Response(JSON.stringify(result), {
       status: 200,
