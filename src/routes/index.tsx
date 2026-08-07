@@ -31,7 +31,6 @@ const stats = [
   { value: "Rp17jt", label: "Total beasiswa per semester" },
   { value: "4", label: "Jalur beasiswa tersedia" },
   { value: "3", label: "Jenjang pendidikan tercakup" },
-  { value: "Rp0", label: "Biaya pendaftaran" },
 ];
 
 const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Beasiswa Umum", "Beasiswa Yatim", "Tanpa Biaya", "Seluruh Indonesia", "Sertifikat Resmi", "Merchandise", "Akses Magang"];
