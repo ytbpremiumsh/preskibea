@@ -218,6 +218,22 @@ serve(async (req) => {
       }
     }
 
+    // Trigger email notification
+    try {
+      await supabaseAdmin.functions.invoke("send-email", {
+        body: {
+          type: "registration",
+          full_name: data.full_name,
+          email: data.email,
+          token,
+          kind: data.kind,
+          status: data.fast_track ? "pending" : "approved"
+        },
+      });
+    } catch (emailErr) {
+      console.error("Failed to trigger registration email:", emailErr.message);
+    }
+
     return new Response(
       JSON.stringify({ 
         token, 

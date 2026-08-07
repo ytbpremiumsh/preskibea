@@ -71,8 +71,20 @@ serve(async (req) => {
                  token: reg.token,
                },
              });
-           }
-         } catch (err) {
+            }
+
+            // Also send email confirmation on successful payment
+            await supabaseAdmin.functions.invoke("send-email", {
+              body: {
+                type: "registration",
+                full_name: regDetail.full_name,
+                email: regDetail.email,
+                token: reg.token,
+                kind: regDetail.kind,
+                status: "approved"
+              },
+            });
+          } catch (err) {
            console.error("Failed to send WA success notification:", err.message);
          }
        }
