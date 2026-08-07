@@ -102,6 +102,7 @@ export type SendTestEmailInput = {
 export async function sendTestEmail(args: { data: SendTestEmailInput }) {
   return invoke<{ ok: boolean; messageId?: string }>("send-app-email", {
     ...args.data,
+    idempotencyKey: `test-${args.data.templateName}-${Date.now()}`,
     _isTest: true,
   });
 }

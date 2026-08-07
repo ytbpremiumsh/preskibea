@@ -27,7 +27,7 @@ const CUSTOMIZABLE: Record<string, string> = {
 const Input = z.object({
   templateName: z.string().min(1).max(100),
   recipientEmail: z.string().email(),
-  idempotencyKey: z.string().min(1).max(200),
+  idempotencyKey: z.string().min(1).max(200).optional(),
   templateData: z.record(z.string(), z.any()).optional(),
   // Mode test (dari halaman admin Email Template)
   _isTest: z.boolean().optional(),
@@ -246,7 +246,7 @@ serve(async (req) => {
     const messageId = await enqueue({
       recipient,
       templateName: data.templateName,
-      idempotencyKey: data.idempotencyKey,
+      idempotencyKey: data.idempotencyKey ?? `test-${data.templateName}-${crypto.randomUUID()}`,
       subject,
       html,
       text,
