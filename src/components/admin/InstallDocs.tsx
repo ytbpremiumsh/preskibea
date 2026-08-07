@@ -120,7 +120,7 @@ export function UpdateSection() {
 
       <div className="space-y-4 text-sm">
         <CodeBlock
-          code={`cd /var/www/kejarprestasi
+          code={`cd /var/www/prestasikita
 
 git pull origin main
 
@@ -128,11 +128,11 @@ npm install --legacy-peer-deps
 
 npm run build
 
-rm -rf /www/wwwroot/kejarprestasi.id/*
+rm -rf /www/wwwroot/prestasikita.com/*
 
-cp -r dist/* /www/wwwroot/kejarprestasi.id/
+cp -r dist/* /www/wwwroot/prestasikita.com/
 
-chown -R www:www /www/wwwroot/kejarprestasi.id
+chown -R www:www /www/wwwroot/prestasikita.com
 
 nginx -s reload`}
         />
@@ -142,7 +142,7 @@ nginx -s reload`}
           <CodeBlock
             code={`sudo crontab -e
 # Tambahkan baris berikut:
-0 3 * * * cd /var/www/kejarprestasi && bash deploy.sh >> /var/log/kejarprestasi-update.log 2>&1`}
+0 3 * * * cd /var/www/prestasikita && bash deploy.sh >> /var/log/prestasikita-update.log 2>&1`}
           />
         </div>
       </div>

@@ -23,11 +23,11 @@ function VpsInstallPage() {
           <Layers className="h-5 w-5 text-primary" /> Alur Singkat
         </h2>
         <CodeBlock
-          code={`Source code: /var/www/kejarprestasi  (git clone)
-   └── npm run build  →  ./dist/
+          code={`Source code: /var/www/prestasikita  (git clone)
+    └── npm run build  →  ./dist/
 
-Web publik:  /www/wwwroot/kejarprestasi.id  (webroot Nginx / aaPanel)
-   └── isi: assets/, index.html, favicon.ico, dll.`}
+Web publik:  /www/wwwroot/prestasikita.com  (webroot Nginx / aaPanel)
+    └── isi: assets/, index.html, favicon.ico, dll.`}
         />
         <p className="mt-2 text-xs text-muted-foreground">
           Repository disimpan terpisah dari webroot. Hasil <code className="rounded bg-muted px-1">dist/</code>
@@ -43,17 +43,17 @@ Web publik:  /www/wwwroot/kejarprestasi.id  (webroot Nginx / aaPanel)
               <li>VPS Ubuntu 20.04+ / Debian 11+ dengan akses <strong>root / sudo</strong></li>
               <li>aaPanel terpasang (atau Nginx + Git manual)</li>
               <li>Node.js <strong>20+</strong> dan npm (install via aaPanel App Store atau NodeSource)</li>
-              <li>Domain <code className="rounded bg-muted px-1">kejarprestasi.id</code> sudah point ke IP VPS</li>
-              <li>Webroot site di aaPanel: <code className="rounded bg-muted px-1">/www/wwwroot/kejarprestasi.id</code></li>
+              <li>Domain <code className="rounded bg-muted px-1">prestasikita.com</code> sudah point ke IP VPS</li>
+              <li>Webroot site di aaPanel: <code className="rounded bg-muted px-1">/www/wwwroot/prestasikita.com</code></li>
             </ul>
           </Step>
 
-          <Step n={2} title="Clone Repository ke /var/www/kejarprestasi">
+          <Step n={2} title="Clone Repository ke /var/www/prestasikita">
             <CodeBlock
               code={`sudo mkdir -p /var/www
 cd /var/www
-sudo git clone -b main <REPO_URL> kejarprestasi
-cd /var/www/kejarprestasi`}
+sudo git clone -b main <REPO_URL> prestasikita
+cd /var/www/prestasikita`}
             />
             <p className="text-xs text-muted-foreground">
               Ganti <code className="rounded bg-muted px-1">&lt;REPO_URL&gt;</code> dengan URL GitHub project Anda.
@@ -61,7 +61,7 @@ cd /var/www/kejarprestasi`}
           </Step>
 
           <Step n={3} title="Isi File .env">
-            <CodeBlock code={`sudo nano /var/www/kejarprestasi/.env`} />
+            <CodeBlock code={`sudo nano /var/www/prestasikita/.env`} />
             <p>Minimum yang harus ada:</p>
             <CodeBlock
               code={`VITE_SUPABASE_URL=https://xxxxx.supabase.co
@@ -72,7 +72,7 @@ VITE_SUPABASE_PROJECT_ID=xxxxx`}
 
           <Step n={4} title="Install Dependency & Build">
             <CodeBlock
-              code={`cd /var/www/kejarprestasi
+              code={`cd /var/www/prestasikita
 npm install --legacy-peer-deps
 npm run build`}
             />
@@ -83,9 +83,9 @@ npm run build`}
 
           <Step n={5} title="Publikasikan ke Webroot Nginx / aaPanel">
             <CodeBlock
-              code={`rm -rf /www/wwwroot/kejarprestasi.id/*
-cp -r dist/* /www/wwwroot/kejarprestasi.id/
-chown -R www:www /www/wwwroot/kejarprestasi.id
+              code={`rm -rf /www/wwwroot/prestasikita.com/*
+cp -r dist/* /www/wwwroot/prestasikita.com/
+chown -R www:www /www/wwwroot/prestasikita.com
 nginx -s reload`}
             />
             <p className="text-xs text-muted-foreground">
@@ -97,7 +97,7 @@ nginx -s reload`}
           <Step n={6} title="Konfigurasi Nginx (SPA fallback)">
             <p>Di aaPanel: <em>Website → Settings → Config File</em>, tambahkan dalam blok <code>server</code>:</p>
             <CodeBlock
-              code={`root /www/wwwroot/kejarprestasi.id;
+              code={`root /www/wwwroot/prestasikita.com;
 index index.html;
 
 # SPA fallback untuk TanStack Router
@@ -113,7 +113,7 @@ location ~* \\.(?:css|js|woff2?|ttf|otf|eot|ico|svg|png|jpg|jpeg|gif|webp|avif)$
 }`}
             />
             <p className="text-xs text-muted-foreground">
-              Simpan, lalu jalankan <code className="rounded bg-muted px-1">nginx -t &amp;&amp; nginx -s reload</code>.
+              Simpan, lalu jalankan <code className="rounded bg-muted px-1">nginx -t && nginx -s reload</code>.
             </p>
           </Step>
 
@@ -122,21 +122,21 @@ location ~* \\.(?:css|js|woff2?|ttf|otf|eot|ico|svg|png|jpg|jpeg|gif|webp|avif)$
             <p>Atau manual via certbot:</p>
             <CodeBlock
               code={`sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d kejarprestasi.id -d www.kejarprestasi.id`}
+sudo certbot --nginx -d prestasikita.com -d www.prestasikita.com`}
             />
           </Step>
 
           <Step n={8} title="Verifikasi">
             <CodeBlock
               code={`# 1. Webroot terisi
-ls /www/wwwroot/kejarprestasi.id
+ls /www/wwwroot/prestasikita.com
 # → assets/  index.html  favicon.ico  ...
 
 # 2. Nginx OK
 nginx -t
 
 # 3. Site respond 200 OK
-curl -I https://kejarprestasi.id`}
+curl -I https://prestasikita.com`}
             />
             <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 text-xs text-foreground">
               <div className="flex gap-2">
@@ -144,7 +144,7 @@ curl -I https://kejarprestasi.id`}
                 <div>
                   <p className="font-medium">Hasil yang benar:</p>
                   <ul className="mt-1 list-disc space-y-0.5 pl-5 text-muted-foreground">
-                    <li><code>curl -I https://kejarprestasi.id</code> → <code>HTTP/2 200</code></li>
+                    <li><code>curl -I https://prestasikita.com</code> → <code>HTTP/2 200</code></li>
                     <li>Webroot berisi <code>assets/</code>, <code>index.html</code>, <code>favicon.ico</code></li>
                   </ul>
                 </div>
@@ -169,7 +169,7 @@ curl -I https://kejarprestasi.id`}
         </div>
 
         <CodeBlock
-          code={`cd /var/www/kejarprestasi
+          code={`cd /var/www/prestasikita
 
 git pull origin main
 
@@ -177,11 +177,11 @@ npm install --legacy-peer-deps
 
 npm run build
 
-rm -rf /www/wwwroot/kejarprestasi.id/*
+rm -rf /www/wwwroot/prestasikita.com/*
 
-cp -r dist/* /www/wwwroot/kejarprestasi.id/
+cp -r dist/* /www/wwwroot/prestasikita.com/
 
-chown -R www:www /www/wwwroot/kejarprestasi.id
+chown -R www:www /www/wwwroot/prestasikita.com
 
 nginx -s reload`}
         />
@@ -192,7 +192,7 @@ nginx -s reload`}
             <div>
               <p className="font-medium">Opsional — simpan jadi script <code>deploy.sh</code>:</p>
               <p className="mt-1 text-muted-foreground">
-                Buat file <code className="rounded bg-muted px-1">/var/www/kejarprestasi/deploy.sh</code>{" "}
+                Buat file <code className="rounded bg-muted px-1">/var/www/prestasikita/deploy.sh</code>{" "}
                 dengan isi perintah di atas, lalu chmod +x. Cukup jalankan{" "}
                 <code className="rounded bg-muted px-1">bash deploy.sh</code> setiap update.
               </p>
@@ -222,7 +222,7 @@ nginx -s reload`}
               <tr className="border-b">
                 <td className="py-2 pr-4">403 Forbidden</td>
                 <td className="py-2 pr-4">Permission webroot salah</td>
-                <td className="py-2"><code>chown -R www:www /www/wwwroot/kejarprestasi.id</code></td>
+                <td className="py-2"><code>chown -R www:www /www/wwwroot/prestasikita.com</code></td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4"><code>npm run build</code> gagal / OOM</td>
@@ -237,7 +237,7 @@ nginx -s reload`}
               <tr>
                 <td className="py-2 pr-4">Perubahan tidak muncul</td>
                 <td className="py-2 pr-4">Nginx cache / browser cache</td>
-                <td className="py-2"><code>nginx -s reload</code> &amp; clear cache aaPanel</td>
+                <td className="py-2"><code>nginx -s reload</code> & clear cache aaPanel</td>
               </tr>
             </tbody>
           </table>
