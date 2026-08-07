@@ -1,5 +1,5 @@
 // supabase/functions/submit-registration/index.ts
-// Insert registrasi pendaftar (sebelumnya TanStack server fn)
+// Insert registrasi pendaftar + Create Mayar Invoice for Fast Track
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { z } from "https://esm.sh/zod@3.23.8";
@@ -60,6 +60,14 @@ function generateToken(kind: "prestasi" | "ekonomi" | "umum" | "yatim") {
   return `${prefix}${Array.from(bytes, (b) => TOKEN_CHARS[b % TOKEN_CHARS.length]).join("")}`;
 }
 
+function normalizeNumber(raw: string): string {
+  let n = (raw || "").replace(/\D/g, "");
+  if (!n) return "";
+  if (n.startsWith("0")) n = "62" + n.slice(1);
+  else if (n.startsWith("8")) n = "62" + n;
+  return n;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
   if (req.method !== "POST")
@@ -77,8 +85,11 @@ serve(async (req) => {
     const data = parsed.data;
 
     let lastError: { code?: string; message?: string } | null = null;
+    let registrationId: string | null = null;
+    let token: string | null = null;
+
     for (let attempt = 0; attempt < 5; attempt += 1) {
-      const token = generateToken(data.kind);
+      token = generateToken(data.kind);
       const { data: inserted, error } = await supabaseAdmin
         .from("registrations")
         .insert({
@@ -105,14 +116,13 @@ serve(async (req) => {
           student_card_url: data.student_card_url ?? null,
           extra: data.extra,
         })
-        .select("token")
+        .select("id, token")
         .single();
 
       if (!error) {
-        return new Response(
-          JSON.stringify({ token: (inserted as { token?: string } | null)?.token ?? token }),
-          { status: 200, headers: { ...cors, "Content-Type": "application/json" } },
-        );
+        registrationId = inserted.id;
+        token = inserted.token;
+        break;
       }
       lastError = error;
       if (error.code !== "23505") {
@@ -122,10 +132,100 @@ serve(async (req) => {
         });
       }
     }
+
+    if (!registrationId || !token) {
+      return new Response(
+        JSON.stringify({ error: lastError?.message ?? "Gagal membuat kode pendaftar" }),
+        { status: 500, headers: { ...cors, "Content-Type": "application/json" } },
+      );
+    }
+
+    // IF FAST TRACK, create Mayar Invoice
+    let finalInvoiceUrl = data.payment_url || null;
+
+    if (data.fast_track) {
+      try {
+        const { data: mayarRow } = await supabaseAdmin
+          .from("site_settings")
+          .select("value")
+          .eq("key", "mayar_config")
+          .maybeSingle();
+        
+        const mayar = (mayarRow?.value ?? {}) as { api_key?: string };
+        
+        if (mayar.api_key) {
+          const expiredAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+          const description = `Pendaftaran Fast Track — ${data.full_name}`;
+          const amount = 15000;
+          
+          const origin = req.headers.get("origin") || req.headers.get("referer") || "";
+          const redirectUrl = origin 
+            ? `${origin.replace(/\/$/, "")}/pendaftaran/sukses?token=${token}&name=${encodeURIComponent(data.full_name)}&email=${encodeURIComponent(data.email)}&whatsapp=${encodeURIComponent(data.whatsapp)}&kind=${data.kind}`
+            : "https://prestasikita.com";
+
+          const mayarBody = {
+            name: data.full_name,
+            email: data.email,
+            mobile: normalizeNumber(data.whatsapp) || "62800000000",
+            redirectUrl,
+            description,
+            expiredAt,
+            items: [
+              {
+                quantity: 1,
+                rate: amount,
+                description: "Biaya Pendaftaran Jalur Fast Track Batch #8",
+              },
+            ],
+            extraData: {
+              noCustomer: token,
+              idProd: "FAST_TRACK_BATCH_8"
+            }
+          };
+
+          const mayarRes = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${mayar.api_key}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(mayarBody),
+          });
+
+          if (mayarRes.ok) {
+            const resJson = await mayarRes.json();
+            const link = resJson?.data?.link;
+            const invoiceId = resJson?.data?.id;
+            
+            if (link) {
+              finalInvoiceUrl = link;
+              // Update registration with invoice info
+              await supabaseAdmin
+                .from("registrations")
+                .update({ 
+                  payment_url: link,
+                  extra: { ...data.extra, mayar_invoice_id: invoiceId } 
+                })
+                .eq("id", registrationId);
+            }
+          } else {
+            const errJson = await mayarRes.json();
+            console.error("Mayar Invoice Error:", errJson);
+          }
+        }
+      } catch (invoiceErr) {
+        console.error("Failed to generate fast track invoice:", invoiceErr);
+      }
+    }
+
     return new Response(
-      JSON.stringify({ error: lastError?.message ?? "Gagal membuat kode pendaftar" }),
-      { status: 500, headers: { ...cors, "Content-Type": "application/json" } },
+      JSON.stringify({ 
+        token, 
+        invoice_url: finalInvoiceUrl 
+      }),
+      { status: 200, headers: { ...cors, "Content-Type": "application/json" } },
     );
+
   } catch (e) {
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 500,
