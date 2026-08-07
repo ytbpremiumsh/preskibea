@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json();
     const tokenRaw = typeof body?.token === "string" ? body.token.trim().toUpperCase() : "";
-    if (!/^KP-(PRE|EKO)-[A-Z0-9]{4,10}$/.test(tokenRaw)) {
+    if (!/^(PK|KP)-(PRE|EKO|UMU|YAT)-[A-Z0-9]{4,10}$/.test(tokenRaw)) {
       return new Response(JSON.stringify({ ok: false, error: "invalid_token_format" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
