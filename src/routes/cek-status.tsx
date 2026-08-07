@@ -99,7 +99,7 @@ function CekStatusPage() {
                   value={token}
                   onChange={(e) => { setToken(e.target.value.toUpperCase()); setError(null); }}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleCheck(); } }}
-                  placeholder="PK-PRE-XXXXXX atau PK-EKO-XXXXXX"
+                  placeholder="PK-PRE-XXXXXX, PK-EKO-XXXXXX, PK-UMU-XXXXXX, atau PK-YAT-XXXXXX"
                   maxLength={20}
                   className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm font-mono tracking-wider text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 />
