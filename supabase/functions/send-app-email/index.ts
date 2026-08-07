@@ -16,8 +16,8 @@ const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
-const SENDER_DOMAIN = "notify.mail.kejarprestasi.id";
-const FROM_EMAIL = "Prestasi Kita <noreply@notify.mail.kejarprestasi.id>";
+const SENDER_DOMAIN = "notify.prestasikita.com";
+const FROM_EMAIL = "Prestasi Kita <noreply@notify.prestasikita.com>";
 
 const CUSTOMIZABLE: Record<string, string> = {
   "registration-confirmation": "email_template_registration",
