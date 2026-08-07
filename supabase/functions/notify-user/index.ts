@@ -42,6 +42,7 @@ serve(async (req) => {
           status,
           whatsapp,
           count,
+          site_name: "Prestasi Kita",
         },
       }),
     });
