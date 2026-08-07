@@ -31,7 +31,6 @@ const stats = [
   { value: "Rp17jt", label: "Total beasiswa per semester" },
   { value: "4", label: "Jalur beasiswa tersedia" },
   { value: "3", label: "Jenjang pendidikan tercakup" },
-  { value: "Rp0", label: "Biaya pendaftaran" },
 ];
 
 const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Beasiswa Umum", "Beasiswa Yatim", "Tanpa Biaya", "Seluruh Indonesia", "Sertifikat Resmi", "Merchandise", "Akses Magang"];
@@ -147,7 +146,7 @@ function Index() {
 
         {/* STAT STRIP */}
         <div className="container-page pb-14">
-          <div className="card-block grid grid-cols-2 gap-4 px-6 py-7 md:grid-cols-4">
+          <div className="card-block grid grid-cols-1 sm:grid-cols-3 gap-4 px-6 py-7">
             {stats.map((s) => (
               <div key={s.label} className="text-center">
                 <div className="text-2xl md:text-3xl font-extrabold text-primary">{s.value}</div>
