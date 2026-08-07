@@ -146,7 +146,7 @@ function Index() {
 
         {/* STAT STRIP */}
         <div className="container-page pb-14">
-          <div className="card-block grid grid-cols-2 gap-4 px-6 py-7 md:grid-cols-4">
+          <div className="card-block grid grid-cols-1 sm:grid-cols-3 gap-4 px-6 py-7">
             {stats.map((s) => (
               <div key={s.label} className="text-center">
                 <div className="text-2xl md:text-3xl font-extrabold text-primary">{s.value}</div>
