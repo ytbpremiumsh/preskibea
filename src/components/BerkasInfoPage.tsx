@@ -8,7 +8,6 @@ const docsByKind = {
     "Kartu Pelajar / Kartu Mahasiswa",
     "Sertifikat Prestasi (Akademik maupun Non-Akademik)",
     "Rapor / KHS / Transkrip Nilai Terakhir",
-    "Sertifikat Organisasi/Kepanitiaan",
     "Curriculum Vitae (CV) Kreatif",
   ],
   ekonomi: [
@@ -23,7 +22,6 @@ const docsByKind = {
     "Rapor / KHS / Transkrip Nilai Terakhir (Minimal 1 Semester)",
     "Curriculum Vitae (CV) / Portofolio Singkat",
     "Video Motivasi Diri (Link Drive/YouTube) — Wajib",
-    "Sertifikat / Berkas Pendukung Lainnya (Organisasi/Keahlian) — opsional",
     
   ],
   yatim: [
@@ -31,7 +29,6 @@ const docsByKind = {
     "Surat Keterangan Yatim / Piatu / Yatim Piatu",
     "Akta Kematian Orang Tua",
     "Kartu Keluarga (KK)",
-    "Sertifikat Pendukung Lainnya — opsional",
   ],
 } as const;
 
