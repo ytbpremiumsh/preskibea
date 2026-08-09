@@ -543,7 +543,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
                   <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-[var(--gold)]" /> Akses Webinar Eksklusif</li>
                 </ul>
                 <div className="mt-4 pt-3 border-t border-border w-full flex justify-between items-center">
-                  <span className="text-[10px] font-semibold text-muted-foreground uppercase">Donasi</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase">BIAYA</span>
                   <span className="text-sm font-bold text-[var(--gold)]">Rp15.000</span>
                 </div>
               </button>
