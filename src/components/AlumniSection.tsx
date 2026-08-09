@@ -2,9 +2,9 @@ import { Quote, Trophy } from "lucide-react";
 import { useBranding } from "@/hooks/use-branding";
 
 const FALLBACK_IMAGES = [
-  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/peraih-batch7-1.png",
-  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/peraih-batch7-2.png",
-  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/peraih-batch7-3.png",
+  "https://www.prestasikita.com/__l5e/assets-v1/25612803-62c6-4328-b996-cc0d268d0113/peraih-batch7-1.png",
+  "https://www.prestasikita.com/__l5e/assets-v1/55ee6bc6-3c58-4eda-b6b4-96ea96e5bef3/peraih-batch7-2.png",
+  "https://www.prestasikita.com/__l5e/assets-v1/981503c4-ec06-4b95-a226-78b171f1ce1c/peraih-batch7-3.png",
 ];
 
 const alumniBase = [
