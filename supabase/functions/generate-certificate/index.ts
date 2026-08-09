@@ -111,8 +111,10 @@ Deno.serve(async (req) => {
     doc.text(`Tanggal: ${new Date().toLocaleDateString("id-ID")}`, width - 20, height - 20, { align: "right" });
 
     // Signature placeholders
-    doc.setDrawColor(255, 255, 255);
+    doc.setTextColor(15, 23, 42);
+    doc.setDrawColor(15, 23, 42);
     doc.line(width / 2 - 40, height - 45, width / 2 + 40, height - 45);
+    doc.setFont("helvetica", "bold");
     doc.text("Direktur Prestasi Kita", width / 2, height - 38, { align: "center" });
 
     const pdfOutput = doc.output("arraybuffer");
