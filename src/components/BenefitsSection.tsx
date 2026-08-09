@@ -1,4 +1,6 @@
 import { Wallet, Award, Gift, PlayCircle, Users, Briefcase } from "lucide-react";
+import benefitDefault from "@/assets/benefit-prestasi-kita.png.asset.json";
+import { useBranding } from "@/hooks/use-branding";
 
 const benefits = [
   {
@@ -40,6 +42,9 @@ const benefits = [
 ];
 
 export function BenefitsSection() {
+  const { benefitImage } = useBranding();
+  const benefitImg = benefitImage || benefitDefault.url;
+
   return (
     <section className="container-page py-20">
       <div className="text-center max-w-2xl mx-auto">
@@ -53,6 +58,16 @@ export function BenefitsSection() {
           Bukan sekadar beasiswa tunai — kamu mendapatkan paket lengkap untuk mendukung
           perjalanan akademis dan pengembangan diri.
         </p>
+      </div>
+
+      <div className="mt-12 mb-16 flex justify-center">
+        <div className="card-block overflow-hidden max-w-4xl w-full">
+          <img 
+            src={benefitImg} 
+            alt="Benefit Beasiswa Prestasi Kita" 
+            className="w-full h-auto object-contain"
+          />
+        </div>
       </div>
 
       <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-5">

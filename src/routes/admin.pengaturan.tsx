@@ -44,11 +44,13 @@ function AdminSettings() {
     header_logo_url: string; 
     footer_logo_url: string;
     hero_image_url: string;
+    benefit_image_url: string;
     alumni_images: string[];
   }>({
     header_logo_url: "",
     footer_logo_url: "",
     hero_image_url: "",
+    benefit_image_url: "",
     alumni_images: ["", "", ""],
   });
 
@@ -62,6 +64,7 @@ function AdminSettings() {
         header_logo_url?: string; 
         footer_logo_url?: string; 
         hero_image_url?: string;
+        benefit_image_url?: string;
         alumni_images?: string[];
       } | undefined;
       
@@ -76,6 +79,7 @@ function AdminSettings() {
         header_logo_url: br.header_logo_url || "",
         footer_logo_url: br.footer_logo_url || "",
         hero_image_url: br.hero_image_url || "",
+        benefit_image_url: br.benefit_image_url || "",
         alumni_images: br.alumni_images?.length ? br.alumni_images : ["", "", ""],
       });
       setLoading(false);
@@ -212,6 +216,14 @@ function AdminSettings() {
               placeholder="https://vps-anda.com/hero-students.png"
               value={branding.hero_image_url}
               onChange={(e) => setBranding({ ...branding, hero_image_url: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>URL Benefit Image</Label>
+            <Input
+              placeholder="https://vps-anda.com/benefit.png"
+              value={branding.benefit_image_url}
+              onChange={(e) => setBranding({ ...branding, benefit_image_url: e.target.value })}
             />
           </div>
         </div>
