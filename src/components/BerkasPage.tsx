@@ -37,7 +37,7 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "transcript", key: "transcript", label: "Rapor / Transkrip Nilai Terakhir", required: true },
     { id: "cv", key: "cv", label: "Curriculum Vitae (CV) / Portofolio Singkat", required: true },
     { id: "video_motivation", key: "video_motivation", label: "Video Motivasi Diri (Link)", required: true },
-    { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
+    { id: "supporting", key: "supporting", label: "Sertifikat / Berkas Pendukung Lainnya", required: false },
     { id: "other_docs", key: "other_docs", label: "Berkas Pendukung Lainnya", required: false },
   ],
   yatim: [
