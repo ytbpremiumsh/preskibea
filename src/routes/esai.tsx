@@ -128,6 +128,74 @@ function EsaiRoute() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search.token]);
 
+  if (!registrant) {
+    return (
+      <section className="container-page py-12 md:py-16">
+        <Link to="/" className="text-xs font-semibold text-primary hover:underline">
+          ← Kembali ke Beranda
+        </Link>
+        <div className="mt-4 max-w-3xl">
+          <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
+            Tahap 3 — Pengiriman Esai
+          </span>
+          <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Verifikasi Pendaftaran</h1>
+          <p className="mt-2 text-muted-foreground">
+            Masukkan kode pendaftar kamu untuk melanjutkan ke tahap Pengiriman Esai.
+          </p>
+        </div>
+
+        <div className="mt-10 max-w-xl">
+          <div className="card-block p-6 md:p-7">
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <KeyRound size={16} className="text-primary" /> Kode Pendaftar
+            </h2>
+            <div className="mt-5 grid sm:grid-cols-[1fr_auto] gap-3 items-end">
+              <label className="block w-full">
+                <span className="text-xs font-medium text-foreground/80">
+                  Kode Pendaftar<span className="text-destructive"> *</span>
+                </span>
+                <div className="mt-1.5 relative">
+                  <KeyRound size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={token}
+                    onChange={(e) => {
+                      setToken(e.target.value.toUpperCase());
+                      setError(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleVerify();
+                      }
+                    }}
+                    placeholder="PK-PRE-XXXXXX"
+                    className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm font-mono tracking-wider outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  />
+                </div>
+              </label>
+              <button
+                type="button"
+                onClick={() => handleVerify()}
+                disabled={verifying}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-95 transition disabled:opacity-60"
+              >
+                {verifying ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
+                Lanjut
+              </button>
+            </div>
+            {error && (
+              <div className="mt-4 flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
+                <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                <div>{error}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!registrant || !kind) {
@@ -176,88 +244,13 @@ function EsaiRoute() {
 
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="card-block p-6 md:p-7">
-            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-              <KeyRound size={16} className="text-primary" /> Verifikasi Kode Pendaftar
-            </h2>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Masukkan kode pendaftar (format{" "}
-              <span className="font-mono font-semibold">PK-PRE-XXXXXX</span>,{" "}
-              <span className="font-mono font-semibold">PK-EKO-XXXXXX</span>,{" "}
-              <span className="font-mono font-semibold">PK-UMU-XXXXXX</span>, atau{" "}
-              <span className="font-mono font-semibold">PK-YAT-XXXXXX</span>).
-            </p>
-            <div className="mt-5 grid sm:grid-cols-[1fr_auto] gap-3 items-end">
-              <label className="block">
-                <span className="text-xs font-medium text-foreground/80">
-                  Kode Pendaftar<span className="text-destructive"> *</span>
-                </span>
-                <div className="mt-1.5 relative">
-                  <KeyRound size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    type="text"
-                    value={token}
-                    onChange={(e) => {
-                      setToken(e.target.value.toUpperCase());
-                      setRegistrant(null);
-                      setError(null);
-                      setDone(false);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleVerify();
-                      }
-                    }}
-                    placeholder="PK-PRE-XXXXXX"
-                    maxLength={20}
-                    autoCapitalize="characters"
-                    className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm font-mono tracking-wider text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
-                    required
-                  />
-                </div>
-              </label>
-              <button
-                type="button"
-                onClick={() => handleVerify()}
-                disabled={verifying}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-95 transition disabled:opacity-60"
-              >
-                {verifying ? <Loader2 size={14} className="animate-spin" /> : <KeyRound size={14} />}
-                Verifikasi
-              </button>
+          {registrant && kind && (
+            <div className="rounded-2xl border border-primary/30 bg-primary-soft/40 p-4">
+              <div className="flex items-center gap-2 text-xs font-semibold text-primary">
+                <UserCheck size={14} /> Terverifikasi: {registrant.full_name}
+              </div>
             </div>
-
-            {error && (
-              <div className="mt-4 flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
-                <AlertCircle size={14} className="mt-0.5 shrink-0" />
-                <div>
-                  {error}{" "}
-                  <Link to="/daftar" className="font-semibold underline">
-                    Daftar dulu
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {registrant && kind && (
-              <div className="mt-5 rounded-2xl border border-primary/30 bg-primary-soft/40 p-4">
-                <div className="flex items-center gap-2 text-xs font-semibold text-primary">
-                  <UserCheck size={14} /> Data ditemukan
-                </div>
-                <div className="mt-3 grid sm:grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Nama Lengkap</div>
-                    <div className="font-semibold text-foreground">{registrant.full_name}</div>
-                  </div>
-                  <div>
-                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Kategori</div>
-                    <div className="font-semibold text-foreground">{KIND_LABEL[kind]}</div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          )}
 
           {registrant && (isFastTrack || done) && (
             <div className="card-block p-6 md:p-7">
