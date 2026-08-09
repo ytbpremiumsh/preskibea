@@ -590,7 +590,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                 <div className="flex items-start gap-2 text-destructive">
                   <AlertCircle size={16} className="mt-0.5 shrink-0" />
                   <div>
-                    <span className="font-semibold">Esai singkat belum diisi.</span>
+                    <span className="font-semibold text-destructive">Esai singkat belum diisi.</span>
                     <div className="text-xs mt-1 text-muted-foreground">
                       Tahap Esai Singkat wajib diselesaikan lebih dulu di halaman khusus esai
                       sebelum mengirim berkas administrasi.
