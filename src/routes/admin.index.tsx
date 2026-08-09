@@ -145,6 +145,9 @@ function AdminOverview() {
             today: c.today + 1,
             prestasi: c.prestasi + (newRow.kind === "prestasi" ? 1 : 0),
             ekonomi: c.ekonomi + (newRow.kind === "ekonomi" ? 1 : 0),
+            umum: c.umum + (newRow.kind === "umum" ? 1 : 0),
+            yatim: c.yatim + (newRow.kind === "yatim" ? 1 : 0),
+
             fastTrack: c.fastTrack + (newRow.fast_track ? 1 : 0),
           }));
           if (notif) {
