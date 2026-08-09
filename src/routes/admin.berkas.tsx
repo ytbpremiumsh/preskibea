@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -82,6 +82,7 @@ type Group = {
 };
 
 function AdminBerkas() {
+  const navigate = useNavigate();
   const [docs, setDocs] = useState<Document[]>([]);
   const [regs, setRegs] = useState<Registration[]>([]);
   const [loading, setLoading] = useState(true);
@@ -90,6 +91,15 @@ function AdminBerkas() {
   const [filterStatus, setFilterStatus] = useState<"all" | CandidateStatus>("all");
   const [detail, setDetail] = useState<Group | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  // Handle URL params for filtering from Dashboard
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const kind = searchParams.get("kind");
+    if (kind && ["prestasi", "ekonomi", "umum", "yatim"].includes(kind)) {
+      setFilterKind(kind as any);
+    }
+  }, []);
 
   const load = async () => {
     setLoading(true);

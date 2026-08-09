@@ -227,14 +227,14 @@ function AdminOverview() {
   }, [lite]);
 
   const items = [
-    { label: "Total Pendaftar", value: counts.total, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
-    { label: "Hari Ini", value: counts.today, icon: Clock, color: "text-emerald-700", bg: "bg-emerald-100" },
-    { label: "Fast Track", value: counts.fastTrack, icon: Clock, color: "text-orange-600", bg: "bg-orange-100" },
-    { label: "Berkas Diunggah", value: counts.docs, icon: FileText, color: "text-blue-700", bg: "bg-blue-100" },
-    { label: "Beasiswa Prestasi", value: counts.prestasi, icon: GraduationCap, color: "text-indigo-600", bg: "bg-indigo-100" },
-    { label: "Beasiswa Ekonomi", value: counts.ekonomi, icon: HeartHandshake, color: "text-emerald-700", bg: "bg-emerald-100" },
-    { label: "Beasiswa Umum", value: counts.umum, icon: GraduationCap, color: "text-teal-700", bg: "bg-teal-100" },
-    { label: "Beasiswa Yatim", value: counts.yatim, icon: HeartHandshake, color: "text-fuchsia-700", bg: "bg-fuchsia-100" },
+    { label: "Total Pendaftar", value: counts.total, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10", url: "/admin/pendaftar" },
+    { label: "Hari Ini", value: counts.today, icon: Clock, color: "text-emerald-700", bg: "bg-emerald-100", url: "/admin/pendaftar" },
+    { label: "Fast Track", value: counts.fastTrack, icon: Clock, color: "text-orange-600", bg: "bg-orange-100", url: "/admin/pendaftar" },
+    { label: "Berkas Diunggah", value: counts.docs, icon: FileText, color: "text-blue-700", bg: "bg-blue-100", url: "/admin/berkas" },
+    { label: "Beasiswa Prestasi", value: counts.prestasi, icon: GraduationCap, color: "text-indigo-600", bg: "bg-indigo-100", url: "/admin/pendaftar?kind=prestasi" },
+    { label: "Beasiswa Ekonomi", value: counts.ekonomi, icon: HeartHandshake, color: "text-emerald-700", bg: "bg-emerald-100", url: "/admin/pendaftar?kind=ekonomi" },
+    { label: "Beasiswa Umum", value: counts.umum, icon: GraduationCap, color: "text-teal-700", bg: "bg-teal-100", url: "/admin/pendaftar?kind=umum" },
+    { label: "Beasiswa Yatim", value: counts.yatim, icon: HeartHandshake, color: "text-fuchsia-700", bg: "bg-fuchsia-100", url: "/admin/pendaftar?kind=yatim" },
   ];
 
 
@@ -261,19 +261,21 @@ function AdminOverview() {
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {items.map((it) => (
-          <Card key={it.label} className="rounded-2xl p-4 shadow-soft sm:p-5">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className="text-2xl font-bold tabular-nums text-foreground sm:text-3xl">
-                  {loading ? <span className="inline-block h-7 w-12 animate-pulse rounded bg-muted" /> : it.value}
-                </p>
-                <p className="mt-1 truncate text-xs text-muted-foreground">{it.label}</p>
+          <Link key={it.label} to={it.url as any} className="block transition-transform hover:scale-[1.02] active:scale-[0.98]">
+            <Card className="rounded-2xl p-4 shadow-soft sm:p-5 h-full">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-2xl font-bold tabular-nums text-foreground sm:text-3xl">
+                    {loading ? <span className="inline-block h-7 w-12 animate-pulse rounded bg-muted" /> : it.value}
+                  </p>
+                  <p className="mt-1 truncate text-xs text-muted-foreground">{it.label}</p>
+                </div>
+                <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${it.bg} ${it.color}`}>
+                  <it.icon className="h-5 w-5" />
+                </div>
               </div>
-              <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${it.bg} ${it.color}`}>
-                <it.icon className="h-5 w-5" />
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </Link>
         ))}
 
       </div>

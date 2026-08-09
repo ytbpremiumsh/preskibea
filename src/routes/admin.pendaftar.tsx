@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -54,6 +54,7 @@ type Document = {
 };
 
 function AdminPendaftar() {
+  const navigate = useNavigate();
   const [rows, setRows] = useState<Registration[]>([]);
   const [docs, setDocs] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +64,15 @@ function AdminPendaftar() {
   const [filterJalur, setFilterJalur] = useState<"all" | "fast" | "reguler">("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectedRow, setSelectedRow] = useState<Registration | null>(null);
+
+  // Handle URL params for filtering from Dashboard
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const kind = searchParams.get("kind");
+    if (kind && ["prestasi", "ekonomi", "umum", "yatim"].includes(kind)) {
+      setFilterKind(kind as any);
+    }
+  }, []);
 
   const load = async () => {
     setLoading(true);
