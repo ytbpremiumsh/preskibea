@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Plus, Trash2, Save } from "lucide-react";
+import { Loader2, Plus, Trash2, Save, Award } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/pengaturan")({
@@ -34,15 +35,18 @@ function AdminSettings() {
     subtitle: "",
   });
   const [stages, setStages] = useState<Stage[]>([]);
+  const [certConfig, setCertConfig] = useState({ enabled: true });
 
   useEffect(() => {
     const load = async () => {
       const { data } = await supabase.from("site_settings").select("key,value");
       const cd = data?.find((d) => d.key === "countdown")?.value as CountdownSetting | undefined;
       const tl = data?.find((d) => d.key === "timeline")?.value as Stage[] | undefined;
+      const cc = data?.find((d) => d.key === "certificate_config")?.value as { enabled: boolean } | undefined;
       if (cd) setCountdown({ ...cd, deadline: toLocalInput(cd.deadline) });
       if (Array.isArray(tl))
         setStages(tl.map((s) => ({ ...s, date: s.date ? s.date.slice(0, 10) : "", startDate: s.startDate ? s.startDate.slice(0, 10) : "" })));
+      if (cc) setCertConfig(cc);
       setLoading(false);
     };
     load();
@@ -71,6 +75,11 @@ function AdminSettings() {
         .from("site_settings")
         .upsert({ key: "timeline", value: stages }, { onConflict: "key" });
       if (e2) throw e2;
+
+      const { error: e3 } = await supabase
+        .from("site_settings")
+        .upsert({ key: "certificate_config", value: certConfig }, { onConflict: "key" });
+      if (e3) throw e3;
 
       toast.success("Pengaturan berhasil disimpan");
     } catch (e: unknown) {
@@ -130,6 +139,25 @@ function AdminSettings() {
               onChange={(e) => setCountdown({ ...countdown, subtitle: e.target.value })}
             />
           </div>
+        </div>
+      </Card>
+
+      <Card className="p-6 space-y-4">
+        <div className="flex items-center gap-2">
+          <Award className="h-5 w-5 text-primary" />
+          <h2 className="text-lg font-semibold text-foreground">Pengaturan Sertifikat</h2>
+        </div>
+        <div className="flex items-center justify-between rounded-xl border border-border p-4">
+          <div className="space-y-0.5">
+            <Label className="text-sm font-semibold">Aktifkan E-Sertifikat</Label>
+            <p className="text-xs text-muted-foreground">
+              Izinkan pendaftar mengunduh sertifikat dari halaman Cek Status.
+            </p>
+          </div>
+          <Switch
+            checked={certConfig.enabled}
+            onCheckedChange={(v) => setCertConfig({ enabled: v })}
+          />
         </div>
       </Card>
 
