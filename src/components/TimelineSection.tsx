@@ -8,6 +8,7 @@ export type Stage = { title: string; desc: string; date: string; startDate?: str
 const fallback: Stage[] = [
   { title: "Pendaftaran Dibuka", desc: "Calon peserta mengisi formulir pendaftaran beasiswa secara online.", date: "2027-02-07", startDate: "2026-08-12" },
   { title: "Bagikan Poster", desc: "Peserta membagikan poster beasiswa ke media sosial sebagai bagian dari tahapan seleksi.", date: "2027-02-07", startDate: "2026-08-12" },
+  { title: "Esai Singkat", desc: "Peserta menjawab 3 pertanyaan esai singkat sebelum mengirim berkas. Khusus Fast Track otomatis lolos dan langsung lanjut ke Berkas Administrasi.", date: "2027-02-07", startDate: "2026-08-12" },
   { title: "Berkas Administrasi", desc: "Peserta mengunggah seluruh berkas pendukung sesuai persyaratan yang ditentukan.", date: "2027-02-07", startDate: "2026-08-12" },
   { title: "Seleksi Administrasi", desc: "Tim panitia memeriksa kelengkapan data dan keabsahan berkas pendaftar.", date: "2027-02-12", startDate: "2027-02-08" },
   { title: "Verifikasi", desc: "Validasi akhir terhadap dokumen dan data peserta yang lolos administrasi.", date: "2027-02-26", startDate: "2027-02-13" },
