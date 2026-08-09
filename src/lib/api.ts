@@ -77,6 +77,19 @@ export async function submitBerkasDocuments(
   return invoke<{ count: number }>("submit-berkas", input);
 }
 
+// ─── Esai ──────────────────────────────────────────────────────────────────
+
+export type SubmitEsaiInput = {
+  token: string;
+  kind: "prestasi" | "ekonomi" | "umum" | "yatim";
+  essays: { question: string; answer: string }[];
+};
+
+export async function submitEsai(input: SubmitEsaiInput): Promise<{ ok: boolean }> {
+  return invoke<{ ok: boolean }>("submit-esai", input);
+}
+
+
 // ─── Email ─────────────────────────────────────────────────────────────────
 
 export type SendAppEmailInput = {
