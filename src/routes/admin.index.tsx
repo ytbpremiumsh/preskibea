@@ -177,12 +177,17 @@ function AdminOverview() {
   };
 
   const byJenjang = useMemo(() => {
-    const map = new Map<string, { name: string; prestasi: number; ekonomi: number; total: number }>();
-    for (const j of JENJANG) map.set(j, { name: j, prestasi: 0, ekonomi: 0, total: 0 });
+    type Row = { name: string; prestasi: number; ekonomi: number; umum: number; yatim: number; total: number };
+    const blank = (name: string): Row => ({ name, prestasi: 0, ekonomi: 0, umum: 0, yatim: 0, total: 0 });
+    const map = new Map<string, Row>();
+    for (const j of JENJANG) map.set(j, blank(j));
     for (const r of lite) {
       const j = normalizeJenjang(r.education_level);
-      const cur = map.get(j) ?? { name: j, prestasi: 0, ekonomi: 0, total: 0 };
-      if (r.kind === "prestasi") cur.prestasi++; else cur.ekonomi++;
+      const cur = map.get(j) ?? blank(j);
+      if (r.kind === "prestasi") cur.prestasi++;
+      else if (r.kind === "ekonomi") cur.ekonomi++;
+      else if (r.kind === "umum") cur.umum++;
+      else if (r.kind === "yatim") cur.yatim++;
       cur.total++;
       map.set(j, cur);
     }
@@ -192,7 +197,10 @@ function AdminOverview() {
   const byKind = useMemo(() => [
     { name: "Prestasi", value: counts.prestasi },
     { name: "Ekonomi", value: counts.ekonomi },
+    { name: "Umum", value: counts.umum },
+    { name: "Yatim", value: counts.yatim },
   ], [counts]);
+
 
   const dailyStats = useMemo(() => {
     const days: { date: string; label: string; count: number; fastTrack: number }[] = [];
