@@ -479,17 +479,43 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
               </div>
             )}
           </div>
+          
+          {registrant && !essayDone && (
+            <div className="mb-6 card-block p-6 md:p-7 border-destructive/30 bg-destructive/5">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="text-sm font-bold text-destructive uppercase tracking-wider">Peringatan: Esai Belum Diisi</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Maaf, Anda belum bisa mengirimkan berkas administrasi. Anda wajib menyelesaikan tahap <strong>Pengiriman Esai</strong> terlebih dahulu.
+                  </p>
+                  <Link
+                    to="/esai"
+                    search={{ token: token.trim().toUpperCase() }}
+                    className="mt-4 inline-flex items-center gap-2 rounded-full bg-destructive px-5 py-2.5 text-xs font-semibold text-white shadow-soft hover:opacity-90 transition"
+                  >
+                    Lengkapi Esai Sekarang <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
 
           <KetentuanBerkasCard kind={kind} />
 
           <div
-            className={`card-block p-6 md:p-7 ${!registrant ? "opacity-60 pointer-events-none select-none" : ""}`}
+            className={`card-block p-6 md:p-7 ${(!registrant || !essayDone) ? "opacity-60 pointer-events-none select-none" : ""}`}
           >
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
-              {!registrant && (
+              {!registrant ? (
                 <span className="text-[11px] font-semibold text-muted-foreground">
                   Verifikasi kode dulu
+                </span>
+              ) : !essayDone && (
+                <span className="text-[11px] font-semibold text-destructive">
+                  Selesaikan esai dulu
                 </span>
               )}
             </div>
@@ -520,7 +546,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                         value={v}
                         onChange={(e) => setVal(d.key, e.target.value)}
                         placeholder="https://drive.google.com/..."
-                        disabled={!registrant}
+                        disabled={!registrant || !essayDone}
                         className={`w-full rounded-xl border bg-background pl-9 pr-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${showError ? "border-destructive" : "border-border focus:border-primary"}`}
                         required={d.required}
                       />
@@ -564,7 +590,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                 <div className="flex items-start gap-2 text-destructive">
                   <AlertCircle size={16} className="mt-0.5 shrink-0" />
                   <div>
-                    <span className="font-semibold">Esai singkat belum diisi.</span>
+                    <span className="font-semibold text-destructive">Esai singkat belum diisi.</span>
                     <div className="text-xs mt-1 text-muted-foreground">
                       Tahap Esai Singkat wajib diselesaikan lebih dulu di halaman khusus esai
                       sebelum mengirim berkas administrasi.
