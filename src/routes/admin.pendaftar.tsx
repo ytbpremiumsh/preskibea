@@ -320,6 +320,15 @@ function AdminPendaftar() {
             <option value="yatim">Yatim</option>
           </select>
           <select
+            value={filterJalur}
+            onChange={(e) => setFilterJalur(e.target.value as "all" | "fast" | "reguler")}
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            <option value="all">Semua Jalur</option>
+            <option value="fast">Fast Track ({totals.fast})</option>
+            <option value="reguler">Reguler ({rows.length - totals.fast})</option>
+          </select>
+          <select
             value={filterBerkas}
             onChange={(e) => setFilterBerkas(e.target.value as "all" | "submitted" | "pending")}
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
