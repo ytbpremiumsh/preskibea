@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
 
     let q = supabase
       .from("registrations")
-      .select("id, full_name, email, whatsapp, school_name, education_level, gender, birth_place, birth_date, address, grade, token, fast_track")
+      .select("id, full_name, email, whatsapp, school_name, education_level, gender, birth_place, birth_date, address, grade, token, fast_track, extra")
       .eq("kind", kind)
       .order("created_at", { ascending: false })
       .limit(1);
@@ -85,6 +85,7 @@ Deno.serve(async (req) => {
         grade: data.grade,
         token: data.token,
         fast_track: !!data.fast_track,
+        essay_submitted: !!((data as { extra?: Record<string, unknown> }).extra as Record<string, unknown> | undefined)?.essay_submitted_at,
       },
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
