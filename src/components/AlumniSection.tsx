@@ -1,26 +1,26 @@
-import a1Default from "@/assets/peraih-batch7-1.png.asset.json";
-import a2Default from "@/assets/peraih-batch7-2.png.asset.json";
-import a3Default from "@/assets/peraih-batch7-3.png.asset.json";
 import { Quote, Trophy } from "lucide-react";
 import { useBranding } from "@/hooks/use-branding";
 
+const FALLBACK_IMAGES = [
+  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/peraih-batch7-1.png",
+  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/peraih-batch7-2.png",
+  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/peraih-batch7-3.png",
+];
+
 const alumniBase = [
   {
-    img: a1Default.url,
     name: "Kalaj Nazhiful Haq",
     school: "Universitas Andalas",
     year: "BATCH #7 - 2025",
     quote: "Beasiswa ini membantu saya fokus belajar tanpa khawatir biaya pendidikan.",
   },
   {
-    img: a2Default.url,
     name: "Amelia Kusuma Suryandari",
     school: "Universitas Diponegoro",
     year: "BATCH #7 - 2025",
     quote: "Selain dana, pembinaannya membuka banyak peluang baru bagi saya.",
   },
   {
-    img: a3Default.url,
     name: "Jahwa Aulia Hasan",
     school: "Peraih Beasiswa Prestasi Kita",
     year: "BATCH #7 - 2025",
@@ -33,7 +33,7 @@ export function AlumniSection() {
 
   const alumni = alumniBase.map((a, i) => ({
     ...a,
-    img: alumniImages[i] || a.img,
+    img: alumniImages[i] || FALLBACK_IMAGES[i],
   }));
 
   return (
