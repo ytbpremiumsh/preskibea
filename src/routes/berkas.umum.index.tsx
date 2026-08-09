@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { BerkasInfoPage } from "@/components/BerkasInfoPage";
 
 export const Route = createFileRoute("/berkas/umum/")({
@@ -8,5 +8,8 @@ export const Route = createFileRoute("/berkas/umum/")({
       { name: "description", content: "Persyaratan & informasi pengiriman berkas Beasiswa Umum." },
     ],
   }),
-  component: () => <BerkasInfoPage kind="umum" />,
+  component: () => {
+    const search = useSearch({ strict: false }) as { education_level?: string };
+    return <BerkasInfoPage kind="umum" educationLevel={search.education_level} />;
+  },
 });

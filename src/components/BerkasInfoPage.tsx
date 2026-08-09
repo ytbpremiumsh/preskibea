@@ -41,8 +41,20 @@ const tips = [
   "Gunakan Kode Token yang sama saat pendaftaran",
 ];
 
-export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "yatim" }) {
-  const docs = docsByKind[kind];
+export function BerkasInfoPage({ kind, educationLevel }: { kind: "prestasi" | "ekonomi" | "umum" | "yatim"; educationLevel?: string }) {
+  const isMahasiswa = educationLevel?.toLowerCase().includes("mahasiswa") || 
+                     educationLevel?.toLowerCase().includes("s1") || 
+                     educationLevel?.toLowerCase().includes("diploma");
+
+  const docs = docsByKind[kind].map(d => {
+    if (d.includes("Rapor / KHS")) {
+      return isMahasiswa ? "KHS / Transkrip Nilai Terakhir" : "Rapor Terakhir";
+    }
+    if (d.includes("Kartu Pelajar / Kartu Mahasiswa")) {
+      return isMahasiswa ? "Kartu Tanda Mahasiswa (KTM)" : "Kartu Pelajar / Kartu Identitas";
+    }
+    return d;
+  });
   const uploadTo = kind === "prestasi" ? "/berkas/prestasi/upload" : kind === "ekonomi" ? "/berkas/ekonomi/upload" : kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/umum/upload";
 
   return (

@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
 
     const { data: reg, error } = await supabase
       .from("registrations")
-      .select("id, full_name, kind, status, candidate_status, created_at, fast_track, payment_status, extra")
+      .select("id, full_name, kind, status, candidate_status, created_at, fast_track, payment_status, education_level, extra")
       .eq("token", tokenRaw)
       .maybeSingle();
     if (error) throw error;
@@ -66,6 +66,7 @@ Deno.serve(async (req) => {
         payment_status: (reg as { payment_status?: string | null }).payment_status ?? null,
         essay_submitted: fastTrack || !!essaySubmittedAt,
         essay_submitted_at: essaySubmittedAt,
+        education_level: reg.education_level,
         docs: { total: docCount, pending, approved, rejected },
       },
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
