@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Plus, Trash2, Save, Award } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { ImagePlus } from "lucide-react";
 
 export const Route = createFileRoute("/admin/pengaturan")({
   component: AdminSettings,
@@ -39,6 +40,10 @@ function AdminSettings() {
     enabled: true, 
     releaseDate: "" 
   });
+  const [branding, setBranding] = useState<{ header_logo_url: string; footer_logo_url: string }>({
+    header_logo_url: "",
+    footer_logo_url: "",
+  });
 
   useEffect(() => {
     const load = async () => {
@@ -46,12 +51,18 @@ function AdminSettings() {
       const cd = data?.find((d) => d.key === "countdown")?.value as CountdownSetting | undefined;
       const tl = data?.find((d) => d.key === "timeline")?.value as Stage[] | undefined;
       const cc = data?.find((d) => d.key === "certificate_config")?.value as { enabled: boolean; releaseDate?: string } | undefined;
+      const br = data?.find((d) => d.key === "branding")?.value as { header_logo_url?: string; footer_logo_url?: string } | undefined;
+      
       if (cd) setCountdown({ ...cd, deadline: toLocalInput(cd.deadline) });
       if (Array.isArray(tl))
         setStages(tl.map((s) => ({ ...s, date: s.date ? s.date.slice(0, 10) : "", startDate: s.startDate ? s.startDate.slice(0, 10) : "" })));
       if (cc) setCertConfig({ 
         enabled: cc.enabled, 
         releaseDate: cc.releaseDate ? toLocalInput(cc.releaseDate) : "" 
+      });
+      if (br) setBranding({
+        header_logo_url: br.header_logo_url || "",
+        footer_logo_url: br.footer_logo_url || "",
       });
       setLoading(false);
     };
@@ -89,6 +100,11 @@ function AdminSettings() {
         .from("site_settings")
         .upsert({ key: "certificate_config", value: ccPayload }, { onConflict: "key" });
       if (e3) throw e3;
+
+      const { error: e4 } = await supabase
+        .from("site_settings")
+        .upsert({ key: "branding", value: branding }, { onConflict: "key" });
+      if (e4) throw e4;
 
       toast.success("Pengaturan berhasil disimpan");
     } catch (e: unknown) {
@@ -146,6 +162,34 @@ function AdminSettings() {
               rows={2}
               value={countdown.subtitle}
               onChange={(e) => setCountdown({ ...countdown, subtitle: e.target.value })}
+            />
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-6 space-y-4">
+        <div className="flex items-center gap-2 text-primary">
+          <ImagePlus className="h-5 w-5" />
+          <h2 className="text-lg font-semibold text-foreground">Branding (Logo & Gambar)</h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Masukkan URL gambar (logo) yang dihosting di VPS atau server eksternal Anda.
+        </p>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>URL Logo Header</Label>
+            <Input
+              placeholder="https://vps-anda.com/logo-header.png"
+              value={branding.header_logo_url}
+              onChange={(e) => setBranding({ ...branding, header_logo_url: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>URL Logo Footer</Label>
+            <Input
+              placeholder="https://vps-anda.com/logo-footer.png"
+              value={branding.footer_logo_url}
+              onChange={(e) => setBranding({ ...branding, footer_logo_url: e.target.value })}
             />
           </div>
         </div>
