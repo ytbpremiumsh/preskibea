@@ -14,6 +14,7 @@ type PosterCfg = {
 };
 
 export function SharePosterPage({ kind: initialKind }: { kind?: "prestasi" | "ekonomi" | "umum" | "yatim" }) {
+  const kind = initialKind || "prestasi";
   const isGold = kind === "ekonomi";
   const label = kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "umum" ? "Beasiswa Umum" : kind === "yatim" ? "Beasiswa Yatim" : "Beasiswa Prestasi";
   const path = kind === "ekonomi" ? "/beasiswa-ekonomi" : kind === "umum" ? "/beasiswa-umum" : kind === "yatim" ? "/beasiswa-yatim" : "/beasiswa-prestasi";
