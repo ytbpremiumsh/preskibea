@@ -20,7 +20,7 @@ const Input = z.object({
     .string()
     .trim()
     .transform((v) => v.toUpperCase())
-    .pipe(z.string().regex(/^KP-(PRE|EKO|UMU)-[A-Z0-9]{4,10}$/)),
+    .pipe(z.string().regex(/^(PK|KP)-(PRE|EKO|UMU|YAT)-[A-Z0-9]{4,10}$/)),
   kind: z.enum(["prestasi", "ekonomi", "umum", "yatim"]),
   documents: z
     .array(
@@ -32,6 +32,15 @@ const Input = z.object({
     )
     .min(1)
     .max(20),
+  essays: z
+    .array(
+      z.object({
+        question: z.string().min(1).max(300),
+        answer: z.string().trim().min(1).max(3000),
+      }),
+    )
+    .max(10)
+    .optional(),
 });
 
 serve(async (req) => {
@@ -50,8 +59,8 @@ serve(async (req) => {
     }
     const data = parsed.data;
 
-    const expectedPrefix = data.kind === "prestasi" ? "KP-PRE-" : data.kind === "ekonomi" ? "KP-EKO-" : data.kind === "yatim" ? "KP-YAT-" : "KP-UMU-";
-    if (!data.token.startsWith(expectedPrefix)) {
+    const kindCode = data.kind === "prestasi" ? "PRE" : data.kind === "ekonomi" ? "EKO" : data.kind === "yatim" ? "YAT" : "UMU";
+    if (!new RegExp(`^(PK|KP)-${kindCode}-`).test(data.token)) {
       return new Response(JSON.stringify({ error: "Kode pendaftar tidak sesuai kategori." }), {
         status: 400,
         headers: { ...cors, "Content-Type": "application/json" },
@@ -60,7 +69,7 @@ serve(async (req) => {
 
     const { data: reg, error: regErr } = await supabaseAdmin
       .from("registrations")
-      .select("id, email, full_name")
+      .select("id, email, full_name, extra, fast_track")
       .eq("token", data.token)
       .eq("kind", data.kind)
       .maybeSingle();
@@ -90,6 +99,20 @@ serve(async (req) => {
       .upsert(rows, { onConflict: "email_key,kind,doc_key" });
 
     if (error) throw new Error(error.message);
+
+    if (data.essays && data.essays.length > 0) {
+      const prevExtra = (reg as { extra?: Record<string, unknown> }).extra ?? {};
+      await supabaseAdmin
+        .from("registrations")
+        .update({
+          extra: {
+            ...prevExtra,
+            essay_answers: data.essays,
+            essay_submitted_at: submittedAt,
+          },
+        })
+        .eq("id", reg.id);
+    }
 
     return new Response(JSON.stringify({ count: rows.length }), {
       status: 200,
