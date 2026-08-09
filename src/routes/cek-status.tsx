@@ -141,7 +141,7 @@ function StatusResult({ data }: { data: StatusData }) {
   const hasDocs = data.docs.total > 0;
   const isFast = !!data.fast_track;
   const essayDone = isFast || !!data.essay_submitted;
-  const [certEnabled, setCertEnabled] = useState(false);
+  const [certConfig, setCertConfig] = useState<{ enabled: boolean; releaseDate?: string }>({ enabled: false });
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
@@ -152,12 +152,14 @@ function StatusResult({ data }: { data: StatusData }) {
       .maybeSingle()
       .then(({ data: res }) => {
         if (res?.value) {
-          setCertEnabled((res.value as any).enabled);
+          setCertConfig(res.value as any);
         } else {
-          setCertEnabled(true); // Default enabled
+          setCertConfig({ enabled: true }); // Default enabled
         }
       });
   }, []);
+
+  const canDownload = certConfig.enabled && (!certConfig.releaseDate || new Date() >= new Date(certConfig.releaseDate));
 
   const downloadCert = async () => {
     setDownloading(true);
