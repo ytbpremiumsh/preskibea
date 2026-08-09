@@ -103,13 +103,23 @@ export function TimelineSection() {
                     </span>
                   </div>
                   <p className="mt-1.5 text-sm text-muted-foreground">{t.desc}</p>
+                  {(t.title.toLowerCase().includes("esai") || t.title.toLowerCase().includes("essai")) && (
+                    <div className="mt-3 flex items-start gap-2 rounded-xl border border-[oklch(0.92_0.13_85)] bg-[oklch(0.97_0.06_85)] px-3 py-2 text-xs font-medium text-gold-foreground">
+                      <Zap size={14} className="mt-0.5 shrink-0" />
+                      <span>
+                        <strong>Fast Track otomatis lolos</strong> tahapan esai — kamu bisa langsung lanjut kirim Berkas Administrasi.
+                      </span>
+                    </div>
+                  )}
                   <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-foreground/80 flex-wrap">
                     <Calendar size={14} className="text-primary shrink-0" />
                     {t.startDate && t.startDate !== t.date ? (
                       <>
                         {(t.title.toLowerCase().includes("pendaftaran") || 
                           t.title.toLowerCase().includes("poster") || 
+                          t.title.toLowerCase().includes("esai") || 
                           t.title.toLowerCase().includes("berkas")) 
+
                           ? `Hingga ${fmt(t.date)}` 
                           : `${fmt(t.startDate)} – ${t.singleDay ? fmt(t.date) : `Hingga ${fmt(t.date)}`}`}
                       </>
