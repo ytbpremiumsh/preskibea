@@ -40,9 +40,18 @@ function AdminSettings() {
     enabled: true, 
     releaseDate: "" 
   });
-  const [branding, setBranding] = useState<{ header_logo_url: string; footer_logo_url: string }>({
+  const [branding, setBranding] = useState<{ 
+    header_logo_url: string; 
+    footer_logo_url: string;
+    hero_image_url: string;
+    benefit_image_url: string;
+    alumni_images: string[];
+  }>({
     header_logo_url: "",
     footer_logo_url: "",
+    hero_image_url: "",
+    benefit_image_url: "",
+    alumni_images: ["", "", ""],
   });
 
   useEffect(() => {
@@ -51,7 +60,13 @@ function AdminSettings() {
       const cd = data?.find((d) => d.key === "countdown")?.value as CountdownSetting | undefined;
       const tl = data?.find((d) => d.key === "timeline")?.value as Stage[] | undefined;
       const cc = data?.find((d) => d.key === "certificate_config")?.value as { enabled: boolean; releaseDate?: string } | undefined;
-      const br = data?.find((d) => d.key === "branding")?.value as { header_logo_url?: string; footer_logo_url?: string } | undefined;
+      const br = data?.find((d) => d.key === "branding")?.value as { 
+        header_logo_url?: string; 
+        footer_logo_url?: string; 
+        hero_image_url?: string;
+        benefit_image_url?: string;
+        alumni_images?: string[];
+      } | undefined;
       
       if (cd) setCountdown({ ...cd, deadline: toLocalInput(cd.deadline) });
       if (Array.isArray(tl))
@@ -63,6 +78,9 @@ function AdminSettings() {
       if (br) setBranding({
         header_logo_url: br.header_logo_url || "",
         footer_logo_url: br.footer_logo_url || "",
+        hero_image_url: br.hero_image_url || "",
+        benefit_image_url: br.benefit_image_url || "",
+        alumni_images: br.alumni_images?.length ? br.alumni_images : ["", "", ""],
       });
       setLoading(false);
     };
@@ -173,7 +191,7 @@ function AdminSettings() {
           <h2 className="text-lg font-semibold text-foreground">Branding (Logo & Gambar)</h2>
         </div>
         <p className="text-sm text-muted-foreground">
-          Masukkan URL gambar (logo) yang dihosting di VPS atau server eksternal Anda.
+          Masukkan URL gambar yang dihosting di VPS atau server eksternal Anda untuk mengganti gambar default.
         </p>
         <div className="grid md:grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -191,6 +209,42 @@ function AdminSettings() {
               value={branding.footer_logo_url}
               onChange={(e) => setBranding({ ...branding, footer_logo_url: e.target.value })}
             />
+          </div>
+          <div className="space-y-2">
+            <Label>URL Hero Image (Landing Page)</Label>
+            <Input
+              placeholder="https://vps-anda.com/hero-students.png"
+              value={branding.hero_image_url}
+              onChange={(e) => setBranding({ ...branding, hero_image_url: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>URL Benefit Image</Label>
+            <Input
+              placeholder="https://vps-anda.com/benefit.png"
+              value={branding.benefit_image_url}
+              onChange={(e) => setBranding({ ...branding, benefit_image_url: e.target.value })}
+            />
+          </div>
+        </div>
+
+        <div className="pt-4 space-y-4 border-t border-border">
+          <h3 className="text-sm font-semibold text-foreground">Foto Peraih Beasiswa (Alumni Section)</h3>
+          <div className="grid md:grid-cols-3 gap-4">
+            {branding.alumni_images.map((url, i) => (
+              <div key={i} className="space-y-2">
+                <Label className="text-xs">Foto Alumni #{i + 1}</Label>
+                <Input
+                  placeholder={`URL Foto Alumni ${i + 1}`}
+                  value={url}
+                  onChange={(e) => {
+                    const newUrls = [...branding.alumni_images];
+                    newUrls[i] = e.target.value;
+                    setBranding({ ...branding, alumni_images: newUrls });
+                  }}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </Card>

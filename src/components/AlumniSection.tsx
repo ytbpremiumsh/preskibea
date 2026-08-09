@@ -1,25 +1,26 @@
-import a1 from "@/assets/peraih-batch7-1.png.asset.json";
-import a2 from "@/assets/peraih-batch7-2.png.asset.json";
-import a3 from "@/assets/peraih-batch7-3.png.asset.json";
+import a1Default from "@/assets/peraih-batch7-1.png.asset.json";
+import a2Default from "@/assets/peraih-batch7-2.png.asset.json";
+import a3Default from "@/assets/peraih-batch7-3.png.asset.json";
 import { Quote, Trophy } from "lucide-react";
+import { useBranding } from "@/hooks/use-branding";
 
-const alumni = [
+const alumniBase = [
   {
-    img: a1.url,
+    img: a1Default.url,
     name: "Kalaj Nazhiful Haq",
     school: "Universitas Andalas",
     year: "BATCH #7 - 2025",
     quote: "Beasiswa ini membantu saya fokus belajar tanpa khawatir biaya pendidikan.",
   },
   {
-    img: a2.url,
+    img: a2Default.url,
     name: "Amelia Kusuma Suryandari",
     school: "Universitas Diponegoro",
     year: "BATCH #7 - 2025",
     quote: "Selain dana, pembinaannya membuka banyak peluang baru bagi saya.",
   },
   {
-    img: a3.url,
+    img: a3Default.url,
     name: "Jahwa Aulia Hasan",
     school: "Peraih Beasiswa Prestasi Kita",
     year: "BATCH #7 - 2025",
@@ -27,8 +28,14 @@ const alumni = [
   },
 ];
 
-
 export function AlumniSection() {
+  const { alumniImages } = useBranding();
+
+  const alumni = alumniBase.map((a, i) => ({
+    ...a,
+    img: alumniImages[i] || a.img,
+  }));
+
   return (
     <section className="container-page py-20">
       <div className="text-center max-w-2xl mx-auto">
