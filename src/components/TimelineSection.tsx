@@ -188,7 +188,7 @@ function StageActions({ title }: { title: string }) {
     return (
       <div className="mt-4">
         <Link
-          to="/berkas"
+          to="/berkas/prestasi/upload"
           className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
         >
           <FileText size={14} /> Kirim Berkas <ArrowRight size={12} />
