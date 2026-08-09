@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Calendar, FileText, Share2, Trophy } from "lucide-react";
+import { ArrowRight, Calendar, FileText, PenLine, Share2, Trophy, Zap } from "lucide-react";
 
 export type Stage = { title: string; desc: string; date: string; startDate?: string; singleDay?: boolean };
 
 const fallback: Stage[] = [
   { title: "Pendaftaran Dibuka", desc: "Calon peserta mengisi formulir pendaftaran beasiswa secara online.", date: "2027-02-07", startDate: "2026-08-12" },
   { title: "Bagikan Poster", desc: "Peserta membagikan poster beasiswa ke media sosial sebagai bagian dari tahapan seleksi.", date: "2027-02-07", startDate: "2026-08-12" },
+  { title: "Esai Singkat", desc: "Peserta menjawab 3 pertanyaan esai singkat sebelum mengirim berkas. Khusus Fast Track otomatis lolos dan langsung lanjut ke Berkas Administrasi.", date: "2027-02-07", startDate: "2026-08-12" },
   { title: "Berkas Administrasi", desc: "Peserta mengunggah seluruh berkas pendukung sesuai persyaratan yang ditentukan.", date: "2027-02-07", startDate: "2026-08-12" },
   { title: "Seleksi Administrasi", desc: "Tim panitia memeriksa kelengkapan data dan keabsahan berkas pendaftar.", date: "2027-02-12", startDate: "2027-02-08" },
   { title: "Verifikasi", desc: "Validasi akhir terhadap dokumen dan data peserta yang lolos administrasi.", date: "2027-02-26", startDate: "2027-02-13" },
@@ -102,13 +103,23 @@ export function TimelineSection() {
                     </span>
                   </div>
                   <p className="mt-1.5 text-sm text-muted-foreground">{t.desc}</p>
+                  {(t.title.toLowerCase().includes("esai") || t.title.toLowerCase().includes("essai")) && (
+                    <div className="mt-3 flex items-start gap-2 rounded-xl border border-[oklch(0.92_0.13_85)] bg-[oklch(0.97_0.06_85)] px-3 py-2 text-xs font-medium text-gold-foreground">
+                      <Zap size={14} className="mt-0.5 shrink-0" />
+                      <span>
+                        <strong>Fast Track otomatis lolos</strong> tahapan esai — kamu bisa langsung lanjut kirim Berkas Administrasi.
+                      </span>
+                    </div>
+                  )}
                   <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-foreground/80 flex-wrap">
                     <Calendar size={14} className="text-primary shrink-0" />
                     {t.startDate && t.startDate !== t.date ? (
                       <>
                         {(t.title.toLowerCase().includes("pendaftaran") || 
                           t.title.toLowerCase().includes("poster") || 
+                          t.title.toLowerCase().includes("esai") || 
                           t.title.toLowerCase().includes("berkas")) 
+
                           ? `Hingga ${fmt(t.date)}` 
                           : `${fmt(t.startDate)} – ${t.singleDay ? fmt(t.date) : `Hingga ${fmt(t.date)}`}`}
                       </>
@@ -153,6 +164,19 @@ function StageActions({ title }: { title: string }) {
           className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
         >
           <Share2 size={14} /> Bagikan Poster <ArrowRight size={12} />
+        </Link>
+      </div>
+    );
+  }
+
+  if (t.includes("esai") || t.includes("essai")) {
+    return (
+      <div className="mt-4">
+        <Link
+          to="/berkas"
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+        >
+          <PenLine size={14} /> Isi Esai Singkat <ArrowRight size={12} />
         </Link>
       </div>
     );
