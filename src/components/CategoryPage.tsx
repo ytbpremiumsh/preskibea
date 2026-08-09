@@ -47,7 +47,7 @@ export function CategoryPage({
   tagline: string;
   desc: string;
   registerTo: "/pendaftaran/prestasi" | "/pendaftaran/ekonomi" | "/pendaftaran/umum" | "/pendaftaran/yatim";
-  shareTo: "/bagikan-poster/prestasi" | "/bagikan-poster/ekonomi" | "/bagikan-poster/umum" | "/bagikan-poster/yatim";
+  shareTo: "/bagikan-poster";
 }) {
   const isGold = kind === "ekonomi";
   const Icon: ReactNode = isGold ? <HeartHandshake /> : kind === "umum" ? <Users /> : kind === "yatim" ? <Heart /> : <Trophy />;
