@@ -32,6 +32,9 @@ type Registration = {
   kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   status: "pending" | "approved" | "rejected";
   token?: string | null;
+  fast_track?: boolean | null;
+  payment_status?: string | null;
+  extra?: Record<string, unknown> | null;
   parent_income: string | null;
   dependents: number | null;
   main_achievement: string | null;
