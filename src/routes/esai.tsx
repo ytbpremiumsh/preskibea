@@ -1,0 +1,360 @@
+import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { AlertCircle, ArrowRight, CheckCircle2, KeyRound, Loader2, PenLine, UserCheck } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { submitEsai } from "@/lib/api";
+import { toast } from "sonner";
+
+type Search = { token?: string };
+
+export const Route = createFileRoute("/esai")({
+  head: () => ({
+    meta: [
+      { title: "Pengiriman Esai Singkat — Prestasi Kita Batch #8" },
+      {
+        name: "description",
+        content:
+          "Isi esai singkat sebagai syarat melanjutkan ke tahap berkas administrasi. Masukkan kode pendaftar Anda.",
+      },
+    ],
+  }),
+  validateSearch: (s: Record<string, unknown>): Search => ({
+    token: typeof s.token === "string" ? s.token : undefined,
+  }),
+  component: EsaiRoute,
+});
+
+const ESSAY_QUESTIONS = [
+  "Kenapa kamu layak menerima beasiswa ini?",
+  "Bantuan biaya pendidikan ini akan kamu gunakan untuk apa?",
+  "Apa rencana atau targetmu dalam 1 tahun ke depan setelah menerima beasiswa ini?",
+];
+const MIN_ESSAY_CHARS = 100;
+
+type Kind = "prestasi" | "ekonomi" | "umum" | "yatim";
+
+const KIND_BY_CODE: Record<string, Kind> = {
+  PRE: "prestasi",
+  EKO: "ekonomi",
+  UMU: "umum",
+  YAT: "yatim",
+};
+
+const KIND_LABEL: Record<Kind, string> = {
+  prestasi: "Beasiswa Prestasi",
+  ekonomi: "Beasiswa Ekonomi",
+  umum: "Beasiswa Umum",
+  yatim: "Beasiswa Yatim",
+};
+
+const BERKAS_TO: Record<Kind, string> = {
+  prestasi: "/berkas/prestasi/upload",
+  ekonomi: "/berkas/ekonomi/upload",
+  umum: "/berkas/umum/upload",
+  yatim: "/berkas/yatim/upload",
+};
+
+type RegInfo = {
+  full_name: string;
+  email?: string | null;
+  education_level?: string | null;
+  school_name?: string | null;
+  token?: string | null;
+  fast_track?: boolean | null;
+  essay_submitted?: boolean | null;
+};
+
+function kindFromToken(t: string): Kind | null {
+  const m = /^(?:PK|KP)-(PRE|EKO|UMU|YAT)-/.exec(t.trim().toUpperCase());
+  return m ? KIND_BY_CODE[m[1]] : null;
+}
+
+function EsaiRoute() {
+  const search = Route.useSearch();
+  const [token, setToken] = useState((search.token ?? "").toUpperCase());
+  const [verifying, setVerifying] = useState(false);
+  const [registrant, setRegistrant] = useState<RegInfo | null>(null);
+  const [kind, setKind] = useState<Kind | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [essays, setEssays] = useState<string[]>(["", "", ""]);
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const isFastTrack = !!registrant?.fast_track;
+
+  const handleVerify = async (silent = false) => {
+    const t = token.trim().toUpperCase();
+    if (!t) {
+      if (!silent) toast.error("Masukkan kode pendaftar Anda");
+      return;
+    }
+    const k = kindFromToken(t);
+    if (!k) {
+      setError("Format kode tidak valid. Contoh: PK-PRE-XXXXXX");
+      return;
+    }
+    setVerifying(true);
+    setError(null);
+    setRegistrant(null);
+    setDone(false);
+    try {
+      const { data, error: fnErr } = await supabase.functions.invoke("lookup-pendaftar", {
+        body: { token: t, kind: k },
+      });
+      if (fnErr) throw fnErr;
+      const payload = data as { ok: boolean; data?: RegInfo; error?: string };
+      if (!payload?.ok || !payload.data) {
+        setError(
+          payload?.error === "not_found"
+            ? "Kode tidak ditemukan. Periksa kembali kode dari WhatsApp / halaman sukses pendaftaran kamu."
+            : "Gagal memverifikasi kode.",
+        );
+        return;
+      }
+      setKind(k);
+      setRegistrant(payload.data);
+      if (payload.data.essay_submitted) setDone(true);
+      if (!silent) toast.success(`Selamat datang, ${payload.data.full_name}`);
+    } catch (err) {
+      console.error(err);
+      setError("Terjadi kesalahan saat memverifikasi kode.");
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  useEffect(() => {
+    if (search.token && !registrant && !verifying) handleVerify(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search.token]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!registrant || !kind) {
+      toast.error("Verifikasi kode pendaftar terlebih dahulu");
+      return;
+    }
+    const kurang = essays.findIndex((a) => a.trim().length < MIN_ESSAY_CHARS);
+    if (kurang !== -1) {
+      toast.error(`Esai No. ${kurang + 1} minimal ${MIN_ESSAY_CHARS} karakter`);
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await submitEsai({
+        token: token.trim().toUpperCase(),
+        kind,
+        essays: ESSAY_QUESTIONS.map((q, i) => ({ question: q, answer: essays[i].trim() })),
+      });
+      toast.success("Esai berhasil dikirim!");
+      setDone(true);
+    } catch (err) {
+      console.error(err);
+      toast.error(err instanceof Error ? err.message : "Gagal mengirim esai");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const berkasLink = kind ? `${BERKAS_TO[kind]}?token=${encodeURIComponent(token.trim().toUpperCase())}` : "/berkas";
+
+  return (
+    <section className="container-page py-12 md:py-16">
+      <Link to="/" className="text-xs font-semibold text-primary hover:underline">
+        ← Kembali ke Beranda
+      </Link>
+      <div className="mt-4 max-w-3xl">
+        <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
+          Tahap 3 — Pengiriman Esai
+        </span>
+        <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Esai Singkat</h1>
+        <p className="mt-2 text-muted-foreground">
+          Lengkapi esai singkat ini sebagai syarat untuk melanjutkan ke tahap Berkas Administrasi.
+          Masukkan kode pendaftar kamu terlebih dahulu.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="card-block p-6 md:p-7">
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <KeyRound size={16} className="text-primary" /> Verifikasi Kode Pendaftar
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Masukkan kode pendaftar (format{" "}
+              <span className="font-mono font-semibold">PK-PRE-XXXXXX</span>,{" "}
+              <span className="font-mono font-semibold">PK-EKO-XXXXXX</span>,{" "}
+              <span className="font-mono font-semibold">PK-UMU-XXXXXX</span>, atau{" "}
+              <span className="font-mono font-semibold">PK-YAT-XXXXXX</span>).
+            </p>
+            <div className="mt-5 grid sm:grid-cols-[1fr_auto] gap-3 items-end">
+              <label className="block">
+                <span className="text-xs font-medium text-foreground/80">
+                  Kode Pendaftar<span className="text-destructive"> *</span>
+                </span>
+                <div className="mt-1.5 relative">
+                  <KeyRound size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={token}
+                    onChange={(e) => {
+                      setToken(e.target.value.toUpperCase());
+                      setRegistrant(null);
+                      setError(null);
+                      setDone(false);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleVerify();
+                      }
+                    }}
+                    placeholder="PK-PRE-XXXXXX"
+                    maxLength={20}
+                    autoCapitalize="characters"
+                    className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm font-mono tracking-wider text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    required
+                  />
+                </div>
+              </label>
+              <button
+                type="button"
+                onClick={() => handleVerify()}
+                disabled={verifying}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-95 transition disabled:opacity-60"
+              >
+                {verifying ? <Loader2 size={14} className="animate-spin" /> : <KeyRound size={14} />}
+                Verifikasi
+              </button>
+            </div>
+
+            {error && (
+              <div className="mt-4 flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
+                <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                <div>
+                  {error}{" "}
+                  <Link to="/daftar" className="font-semibold underline">
+                    Daftar dulu
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {registrant && kind && (
+              <div className="mt-5 rounded-2xl border border-primary/30 bg-primary-soft/40 p-4">
+                <div className="flex items-center gap-2 text-xs font-semibold text-primary">
+                  <UserCheck size={14} /> Data ditemukan
+                </div>
+                <div className="mt-3 grid sm:grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Nama Lengkap</div>
+                    <div className="font-semibold text-foreground">{registrant.full_name}</div>
+                  </div>
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Kategori</div>
+                    <div className="font-semibold text-foreground">{KIND_LABEL[kind]}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {registrant && (isFastTrack || done) && (
+            <div className="card-block p-6 md:p-7">
+              <div className="flex items-start gap-2">
+                <CheckCircle2 size={18} className="mt-0.5 text-primary shrink-0" />
+                <div>
+                  <h2 className="text-base font-bold text-foreground">
+                    {isFastTrack ? "Fast Track — Esai Otomatis Lolos" : "Esai Sudah Terkirim"}
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {isFastTrack
+                      ? "Kamu terdaftar di jalur Fast Track, jadi tahap esai otomatis lolos. Silakan langsung lanjut mengirim berkas administrasi."
+                      : "Terima kasih! Jawaban esaimu sudah kami terima. Lanjutkan ke tahap Berkas Administrasi."}
+                  </p>
+                  <Link
+                    to={berkasLink}
+                    className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+                  >
+                    Lanjut Kirim Berkas <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {registrant && !isFastTrack && !done && (
+            <div className="card-block p-6 md:p-7">
+              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                <PenLine size={16} className="text-primary" /> Pertanyaan Esai (Wajib)
+              </h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Jawab 3 pertanyaan berikut dengan jujur dan singkat (minimal {MIN_ESSAY_CHARS} karakter per jawaban).
+              </p>
+              <div className="mt-5 space-y-5">
+                {ESSAY_QUESTIONS.map((q, i) => {
+                  const val = essays[i];
+                  const len = val.trim().length;
+                  return (
+                    <label key={q} className="block">
+                      <span className="text-xs font-medium text-foreground/80">
+                        {i + 1}. {q}
+                        <span className="text-destructive"> *</span>
+                      </span>
+                      <textarea
+                        value={val}
+                        onChange={(e) => setEssays((s) => s.map((v, idx) => (idx === i ? e.target.value : v)))}
+                        rows={4}
+                        maxLength={3000}
+                        placeholder="Tulis jawabanmu di sini…"
+                        className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      />
+                      <div className={`mt-1 text-[11px] ${len < MIN_ESSAY_CHARS ? "text-muted-foreground" : "text-primary"}`}>
+                        {len}/{MIN_ESSAY_CHARS} karakter minimum
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
+          <div className="card-block p-6">
+            <h3 className="font-semibold text-foreground">Catatan</h3>
+            <ul className="mt-4 space-y-3 text-sm text-foreground/85">
+              {[
+                "Esai wajib diisi sebelum mengirim berkas administrasi",
+                "Minimal 100 karakter untuk setiap jawaban",
+                "Peserta Fast Track otomatis lolos tahap esai",
+                "Gunakan bahasa yang sopan dan jujur",
+              ].map((t) => (
+                <li key={t} className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+          {!done && !isFastTrack && (
+            <button
+              type="submit"
+              disabled={submitting || !registrant}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition disabled:opacity-60"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" /> Mengirim…
+                </>
+              ) : (
+                <>
+                  Kirim Esai <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          )}
+        </aside>
+      </form>
+    </section>
+  );
+}
