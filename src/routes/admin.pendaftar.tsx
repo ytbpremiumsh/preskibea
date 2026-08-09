@@ -103,12 +103,15 @@ function AdminPendaftar() {
   const totals = useMemo(() => {
     const prestasi = rows.filter((r) => r.kind === "prestasi").length;
     const ekonomi = rows.filter((r) => r.kind === "ekonomi").length;
-    return { prestasi, ekonomi, total: rows.length };
+    const fast = rows.filter((r) => !!r.fast_track).length;
+    return { prestasi, ekonomi, fast, total: rows.length };
   }, [rows]);
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
       if (filterKind !== "all" && r.kind !== filterKind) return false;
+      if (filterJalur === "fast" && !r.fast_track) return false;
+      if (filterJalur === "reguler" && r.fast_track) return false;
       const hasDocs = docsForRow(r).length > 0;
       if (filterBerkas === "submitted" && !hasDocs) return false;
       if (filterBerkas === "pending" && hasDocs) return false;
@@ -125,7 +128,18 @@ function AdminPendaftar() {
       return true;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, q, filterKind, filterBerkas, docs]);
+  }, [rows, q, filterKind, filterBerkas, filterJalur, docs]);
+
+  const setPayment = async (r: Registration, next: "paid" | "pending") => {
+    if (next === "paid" && !confirm(`Validasi manual pembayaran Fast Track untuk "${r.full_name}"?`)) return;
+    const { error } = await supabase
+      .from("registrations")
+      .update({ payment_status: next, status: next === "paid" ? "verified" : "pending" })
+      .eq("id", r.id);
+    if (error) return toast.error(error.message);
+    setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, payment_status: next, status: (next === "paid" ? "verified" : "pending") as Registration["status"] } : x)));
+    toast.success(next === "paid" ? "Fast Track tervalidasi" : "Validasi dibatalkan");
+  };
 
   const exportExcel = async () => {
     const data = filtered.map((r) => ({
