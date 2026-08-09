@@ -121,7 +121,7 @@ function AdminAnalytics() {
         <ol className="list-decimal pl-5 space-y-2 text-sm text-foreground/85">
           <li>Buka <a href="https://analytics.google.com" target="_blank" rel="noreferrer" className="text-primary font-medium inline-flex items-center gap-1 hover:underline">analytics.google.com <ExternalLink className="h-3 w-3" /></a> dan login.</li>
           <li>Klik <b>Admin</b> (ikon roda gigi di kiri bawah).</li>
-          <li>Buat <b>Akun</b> baru jika belum ada, lalu buat <b>Properti</b> untuk website kejarprestasi.id.</li>
+          <li>Buat <b>Akun</b> baru jika belum ada, lalu buat <b>Properti</b> untuk website prestasikita.com.</li>
           <li>Pada properti, pilih <b>Aliran Data → Web</b>, lalu masukkan URL situs.</li>
           <li>Salin <b>Measurement ID</b> (format <span className="font-mono">G-XXXXXXXXXX</span>) dan tempel di form di atas.</li>
           <li>Klik <b>Simpan</b>. Statistik akan mulai tercatat dalam beberapa menit.</li>

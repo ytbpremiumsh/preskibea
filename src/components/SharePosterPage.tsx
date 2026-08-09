@@ -18,7 +18,7 @@ export function SharePosterPage({ kind: initialKind }: { kind?: "prestasi" | "ek
   const isGold = kind === "ekonomi";
   const label = kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "umum" ? "Beasiswa Umum" : kind === "yatim" ? "Beasiswa Yatim" : "Beasiswa Prestasi";
   const path = kind === "ekonomi" ? "/beasiswa-ekonomi" : kind === "umum" ? "/beasiswa-umum" : kind === "yatim" ? "/beasiswa-yatim" : "/beasiswa-prestasi";
-  const url = typeof window !== "undefined" ? window.location.origin + path : "https://kejarprestasi.id";
+  const url = typeof window !== "undefined" ? window.location.origin + path : "https://prestasikita.com";
 
   const defaultCaption = `🎓✨ BEASISWA PENDIDIKAN PRESTASI KITA — BATCH #8 ✨🎓
 
@@ -41,7 +41,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 • Video motivasi & sesi pembinaan penerima
 
 📌 Daftar sekarang di: ${url}
-📷 Info lengkap: @kejarprestasi_id
+📷 Info lengkap: @prestasikita
 📞 0812 8001 0302
 
 ⚠️ Hati-hati terhadap penipuan yang mengatasnamakan Prestasi Kita.
@@ -132,7 +132,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 
         <ol className="mt-6 grid md:grid-cols-2 gap-4">
           {[
-            { t: "Follow Instagram @kejarprestasi_id dan @atskolla", d: "Pastikan kamu sudah mengikuti akun Instagram resmi @kejarprestasi_id dan @atskolla sebelum lanjut ke tahap berikutnya." },
+            { t: "Follow Instagram @prestasikita dan @atskolla", d: "Pastikan kamu sudah mengikuti akun Instagram resmi @prestasikita dan @atskolla sebelum lanjut ke tahap berikutnya." },
             { t: "Sebar ke 5 grup WA atau 1 Instagram Feed", d: "Pilih salah satu: bagikan poster + caption ke minimal 5 grup WhatsApp, atau posting poster + caption ke 1 Instagram Feed kamu." },
             { t: "Komentar & tag 3 teman", d: "Komentari unggahan resmi @ayopintar_ dan mention 3 sahabatmu. Contoh: \"Yuk ikut daftar beasiswa ini 🥳✨ @temanA @temanB @temanC\"." },
             { t: "Konfirmasi bukti via WhatsApp", d: "Kirim screenshot (Story, postingan, dan grup) melalui tombol konfirmasi di bawah agar tim verifikasi mencatat partisipasimu." },

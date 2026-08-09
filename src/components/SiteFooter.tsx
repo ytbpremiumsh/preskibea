@@ -73,7 +73,7 @@ export function SiteFooter() {
 
           <div className="mt-6 flex items-center gap-3">
             <a
-              href="https://instagram.com/kejarprestasi_id"
+              href="https://instagram.com/prestasikita"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
