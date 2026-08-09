@@ -27,6 +27,10 @@ type StatusData = {
   candidate_status: string;
   created_at: string;
   token: string;
+  fast_track?: boolean;
+  payment_status?: string | null;
+  essay_submitted?: boolean;
+  essay_submitted_at?: string | null;
   docs: { total: number; pending: number; approved: number; rejected: number };
 };
 
