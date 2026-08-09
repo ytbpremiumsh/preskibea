@@ -138,6 +138,8 @@ function StatusResult({ data }: { data: StatusData }) {
   const jenis = data.kind === "prestasi" ? "Beasiswa Prestasi" : data.kind === "ekonomi" ? "Beasiswa Ekonomi" : data.kind === "yatim" ? "Beasiswa Yatim" : "Beasiswa Umum";
   const berkasTo = data.kind === "prestasi" ? "/berkas/prestasi/upload" : data.kind === "ekonomi" ? "/berkas/ekonomi/upload" : data.kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/umum/upload";
   const hasDocs = data.docs.total > 0;
+  const isFast = !!data.fast_track;
+  const essayDone = isFast || !!data.essay_submitted;
 
   return (
     <div className="card-block mt-6 p-6 md:p-7">
@@ -147,23 +149,72 @@ function StatusResult({ data }: { data: StatusData }) {
           <div className="mt-1 text-xl font-extrabold text-foreground">{data.full_name}</div>
           <div className="mt-1 text-sm text-muted-foreground">{jenis} · Kode: <span className="font-mono font-semibold text-foreground">{data.token}</span></div>
         </div>
+        <span
+          className={`rounded-full border-2 px-3 py-1 text-xs font-bold ${
+            isFast
+              ? "border-amber-500 bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-200"
+              : "border-border bg-muted text-muted-foreground"
+          }`}
+        >
+          {isFast ? "⚡ Fast Track" : "Jalur Reguler"}
+        </span>
       </div>
 
+      {isFast && (
+        <div className="mt-5 rounded-2xl border-2 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/30">
+          <div className="flex items-center gap-2 text-sm font-extrabold text-amber-900 dark:text-amber-200">
+            <Zap size={16} /> Fast Track — Esai Otomatis Lolos
+          </div>
+          <p className="mt-1 text-xs text-amber-900/80 dark:text-amber-200/80">
+            Anda tidak perlu mengisi esai singkat. Silakan langsung lanjut ke tahap Berkas Administrasi.
+          </p>
+        </div>
+      )}
+
       {/* Timeline */}
-      <div className="mt-6 grid sm:grid-cols-2 gap-3">
-        <Step
-          n={1}
-          label="Pendaftaran"
-          done
-          desc="Data diterima"
-        />
+      <div className="mt-6 grid sm:grid-cols-3 gap-3">
+        <Step n={1} label="Pendaftaran" done desc="Data diterima" />
         <Step
           n={2}
+          label="Pengiriman Essai"
+          done={essayDone}
+          desc={isFast ? "Otomatis lolos (Fast Track)" : essayDone ? "Esai sudah dikirim" : "Belum dikirim"}
+        />
+        <Step
+          n={3}
           label="Berkas Pendukung"
           done={hasDocs}
           desc={hasDocs ? `${data.docs.total} berkas masuk` : "Belum dikirim"}
         />
       </div>
+
+      {/* Essai detail */}
+      {!isFast && (
+        <div className="mt-6 rounded-2xl border border-border bg-background p-4">
+          <div className="flex items-center gap-2 text-sm font-bold text-foreground">
+            <PenLine size={16} className="text-primary" /> Status Esai Singkat
+          </div>
+          {essayDone ? (
+            <div className="mt-3 rounded-xl border border-green-200 bg-green-50 p-3 text-xs text-green-800 dark:border-green-900/40 dark:bg-green-950/30 dark:text-green-200">
+              ✓ Esai sudah dikirim
+              {data.essay_submitted_at ? ` pada ${new Date(data.essay_submitted_at).toLocaleString("id-ID")}` : ""}.
+            </div>
+          ) : (
+            <>
+              <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
+                ⚠️ Anda belum mengirim esai singkat. Esai wajib diisi sebelum mengirim berkas administrasi.
+              </div>
+              <Link
+                to="/esai"
+                search={{ token: data.token }}
+                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+              >
+                Isi Esai Sekarang <ArrowRight size={16} />
+              </Link>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Berkas detail */}
       <div className="mt-6 rounded-2xl border border-border bg-background p-4">
@@ -183,7 +234,7 @@ function StatusResult({ data }: { data: StatusData }) {
         )}
       </div>
 
-      {!hasDocs && (
+      {!hasDocs && essayDone && (
         <Link
           to={berkasTo as "/berkas/prestasi/upload" | "/berkas/ekonomi/upload" | "/berkas/umum/upload" | "/berkas/yatim/upload"}
           search={{ token: data.token }}
