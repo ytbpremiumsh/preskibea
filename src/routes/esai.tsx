@@ -237,7 +237,7 @@ function EsaiRoute() {
         <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
           Tahap 3 — Pengiriman Esai
         </span>
-        <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Esai Singkat</h1>
+        <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Pengiriman Esai</h1>
         <p className="mt-2 text-muted-foreground">
           Lengkapi esai singkat ini sebagai syarat untuk melanjutkan ke tahap Berkas Administrasi.
           Masukkan kode pendaftar kamu terlebih dahulu.
