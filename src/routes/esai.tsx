@@ -321,22 +321,21 @@ function EsaiRoute() {
 
         {!isFastTrack && !done && (
           <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
-          <div className="card-block p-6">
-            <h3 className="font-semibold text-foreground">Catatan</h3>
-            <ul className="mt-4 space-y-3 text-sm text-foreground/85">
-              {[
-                "Esai wajib diisi sebelum mengirim berkas administrasi",
-                "Minimal 100 karakter untuk setiap jawaban",
-                "Peserta Fast Track otomatis lolos tahap esai",
-                "Gunakan bahasa yang sopan dan jujur",
-              ].map((t) => (
-                <li key={t} className="flex items-start gap-2">
-                  <CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-          {!done && !isFastTrack && (
+            <div className="card-block p-6">
+              <h3 className="font-semibold text-foreground">Catatan</h3>
+              <ul className="mt-4 space-y-3 text-sm text-foreground/85">
+                {[
+                  "Esai wajib diisi sebelum mengirim berkas administrasi",
+                  "Minimal 100 karakter untuk setiap jawaban",
+                  "Peserta Fast Track otomatis lolos tahap esai",
+                  "Gunakan bahasa yang sopan dan jujur",
+                ].map((t) => (
+                  <li key={t} className="flex items-start gap-2">
+                    <CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
             <button
               type="submit"
               disabled={submitting || !registrant}
@@ -352,8 +351,8 @@ function EsaiRoute() {
                 </>
               )}
             </button>
-          )}
-        </aside>
+          </aside>
+        )}
       </form>
     </section>
   );
