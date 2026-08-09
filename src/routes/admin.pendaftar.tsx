@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, Users, Award, HeartHandshake, FileCheck } from "lucide-react";
+import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, Users, Award, HeartHandshake, FileCheck, Zap, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { openStoredFile } from "@/lib/storage-url";
 import { exportRowsToXlsx, exportRowsToCsv } from "@/lib/excel-export";
@@ -259,7 +259,7 @@ function AdminPendaftar() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <StatCard
           label="Total Pendaftar"
           value={totals.total}
