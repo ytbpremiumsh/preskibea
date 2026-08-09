@@ -70,6 +70,7 @@ export function AlumniSection() {
                 width={768}
                 height={768}
                 loading="lazy"
+                onError={(e) => handleImageError(e, alumni.indexOf(a))}
                 className="h-full w-full object-cover group-hover:scale-105 transition duration-500"
               />
             </div>
