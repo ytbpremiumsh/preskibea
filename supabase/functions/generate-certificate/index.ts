@@ -96,15 +96,10 @@ Deno.serve(async (req) => {
       try {
         const logoResp = await fetch(branding.header_logo_url);
         if (logoResp.ok) {
-          const logoBlob = await logoResp.blob();
-          const reader = new FileReader();
-          const base64Promise = new Promise((resolve) => {
-            reader.onloadend = () => resolve(reader.result);
-            reader.readAsDataURL(logoBlob);
-          });
-          const base64 = await base64Promise as string;
+          const logoArrayBuffer = await logoResp.arrayBuffer();
+          const uint8Array = new Uint8Array(logoArrayBuffer);
           // Add logo at top left inside border
-          doc.addImage(base64, "PNG", 40, 15, 25, 10); 
+          doc.addImage(uint8Array, "PNG", 40, 15, 25, 10); 
         }
       } catch (e) {
         console.error("Failed to load branding logo for certificate:", e);
