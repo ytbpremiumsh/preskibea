@@ -479,6 +479,28 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
               </div>
             )}
           </div>
+          
+          {registrant && !essayDone && (
+            <div className="mb-6 card-block p-6 md:p-7 border-destructive/30 bg-destructive/5">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="text-sm font-bold text-destructive uppercase tracking-wider">Peringatan: Esai Belum Diisi</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Maaf, Anda belum bisa mengirimkan berkas administrasi. Anda wajib menyelesaikan tahap <strong>Pengiriman Esai</strong> terlebih dahulu.
+                  </p>
+                  <Link
+                    to="/esai"
+                    search={{ token: token.trim().toUpperCase() }}
+                    className="mt-4 inline-flex items-center gap-2 rounded-full bg-destructive px-5 py-2.5 text-xs font-semibold text-white shadow-soft hover:opacity-90 transition"
+                  >
+                    Lengkapi Esai Sekarang <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
 
           <KetentuanBerkasCard kind={kind} />
 
