@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, Users, Award, HeartHandshake, FileCheck } from "lucide-react";
+import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, Users, Award, HeartHandshake, FileCheck, Zap, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { openStoredFile } from "@/lib/storage-url";
 import { exportRowsToXlsx, exportRowsToCsv } from "@/lib/excel-export";
@@ -30,8 +30,11 @@ type Registration = {
   school_name: string;
   grade: string;
   kind: "prestasi" | "ekonomi" | "umum" | "yatim";
-  status: "pending" | "approved" | "rejected";
+  status: "pending" | "verified" | "approved" | "rejected";
   token?: string | null;
+  fast_track?: boolean | null;
+  payment_status?: string | null;
+  extra?: Record<string, unknown> | null;
   parent_income: string | null;
   dependents: number | null;
   main_achievement: string | null;
@@ -57,6 +60,7 @@ function AdminPendaftar() {
   const [q, setQ] = useState("");
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi" | "umum" | "yatim">("all");
   const [filterBerkas, setFilterBerkas] = useState<"all" | "submitted" | "pending">("all");
+  const [filterJalur, setFilterJalur] = useState<"all" | "fast" | "reguler">("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectedRow, setSelectedRow] = useState<Registration | null>(null);
 
@@ -99,12 +103,15 @@ function AdminPendaftar() {
   const totals = useMemo(() => {
     const prestasi = rows.filter((r) => r.kind === "prestasi").length;
     const ekonomi = rows.filter((r) => r.kind === "ekonomi").length;
-    return { prestasi, ekonomi, total: rows.length };
+    const fast = rows.filter((r) => !!r.fast_track).length;
+    return { prestasi, ekonomi, fast, total: rows.length };
   }, [rows]);
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
       if (filterKind !== "all" && r.kind !== filterKind) return false;
+      if (filterJalur === "fast" && !r.fast_track) return false;
+      if (filterJalur === "reguler" && r.fast_track) return false;
       const hasDocs = docsForRow(r).length > 0;
       if (filterBerkas === "submitted" && !hasDocs) return false;
       if (filterBerkas === "pending" && hasDocs) return false;
@@ -121,7 +128,18 @@ function AdminPendaftar() {
       return true;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, q, filterKind, filterBerkas, docs]);
+  }, [rows, q, filterKind, filterBerkas, filterJalur, docs]);
+
+  const setPayment = async (r: Registration, next: "paid" | "pending") => {
+    if (next === "paid" && !confirm(`Validasi manual pembayaran Fast Track untuk "${r.full_name}"?`)) return;
+    const { error } = await supabase
+      .from("registrations")
+      .update({ payment_status: next, status: next === "paid" ? "verified" : "pending" })
+      .eq("id", r.id);
+    if (error) return toast.error(error.message);
+    setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, payment_status: next, status: (next === "paid" ? "verified" : "pending") as Registration["status"] } : x)));
+    toast.success(next === "paid" ? "Fast Track tervalidasi" : "Validasi dibatalkan");
+  };
 
   const exportExcel = async () => {
     const data = filtered.map((r) => ({
@@ -241,7 +259,7 @@ function AdminPendaftar() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <StatCard
           label="Total Pendaftar"
           value={totals.total}
@@ -262,6 +280,13 @@ function AdminPendaftar() {
           icon={<HeartHandshake className="h-5 w-5" />}
           gradient="from-emerald-500/15 to-emerald-500/5"
           iconBg="bg-emerald-500/15 text-emerald-600"
+        />
+        <StatCard
+          label="Fast Track"
+          value={totals.fast}
+          icon={<Zap className="h-5 w-5" />}
+          gradient="from-amber-500/20 to-amber-500/5"
+          iconBg="bg-amber-500/20 text-amber-600"
         />
         <StatCard
           label="Sudah Kirim Berkas"
@@ -293,6 +318,15 @@ function AdminPendaftar() {
             <option value="ekonomi">Ekonomi</option>
             <option value="umum">Umum</option>
             <option value="yatim">Yatim</option>
+          </select>
+          <select
+            value={filterJalur}
+            onChange={(e) => setFilterJalur(e.target.value as "all" | "fast" | "reguler")}
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            <option value="all">Semua Jalur</option>
+            <option value="fast">Fast Track ({totals.fast})</option>
+            <option value="reguler">Reguler ({rows.length - totals.fast})</option>
           </select>
           <select
             value={filterBerkas}
@@ -330,6 +364,7 @@ function AdminPendaftar() {
                   <th className="px-4 py-3">Nama</th>
                   <th className="px-4 py-3">Kode Token</th>
                   <th className="px-4 py-3">Kategori</th>
+                  <th className="px-4 py-3">Jalur</th>
                   <th className="px-4 py-3">Sekolah</th>
                   <th className="px-4 py-3">Kontak</th>
                   <th className="px-4 py-3">Berkas</th>
@@ -360,6 +395,9 @@ function AdminPendaftar() {
                     </td>
                     <td className="px-4 py-3 capitalize">{r.kind}</td>
                     <td className="px-4 py-3">
+                      <JalurBadge row={r} />
+                    </td>
+                    <td className="px-4 py-3">
                       <div>{r.school_name}</div>
                       <div className="text-xs text-muted-foreground uppercase">
                         {r.education_level} · {r.grade}
@@ -385,6 +423,26 @@ function AdminPendaftar() {
                         <Button size="sm" variant="outline" onClick={() => setSelectedRow(r)}>
                           Detail
                         </Button>
+                        {r.fast_track && r.payment_status !== "paid" && (
+                          <Button
+                            size="sm"
+                            className="bg-amber-500 text-white hover:bg-amber-600"
+                            onClick={() => setPayment(r, "paid")}
+                            title="Validasi manual Fast Track"
+                          >
+                            <CheckCircle2 className="h-4 w-4 mr-1" /> Validasi
+                          </Button>
+                        )}
+                        {r.fast_track && r.payment_status === "paid" && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setPayment(r, "pending")}
+                            title="Batalkan validasi"
+                          >
+                            <RotateCcw className="h-4 w-4" />
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           variant="ghost"
@@ -527,5 +585,26 @@ function StatCard({ label, value, icon, gradient, iconBg }: { label: string; val
         </div>
       </div>
     </Card>
+  );
+}
+
+function JalurBadge({ row }: { row: Registration }) {
+  if (!row.fast_track) {
+    return (
+      <Badge variant="outline" className="text-muted-foreground">
+        Reguler
+      </Badge>
+    );
+  }
+  const paid = row.payment_status === "paid";
+  return (
+    <div className="flex flex-col gap-1">
+      <Badge className="bg-amber-500/15 text-amber-700 hover:bg-amber-500/20 border border-amber-500/40">
+        <Zap className="h-3 w-3 mr-1" /> Fast Track
+      </Badge>
+      <span className={`text-[11px] font-medium ${paid ? "text-emerald-600" : "text-muted-foreground"}`}>
+        {paid ? "✓ Lunas / tervalidasi" : "Menunggu pembayaran"}
+      </span>
+    </div>
   );
 }
