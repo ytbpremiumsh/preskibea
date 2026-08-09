@@ -364,6 +364,7 @@ function AdminPendaftar() {
                   <th className="px-4 py-3">Nama</th>
                   <th className="px-4 py-3">Kode Token</th>
                   <th className="px-4 py-3">Kategori</th>
+                  <th className="px-4 py-3">Jalur</th>
                   <th className="px-4 py-3">Sekolah</th>
                   <th className="px-4 py-3">Kontak</th>
                   <th className="px-4 py-3">Berkas</th>
