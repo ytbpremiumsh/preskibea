@@ -228,12 +228,15 @@ function AdminOverview() {
 
   const items = [
     { label: "Total Pendaftar", value: counts.total, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
-    { label: "Pendaftar Fast Track", value: counts.fastTrack, icon: Clock, color: "text-orange-600", bg: "bg-orange-100" },
     { label: "Hari Ini", value: counts.today, icon: Clock, color: "text-emerald-700", bg: "bg-emerald-100" },
-    { label: "Beasiswa Prestasi", value: counts.prestasi, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
-    { label: "Beasiswa Ekonomi", value: counts.ekonomi, icon: HeartHandshake, color: "text-accent-foreground", bg: "bg-accent/30" },
+    { label: "Fast Track", value: counts.fastTrack, icon: Clock, color: "text-orange-600", bg: "bg-orange-100" },
     { label: "Berkas Diunggah", value: counts.docs, icon: FileText, color: "text-blue-700", bg: "bg-blue-100" },
+    { label: "Beasiswa Prestasi", value: counts.prestasi, icon: GraduationCap, color: "text-indigo-600", bg: "bg-indigo-100" },
+    { label: "Beasiswa Ekonomi", value: counts.ekonomi, icon: HeartHandshake, color: "text-emerald-700", bg: "bg-emerald-100" },
+    { label: "Beasiswa Umum", value: counts.umum, icon: GraduationCap, color: "text-teal-700", bg: "bg-teal-100" },
+    { label: "Beasiswa Yatim", value: counts.yatim, icon: HeartHandshake, color: "text-fuchsia-700", bg: "bg-fuchsia-100" },
   ];
+
 
   return (
     <div className="space-y-6">
