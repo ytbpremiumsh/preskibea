@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap, Heart } from "lucide-react";
-import heroImg from "@/assets/students-hero.png";
+import heroDefault from "@/assets/students-hero.png";
 import { Countdown } from "@/components/Countdown";
 import { AboutMockup } from "@/components/AboutMockup";
 import { FAQSection } from "@/components/FAQSection";
@@ -8,6 +8,7 @@ import { TimelineSection } from "@/components/TimelineSection";
 import { BenefitsSection } from "@/components/BenefitsSection";
 import { AlumniSection } from "@/components/AlumniSection";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { useBranding } from "@/hooks/use-branding";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,6 +37,9 @@ const stats = [
 const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Beasiswa Umum", "Beasiswa Yatim", "Tanpa Biaya", "Seluruh Indonesia", "Sertifikat Resmi", "Merchandise", "Akses Magang"];
 
 function Index() {
+  const { heroImage } = useBranding();
+  const heroImg = heroImage || heroDefault;
+
   return (
     <>
       {/* HERO */}
