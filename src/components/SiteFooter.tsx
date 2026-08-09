@@ -127,7 +127,7 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link to="/bagikan-poster/prestasi" className="hover:text-primary transition flex items-center gap-2">
+              <Link to="/bagikan-poster" className="hover:text-primary transition flex items-center gap-2">
                 <span className="h-1 w-1 rounded-full bg-primary" /> Bagikan Poster
               </Link>
             </li>
