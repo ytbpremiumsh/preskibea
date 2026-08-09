@@ -147,7 +147,7 @@ function SuksesPage() {
             </div>
           </div>
           <Link
-            to={kind === "ekonomi" ? "/bagikan-poster/ekonomi" : kind === "umum" ? "/bagikan-poster/umum" : kind === "yatim" ? "/bagikan-poster/yatim" : "/bagikan-poster/prestasi"}
+            to="/bagikan-poster"
             className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
           >
             Bagikan Poster Sekarang <ArrowRight size={16} />

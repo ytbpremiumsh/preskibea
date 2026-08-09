@@ -22,7 +22,6 @@ import { Route as BagikanPosterRouteImport } from './routes/bagikan-poster'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BerkasIndexRouteImport } from './routes/berkas.index'
-import { Route as BagikanPosterIndexRouteImport } from './routes/bagikan-poster.index'
 import { Route as ArtikelIndexRouteImport } from './routes/artikel.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PendaftaranYatimRouteImport } from './routes/pendaftaran.yatim'
@@ -130,11 +129,6 @@ const BerkasIndexRoute = BerkasIndexRouteImport.update({
   id: '/berkas/',
   path: '/berkas/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const BagikanPosterIndexRoute = BagikanPosterIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => BagikanPosterRoute,
 } as any)
 const ArtikelIndexRoute = ArtikelIndexRouteImport.update({
   id: '/artikel/',
@@ -350,7 +344,7 @@ const BerkasEkonomiUploadRoute = BerkasEkonomiUploadRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/bagikan-poster': typeof BagikanPosterRouteWithChildren
+  '/bagikan-poster': typeof BagikanPosterRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/beasiswa-umum': typeof BeasiswaUmumRoute
@@ -394,7 +388,6 @@ export interface FileRoutesByFullPath {
   '/pendaftaran/yatim': typeof PendaftaranYatimRoute
   '/admin/': typeof AdminIndexRoute
   '/artikel/': typeof ArtikelIndexRoute
-  '/bagikan-poster/': typeof BagikanPosterIndexRoute
   '/berkas/': typeof BerkasIndexRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
@@ -407,6 +400,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bagikan-poster': typeof BagikanPosterRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/beasiswa-umum': typeof BeasiswaUmumRoute
@@ -446,7 +440,6 @@ export interface FileRoutesByTo {
   '/pendaftaran/yatim': typeof PendaftaranYatimRoute
   '/admin': typeof AdminIndexRoute
   '/artikel': typeof ArtikelIndexRoute
-  '/bagikan-poster': typeof BagikanPosterIndexRoute
   '/berkas': typeof BerkasIndexRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
@@ -461,7 +454,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/bagikan-poster': typeof BagikanPosterRouteWithChildren
+  '/bagikan-poster': typeof BagikanPosterRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/beasiswa-umum': typeof BeasiswaUmumRoute
@@ -505,7 +498,6 @@ export interface FileRoutesById {
   '/pendaftaran/yatim': typeof PendaftaranYatimRoute
   '/admin/': typeof AdminIndexRoute
   '/artikel/': typeof ArtikelIndexRoute
-  '/bagikan-poster/': typeof BagikanPosterIndexRoute
   '/berkas/': typeof BerkasIndexRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
@@ -565,7 +557,6 @@ export interface FileRouteTypes {
     | '/pendaftaran/yatim'
     | '/admin/'
     | '/artikel/'
-    | '/bagikan-poster/'
     | '/berkas/'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
@@ -578,6 +569,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/bagikan-poster'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/beasiswa-umum'
@@ -617,7 +609,6 @@ export interface FileRouteTypes {
     | '/pendaftaran/yatim'
     | '/admin'
     | '/artikel'
-    | '/bagikan-poster'
     | '/berkas'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
@@ -675,7 +666,6 @@ export interface FileRouteTypes {
     | '/pendaftaran/yatim'
     | '/admin/'
     | '/artikel/'
-    | '/bagikan-poster/'
     | '/berkas/'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
@@ -690,7 +680,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
-  BagikanPosterRoute: typeof BagikanPosterRouteWithChildren
+  BagikanPosterRoute: typeof BagikanPosterRoute
   BeasiswaEkonomiRoute: typeof BeasiswaEkonomiRoute
   BeasiswaPrestasiRoute: typeof BeasiswaPrestasiRoute
   BeasiswaUmumRoute: typeof BeasiswaUmumRoute
@@ -808,13 +798,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/berkas/'
       preLoaderRoute: typeof BerkasIndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/bagikan-poster/': {
-      id: '/bagikan-poster/'
-      path: '/'
-      fullPath: '/bagikan-poster/'
-      preLoaderRoute: typeof BagikanPosterIndexRouteImport
-      parentRoute: typeof BagikanPosterRoute
     }
     '/artikel/': {
       id: '/artikel/'
@@ -1163,18 +1146,6 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
-interface BagikanPosterRouteChildren {
-  BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
-}
-
-const BagikanPosterRouteChildren: BagikanPosterRouteChildren = {
-  BagikanPosterIndexRoute: BagikanPosterIndexRoute,
-}
-
-const BagikanPosterRouteWithChildren = BagikanPosterRoute._addFileChildren(
-  BagikanPosterRouteChildren,
-)
-
 interface BerkasEkonomiRouteChildren {
   BerkasEkonomiUploadRoute: typeof BerkasEkonomiUploadRoute
   BerkasEkonomiIndexRoute: typeof BerkasEkonomiIndexRoute
@@ -1234,7 +1205,7 @@ const BerkasYatimRouteWithChildren = BerkasYatimRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
-  BagikanPosterRoute: BagikanPosterRouteWithChildren,
+  BagikanPosterRoute: BagikanPosterRoute,
   BeasiswaEkonomiRoute: BeasiswaEkonomiRoute,
   BeasiswaPrestasiRoute: BeasiswaPrestasiRoute,
   BeasiswaUmumRoute: BeasiswaUmumRoute,
