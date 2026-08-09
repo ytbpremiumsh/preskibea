@@ -153,17 +153,31 @@ function AdminSettings() {
           <Award className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold text-foreground">Pengaturan Sertifikat</h2>
         </div>
-        <div className="flex items-center justify-between rounded-xl border border-border p-4">
-          <div className="space-y-0.5">
-            <Label className="text-sm font-semibold">Aktifkan E-Sertifikat</Label>
-            <p className="text-xs text-muted-foreground">
-              Izinkan pendaftar mengunduh sertifikat dari halaman Cek Status.
+        <div className="space-y-4">
+          <div className="flex items-center justify-between rounded-xl border border-border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-sm font-semibold">Aktifkan E-Sertifikat</Label>
+              <p className="text-xs text-muted-foreground">
+                Izinkan pendaftar mengunduh sertifikat dari halaman Cek Status.
+              </p>
+            </div>
+            <Switch
+              checked={certConfig.enabled}
+              onCheckedChange={(v) => setCertConfig({ ...certConfig, enabled: v })}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold">Tanggal & Jam Rilis Unduhan</Label>
+            <Input
+              type="datetime-local"
+              value={certConfig.releaseDate}
+              onChange={(e) => setCertConfig({ ...certConfig, releaseDate: e.target.value })}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Tentukan kapan tombol unduh sertifikat akan muncul bagi peserta yang sudah terverifikasi.
             </p>
           </div>
-          <Switch
-            checked={certConfig.enabled}
-            onCheckedChange={(v) => setCertConfig({ enabled: v })}
-          />
         </div>
       </Card>
 
