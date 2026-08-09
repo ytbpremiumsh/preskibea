@@ -13,7 +13,7 @@ type PosterCfg = {
   wa_message: string;
 };
 
-export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "yatim" }) {
+export function SharePosterPage({ kind: initialKind }: { kind?: "prestasi" | "ekonomi" | "umum" | "yatim" }) {
   const isGold = kind === "ekonomi";
   const label = kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "umum" ? "Beasiswa Umum" : kind === "yatim" ? "Beasiswa Yatim" : "Beasiswa Prestasi";
   const path = kind === "ekonomi" ? "/beasiswa-ekonomi" : kind === "umum" ? "/beasiswa-umum" : kind === "yatim" ? "/beasiswa-yatim" : "/beasiswa-prestasi";
@@ -62,8 +62,16 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
         .select("value")
         .eq("key", "share_poster")
         .maybeSingle();
-      const v = data?.value as { prestasi?: Partial<PosterCfg>; ekonomi?: Partial<PosterCfg>; umum?: Partial<PosterCfg>; yatim?: Partial<PosterCfg> } | undefined;
-      const k = v?.[kind];
+      const v = data?.value as {
+        prestasi?: Partial<PosterCfg>;
+        ekonomi?: Partial<PosterCfg>;
+        umum?: Partial<PosterCfg>;
+        yatim?: Partial<PosterCfg>;
+        is_unified?: boolean;
+        unified?: Partial<PosterCfg>;
+      } | undefined;
+
+      const k = v?.is_unified ? v?.unified : v?.[initialKind || "prestasi"];
       if (k) {
         setCfg((prev) => ({
           image_url: k.image_url || prev.image_url,
@@ -74,7 +82,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
         }));
       }
     })();
-  }, [kind]);
+  }, [initialKind]);
 
   const caption = cfg.caption;
 
@@ -105,7 +113,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
       <Link to="/" className="text-xs font-semibold text-primary hover:underline">← Kembali ke Beranda</Link>
 
       <div className="mt-4">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-foreground">Bagikan Poster {label}</h1>
+        <h1 className="text-3xl md:text-4xl font-extrabold text-foreground">Bagikan Poster Beasiswa</h1>
         <p className="mt-2 text-muted-foreground">Bantu sebarkan informasi beasiswa ini kepada teman dan keluarga.</p>
       </div>
 
@@ -180,7 +188,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
           <div className="mt-5 flex justify-center">
             <a
               href={cfg.download_url || cfg.image_url}
-              download={`poster-kejar-prestasi-${kind}.png`}
+              download={`poster-prestasi-kita.png`}
               target="_blank"
               rel="noreferrer"
               className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/80 px-7 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/40 active:scale-95 overflow-hidden"

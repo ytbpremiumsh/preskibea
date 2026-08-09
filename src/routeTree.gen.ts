@@ -18,6 +18,7 @@ import { Route as BeasiswaYatimRouteImport } from './routes/beasiswa-yatim'
 import { Route as BeasiswaUmumRouteImport } from './routes/beasiswa-umum'
 import { Route as BeasiswaPrestasiRouteImport } from './routes/beasiswa-prestasi'
 import { Route as BeasiswaEkonomiRouteImport } from './routes/beasiswa-ekonomi'
+import { Route as BagikanPosterRouteImport } from './routes/bagikan-poster'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BerkasIndexRouteImport } from './routes/berkas.index'
@@ -114,6 +115,11 @@ const BeasiswaEkonomiRoute = BeasiswaEkonomiRouteImport.update({
   path: '/beasiswa-ekonomi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BagikanPosterRoute = BagikanPosterRouteImport.update({
+  id: '/bagikan-poster',
+  path: '/bagikan-poster',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -130,9 +136,9 @@ const BerkasIndexRoute = BerkasIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const BagikanPosterIndexRoute = BagikanPosterIndexRouteImport.update({
-  id: '/bagikan-poster/',
-  path: '/bagikan-poster/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => BagikanPosterRoute,
 } as any)
 const ArtikelIndexRoute = ArtikelIndexRouteImport.update({
   id: '/artikel/',
@@ -200,24 +206,24 @@ const BerkasEkonomiRoute = BerkasEkonomiRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const BagikanPosterYatimRoute = BagikanPosterYatimRouteImport.update({
-  id: '/bagikan-poster/yatim',
-  path: '/bagikan-poster/yatim',
-  getParentRoute: () => rootRouteImport,
+  id: '/yatim',
+  path: '/yatim',
+  getParentRoute: () => BagikanPosterRoute,
 } as any)
 const BagikanPosterUmumRoute = BagikanPosterUmumRouteImport.update({
-  id: '/bagikan-poster/umum',
-  path: '/bagikan-poster/umum',
-  getParentRoute: () => rootRouteImport,
+  id: '/umum',
+  path: '/umum',
+  getParentRoute: () => BagikanPosterRoute,
 } as any)
 const BagikanPosterPrestasiRoute = BagikanPosterPrestasiRouteImport.update({
-  id: '/bagikan-poster/prestasi',
-  path: '/bagikan-poster/prestasi',
-  getParentRoute: () => rootRouteImport,
+  id: '/prestasi',
+  path: '/prestasi',
+  getParentRoute: () => BagikanPosterRoute,
 } as any)
 const BagikanPosterEkonomiRoute = BagikanPosterEkonomiRouteImport.update({
-  id: '/bagikan-poster/ekonomi',
-  path: '/bagikan-poster/ekonomi',
-  getParentRoute: () => rootRouteImport,
+  id: '/ekonomi',
+  path: '/ekonomi',
+  getParentRoute: () => BagikanPosterRoute,
 } as any)
 const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
   id: '/artikel/$slug',
@@ -368,6 +374,7 @@ const BerkasEkonomiUploadRoute = BerkasEkonomiUploadRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/bagikan-poster': typeof BagikanPosterRouteWithChildren
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/beasiswa-umum': typeof BeasiswaUmumRoute
@@ -486,6 +493,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/bagikan-poster': typeof BagikanPosterRouteWithChildren
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/beasiswa-umum': typeof BeasiswaUmumRoute
@@ -549,6 +557,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/bagikan-poster'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/beasiswa-umum'
@@ -666,6 +675,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/bagikan-poster'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/beasiswa-umum'
@@ -728,6 +738,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  BagikanPosterRoute: typeof BagikanPosterRouteWithChildren
   BeasiswaEkonomiRoute: typeof BeasiswaEkonomiRoute
   BeasiswaPrestasiRoute: typeof BeasiswaPrestasiRoute
   BeasiswaUmumRoute: typeof BeasiswaUmumRoute
@@ -738,10 +749,6 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   TentangRoute: typeof TentangRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
-  BagikanPosterEkonomiRoute: typeof BagikanPosterEkonomiRoute
-  BagikanPosterPrestasiRoute: typeof BagikanPosterPrestasiRoute
-  BagikanPosterUmumRoute: typeof BagikanPosterUmumRoute
-  BagikanPosterYatimRoute: typeof BagikanPosterYatimRoute
   BerkasEkonomiRoute: typeof BerkasEkonomiRouteWithChildren
   BerkasPrestasiRoute: typeof BerkasPrestasiRouteWithChildren
   BerkasTerkirimRoute: typeof BerkasTerkirimRoute
@@ -754,7 +761,6 @@ export interface RootRouteChildren {
   PendaftaranUmumRoute: typeof PendaftaranUmumRoute
   PendaftaranYatimRoute: typeof PendaftaranYatimRoute
   ArtikelIndexRoute: typeof ArtikelIndexRoute
-  BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
   BerkasIndexRoute: typeof BerkasIndexRoute
 }
 
@@ -823,6 +829,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BeasiswaEkonomiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bagikan-poster': {
+      id: '/bagikan-poster'
+      path: '/bagikan-poster'
+      fullPath: '/bagikan-poster'
+      preLoaderRoute: typeof BagikanPosterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -846,10 +859,10 @@ declare module '@tanstack/react-router' {
     }
     '/bagikan-poster/': {
       id: '/bagikan-poster/'
-      path: '/bagikan-poster'
+      path: '/'
       fullPath: '/bagikan-poster/'
       preLoaderRoute: typeof BagikanPosterIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof BagikanPosterRoute
     }
     '/artikel/': {
       id: '/artikel/'
@@ -944,31 +957,31 @@ declare module '@tanstack/react-router' {
     }
     '/bagikan-poster/yatim': {
       id: '/bagikan-poster/yatim'
-      path: '/bagikan-poster/yatim'
+      path: '/yatim'
       fullPath: '/bagikan-poster/yatim'
       preLoaderRoute: typeof BagikanPosterYatimRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof BagikanPosterRoute
     }
     '/bagikan-poster/umum': {
       id: '/bagikan-poster/umum'
-      path: '/bagikan-poster/umum'
+      path: '/umum'
       fullPath: '/bagikan-poster/umum'
       preLoaderRoute: typeof BagikanPosterUmumRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof BagikanPosterRoute
     }
     '/bagikan-poster/prestasi': {
       id: '/bagikan-poster/prestasi'
-      path: '/bagikan-poster/prestasi'
+      path: '/prestasi'
       fullPath: '/bagikan-poster/prestasi'
       preLoaderRoute: typeof BagikanPosterPrestasiRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof BagikanPosterRoute
     }
     '/bagikan-poster/ekonomi': {
       id: '/bagikan-poster/ekonomi'
-      path: '/bagikan-poster/ekonomi'
+      path: '/ekonomi'
       fullPath: '/bagikan-poster/ekonomi'
       preLoaderRoute: typeof BagikanPosterEkonomiRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof BagikanPosterRoute
     }
     '/artikel/$slug': {
       id: '/artikel/$slug'
@@ -1226,6 +1239,26 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface BagikanPosterRouteChildren {
+  BagikanPosterEkonomiRoute: typeof BagikanPosterEkonomiRoute
+  BagikanPosterPrestasiRoute: typeof BagikanPosterPrestasiRoute
+  BagikanPosterUmumRoute: typeof BagikanPosterUmumRoute
+  BagikanPosterYatimRoute: typeof BagikanPosterYatimRoute
+  BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
+}
+
+const BagikanPosterRouteChildren: BagikanPosterRouteChildren = {
+  BagikanPosterEkonomiRoute: BagikanPosterEkonomiRoute,
+  BagikanPosterPrestasiRoute: BagikanPosterPrestasiRoute,
+  BagikanPosterUmumRoute: BagikanPosterUmumRoute,
+  BagikanPosterYatimRoute: BagikanPosterYatimRoute,
+  BagikanPosterIndexRoute: BagikanPosterIndexRoute,
+}
+
+const BagikanPosterRouteWithChildren = BagikanPosterRoute._addFileChildren(
+  BagikanPosterRouteChildren,
+)
+
 interface BerkasEkonomiRouteChildren {
   BerkasEkonomiUploadRoute: typeof BerkasEkonomiUploadRoute
   BerkasEkonomiIndexRoute: typeof BerkasEkonomiIndexRoute
@@ -1285,6 +1318,7 @@ const BerkasYatimRouteWithChildren = BerkasYatimRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  BagikanPosterRoute: BagikanPosterRouteWithChildren,
   BeasiswaEkonomiRoute: BeasiswaEkonomiRoute,
   BeasiswaPrestasiRoute: BeasiswaPrestasiRoute,
   BeasiswaUmumRoute: BeasiswaUmumRoute,
@@ -1295,10 +1329,6 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   TentangRoute: TentangRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
-  BagikanPosterEkonomiRoute: BagikanPosterEkonomiRoute,
-  BagikanPosterPrestasiRoute: BagikanPosterPrestasiRoute,
-  BagikanPosterUmumRoute: BagikanPosterUmumRoute,
-  BagikanPosterYatimRoute: BagikanPosterYatimRoute,
   BerkasEkonomiRoute: BerkasEkonomiRouteWithChildren,
   BerkasPrestasiRoute: BerkasPrestasiRouteWithChildren,
   BerkasTerkirimRoute: BerkasTerkirimRoute,
@@ -1311,7 +1341,6 @@ const rootRouteChildren: RootRouteChildren = {
   PendaftaranUmumRoute: PendaftaranUmumRoute,
   PendaftaranYatimRoute: PendaftaranYatimRoute,
   ArtikelIndexRoute: ArtikelIndexRoute,
-  BagikanPosterIndexRoute: BagikanPosterIndexRoute,
   BerkasIndexRoute: BerkasIndexRoute,
 }
 export const routeTree = rootRouteImport
