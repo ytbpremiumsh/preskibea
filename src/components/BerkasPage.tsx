@@ -439,7 +439,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
           {registrant && essayDone && (
             <div className="card-block p-6 md:p-7">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
+                <h2 className="text-base font-bold text-foreground">Form Pengiriman Berkas</h2>
               </div>
               <div className="mt-5 space-y-6">
                 {docs.map((d) => {

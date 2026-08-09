@@ -14,8 +14,8 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
     ],
     umum: [
       "Sertifikat / medali / surat rekomendasi prestasi",
-      "Esai dengan tema yang sudah ditentukan",
-      "Sertifikat pendukung lainnya (opsional)",
+      "Curriculum Vitae (CV) Kreatif",
+      "Sertifikat Organisasi/Kepanitiaan (opsional)",
     ],
   },
   ekonomi: {
@@ -29,8 +29,8 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
       "Surat Keterangan Tidak Mampu (SKTM) dari kelurahan",
       "Keterangan penghasilan orang tua / wali",
       "Bukti pembayaran listrik rumah terakhir",
-      "Esai dengan tema yang sudah ditentukan",
-      "Sertifikat pendukung lainnya (opsional)",
+      "Foto Rumah (Tampak Depan & Ruang Tamu)",
+      "Bukti Pembayaran Listrik/PBB",
     ],
   },
   umum: {
@@ -43,8 +43,9 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
       "Transkrip Nilai atau Kartu Hasil Studi (KHS)",
     ],
     umum: [
-      "Esai dengan tema yang sudah ditentukan",
-      "Sertifikat pendukung lainnya (opsional)",
+      "Curriculum Vitae (CV) / Portofolio Singkat",
+      "Video Motivasi Diri (Link)",
+      "Sertifikat / Berkas Pendukung Lainnya",
     ],
   },
   yatim: {
