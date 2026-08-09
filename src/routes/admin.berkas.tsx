@@ -29,6 +29,7 @@ import {
   Users,
   Award,
   HeartHandshake,
+  GraduationCap,
 } from "lucide-react";
 import { toast } from "sonner";
 import { openStoredFile } from "@/lib/storage-url";
@@ -272,7 +273,9 @@ function AdminBerkas() {
     );
     const prestasi = all.filter((d) => d.kind === "prestasi").length;
     const ekonomi = all.filter((d) => d.kind === "ekonomi").length;
-    return { prestasi, ekonomi, total: all.length };
+    const umum = all.filter((d) => d.kind === "umum").length;
+    const yatim = all.filter((d) => d.kind === "yatim").length;
+    return { prestasi, ekonomi, umum, yatim, total: all.length };
   }, [docs]);
 
   return (
@@ -302,27 +305,41 @@ function AdminBerkas() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <StatCard
-          label="Total Pengirim Berkas"
+          label="Total Pengirim"
           value={totals.total}
           icon={<Users className="h-5 w-5" />}
           gradient="from-primary/15 to-primary/5"
           iconBg="bg-primary/15 text-primary"
         />
         <StatCard
-          label="Berkas Prestasi"
+          label="Prestasi"
           value={totals.prestasi}
           icon={<Award className="h-5 w-5" />}
-          gradient="from-amber-500/15 to-amber-500/5"
-          iconBg="bg-amber-500/15 text-amber-600"
+          gradient="from-indigo-500/15 to-indigo-500/5"
+          iconBg="bg-indigo-500/15 text-indigo-600"
         />
         <StatCard
-          label="Berkas Ekonomi"
+          label="Ekonomi"
           value={totals.ekonomi}
           icon={<HeartHandshake className="h-5 w-5" />}
           gradient="from-emerald-500/15 to-emerald-500/5"
           iconBg="bg-emerald-500/15 text-emerald-600"
+        />
+        <StatCard
+          label="Umum"
+          value={totals.umum}
+          icon={<GraduationCap className="h-5 w-5" />}
+          gradient="from-teal-500/15 to-teal-500/5"
+          iconBg="bg-teal-500/15 text-teal-600"
+        />
+        <StatCard
+          label="Yatim"
+          value={totals.yatim}
+          icon={<HeartHandshake className="h-5 w-5" />}
+          gradient="from-fuchsia-500/15 to-fuchsia-500/5"
+          iconBg="bg-fuchsia-500/15 text-fuchsia-600"
         />
       </div>
 
