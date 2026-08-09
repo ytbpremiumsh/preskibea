@@ -587,3 +587,24 @@ function StatCard({ label, value, icon, gradient, iconBg }: { label: string; val
     </Card>
   );
 }
+
+function JalurBadge({ row }: { row: Registration }) {
+  if (!row.fast_track) {
+    return (
+      <Badge variant="outline" className="text-muted-foreground">
+        Reguler
+      </Badge>
+    );
+  }
+  const paid = row.payment_status === "paid";
+  return (
+    <div className="flex flex-col gap-1">
+      <Badge className="bg-amber-500/15 text-amber-700 hover:bg-amber-500/20 border border-amber-500/40">
+        <Zap className="h-3 w-3 mr-1" /> Fast Track
+      </Badge>
+      <span className={`text-[11px] font-medium ${paid ? "text-emerald-600" : "text-muted-foreground"}`}>
+        {paid ? "✓ Lunas / tervalidasi" : "Menunggu pembayaran"}
+      </span>
+    </div>
+  );
+}
