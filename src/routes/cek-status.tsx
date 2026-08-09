@@ -238,7 +238,7 @@ function StatusResult({ data }: { data: StatusData }) {
       {!hasDocs && essayDone && (
         <Link
           to={berkasTo as "/berkas/prestasi/upload" | "/berkas/ekonomi/upload" | "/berkas/umum/upload" | "/berkas/yatim/upload"}
-          search={{ token: data.token, education_level: data.education_level }}
+          search={{ token: data.token } as any}
           className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
         >
           Kirim Berkas Sekarang <ArrowRight size={16} />

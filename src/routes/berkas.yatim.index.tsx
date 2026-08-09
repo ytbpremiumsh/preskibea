@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { BerkasInfoPage } from "@/components/BerkasInfoPage";
 
 export const Route = createFileRoute("/berkas/yatim/")({
