@@ -24,7 +24,7 @@ const docsByKind = {
     "Rapor / KHS / Transkrip Nilai Terakhir (Minimal 1 Semester)",
     "Curriculum Vitae (CV) / Portofolio Singkat",
     "Video Motivasi Diri (Link Drive/YouTube) — Wajib",
-    "Sertifikat Pendukung Lainnya (Organisasi/Keahlian) — opsional",
+    "Sertifikat / Berkas Pendukung Lainnya (Organisasi/Keahlian) — opsional",
     "Berkas Pendukung Lainnya",
   ],
   yatim: [
