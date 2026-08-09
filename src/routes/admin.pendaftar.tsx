@@ -423,6 +423,26 @@ function AdminPendaftar() {
                         <Button size="sm" variant="outline" onClick={() => setSelectedRow(r)}>
                           Detail
                         </Button>
+                        {r.fast_track && r.payment_status !== "paid" && (
+                          <Button
+                            size="sm"
+                            className="bg-amber-500 text-white hover:bg-amber-600"
+                            onClick={() => setPayment(r, "paid")}
+                            title="Validasi manual Fast Track"
+                          >
+                            <CheckCircle2 className="h-4 w-4 mr-1" /> Validasi
+                          </Button>
+                        )}
+                        {r.fast_track && r.payment_status === "paid" && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setPayment(r, "pending")}
+                            title="Batalkan validasi"
+                          >
+                            <RotateCcw className="h-4 w-4" />
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           variant="ghost"
