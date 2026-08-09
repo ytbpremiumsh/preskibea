@@ -92,13 +92,6 @@ const groups: { label: string; items: Item[] }[] = [
       { title: "Mode Maintenance", url: "/admin/maintenance", icon: Wrench },
     ],
   },
-  {
-    label: "Dokumentasi",
-    items: [
-      { title: "Instalasi VPS", url: "/admin/instalasi/vps", icon: Server },
-      { title: "Instalasi Hosting", url: "/admin/instalasi/hosting", icon: Globe },
-    ],
-  },
 ];
 
 export function AdminSidebar() {
