@@ -425,8 +425,9 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
 
   const grouped = useMemo(() => {
     const fileFields = schema.fields.filter((f) => f.type === "file");
-    const dataFields = schema.fields.filter((f) => f.type !== "file");
-    return { dataFields, fileFields };
+    const requiredDataFields = schema.fields.filter((f) => f.type !== "file" && f.required);
+    const optionalDataFields = schema.fields.filter((f) => f.type !== "file" && !f.required);
+    return { requiredDataFields, optionalDataFields, fileFields };
   }, [schema]);
 
   if (loading) {
@@ -552,7 +553,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
 
           <Card title="Formulir Pendaftaran">
             <div className="grid sm:grid-cols-2 gap-4">
-              {grouped.dataFields.map((f) => (
+              {grouped.requiredDataFields.map((f) => (
                 <FieldRenderer
                   key={f.id}
                   field={f}
@@ -564,6 +565,23 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
               ))}
             </div>
           </Card>
+
+          {grouped.optionalDataFields.length > 0 && (
+            <Card title="Informasi Tambahan (Opsional)">
+              <div className="grid sm:grid-cols-2 gap-4">
+                {grouped.optionalDataFields.map((f) => (
+                  <FieldRenderer
+                    key={f.id}
+                    field={f}
+                    value={values[f.name] ?? ""}
+                    error={errors[f.name]}
+                    onChange={(v) => setVal(f.name, v)}
+                    fullWidth={f.type === "textarea" || f.name === "address" || f.name === "email"}
+                  />
+                ))}
+              </div>
+            </Card>
+          )}
 
           {grouped.fileFields.length > 0 && (
             <Card title="Unggah Berkas">
