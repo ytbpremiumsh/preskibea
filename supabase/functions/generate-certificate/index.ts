@@ -94,7 +94,9 @@ Deno.serve(async (req) => {
     doc.text(`Kategori: Beasiswa ${category}`, width / 2, 130, { align: "center" });
 
     // Footer info
+    const docNumber = `SK/${reg.kind.toUpperCase()}/PK-B8/${new Date().getFullYear()}/${reg.token.split('-').pop()}`;
     doc.setFontSize(10);
+    doc.text(`Nomor Surat: ${docNumber}`, 20, height - 25);
     doc.text(`ID Sertifikat: ${reg.token}`, 20, height - 20);
     doc.text(`Tanggal: ${new Date().toLocaleDateString("id-ID")}`, width - 20, height - 20, { align: "right" });
 
