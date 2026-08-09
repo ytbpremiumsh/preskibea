@@ -312,21 +312,23 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
 
   if (!registrant) {
     return (
-      <section className="container-page py-12 md:py-16">
-        <Link to="/" className="text-xs font-semibold text-primary hover:underline">
-          ← Kembali ke Beranda
-        </Link>
-        <div className="mt-4 max-w-3xl">
-          <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-            Berkas {kind === "prestasi" ? "Beasiswa Prestasi" : kind === "ekonomi" ? "Beasiswa Ekonomi" : "Beasiswa Umum"}
-          </span>
-          <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Verifikasi Pendaftaran</h1>
-          <p className="mt-2 text-muted-foreground">
-            Masukkan kode pendaftar kamu untuk melanjutkan ke tahap Berkas Administrasi.
-          </p>
+      <section className="container-page py-12 md:py-16 flex flex-col items-center">
+        <div className="w-full max-w-xl">
+          <Link to="/" className="text-xs font-semibold text-primary hover:underline">
+            ← Kembali ke Beranda
+          </Link>
+          <div className="mt-4">
+            <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
+              Berkas {kind === "prestasi" ? "Beasiswa Prestasi" : kind === "ekonomi" ? "Beasiswa Ekonomi" : "Beasiswa Umum"}
+            </span>
+            <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Verifikasi Pendaftaran</h1>
+            <p className="mt-2 text-muted-foreground">
+              Masukkan kode pendaftar kamu untuk melanjutkan ke tahap Berkas Administrasi.
+            </p>
+          </div>
         </div>
 
-        <div className="mt-10 max-w-xl">
+        <div className="mt-10 w-full max-w-xl">
           <div className="card-block p-6 md:p-7">
             <h2 className="text-base font-bold text-foreground flex items-center gap-2">
               <KeyRound size={16} className="text-primary" /> Kode Pendaftar
