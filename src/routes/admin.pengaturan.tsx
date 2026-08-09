@@ -72,6 +72,9 @@ function AdminSettings() {
       const deadlineISO = countdown.deadline ? new Date(countdown.deadline).toISOString() : "";
       const cdPayload = { ...countdown, deadline: deadlineISO };
 
+      const releaseDateISO = certConfig.releaseDate ? new Date(certConfig.releaseDate).toISOString() : "";
+      const ccPayload = { ...certConfig, releaseDate: releaseDateISO };
+
       const { error: e1 } = await supabase
         .from("site_settings")
         .upsert({ key: "countdown", value: cdPayload }, { onConflict: "key" });
@@ -84,7 +87,7 @@ function AdminSettings() {
 
       const { error: e3 } = await supabase
         .from("site_settings")
-        .upsert({ key: "certificate_config", value: certConfig }, { onConflict: "key" });
+        .upsert({ key: "certificate_config", value: ccPayload }, { onConflict: "key" });
       if (e3) throw e3;
 
       toast.success("Pengaturan berhasil disimpan");
