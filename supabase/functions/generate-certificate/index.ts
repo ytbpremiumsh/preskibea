@@ -24,6 +24,14 @@ Deno.serve(async (req) => {
       .select("value")
       .eq("key", "certificate_config")
       .maybeSingle();
+
+    const { data: brandingConfig } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "branding")
+      .maybeSingle();
+    
+    const branding = (brandingConfig?.value as any) || {};
     
     const settings = (config?.value as any) || { enabled: true };
     if (!settings.enabled) {
@@ -82,6 +90,21 @@ Deno.serve(async (req) => {
     };
     drawMosaic(0);
     drawMosaic(width - 30);
+
+    // 2.1 Logo (From Branding if available)
+    if (branding.header_logo_url) {
+      try {
+        const logoResp = await fetch(branding.header_logo_url);
+        if (logoResp.ok) {
+          const logoArrayBuffer = await logoResp.arrayBuffer();
+          const uint8Array = new Uint8Array(logoArrayBuffer);
+          // Add logo at top left inside border
+          doc.addImage(uint8Array, "PNG", 40, 15, 25, 10); 
+        }
+      } catch (e) {
+        console.error("Failed to load branding logo for certificate:", e);
+      }
+    }
 
     // 3. Central Content Area Border
     doc.setDrawColor(primaryNavy);
