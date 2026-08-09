@@ -35,18 +35,24 @@ function AdminSettings() {
     subtitle: "",
   });
   const [stages, setStages] = useState<Stage[]>([]);
-  const [certConfig, setCertConfig] = useState({ enabled: true });
+  const [certConfig, setCertConfig] = useState<{ enabled: boolean; releaseDate: string }>({ 
+    enabled: true, 
+    releaseDate: "" 
+  });
 
   useEffect(() => {
     const load = async () => {
       const { data } = await supabase.from("site_settings").select("key,value");
       const cd = data?.find((d) => d.key === "countdown")?.value as CountdownSetting | undefined;
       const tl = data?.find((d) => d.key === "timeline")?.value as Stage[] | undefined;
-      const cc = data?.find((d) => d.key === "certificate_config")?.value as { enabled: boolean } | undefined;
+      const cc = data?.find((d) => d.key === "certificate_config")?.value as { enabled: boolean; releaseDate?: string } | undefined;
       if (cd) setCountdown({ ...cd, deadline: toLocalInput(cd.deadline) });
       if (Array.isArray(tl))
         setStages(tl.map((s) => ({ ...s, date: s.date ? s.date.slice(0, 10) : "", startDate: s.startDate ? s.startDate.slice(0, 10) : "" })));
-      if (cc) setCertConfig(cc);
+      if (cc) setCertConfig({ 
+        enabled: cc.enabled, 
+        releaseDate: cc.releaseDate ? toLocalInput(cc.releaseDate) : "" 
+      });
       setLoading(false);
     };
     load();
@@ -66,6 +72,9 @@ function AdminSettings() {
       const deadlineISO = countdown.deadline ? new Date(countdown.deadline).toISOString() : "";
       const cdPayload = { ...countdown, deadline: deadlineISO };
 
+      const releaseDateISO = certConfig.releaseDate ? new Date(certConfig.releaseDate).toISOString() : "";
+      const ccPayload = { ...certConfig, releaseDate: releaseDateISO };
+
       const { error: e1 } = await supabase
         .from("site_settings")
         .upsert({ key: "countdown", value: cdPayload }, { onConflict: "key" });
@@ -78,7 +87,7 @@ function AdminSettings() {
 
       const { error: e3 } = await supabase
         .from("site_settings")
-        .upsert({ key: "certificate_config", value: certConfig }, { onConflict: "key" });
+        .upsert({ key: "certificate_config", value: ccPayload }, { onConflict: "key" });
       if (e3) throw e3;
 
       toast.success("Pengaturan berhasil disimpan");
@@ -147,17 +156,31 @@ function AdminSettings() {
           <Award className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold text-foreground">Pengaturan Sertifikat</h2>
         </div>
-        <div className="flex items-center justify-between rounded-xl border border-border p-4">
-          <div className="space-y-0.5">
-            <Label className="text-sm font-semibold">Aktifkan E-Sertifikat</Label>
-            <p className="text-xs text-muted-foreground">
-              Izinkan pendaftar mengunduh sertifikat dari halaman Cek Status.
+        <div className="space-y-4">
+          <div className="flex items-center justify-between rounded-xl border border-border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-sm font-semibold">Aktifkan E-Sertifikat</Label>
+              <p className="text-xs text-muted-foreground">
+                Izinkan pendaftar mengunduh sertifikat dari halaman Cek Status.
+              </p>
+            </div>
+            <Switch
+              checked={certConfig.enabled}
+              onCheckedChange={(v) => setCertConfig({ ...certConfig, enabled: v })}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold">Tanggal & Jam Rilis Unduhan</Label>
+            <Input
+              type="datetime-local"
+              value={certConfig.releaseDate}
+              onChange={(e) => setCertConfig({ ...certConfig, releaseDate: e.target.value })}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Tentukan kapan tombol unduh sertifikat akan muncul bagi peserta yang sudah terverifikasi.
             </p>
           </div>
-          <Switch
-            checked={certConfig.enabled}
-            onCheckedChange={(v) => setCertConfig({ enabled: v })}
-          />
         </div>
       </Card>
 
