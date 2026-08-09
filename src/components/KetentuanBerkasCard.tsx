@@ -13,9 +13,8 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
       "Transkrip Nilai atau Kartu Hasil Studi (KHS)",
     ],
     umum: [
-      "Sertifikat / medali / surat rekomendasi prestasi",
+      "Sertifikat / Medali prestasi",
       "Curriculum Vitae (CV) Kreatif",
-      "Sertifikat Organisasi/Kepanitiaan (opsional)",
     ],
   },
   ekonomi: {
@@ -61,7 +60,6 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
       "Surat keterangan yatim / piatu / yatim piatu dari kelurahan",
       "Akta atau surat keterangan kematian orang tua",
       "Kartu Keluarga (KK)",
-      "Sertifikat Pendukung Lainnya (opsional)",
     ],
   },
 };
