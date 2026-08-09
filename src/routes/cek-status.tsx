@@ -237,45 +237,83 @@ function StatusResult({ data }: { data: StatusData }) {
 
 
 
-      {/* Benefit Card - Certificate */}
+      {/* Benefit Card - Certificate Preview & Download */}
       {certConfig.enabled && (
-        <div className="mt-6 rounded-2xl border-2 border-primary/20 bg-primary/5 p-5">
-          <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-                <Award size={24} />
+        <div className="mt-6 overflow-hidden rounded-2xl border-2 border-primary/20 bg-primary/5">
+          <div className="p-5">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+                  <Award size={24} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-foreground">E-Sertifikat Resmi</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Selamat! Kamu berhak mendapatkan e-sertifikat resmi sebagai peserta Beasiswa Prestasi Kita Batch #8.
+                  </p>
+                  {!canDownload && certConfig.releaseDate && (
+                    <div className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-amber-100 px-2.5 py-1 text-[11px] font-bold text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                      📅 Unduhan dibuka pada: {new Date(certConfig.releaseDate).toLocaleString("id-ID", { dateStyle: "long", timeStyle: "short" })}
+                    </div>
+                  )}
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-foreground">E-Sertifikat Resmi</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Selamat! Kamu berhak mendapatkan e-sertifikat resmi sebagai peserta Beasiswa Prestasi Kita Batch #8.
-                </p>
-                {!canDownload && certConfig.releaseDate && (
-                  <div className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-amber-100 px-2.5 py-1 text-[11px] font-bold text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
-                    📅 Unduhan dibuka pada: {new Date(certConfig.releaseDate).toLocaleString("id-ID", { dateStyle: "long", timeStyle: "short" })}
-                  </div>
-                )}
+              
+              {canDownload ? (
+                <button
+                  onClick={downloadCert}
+                  disabled={downloading}
+                  className="btn-block inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground transition-all hover:opacity-95 disabled:opacity-60"
+                >
+                  {downloading ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <Download size={16} />
+                  )}
+                  Unduh PDF
+                </button>
+              ) : (
+                <div className="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-muted px-5 text-sm font-bold text-muted-foreground border-2 border-dashed border-muted-foreground/30 cursor-not-allowed">
+                  <Download size={16} />
+                  Unduh Belum Dibuka
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Mosaic Preview Container */}
+          <div className="relative aspect-[1.414/1] w-full border-t border-primary/10 bg-white p-4 sm:p-8">
+            <div className="absolute inset-0 flex">
+              {/* Mosaic Left */}
+              <div className="grid h-full w-[10%] grid-cols-2 grid-rows-[repeat(10,1fr)]">
+                {[...Array(20)].map((_, i) => (
+                  <div 
+                    key={i} 
+                    className={`${["bg-[#1a2a47]", "bg-[#2563eb]", "bg-[#60a5fa]", "bg-[#ffd700]"][Math.floor(Math.random() * 4)]}`}
+                  />
+                ))}
+              </div>
+              <div className="flex-1" />
+              {/* Mosaic Right */}
+              <div className="grid h-full w-[10%] grid-cols-2 grid-rows-[repeat(10,1fr)]">
+                {[...Array(20)].map((_, i) => (
+                  <div 
+                    key={i} 
+                    className={`${["bg-[#1a2a47]", "bg-[#2563eb]", "bg-[#60a5fa]", "bg-[#ffd700]"][Math.floor(Math.random() * 4)]}`}
+                  />
+                ))}
               </div>
             </div>
-            {canDownload ? (
-              <button
-                onClick={downloadCert}
-                disabled={downloading}
-                className="btn-block inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground transition-all hover:opacity-95 disabled:opacity-60"
-              >
-                {downloading ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  <Download size={16} />
-                )}
-                Unduh PDF
-              </button>
-            ) : (
-              <div className="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-muted px-5 text-sm font-bold text-muted-foreground border-2 border-dashed border-muted-foreground/30 cursor-not-allowed">
-                <Download size={16} />
-                Unduh Belum Dibuka
-              </div>
-            )}
+
+            {/* Preview Content */}
+            <div className="relative flex h-full flex-col items-center justify-center rounded border border-[#1a2a47]/20 bg-white/80 p-4 text-center backdrop-blur-[2px]">
+              <div className="mb-2 text-[10px] font-bold text-[#1a2a47] sm:text-xs">SERTIFIKAT PENGHARGAAN</div>
+              <div className="mb-1 h-[1px] w-12 bg-[#ffd700]" />
+              <div className="text-[8px] italic text-muted-foreground sm:text-[10px]">Diberikan kepada:</div>
+              <div className="my-2 text-sm font-extrabold text-[#1a2a47] sm:text-2xl">{data.full_name.toUpperCase()}</div>
+              <div className="text-[8px] text-muted-foreground sm:text-[10px]">Peserta {jenis}</div>
+              <div className="mt-4 text-[6px] text-[#1a2a47]/60 sm:text-[8px]">ID: {data.token}</div>
+            </div>
           </div>
         </div>
       )}
