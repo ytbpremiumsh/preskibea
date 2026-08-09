@@ -23,6 +23,8 @@ type PosterCfg = {
 };
 
 type SharePosterSettings = {
+  is_unified?: boolean;
+  unified?: PosterCfg;
   prestasi: PosterCfg;
   ekonomi: PosterCfg;
   umum: PosterCfg;
@@ -45,6 +47,14 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 #PrestasiKita #BeasiswaPendidikan`;
 
 const DEF: SharePosterSettings = {
+  is_unified: true,
+  unified: {
+    image_url: "",
+    download_url: "",
+    caption: DEF_CAPTION("Beasiswa Prestasi Kita", "https://prestasikita.com"),
+    wa_number: "6281280010302",
+    wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Prestasi Kita.",
+  },
   prestasi: {
     image_url: "",
     download_url: "",
@@ -90,6 +100,8 @@ function AdminBagikanPoster() {
       if (data?.value) {
         const v = data.value as Partial<SharePosterSettings>;
         setCfg({
+          is_unified: v.is_unified ?? DEF.is_unified,
+          unified: { ...DEF.unified!, ...(v.unified ?? {}) },
           prestasi: { ...DEF.prestasi, ...(v.prestasi ?? {}) },
           ekonomi: { ...DEF.ekonomi, ...(v.ekonomi ?? {}) },
           umum: { ...DEF.umum, ...(v.umum ?? {}) },
@@ -128,16 +140,40 @@ function AdminBagikanPoster() {
         </p>
       </div>
 
-      <Tabs defaultValue="prestasi" className="w-full">
+      <Tabs defaultValue={cfg.is_unified ? "unified" : "prestasi"} className="w-full">
         <TabsList>
+          <TabsTrigger value="unified">Semua Kategori (Unified)</TabsTrigger>
           <TabsTrigger value="prestasi">Beasiswa Prestasi</TabsTrigger>
           <TabsTrigger value="ekonomi">Beasiswa Ekonomi</TabsTrigger>
           <TabsTrigger value="umum">Beasiswa Umum</TabsTrigger>
           <TabsTrigger value="yatim">Beasiswa Yatim</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="unified">
+          <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 mb-4 text-sm text-primary flex items-center justify-between">
+            <p>Gunakan satu pengaturan poster untuk semua kategori beasiswa.</p>
+            <Button 
+              variant={cfg.is_unified ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setCfg({ ...cfg, is_unified: !cfg.is_unified })}
+            >
+              {cfg.is_unified ? "Status: Aktif" : "Aktifkan Unified"}
+            </Button>
+          </div>
+          <PosterEditor
+            value={cfg.unified!}
+            onChange={(v) => setCfg({ ...cfg, unified: v })}
+            kind="unified"
+          />
+        </TabsContent>
+
         {(["prestasi", "ekonomi", "umum", "yatim"] as const).map((kind) => (
           <TabsContent key={kind} value={kind}>
+            {!cfg.is_unified ? null : (
+              <div className="bg-muted border border-border rounded-2xl p-4 mb-4 text-xs text-muted-foreground italic">
+                Mode Unified sedang aktif. Pengaturan per kategori ini mungkin tidak akan muncul di halaman publik kecuali mode Unified dinonaktifkan.
+              </div>
+            )}
             <PosterEditor
               value={cfg[kind]}
               onChange={(v) => setCfg({ ...cfg, [kind]: v })}
