@@ -197,7 +197,7 @@ function AdminMaintenance() {
             <Label>Email Kontak (opsional)</Label>
             <Input
               type="email"
-              placeholder="info@kejarprestasi.id"
+              placeholder="info@prestasikita.com"
               value={cfg.contact_email || ""}
               onChange={(e) => setCfg({ ...cfg, contact_email: e.target.value })}
             />
