@@ -156,7 +156,7 @@ function LoginPage() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="admin@kejarprestasi.id"
+                      placeholder="admin@prestasikita.com"
                       autoComplete="email"
                       className="h-11 pl-10"
                     />
