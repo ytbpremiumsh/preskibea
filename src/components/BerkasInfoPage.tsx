@@ -22,8 +22,10 @@ const docsByKind = {
   umum: [
     "Kartu Pelajar / Kartu Mahasiswa",
     "Rapor / KHS / Transkrip Nilai Terakhir (Minimal 1 Semester)",
-    "Sertifikat Pendukung Lainnya — opsional",
-    "Video Motivasi (link/file) — opsional",
+    "Curriculum Vitae (CV) / Portofolio Singkat",
+    "Surat Rekomendasi (Guru/Dosen/Tokoh Masyarakat)",
+    "Sertifikat Pendukung Lainnya (Organisasi/Keahlian) — opsional",
+    "Video Motivasi Diri (Link Drive/YouTube) — opsional",
   ],
   yatim: [
     "Kartu Pelajar / Kartu Mahasiswa",
