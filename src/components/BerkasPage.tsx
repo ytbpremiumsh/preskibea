@@ -560,46 +560,6 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
         </div>
 
 
-        {registrant && (
-          <div className="lg:col-span-2 card-block p-6 md:p-7">
-            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-              <UserCheck size={16} className="text-primary" /> Status Esai Singkat
-            </h2>
-            {essayDone ? (
-              <div className="mt-4 flex items-start gap-2 rounded-xl border border-primary/30 bg-primary-soft/40 p-4 text-sm text-foreground">
-                <CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" />
-                <div>
-                  <span className="font-semibold">
-                    {isFastTrack ? "Fast Track — esai otomatis lolos." : "Esai singkat sudah terkirim."}
-                  </span>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Silakan lengkapi tautan berkas di atas, lalu kirim.
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm">
-                <div className="flex items-start gap-2 text-destructive">
-                  <AlertCircle size={16} className="mt-0.5 shrink-0" />
-                  <div>
-                    <span className="font-semibold text-destructive">Esai singkat belum diisi.</span>
-                    <div className="text-xs mt-1 text-muted-foreground">
-                      Tahap Esai Singkat wajib diselesaikan lebih dulu di halaman khusus esai
-                      sebelum mengirim berkas administrasi.
-                    </div>
-                  </div>
-                </div>
-                <Link
-                  to="/esai"
-                  search={{ token: token.trim().toUpperCase() }}
-                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-xs font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
-                >
-                  Isi Esai Singkat <ArrowRight size={14} />
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
 
 
         <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
