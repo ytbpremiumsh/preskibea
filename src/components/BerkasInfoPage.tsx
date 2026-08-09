@@ -10,7 +10,7 @@ const docsByKind = {
     "Rapor / KHS / Transkrip Nilai Terakhir",
     "Sertifikat Organisasi/Kepanitiaan",
     "Curriculum Vitae (CV) Kreatif",
-    "Berkas Pendukung Lainnya (Opsional)",
+    "Berkas Pendukung Lainnya",
   ],
   ekonomi: [
     "Kartu Pelajar / Kartu Mahasiswa",
@@ -25,7 +25,7 @@ const docsByKind = {
     "Curriculum Vitae (CV) / Portofolio Singkat",
     "Video Motivasi Diri (Link Drive/YouTube) — Wajib",
     "Sertifikat Pendukung Lainnya (Organisasi/Keahlian) — opsional",
-    "Berkas Pendukung Lainnya (Opsional)",
+    "Berkas Pendukung Lainnya",
   ],
   yatim: [
     "Kartu Pelajar / Kartu Mahasiswa",
