@@ -483,13 +483,17 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
           <KetentuanBerkasCard kind={kind} />
 
           <div
-            className={`card-block p-6 md:p-7 ${!registrant ? "opacity-60 pointer-events-none select-none" : ""}`}
+            className={`card-block p-6 md:p-7 ${(!registrant || !essayDone) ? "opacity-60 pointer-events-none select-none" : ""}`}
           >
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
-              {!registrant && (
+              {!registrant ? (
                 <span className="text-[11px] font-semibold text-muted-foreground">
                   Verifikasi kode dulu
+                </span>
+              ) : !essayDone && (
+                <span className="text-[11px] font-semibold text-destructive">
+                  Selesaikan esai dulu
                 </span>
               )}
             </div>
@@ -520,7 +524,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                         value={v}
                         onChange={(e) => setVal(d.key, e.target.value)}
                         placeholder="https://drive.google.com/..."
-                        disabled={!registrant}
+                        disabled={!registrant || !essayDone}
                         className={`w-full rounded-xl border bg-background pl-9 pr-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${showError ? "border-destructive" : "border-border focus:border-primary"}`}
                         required={d.required}
                       />
