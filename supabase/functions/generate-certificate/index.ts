@@ -58,40 +58,50 @@ Deno.serve(async (req) => {
     const height = doc.internal.pageSize.getHeight();
 
     // Background and border
-    doc.setFillColor(15, 23, 42); // Navy
+    doc.setFillColor(255, 255, 255); // White background
     doc.rect(0, 0, width, height, "F");
     
+    // Pattern or side decoration (Navy blue side bars)
+    doc.setFillColor(15, 23, 42); 
+    doc.rect(0, 0, 30, height, "F");
+    doc.rect(width - 30, 0, 30, height, "F");
+
+    // Gold inner border
     doc.setDrawColor(193, 157, 79); // Gold
-    doc.setLineWidth(2);
-    doc.rect(5, 5, width - 10, height - 10, "D");
-    doc.rect(7, 7, width - 14, height - 14, "D");
+    doc.setLineWidth(1);
+    doc.rect(35, 10, width - 70, height - 20, "D");
+    doc.setLineWidth(0.5);
+    doc.rect(37, 12, width - 74, height - 24, "D");
 
     // Title
-    doc.setTextColor(193, 157, 79);
+    doc.setTextColor(15, 23, 42); // Navy
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(40);
-    doc.text("SERTIFIKAT", width / 2, 45, { align: "center" });
+    doc.setFontSize(36);
+    doc.text("SERTIFIKAT PENGHARGAAN", width / 2, 40, { align: "center" });
 
-    doc.setFontSize(20);
-    doc.text("PENGHARGAAN", width / 2, 55, { align: "center" });
+    // Logo Placeholder or Decorative Element
+    doc.setDrawColor(193, 157, 79);
+    doc.setLineWidth(1);
+    doc.circle(width / 2, 60, 10, "D");
 
     // Body
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "normal");
-    doc.text("Diberikan kepada:", width / 2, 80, { align: "center" });
+    doc.setTextColor(50, 50, 50);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "italic");
+    doc.text("Dengan bangga diberikan kepada:", width / 2, 85, { align: "center" });
 
-    doc.setFontSize(32);
+    doc.setFontSize(38);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(193, 157, 79);
-    doc.text(reg.full_name.toUpperCase(), width / 2, 100, { align: "center" });
+    doc.setTextColor(15, 23, 42);
+    doc.text(reg.full_name.toUpperCase(), width / 2, 105, { align: "center" });
 
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(50, 50, 50);
     doc.setFontSize(14);
     doc.setFont("helvetica", "normal");
     const category = reg.kind.charAt(0).toUpperCase() + reg.kind.slice(1);
-    doc.text(`Sebagai Peserta Beasiswa Prestasi Kita Batch #8`, width / 2, 120, { align: "center" });
-    doc.text(`Kategori: Beasiswa ${category}`, width / 2, 130, { align: "center" });
+    doc.text(`Atas partisipasinya sebagai Peserta pada program`, width / 2, 125, { align: "center" });
+    doc.setFont("helvetica", "bold");
+    doc.text(`Beasiswa Prestasi Kita Batch #8 - Kategori ${category}`, width / 2, 135, { align: "center" });
 
     // Footer info
     const docNumber = `SK/${reg.kind.toUpperCase()}/PK-B8/${new Date().getFullYear()}/${reg.token.split('-').pop()}`;
