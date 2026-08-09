@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as EsaiRouteImport } from './routes/esai'
 import { Route as DaftarRouteImport } from './routes/daftar'
 import { Route as CekStatusRouteImport } from './routes/cek-status'
 import { Route as BeasiswaYatimRouteImport } from './routes/beasiswa-yatim'
@@ -78,6 +79,11 @@ const TentangRoute = TentangRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsaiRoute = EsaiRouteImport.update({
+  id: '/esai',
+  path: '/esai',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DaftarRoute = DaftarRouteImport.update({
@@ -380,6 +386,7 @@ export interface FileRoutesByFullPath {
   '/beasiswa-yatim': typeof BeasiswaYatimRoute
   '/cek-status': typeof CekStatusRoute
   '/daftar': typeof DaftarRoute
+  '/esai': typeof EsaiRoute
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
@@ -441,6 +448,7 @@ export interface FileRoutesByTo {
   '/beasiswa-yatim': typeof BeasiswaYatimRoute
   '/cek-status': typeof CekStatusRoute
   '/daftar': typeof DaftarRoute
+  '/esai': typeof EsaiRoute
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
@@ -500,6 +508,7 @@ export interface FileRoutesById {
   '/beasiswa-yatim': typeof BeasiswaYatimRoute
   '/cek-status': typeof CekStatusRoute
   '/daftar': typeof DaftarRoute
+  '/esai': typeof EsaiRoute
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
@@ -564,6 +573,7 @@ export interface FileRouteTypes {
     | '/beasiswa-yatim'
     | '/cek-status'
     | '/daftar'
+    | '/esai'
     | '/login'
     | '/tentang'
     | '/admin/adsense'
@@ -625,6 +635,7 @@ export interface FileRouteTypes {
     | '/beasiswa-yatim'
     | '/cek-status'
     | '/daftar'
+    | '/esai'
     | '/login'
     | '/tentang'
     | '/admin/adsense'
@@ -683,6 +694,7 @@ export interface FileRouteTypes {
     | '/beasiswa-yatim'
     | '/cek-status'
     | '/daftar'
+    | '/esai'
     | '/login'
     | '/tentang'
     | '/admin/adsense'
@@ -746,6 +758,7 @@ export interface RootRouteChildren {
   BeasiswaYatimRoute: typeof BeasiswaYatimRoute
   CekStatusRoute: typeof CekStatusRoute
   DaftarRoute: typeof DaftarRoute
+  EsaiRoute: typeof EsaiRoute
   LoginRoute: typeof LoginRoute
   TentangRoute: typeof TentangRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
@@ -783,6 +796,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/esai': {
+      id: '/esai'
+      path: '/esai'
+      fullPath: '/esai'
+      preLoaderRoute: typeof EsaiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/daftar': {
@@ -1313,6 +1333,7 @@ const rootRouteChildren: RootRouteChildren = {
   BeasiswaYatimRoute: BeasiswaYatimRoute,
   CekStatusRoute: CekStatusRoute,
   DaftarRoute: DaftarRoute,
+  EsaiRoute: EsaiRoute,
   LoginRoute: LoginRoute,
   TentangRoute: TentangRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,

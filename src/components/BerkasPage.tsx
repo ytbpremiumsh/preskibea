@@ -48,13 +48,6 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
   ],
 };
 
-const ESSAY_QUESTIONS = [
-  "Kenapa kamu layak menerima beasiswa ini?",
-  "Bantuan biaya pendidikan ini akan kamu gunakan untuk apa?",
-  "Apa rencana atau targetmu dalam 1 tahun ke depan setelah menerima beasiswa ini?",
-];
-const MIN_ESSAY_CHARS = 100;
-
 function isValidUrl(v: string) {
   try {
     const u = new URL(v.trim());
@@ -78,6 +71,7 @@ type RegInfo = {
   grade?: string | null;
   token?: string | null;
   fast_track?: boolean | null;
+  essay_submitted?: boolean | null;
 };
 
 const tokenPrefix = (k: "prestasi" | "ekonomi" | "umum" | "yatim") =>
@@ -96,15 +90,14 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   const [verifying, setVerifying] = useState(false);
   const [registrant, setRegistrant] = useState<RegInfo | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [essays, setEssays] = useState<string[]>(["", "", ""]);
   const isFastTrack = !!registrant?.fast_track;
+  const essayDone = isFastTrack || !!registrant?.essay_submitted;
 
   useEffect(() => {
     let mounted = true;
     setLoading(true);
     setDocs(defaultDocs[kind]);
     setValues({});
-    setEssays(["", "", ""]);
 
     (async () => {
       try {
@@ -185,12 +178,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
       toast.error("Verifikasi kode pendaftar terlebih dahulu");
       return;
     }
-    if (!isFastTrack) {
-      const kurang = essays.findIndex((a) => a.trim().length < MIN_ESSAY_CHARS);
-      if (kurang !== -1) {
-        toast.error(`Esai singkat No. ${kurang + 1} minimal ${MIN_ESSAY_CHARS} karakter`);
-        return;
-      }
+    if (!essayDone) {
+      toast.error("Selesaikan Esai Singkat terlebih dahulu di halaman Esai");
+      return;
     }
     const missing = docs.filter((d) => d.required && !(values[d.key] ?? "").trim());
     if (missing.length > 0) {
@@ -228,9 +218,6 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
         token: token.trim().toUpperCase(),
         kind,
         documents: submittedDocs,
-        essays: isFastTrack
-          ? undefined
-          : ESSAY_QUESTIONS.map((q, i) => ({ question: q, answer: essays[i].trim() })),
       });
 
       supabase.functions
