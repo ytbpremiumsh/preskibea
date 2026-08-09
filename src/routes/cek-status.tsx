@@ -266,15 +266,28 @@ function StatusResult({ data }: { data: StatusData }) {
         </div>
       )}
 
-      {!hasDocs && essayDone && (
-        <Link
-          to={berkasTo as "/berkas/prestasi/upload" | "/berkas/ekonomi/upload" | "/berkas/umum/upload" | "/berkas/yatim/upload"}
-          search={{ token: data.token } as any}
-          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
-        >
-          Kirim Berkas Sekarang <ArrowRight size={16} />
-        </Link>
-      )}
+      {/* Call to Actions */}
+      <div className="mt-6 flex flex-col gap-3">
+        {!isFast && !essayDone && (
+          <Link
+            to="/esai"
+            search={{ token: data.token }}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+          >
+            Lengkapi Esai Sekarang <ArrowRight size={16} />
+          </Link>
+        )}
+
+        {!hasDocs && essayDone && (
+          <Link
+            to={berkasTo as any}
+            search={{ token: data.token } as any}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+          >
+            Kirim Berkas Sekarang <ArrowRight size={16} />
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
