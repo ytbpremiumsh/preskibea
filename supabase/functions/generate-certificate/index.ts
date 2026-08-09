@@ -57,65 +57,84 @@ Deno.serve(async (req) => {
     const width = doc.internal.pageSize.getWidth();
     const height = doc.internal.pageSize.getHeight();
 
-    // Background and border
-    doc.setFillColor(255, 255, 255); // White background
+    // Colors
+    const primaryNavy = "#1a2a47";
+    const highlightYellow = "#ffd700";
+    const mosaicBlue = "#2563eb";
+    const mosaicLight = "#60a5fa";
+
+    // 1. Background (White)
+    doc.setFillColor(255, 255, 255);
     doc.rect(0, 0, width, height, "F");
-    
-    // Pattern or side decoration (Navy blue side bars)
-    doc.setFillColor(15, 23, 42); 
-    doc.rect(0, 0, 30, height, "F");
-    doc.rect(width - 30, 0, 30, height, "F");
 
-    // Gold inner border
-    doc.setDrawColor(193, 157, 79); // Gold
-    doc.setLineWidth(1);
+    // 2. Mosaic Pattern (Left & Right Sides)
+    // Left Side Mosaic
+    const drawMosaic = (startX: number) => {
+      const colors = [primaryNavy, mosaicBlue, mosaicLight, highlightYellow];
+      const size = 15;
+      for (let y = 0; y < height; y += size) {
+        for (let x = 0; x < 30; x += size) {
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          doc.setFillColor(color);
+          doc.rect(startX + x, y, size, size, "F");
+        }
+      }
+    };
+    drawMosaic(0);
+    drawMosaic(width - 30);
+
+    // 3. Central Content Area Border
+    doc.setDrawColor(primaryNavy);
+    doc.setLineWidth(0.8);
     doc.rect(35, 10, width - 70, height - 20, "D");
-    doc.setLineWidth(0.5);
-    doc.rect(37, 12, width - 74, height - 24, "D");
 
-    // Title
-    doc.setTextColor(15, 23, 42); // Navy
+    // 4. Header Section
+    doc.setTextColor(primaryNavy);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(36);
-    doc.text("SERTIFIKAT PENGHARGAAN", width / 2, 40, { align: "center" });
+    doc.setFontSize(32);
+    doc.text("SERTIFIKAT", width / 2, 40, { align: "center" });
+    doc.setFontSize(24);
+    doc.text("PENGHARGAAN", width / 2, 50, { align: "center" });
 
-    // Logo Placeholder or Decorative Element
-    doc.setDrawColor(193, 157, 79);
-    doc.setLineWidth(1);
-    doc.circle(width / 2, 60, 10, "D");
+    // Decorative line under title
+    doc.setDrawColor(highlightYellow);
+    doc.setLineWidth(2);
+    doc.line(width / 2 - 40, 55, width / 2 + 40, 55);
 
-    // Body
+    // 5. Main Body
     doc.setTextColor(50, 50, 50);
     doc.setFontSize(14);
-    doc.setFont("helvetica", "italic");
-    doc.text("Dengan bangga diberikan kepada:", width / 2, 85, { align: "center" });
+    doc.setFont("helvetica", "normal");
+    doc.text("Dengan bangga diberikan kepada:", width / 2, 75, { align: "center" });
 
     doc.setFontSize(38);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(15, 23, 42);
-    doc.text(reg.full_name.toUpperCase(), width / 2, 105, { align: "center" });
+    doc.setTextColor(primaryNavy);
+    doc.text(reg.full_name.toUpperCase(), width / 2, 95, { align: "center" });
 
     doc.setTextColor(50, 50, 50);
     doc.setFontSize(14);
     doc.setFont("helvetica", "normal");
     const category = reg.kind.charAt(0).toUpperCase() + reg.kind.slice(1);
-    doc.text(`Atas partisipasinya sebagai Peserta pada program`, width / 2, 125, { align: "center" });
+    doc.text("Atas partisipasinya sebagai Peserta pada program", width / 2, 115, { align: "center" });
     doc.setFont("helvetica", "bold");
-    doc.text(`Beasiswa Prestasi Kita Batch #8 - Kategori ${category}`, width / 2, 135, { align: "center" });
+    doc.text(`Beasiswa Prestasi Kita Batch #8 - Kategori ${category}`, width / 2, 125, { align: "center" });
 
-    // Footer info
-    const docNumber = `SK/${reg.kind.toUpperCase()}/PK-B8/${new Date().getFullYear()}/${reg.token.split('-').pop()}`;
+    // 6. Footer (Official Details)
+    const docNumber = `SK/${reg.kind.toUpperCase()}/PK-B8/${new Date().getFullYear()}/${reg.token.split("-").pop()}`;
     doc.setFontSize(10);
-    doc.text(`Nomor Surat: ${docNumber}`, 20, height - 25);
-    doc.text(`ID Sertifikat: ${reg.token}`, 20, height - 20);
-    doc.text(`Tanggal: ${new Date().toLocaleDateString("id-ID")}`, width - 20, height - 20, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(primaryNavy);
+    doc.text(`Nomor Surat: ${docNumber}`, 45, height - 30);
+    doc.text(`ID Sertifikat: ${reg.token}`, 45, height - 25);
+    doc.text(`Tanggal Rilis: ${new Date().toLocaleDateString("id-ID")}`, width - 45, height - 25, { align: "right" });
 
-    // Signature placeholders
-    doc.setTextColor(15, 23, 42);
-    doc.setDrawColor(15, 23, 42);
-    doc.line(width / 2 - 40, height - 45, width / 2 + 40, height - 45);
+    // 7. Signature Area
+    doc.setDrawColor(primaryNavy);
+    doc.setLineWidth(0.5);
+    doc.line(width / 2 - 30, height - 40, width / 2 + 30, height - 40);
     doc.setFont("helvetica", "bold");
-    doc.text("Direktur Prestasi Kita", width / 2, height - 38, { align: "center" });
+    doc.text("DIREKTUR PRESTASI KITA", width / 2, height - 33, { align: "center" });
 
     const pdfOutput = doc.output("arraybuffer");
 
