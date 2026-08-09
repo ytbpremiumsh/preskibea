@@ -204,7 +204,7 @@ export function CategoryPage({
             </p>
           </div>
           <Link
-            to={kind === "prestasi" ? "/berkas/prestasi" : kind === "ekonomi" ? "/berkas/ekonomi" : kind === "yatim" ? "/berkas/yatim" : "/berkas/umum"}
+            to={kind === "prestasi" ? "/berkas/prestasi/upload" : kind === "ekonomi" ? "/berkas/ekonomi/upload" : kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/umum/upload"}
             className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary transition"
           >
             <FileText size={16} /> Kirim Berkas
