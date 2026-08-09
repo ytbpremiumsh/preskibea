@@ -34,13 +34,24 @@ function AdminFormulir() {
   const tab = TABS.find((t) => t.key === active)!;
 
   useEffect(() => {
+    let mounted = true;
     setLoading(true);
-    supabase
-      .from("site_settings")
-      .select("value")
-      .eq("key", active)
-      .maybeSingle()
-      .then(({ data }) => {
+    
+    const fetchSchema = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", active)
+          .maybeSingle();
+
+        if (!mounted) return;
+
+        if (error) {
+          console.error("Error fetching form schema:", error);
+          toast.error("Gagal memuat data formulir");
+        }
+
         if (tab.kind === "form") {
           const v = (data?.value ?? { fields: [] }) as FormSchema;
           setFormFields(Array.isArray(v.fields) ? v.fields : []);
@@ -48,8 +59,15 @@ function AdminFormulir() {
           const v = (data?.value ?? { fields: [] }) as BerkasSchema;
           setBerkasFields(Array.isArray(v.fields) ? v.fields : []);
         }
-        setLoading(false);
-      });
+      } catch (err) {
+        console.error("Exception fetching form schema:", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    fetchSchema();
+    return () => { mounted = false; };
   }, [active, tab.kind]);
 
   const save = async () => {
