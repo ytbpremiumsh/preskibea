@@ -81,7 +81,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   const sendEmail = sendAppEmail;
   const search = useSearch({ strict: false }) as { token?: string };
   const [token, setToken] = useState((search.token ?? "").toUpperCase());
-  const [docs, setDocs] = useState<DocSlot[]>(defaultDocs[kind]);
+  const [docs, setDocs] = useState<DocSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [values, setValues] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -94,7 +94,24 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    setDocs(defaultDocs[kind]);
+    const level = registrant?.education_level?.toLowerCase() || "";
+    const isMahasiswa = level.includes("mahasiswa") || level.includes("s1") || level.includes("diploma");
+    
+    let baseDocs = [...defaultDocs[kind]];
+    
+    // Adjust label based on education level
+    baseDocs = baseDocs.map(d => {
+      if (d.key === "transcript") {
+        return { 
+          ...d, 
+          label: isMahasiswa ? "KHS / Transkrip Nilai Terakhir" : "Rapor Terakhir" 
+        };
+      }
+      return d;
+    });
+
+    setDocs(baseDocs);
+
     setValues({});
 
     (async () => {
@@ -162,13 +179,29 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
     }
   };
 
-  // Auto-verify if token came from URL
+  // Auto-verify if token came from URL or update docs when registrant data changes
   useEffect(() => {
     if (search.token && !registrant && !verifying) {
       handleVerify(true);
     }
+    
+    if (registrant) {
+      const level = registrant.education_level?.toLowerCase() || "";
+      const isMahasiswa = level.includes("mahasiswa") || level.includes("s1") || level.includes("diploma");
+      
+      setDocs(prev => prev.map(d => {
+        if (d.key === "transcript") {
+          return { 
+            ...d, 
+            label: isMahasiswa ? "KHS / Transkrip Nilai Terakhir" : "Rapor Terakhir" 
+          };
+        }
+        return d;
+      }));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search.token, kind]);
+  }, [search.token, kind, registrant]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
