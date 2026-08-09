@@ -118,6 +118,7 @@ export function TimelineSection() {
                         {(t.title.toLowerCase().includes("pendaftaran") || 
                           t.title.toLowerCase().includes("poster") || 
                           t.title.toLowerCase().includes("esai") || 
+                          t.title.toLowerCase().includes("essai") || 
                           t.title.toLowerCase().includes("berkas")) 
 
                           ? `Hingga ${fmt(t.date)}` 
