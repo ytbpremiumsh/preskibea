@@ -25,6 +25,8 @@ type PosterCfg = {
 type SharePosterSettings = {
   prestasi: PosterCfg;
   ekonomi: PosterCfg;
+  umum: PosterCfg;
+  yatim: PosterCfg;
 };
 
 const DEF_CAPTION = (label: string, url: string) => `🎓✨ BEASISWA PENDIDIKAN PRESTASI KITA — BATCH #8 ✨🎓
@@ -57,6 +59,20 @@ const DEF: SharePosterSettings = {
     wa_number: "6281280010302",
     wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Prestasi Kita.",
   },
+  umum: {
+    image_url: "",
+    download_url: "",
+    caption: DEF_CAPTION("Beasiswa Umum", "https://kejarprestasi.id/beasiswa-umum"),
+    wa_number: "6281280010302",
+    wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Prestasi Kita.",
+  },
+  yatim: {
+    image_url: "",
+    download_url: "",
+    caption: DEF_CAPTION("Beasiswa Yatim", "https://kejarprestasi.id/beasiswa-yatim"),
+    wa_number: "6281280010302",
+    wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Prestasi Kita.",
+  },
 };
 
 function AdminBagikanPoster() {
@@ -76,6 +92,8 @@ function AdminBagikanPoster() {
         setCfg({
           prestasi: { ...DEF.prestasi, ...(v.prestasi ?? {}) },
           ekonomi: { ...DEF.ekonomi, ...(v.ekonomi ?? {}) },
+          umum: { ...DEF.umum, ...(v.umum ?? {}) },
+          yatim: { ...DEF.yatim, ...(v.yatim ?? {}) },
         });
       }
       setLoading(false);
@@ -114,9 +132,11 @@ function AdminBagikanPoster() {
         <TabsList>
           <TabsTrigger value="prestasi">Beasiswa Prestasi</TabsTrigger>
           <TabsTrigger value="ekonomi">Beasiswa Ekonomi</TabsTrigger>
+          <TabsTrigger value="umum">Beasiswa Umum</TabsTrigger>
+          <TabsTrigger value="yatim">Beasiswa Yatim</TabsTrigger>
         </TabsList>
 
-        {(["prestasi", "ekonomi"] as const).map((kind) => (
+        {(["prestasi", "ekonomi", "umum", "yatim"] as const).map((kind) => (
           <TabsContent key={kind} value={kind}>
             <PosterEditor
               value={cfg[kind]}
@@ -144,7 +164,7 @@ function PosterEditor({
 }: {
   value: PosterCfg;
   onChange: (v: PosterCfg) => void;
-  kind: "prestasi" | "ekonomi";
+  kind: "prestasi" | "ekonomi" | "umum" | "yatim";
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
