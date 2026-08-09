@@ -110,6 +110,12 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
           label: isMahasiswa ? "KHS / Transkrip Nilai Terakhir" : "Rapor Terakhir" 
         };
       }
+      if (d.key === "identity") {
+        return { 
+          ...d, 
+          label: isMahasiswa ? "Kartu Tanda Mahasiswa (KTM)" : "Kartu Pelajar / Kartu Identitas" 
+        };
+      }
       return d;
     });
 
