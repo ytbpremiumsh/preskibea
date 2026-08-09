@@ -261,23 +261,6 @@ function StatusResult({ data }: { data: StatusData }) {
         </div>
       )}
 
-      {/* Berkas detail */}
-      <div className="mt-6 rounded-2xl border border-border bg-background p-4">
-        <div className="flex items-center gap-2 text-sm font-bold text-foreground">
-          <FileText size={16} className="text-primary" /> Detail Berkas
-        </div>
-        {hasDocs ? (
-          <div className="mt-3 grid grid-cols-3 gap-3 text-center">
-            <Stat label="Diproses" value={data.docs.pending} cls="text-amber-600 dark:text-amber-400" />
-            <Stat label="Disetujui" value={data.docs.approved} cls="text-green-600 dark:text-green-400" />
-            <Stat label="Ditolak" value={data.docs.rejected} cls="text-destructive" />
-          </div>
-        ) : (
-          <div className="mt-3 rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:border-amber-900/40 dark:text-amber-200">
-            ⚠️ Anda belum mengirim berkas pendukung. Pendaftaran belum lengkap.
-          </div>
-        )}
-      </div>
 
       {/* Benefit Card - Certificate */}
       {certEnabled && (
