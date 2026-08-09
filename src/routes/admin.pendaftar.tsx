@@ -282,6 +282,13 @@ function AdminPendaftar() {
           iconBg="bg-emerald-500/15 text-emerald-600"
         />
         <StatCard
+          label="Fast Track"
+          value={totals.fast}
+          icon={<Zap className="h-5 w-5" />}
+          gradient="from-amber-500/20 to-amber-500/5"
+          iconBg="bg-amber-500/20 text-amber-600"
+        />
+        <StatCard
           label="Sudah Kirim Berkas"
           value={counts.submitted}
           icon={<FileCheck className="h-5 w-5" />}
