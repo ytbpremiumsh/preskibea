@@ -270,7 +270,7 @@ function AdminOverview() {
                 <p className="mt-1 truncate text-xs text-muted-foreground">{it.label}</p>
               </div>
               <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${it.bg} ${it.color}`}>
-                <it.icon className="h-4.5 w-4.5" />
+                <it.icon className="h-5 w-5" />
               </div>
             </div>
           </Card>
