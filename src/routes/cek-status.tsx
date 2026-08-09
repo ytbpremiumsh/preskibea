@@ -233,33 +233,6 @@ function StatusResult({ data }: { data: StatusData }) {
         />
       </div>
 
-      {/* Essai detail */}
-      {!isFast && (
-        <div className="mt-6 rounded-2xl border border-border bg-background p-4">
-          <div className="flex items-center gap-2 text-sm font-bold text-foreground">
-            <PenLine size={16} className="text-primary" /> Status Esai Singkat
-          </div>
-          {essayDone ? (
-            <div className="mt-3 rounded-xl border border-green-200 bg-green-50 p-3 text-xs text-green-800 dark:border-green-900/40 dark:bg-green-950/30 dark:text-green-200">
-              ✓ Esai sudah dikirim
-              {data.essay_submitted_at ? ` pada ${new Date(data.essay_submitted_at).toLocaleString("id-ID")}` : ""}.
-            </div>
-          ) : (
-            <>
-              <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
-                ⚠️ Anda belum mengirim esai singkat. Esai wajib diisi sebelum mengirim berkas administrasi.
-              </div>
-              <Link
-                to="/esai"
-                search={{ token: data.token }}
-                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
-              >
-                Isi Esai Sekarang <ArrowRight size={16} />
-              </Link>
-            </>
-          )}
-        </div>
-      )}
 
 
       {/* Benefit Card - Certificate */}
