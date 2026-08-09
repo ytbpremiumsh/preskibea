@@ -200,7 +200,7 @@ function PosterEditor({
 }: {
   value: PosterCfg;
   onChange: (v: PosterCfg) => void;
-  kind: "prestasi" | "ekonomi" | "umum" | "yatim";
+  kind: "prestasi" | "ekonomi" | "umum" | "yatim" | "unified";
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
