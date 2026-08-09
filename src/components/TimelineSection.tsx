@@ -176,7 +176,7 @@ function StageActions({ title }: { title: string }) {
           to="/esai"
           className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
         >
-          <PenLine size={14} /> Isi Esai Singkat <ArrowRight size={12} />
+          <PenLine size={14} /> Kirim Esai <ArrowRight size={12} />
         </Link>
       </div>
     );
