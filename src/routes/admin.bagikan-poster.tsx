@@ -41,7 +41,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 🚫 100% TIDAK DIPUNGUT BIAYA
 
 📌 Daftar sekarang di: ${url}
-📷 Info lengkap: @kejarprestasi_id
+📷 Info lengkap: @prestasikita
 📞 0812 8001 0302
 
 #PrestasiKita #BeasiswaPendidikan`;
@@ -58,28 +58,28 @@ const DEF: SharePosterSettings = {
   prestasi: {
     image_url: "",
     download_url: "",
-    caption: DEF_CAPTION("Beasiswa Prestasi", "https://kejarprestasi.id/beasiswa-prestasi"),
+    caption: DEF_CAPTION("Beasiswa Prestasi", "https://prestasikita.com/beasiswa-prestasi"),
     wa_number: "6281280010302",
     wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Prestasi Kita.",
   },
   ekonomi: {
     image_url: "",
     download_url: "",
-    caption: DEF_CAPTION("Beasiswa Ekonomi", "https://kejarprestasi.id/beasiswa-ekonomi"),
+    caption: DEF_CAPTION("Beasiswa Ekonomi", "https://prestasikita.com/beasiswa-ekonomi"),
     wa_number: "6281280010302",
     wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Prestasi Kita.",
   },
   umum: {
     image_url: "",
     download_url: "",
-    caption: DEF_CAPTION("Beasiswa Umum", "https://kejarprestasi.id/beasiswa-umum"),
+    caption: DEF_CAPTION("Beasiswa Umum", "https://prestasikita.com/beasiswa-umum"),
     wa_number: "6281280010302",
     wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Prestasi Kita.",
   },
   yatim: {
     image_url: "",
     download_url: "",
-    caption: DEF_CAPTION("Beasiswa Yatim", "https://kejarprestasi.id/beasiswa-yatim"),
+    caption: DEF_CAPTION("Beasiswa Yatim", "https://prestasikita.com/beasiswa-yatim"),
     wa_number: "6281280010302",
     wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Prestasi Kita.",
   },
