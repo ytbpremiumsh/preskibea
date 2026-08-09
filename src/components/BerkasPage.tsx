@@ -35,7 +35,10 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
   umum: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
     { id: "transcript", key: "transcript", label: "Rapor / Transkrip Nilai Terakhir", required: true },
+    { id: "cv", key: "cv", label: "Curriculum Vitae (CV) / Portofolio Singkat", required: true },
+    { id: "recommendation", key: "recommendation", label: "Surat Rekomendasi (Guru/Dosen/Tokoh Masyarakat)", required: true },
     { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
+    { id: "video_motivation", key: "video_motivation", label: "Video Motivasi Diri (Link)", required: false },
   ],
   yatim: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
