@@ -49,6 +49,10 @@ Deno.serve(async (req) => {
     const approved = docs?.filter((d) => d.review_status === "approved").length ?? 0;
     const rejected = docs?.filter((d) => d.review_status === "rejected").length ?? 0;
 
+    const extra = ((reg as { extra?: Record<string, unknown> }).extra ?? {}) as Record<string, unknown>;
+    const fastTrack = !!(reg as { fast_track?: boolean }).fast_track;
+    const essaySubmittedAt = typeof extra.essay_submitted_at === "string" ? extra.essay_submitted_at : null;
+
     return new Response(JSON.stringify({
       ok: true,
       data: {
@@ -58,6 +62,10 @@ Deno.serve(async (req) => {
         candidate_status: reg.candidate_status,
         created_at: reg.created_at,
         token: tokenRaw,
+        fast_track: fastTrack,
+        payment_status: (reg as { payment_status?: string | null }).payment_status ?? null,
+        essay_submitted: fastTrack || !!essaySubmittedAt,
+        essay_submitted_at: essaySubmittedAt,
         docs: { total: docCount, pending, approved, rejected },
       },
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
