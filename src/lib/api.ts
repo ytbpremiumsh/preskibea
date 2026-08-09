@@ -68,6 +68,7 @@ export type SubmitBerkasInput = {
   token: string;
   kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   documents: { key: string; label: string; url: string }[];
+  essays?: { question: string; answer: string }[];
 };
 
 export async function submitBerkasDocuments(
