@@ -139,7 +139,7 @@ function EsaiRoute() {
             <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
               Tahap 3 — Pengiriman Esai
             </span>
-            <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Verifikasi Pendaftaran</h1>
+            <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Verifikasi Esai</h1>
             <p className="mt-2 text-muted-foreground">
               Masukkan kode pendaftar kamu untuk melanjutkan ke tahap Pengiriman Esai.
             </p>
