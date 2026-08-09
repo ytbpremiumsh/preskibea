@@ -203,7 +203,7 @@ nginx -s reload`}
 
       {/* Troubleshooting */}
       <Card className="rounded-2xl p-6">
-        <h2 className="mb-3 text-lg font-semibold text-foreground">Troubleshooting</h2>
+        <h2 className="mb-3 text-lg font-semibold text-foreground">Troubleshooting (Penting!)</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -215,9 +215,18 @@ nginx -s reload`}
             </thead>
             <tbody className="text-muted-foreground">
               <tr className="border-b">
+                <td className="py-2 pr-4 font-bold text-destructive">404 Not Found (Halaman utama/semua)</td>
+                <td className="py-2 pr-4">Nginx gagal menemukan file index.html atau konfigurasi root salah.</td>
+                <td className="py-2">
+                  1. Pastikan folder <code>dist/*</code> sudah disalin ke <code>/www/wwwroot/prestasikita.com</code><br/>
+                  2. Cek path <code>root</code> di config Nginx.<br/>
+                  3. Jalankan <code>chown -R www:www /www/wwwroot/prestasikita.com</code>
+                </td>
+              </tr>
+              <tr className="border-b">
                 <td className="py-2 pr-4">404 saat refresh di halaman dalam</td>
                 <td className="py-2 pr-4">SPA fallback belum dipasang</td>
-                <td className="py-2">Tambahkan <code>try_files $uri /index.html</code> di Nginx</td>
+                <td className="py-2 text-primary">Tambahkan <code>try_files $uri $uri/ /index.html;</code> di blok location / Nginx (Lihat Langkah 6)</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4">403 Forbidden</td>
