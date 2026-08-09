@@ -36,6 +36,13 @@ export function AlumniSection() {
     img: alumniImages[i] || FALLBACK_IMAGES[i],
   }));
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, index: number) => {
+    const target = e.target as HTMLImageElement;
+    if (target.src !== FALLBACK_IMAGES[index]) {
+      target.src = FALLBACK_IMAGES[index];
+    }
+  };
+
   return (
     <section className="container-page py-20">
       <div className="text-center max-w-2xl mx-auto">
