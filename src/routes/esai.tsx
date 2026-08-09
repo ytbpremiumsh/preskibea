@@ -255,26 +255,30 @@ function EsaiRoute() {
           )}
 
           {registrant && (isFastTrack || done) && (
-            <div className="card-block p-6 md:p-7">
-              <div className="flex items-start gap-2">
-                <CheckCircle2 size={18} className="mt-0.5 text-primary shrink-0" />
-                <div>
-                  <h2 className="text-base font-bold text-foreground">
-                    {isFastTrack ? "Fast Track — Esai Otomatis Lolos" : "Esai Sudah Terkirim"}
-                  </h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {isFastTrack
-                      ? "Kamu terdaftar di jalur Fast Track, jadi tahap esai otomatis lolos. Silakan langsung lanjut mengirim berkas administrasi."
-                      : "Terima kasih! Jawaban esaimu sudah kami terima. Lanjutkan ke tahap Berkas Administrasi."}
-                  </p>
-                  <Link
-                    to={berkasLink}
-                    className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
-                  >
-                    Lanjut Kirim Berkas <ArrowRight size={14} />
-                  </Link>
+            <div className="card-block p-8 md:p-10 flex flex-col items-center text-center">
+              <div className="mb-6 relative">
+                <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
+                <div className="relative h-24 w-24 md:h-32 md:w-32 rounded-full bg-primary-soft flex items-center justify-center text-primary shadow-soft border-4 border-background">
+                  <CheckCircle2 size={48} className="md:hidden" />
+                  <CheckCircle2 size={64} className="hidden md:block" />
                 </div>
               </div>
+              
+              <h2 className="text-2xl font-black text-foreground">
+                {isFastTrack ? "Fast Track — Esai Otomatis Lolos" : "Esai Berhasil Terkirim"}
+              </h2>
+              <p className="mt-3 text-base text-muted-foreground max-w-md">
+                {isFastTrack
+                  ? "Selamat! Kamu terdaftar di jalur Fast Track, sehingga tahap pengisian esai otomatis dilewati. Silakan lanjut ke berkas administrasi."
+                  : "Terima kasih! Jawaban esaimu sudah kami terima dan tersimpan di sistem. Silakan lanjutkan ke tahap Berkas Administrasi."}
+              </p>
+              
+              <Link
+                to={berkasLink}
+                className="btn-block mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-8 py-4 text-base font-bold text-primary-foreground shadow-soft hover:opacity-95 transition"
+              >
+                Lanjut Kirim Berkas <ArrowRight size={18} />
+              </Link>
             </div>
           )}
 
@@ -315,7 +319,8 @@ function EsaiRoute() {
           )}
         </div>
 
-        <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
+        {!isFastTrack && !done && (
+          <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
           <div className="card-block p-6">
             <h3 className="font-semibold text-foreground">Catatan</h3>
             <ul className="mt-4 space-y-3 text-sm text-foreground/85">
