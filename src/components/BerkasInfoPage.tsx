@@ -6,10 +6,10 @@ import { AdSlot } from "@/components/ads/AdSlot";
 const docsByKind = {
   prestasi: [
     "Kartu Pelajar / Kartu Mahasiswa",
-    "Sertifikat Prestasi Akademik/Non-Akademik",
+    "Sertifikat Prestasi (Akademik maupun Non-Akademik)",
     "Sertifikat Organisasi/Kepanitiaan",
     "Curriculum Vitae (CV) Kreatif",
-    "Video Motivasi (link/file) — opsional",
+    "Berkas Pendukung Lainnya (Opsional)",
   ],
   ekonomi: [
     "Kartu Pelajar / Kartu Mahasiswa",
