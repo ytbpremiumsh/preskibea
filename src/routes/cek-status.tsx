@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { KeyRound, Loader2, AlertCircle, FileText, ArrowRight, Zap, PenLine } from "lucide-react";
+import { KeyRound, Loader2, AlertCircle, FileText, ArrowRight, Zap, PenLine, Award, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -141,6 +141,50 @@ function StatusResult({ data }: { data: StatusData }) {
   const hasDocs = data.docs.total > 0;
   const isFast = !!data.fast_track;
   const essayDone = isFast || !!data.essay_submitted;
+  const [certEnabled, setCertEnabled] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "certificate_config")
+      .maybeSingle()
+      .then(({ data: res }) => {
+        if (res?.value) {
+          setCertEnabled((res.value as any).enabled);
+        } else {
+          setCertEnabled(true); // Default enabled
+        }
+      });
+  }, []);
+
+  const downloadCert = async () => {
+    setDownloading(true);
+    try {
+      const { data: res, error } = await supabase.functions.invoke("generate-certificate", {
+        body: { token: data.token },
+      });
+      if (error) throw error;
+
+      const blob = new Blob([res], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Sertifikat_${data.token}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+      toast.success("Sertifikat berhasil diunduh");
+    } catch (err) {
+      console.error(err);
+      toast.error("Gagal mengunduh sertifikat");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
 
   return (
     <div className="card-block mt-6 p-6 md:p-7">
@@ -234,6 +278,37 @@ function StatusResult({ data }: { data: StatusData }) {
           </div>
         )}
       </div>
+
+      {/* Benefit Card - Certificate */}
+      {certEnabled && (
+        <div className="mt-6 rounded-2xl border-2 border-primary/20 bg-primary/5 p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+                <Award size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-foreground">E-Sertifikat Resmi</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Selamat! Kamu berhak mendapatkan e-sertifikat resmi sebagai peserta Beasiswa Prestasi Kita Batch #8.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={downloadCert}
+              disabled={downloading}
+              className="btn-block inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground transition-all hover:opacity-95 disabled:opacity-60"
+            >
+              {downloading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Download size={16} />
+              )}
+              Unduh PDF
+            </button>
+          </div>
+        </div>
+      )}
 
       {!hasDocs && essayDone && (
         <Link
