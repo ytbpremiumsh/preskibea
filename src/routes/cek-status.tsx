@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { KeyRound, Loader2, AlertCircle, FileText, ArrowRight } from "lucide-react";
+import { KeyRound, Loader2, AlertCircle, FileText, ArrowRight, Zap, PenLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
