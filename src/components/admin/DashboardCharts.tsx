@@ -3,10 +3,13 @@ import {
   AreaChart, Area, PieChart, Pie, Cell,
 } from "recharts";
 
-const PRIMARY = "oklch(0.58 0.18 260)"; // modern indigo/blue
-const PRIMARY_SOFT = "oklch(0.74 0.14 75)"; // warm amber for secondary segment
-const ACCENT = "oklch(0.70 0.13 195)"; // teal
+const PRIMARY = "oklch(0.58 0.18 260)"; // indigo/blue — Prestasi
+const PRIMARY_SOFT = "oklch(0.74 0.14 75)"; // warm amber — Ekonomi
+const ACCENT = "oklch(0.70 0.13 195)"; // teal — Umum
+const VIOLET = "oklch(0.62 0.16 330)"; // magenta/violet — Yatim
 const MUTED = "hsl(var(--muted-foreground))";
+
+const KIND_COLORS = [PRIMARY, PRIMARY_SOFT, ACCENT, VIOLET];
 
 function TooltipCard({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
@@ -28,7 +31,7 @@ function TooltipCard({ active, payload, label }: any) {
 
 function LegendDots({ items }: { items: { name: string; color: string; value?: number | string }[] }) {
   return (
-    <div className="flex flex-wrap justify-center gap-x-5 gap-y-1.5 pt-3 text-xs">
+    <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 pt-3 text-xs">
       {items.map((it) => (
         <div key={it.name} className="flex items-center gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full" style={{ background: it.color }} />
@@ -90,7 +93,7 @@ export function LineDaily({ data, showFastTrack }: { data: { label: string; coun
 
 export function PieKind({ data }: { data: { name: string; value: number }[] }) {
   const total = data.reduce((s, d) => s + d.value, 0);
-  const colors = [PRIMARY, PRIMARY_SOFT];
+  const colors = KIND_COLORS;
   return (
     <div className="relative h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -121,7 +124,7 @@ export function PieKind({ data }: { data: { name: string; value: number }[] }) {
           </Pie>
         </PieChart>
       </ResponsiveContainer>
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center -mt-4">
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center -mt-6">
         <div className="text-2xl font-bold tabular-nums text-foreground">{total}</div>
         <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Total</div>
       </div>
@@ -138,26 +141,35 @@ export function PieKind({ data }: { data: { name: string; value: number }[] }) {
   );
 }
 
-export function BarJenjang({ data }: { data: { name: string; prestasi: number; ekonomi: number }[] }) {
+export function BarJenjang({
+  data,
+}: {
+  data: { name: string; prestasi: number; ekonomi: number; umum: number; yatim: number }[];
+}) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data} margin={{ top: 16, right: 12, left: -16, bottom: 0 }} barCategoryGap="28%">
         <defs>
-          <linearGradient id="barPrestasi" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={PRIMARY} stopOpacity={1} />
-            <stop offset="100%" stopColor={PRIMARY} stopOpacity={0.7} />
-          </linearGradient>
-          <linearGradient id="barEkonomi" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={ACCENT} stopOpacity={1} />
-            <stop offset="100%" stopColor={ACCENT} stopOpacity={0.7} />
-          </linearGradient>
+          {[
+            ["barPrestasi", PRIMARY],
+            ["barEkonomi", PRIMARY_SOFT],
+            ["barUmum", ACCENT],
+            ["barYatim", VIOLET],
+          ].map(([id, c]) => (
+            <linearGradient key={id} id={id as string} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={c as string} stopOpacity={1} />
+              <stop offset="100%" stopColor={c as string} stopOpacity={0.7} />
+            </linearGradient>
+          ))}
         </defs>
         <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" opacity={0.5} vertical={false} />
         <XAxis dataKey="name" tick={{ fontSize: 12, fill: MUTED }} tickLine={false} axisLine={false} />
         <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: MUTED }} tickLine={false} axisLine={false} width={28} />
         <Tooltip content={<TooltipCard />} cursor={{ fill: "hsl(var(--muted))", opacity: 0.4 }} />
         <Bar dataKey="prestasi" stackId="a" fill="url(#barPrestasi)" name="Prestasi" maxBarSize={44} />
-        <Bar dataKey="ekonomi" stackId="a" fill="url(#barEkonomi)" name="Ekonomi" maxBarSize={44} radius={[8, 8, 0, 0]} />
+        <Bar dataKey="ekonomi" stackId="a" fill="url(#barEkonomi)" name="Ekonomi" maxBarSize={44} />
+        <Bar dataKey="umum" stackId="a" fill="url(#barUmum)" name="Umum" maxBarSize={44} />
+        <Bar dataKey="yatim" stackId="a" fill="url(#barYatim)" name="Yatim" maxBarSize={44} radius={[8, 8, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
