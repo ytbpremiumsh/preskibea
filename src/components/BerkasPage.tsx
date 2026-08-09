@@ -21,7 +21,6 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
     { id: "achievement_certs", key: "achievement_certs", label: "Sertifikat Prestasi (Akademik/Non-Akademik)", required: true },
     { id: "org_certs", key: "org_certs", label: "Sertifikat Organisasi/Kepanitiaan", required: false },
-    { id: "essay", key: "essay", label: "Esai: 'Kontribusiku untuk Indonesia Melalui Prestasi'", required: true },
     { id: "cv", key: "cv", label: "Curriculum Vitae (CV) Kreatif", required: true },
   ],
   ekonomi: [
@@ -30,12 +29,10 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "sktm", key: "sktm", label: "Surat Keterangan Tidak Mampu (SKTM)", required: true },
     { id: "house_photos", key: "house_photos", label: "Foto Rumah (Tampak Depan & Ruang Tamu)", required: true },
     { id: "utility_bill", key: "utility_bill", label: "Bukti Pembayaran Listrik/PBB", required: true },
-    { id: "essay", key: "essay", label: "Esai: 'Pentingnya Pendidikan untuk Merubah Ekonomi Keluarga'", required: true },
   ],
   umum: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
     { id: "transcript", key: "transcript", label: "Rapor / Transkrip Nilai Terakhir", required: true },
-    { id: "essay", key: "essay", label: "Esai: 'Peranku dalam Memajukan Pendidikan di Lingkungan Sekitar'", required: true },
     { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
   ],
   yatim: [
@@ -43,7 +40,6 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "orphan_letter", key: "orphan_letter", label: "Surat Keterangan Yatim / Piatu / Yatim Piatu", required: true },
     { id: "death_cert", key: "death_cert", label: "Akta Kematian Orang Tua", required: true },
     { id: "family_card", key: "family_card", label: "Kartu Keluarga (KK)", required: true },
-    { id: "essay", key: "essay", label: "Esai: 'Harapanku untuk Masa Depan Melalui Pendidikan'", required: true },
     { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
   ],
 };

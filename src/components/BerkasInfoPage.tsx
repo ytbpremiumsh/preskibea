@@ -8,7 +8,6 @@ const docsByKind = {
     "Kartu Pelajar / Kartu Mahasiswa",
     "Sertifikat Prestasi Akademik/Non-Akademik",
     "Sertifikat Organisasi/Kepanitiaan",
-    "Esai Motivasi: 'Kontribusiku untuk Indonesia Melalui Prestasi'",
     "Curriculum Vitae (CV) Kreatif",
     "Video Motivasi (link/file) — opsional",
   ],
@@ -18,12 +17,10 @@ const docsByKind = {
     "Surat Keterangan Tidak Mampu (SKTM)",
     "Foto Rumah (Tampak Depan & Ruang Tamu)",
     "Bukti Pembayaran Listrik/Pajak Bumi Bangunan",
-    "Esai Motivasi: 'Pentingnya Pendidikan untuk Merubah Ekonomi Keluarga'",
   ],
   umum: [
     "Kartu Pelajar / Kartu Mahasiswa",
     "Rapor / Transkrip Nilai Terakhir (Minimal 1 Semester)",
-    "Esai Motivasi: 'Peranku dalam Memajukan Pendidikan di Lingkungan Sekitar'",
     "Sertifikat Pendukung Lainnya — opsional",
     "Video Motivasi (link/file) — opsional",
   ],
@@ -32,7 +29,6 @@ const docsByKind = {
     "Surat Keterangan Yatim / Piatu / Yatim Piatu",
     "Akta Kematian Orang Tua",
     "Kartu Keluarga (KK)",
-    "Esai Motivasi: 'Harapanku untuk Masa Depan Melalui Pendidikan'",
     "Sertifikat Pendukung Lainnya — opsional",
   ],
 } as const;
