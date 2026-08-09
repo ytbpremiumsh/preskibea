@@ -35,7 +35,7 @@ function AdminSettings() {
     subtitle: "",
   });
   const [stages, setStages] = useState<Stage[]>([]);
-  const [certConfig, setCertConfig] = useState({ enabled: true });
+  const [certConfig, setCertConfig] = useState({ enabled: true, releaseDate: "" });
 
   useEffect(() => {
     const load = async () => {
