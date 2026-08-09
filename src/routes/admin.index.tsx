@@ -58,7 +58,7 @@ function ChartFallback() {
 function AdminOverview() {
   const [recent, setRecent] = useState<RecentRow[]>([]);
   const [lite, setLite] = useState<LiteRow[]>([]);
-  const [counts, setCounts] = useState({ total: 0, prestasi: 0, ekonomi: 0, pending: 0, today: 0, docs: 0, fastTrack: 0 });
+  const [counts, setCounts] = useState({ total: 0, prestasi: 0, ekonomi: 0, umum: 0, yatim: 0, pending: 0, today: 0, docs: 0, fastTrack: 0 });
   const [loading, setLoading] = useState(true);
   const [notif, setNotif] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
@@ -81,6 +81,8 @@ function AdminOverview() {
         totalRes,
         prestasiRes,
         ekonomiRes,
+        umumRes,
+        yatimRes,
         pendingRes,
         todayRes,
         docsRes,
@@ -97,6 +99,8 @@ function AdminOverview() {
         supabase.from("registrations").select("id", { count: "exact", head: true }),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "prestasi"),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "ekonomi"),
+        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "umum"),
+        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "yatim"),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("registrations").select("id", { count: "exact", head: true }).gte("created_at", startToday.toISOString()),
         supabase.from("documents").select("id", { count: "exact", head: true }),
@@ -110,11 +114,14 @@ function AdminOverview() {
         total: totalRes.count ?? 0,
         prestasi: prestasiRes.count ?? 0,
         ekonomi: ekonomiRes.count ?? 0,
+        umum: umumRes.count ?? 0,
+        yatim: yatimRes.count ?? 0,
         pending: pendingRes.count ?? 0,
         today: todayRes.count ?? 0,
         docs: docsRes.count ?? 0,
         fastTrack: fastTrackRes.count ?? 0,
       });
+
       setLoading(false);
     };
     load();
@@ -138,6 +145,9 @@ function AdminOverview() {
             today: c.today + 1,
             prestasi: c.prestasi + (newRow.kind === "prestasi" ? 1 : 0),
             ekonomi: c.ekonomi + (newRow.kind === "ekonomi" ? 1 : 0),
+            umum: c.umum + (newRow.kind === "umum" ? 1 : 0),
+            yatim: c.yatim + (newRow.kind === "yatim" ? 1 : 0),
+
             fastTrack: c.fastTrack + (newRow.fast_track ? 1 : 0),
           }));
           if (notif) {
@@ -167,12 +177,17 @@ function AdminOverview() {
   };
 
   const byJenjang = useMemo(() => {
-    const map = new Map<string, { name: string; prestasi: number; ekonomi: number; total: number }>();
-    for (const j of JENJANG) map.set(j, { name: j, prestasi: 0, ekonomi: 0, total: 0 });
+    type Row = { name: string; prestasi: number; ekonomi: number; umum: number; yatim: number; total: number };
+    const blank = (name: string): Row => ({ name, prestasi: 0, ekonomi: 0, umum: 0, yatim: 0, total: 0 });
+    const map = new Map<string, Row>();
+    for (const j of JENJANG) map.set(j, blank(j));
     for (const r of lite) {
       const j = normalizeJenjang(r.education_level);
-      const cur = map.get(j) ?? { name: j, prestasi: 0, ekonomi: 0, total: 0 };
-      if (r.kind === "prestasi") cur.prestasi++; else cur.ekonomi++;
+      const cur = map.get(j) ?? blank(j);
+      if (r.kind === "prestasi") cur.prestasi++;
+      else if (r.kind === "ekonomi") cur.ekonomi++;
+      else if (r.kind === "umum") cur.umum++;
+      else if (r.kind === "yatim") cur.yatim++;
       cur.total++;
       map.set(j, cur);
     }
@@ -182,7 +197,10 @@ function AdminOverview() {
   const byKind = useMemo(() => [
     { name: "Prestasi", value: counts.prestasi },
     { name: "Ekonomi", value: counts.ekonomi },
+    { name: "Umum", value: counts.umum },
+    { name: "Yatim", value: counts.yatim },
   ], [counts]);
+
 
   const dailyStats = useMemo(() => {
     const days: { date: string; label: string; count: number; fastTrack: number }[] = [];
@@ -210,12 +228,15 @@ function AdminOverview() {
 
   const items = [
     { label: "Total Pendaftar", value: counts.total, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
-    { label: "Pendaftar Fast Track", value: counts.fastTrack, icon: Clock, color: "text-orange-600", bg: "bg-orange-100" },
     { label: "Hari Ini", value: counts.today, icon: Clock, color: "text-emerald-700", bg: "bg-emerald-100" },
-    { label: "Beasiswa Prestasi", value: counts.prestasi, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
-    { label: "Beasiswa Ekonomi", value: counts.ekonomi, icon: HeartHandshake, color: "text-accent-foreground", bg: "bg-accent/30" },
+    { label: "Fast Track", value: counts.fastTrack, icon: Clock, color: "text-orange-600", bg: "bg-orange-100" },
     { label: "Berkas Diunggah", value: counts.docs, icon: FileText, color: "text-blue-700", bg: "bg-blue-100" },
+    { label: "Beasiswa Prestasi", value: counts.prestasi, icon: GraduationCap, color: "text-indigo-600", bg: "bg-indigo-100" },
+    { label: "Beasiswa Ekonomi", value: counts.ekonomi, icon: HeartHandshake, color: "text-emerald-700", bg: "bg-emerald-100" },
+    { label: "Beasiswa Umum", value: counts.umum, icon: GraduationCap, color: "text-teal-700", bg: "bg-teal-100" },
+    { label: "Beasiswa Yatim", value: counts.yatim, icon: HeartHandshake, color: "text-fuchsia-700", bg: "bg-fuchsia-100" },
   ];
+
 
   return (
     <div className="space-y-6">
@@ -238,18 +259,23 @@ function AdminOverview() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {items.map((it) => (
-          <Card key={it.label} className="rounded-2xl p-5 shadow-soft">
-            <div className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg ${it.bg} ${it.color}`}>
-              <it.icon className="h-5 w-5" />
+          <Card key={it.label} className="rounded-2xl p-4 shadow-soft sm:p-5">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-2xl font-bold tabular-nums text-foreground sm:text-3xl">
+                  {loading ? <span className="inline-block h-7 w-12 animate-pulse rounded bg-muted" /> : it.value}
+                </p>
+                <p className="mt-1 truncate text-xs text-muted-foreground">{it.label}</p>
+              </div>
+              <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${it.bg} ${it.color}`}>
+                <it.icon className="h-5 w-5" />
+              </div>
             </div>
-            <p className="text-3xl font-bold text-foreground">
-              {loading ? <span className="inline-block h-7 w-12 animate-pulse rounded bg-muted" /> : it.value}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">{it.label}</p>
           </Card>
         ))}
+
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -264,7 +290,8 @@ function AdminOverview() {
 
         <Card className="rounded-2xl p-5 shadow-soft">
           <h2 className="text-base font-semibold text-foreground">Distribusi Kategori</h2>
-          <div className="mt-4 h-64">
+          <div className="mt-4 h-72">
+
             <Suspense fallback={<ChartFallback />}>
               {!loading && <PieKind data={byKind} />}
             </Suspense>

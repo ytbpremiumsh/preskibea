@@ -101,11 +101,18 @@ function AdminPendaftar() {
   }, [rows, docs]);
 
   const totals = useMemo(() => {
-    const prestasi = rows.filter((r) => r.kind === "prestasi").length;
-    const ekonomi = rows.filter((r) => r.kind === "ekonomi").length;
+    const byKind = (k: string) => rows.filter((r) => r.kind === k).length;
     const fast = rows.filter((r) => !!r.fast_track).length;
-    return { prestasi, ekonomi, fast, total: rows.length };
+    return {
+      prestasi: byKind("prestasi"),
+      ekonomi: byKind("ekonomi"),
+      umum: byKind("umum"),
+      yatim: byKind("yatim"),
+      fast,
+      total: rows.length,
+    };
   }, [rows]);
+
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -259,7 +266,7 @@ function AdminPendaftar() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
         <StatCard
           label="Total Pendaftar"
           value={totals.total}
@@ -268,18 +275,32 @@ function AdminPendaftar() {
           iconBg="bg-primary/15 text-primary"
         />
         <StatCard
-          label="Beasiswa Prestasi"
+          label="Prestasi"
           value={totals.prestasi}
           icon={<Award className="h-5 w-5" />}
-          gradient="from-amber-500/15 to-amber-500/5"
-          iconBg="bg-amber-500/15 text-amber-600"
+          gradient="from-indigo-500/15 to-indigo-500/5"
+          iconBg="bg-indigo-500/15 text-indigo-600"
         />
         <StatCard
-          label="Beasiswa Ekonomi"
+          label="Ekonomi"
           value={totals.ekonomi}
           icon={<HeartHandshake className="h-5 w-5" />}
           gradient="from-emerald-500/15 to-emerald-500/5"
           iconBg="bg-emerald-500/15 text-emerald-600"
+        />
+        <StatCard
+          label="Umum"
+          value={totals.umum}
+          icon={<Users className="h-5 w-5" />}
+          gradient="from-teal-500/15 to-teal-500/5"
+          iconBg="bg-teal-500/15 text-teal-600"
+        />
+        <StatCard
+          label="Yatim"
+          value={totals.yatim}
+          icon={<HeartHandshake className="h-5 w-5" />}
+          gradient="from-fuchsia-500/15 to-fuchsia-500/5"
+          iconBg="bg-fuchsia-500/15 text-fuchsia-600"
         />
         <StatCard
           label="Fast Track"
@@ -296,6 +317,7 @@ function AdminPendaftar() {
           iconBg="bg-sky-500/15 text-sky-600"
         />
       </div>
+
 
       <Card className="rounded-2xl p-4 shadow-soft">
         <div className="flex flex-wrap gap-2">
