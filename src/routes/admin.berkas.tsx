@@ -312,6 +312,7 @@ function AdminBerkas() {
           icon={<Users className="h-5 w-5" />}
           gradient="from-primary/15 to-primary/5"
           iconBg="bg-primary/15 text-primary"
+          onClick={() => setFilterKind("all")}
         />
         <StatCard
           label="Prestasi"
@@ -319,6 +320,8 @@ function AdminBerkas() {
           icon={<Award className="h-5 w-5" />}
           gradient="from-indigo-500/15 to-indigo-500/5"
           iconBg="bg-indigo-500/15 text-indigo-600"
+          kind="prestasi"
+          onClick={setFilterKind}
         />
         <StatCard
           label="Ekonomi"
@@ -326,6 +329,8 @@ function AdminBerkas() {
           icon={<HeartHandshake className="h-5 w-5" />}
           gradient="from-emerald-500/15 to-emerald-500/5"
           iconBg="bg-emerald-500/15 text-emerald-600"
+          kind="ekonomi"
+          onClick={setFilterKind}
         />
         <StatCard
           label="Umum"
@@ -333,6 +338,8 @@ function AdminBerkas() {
           icon={<GraduationCap className="h-5 w-5" />}
           gradient="from-teal-500/15 to-teal-500/5"
           iconBg="bg-teal-500/15 text-teal-600"
+          kind="umum"
+          onClick={setFilterKind}
         />
         <StatCard
           label="Yatim"
@@ -340,6 +347,8 @@ function AdminBerkas() {
           icon={<HeartHandshake className="h-5 w-5" />}
           gradient="from-fuchsia-500/15 to-fuchsia-500/5"
           iconBg="bg-fuchsia-500/15 text-fuchsia-600"
+          kind="yatim"
+          onClick={setFilterKind}
         />
       </div>
 
@@ -594,9 +603,28 @@ function Info({ label, value, className }: { label: string; value: string; class
   );
 }
 
-function StatCard({ label, value, icon, gradient, iconBg }: { label: string; value: number; icon: React.ReactNode; gradient: string; iconBg: string }) {
+function StatCard({
+  label,
+  value,
+  icon,
+  gradient,
+  iconBg,
+  kind,
+  onClick,
+}: {
+  label: string;
+  value: number;
+  icon: React.ReactNode;
+  gradient: string;
+  iconBg: string;
+  kind?: string;
+  onClick?: (kind: any) => void;
+}) {
   return (
-    <Card className={`rounded-2xl p-4 shadow-soft bg-gradient-to-br ${gradient} border-border/60`}>
+    <Card
+      className={`rounded-2xl p-4 shadow-soft bg-gradient-to-br ${gradient} border-border/60 transition-all hover:scale-[1.02] cursor-pointer active:scale-[0.98]`}
+      onClick={() => onClick?.(kind || "all")}
+    >
       <div className="flex items-center gap-3">
         <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${iconBg}`}>{icon}</div>
         <div className="min-w-0">
