@@ -7,7 +7,7 @@ const docsByKind = {
   prestasi: [
     "Kartu Pelajar / Kartu Mahasiswa",
     "Sertifikat Prestasi (Akademik maupun Non-Akademik)",
-    "Rapor / Transkrip Nilai Terakhir",
+    "Rapor / KHS / Transkrip Nilai Terakhir",
     "Sertifikat Organisasi/Kepanitiaan",
     "Curriculum Vitae (CV) Kreatif",
     "Berkas Pendukung Lainnya (Opsional)",
@@ -21,7 +21,7 @@ const docsByKind = {
   ],
   umum: [
     "Kartu Pelajar / Kartu Mahasiswa",
-    "Rapor / Transkrip Nilai Terakhir (Minimal 1 Semester)",
+    "Rapor / KHS / Transkrip Nilai Terakhir (Minimal 1 Semester)",
     "Sertifikat Pendukung Lainnya — opsional",
     "Video Motivasi (link/file) — opsional",
   ],
