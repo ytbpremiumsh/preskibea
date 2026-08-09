@@ -35,18 +35,24 @@ function AdminSettings() {
     subtitle: "",
   });
   const [stages, setStages] = useState<Stage[]>([]);
-  const [certConfig, setCertConfig] = useState({ enabled: true, releaseDate: "" });
+  const [certConfig, setCertConfig] = useState<{ enabled: boolean; releaseDate: string }>({ 
+    enabled: true, 
+    releaseDate: "" 
+  });
 
   useEffect(() => {
     const load = async () => {
       const { data } = await supabase.from("site_settings").select("key,value");
       const cd = data?.find((d) => d.key === "countdown")?.value as CountdownSetting | undefined;
       const tl = data?.find((d) => d.key === "timeline")?.value as Stage[] | undefined;
-      const cc = data?.find((d) => d.key === "certificate_config")?.value as { enabled: boolean } | undefined;
+      const cc = data?.find((d) => d.key === "certificate_config")?.value as { enabled: boolean; releaseDate?: string } | undefined;
       if (cd) setCountdown({ ...cd, deadline: toLocalInput(cd.deadline) });
       if (Array.isArray(tl))
         setStages(tl.map((s) => ({ ...s, date: s.date ? s.date.slice(0, 10) : "", startDate: s.startDate ? s.startDate.slice(0, 10) : "" })));
-      if (cc) setCertConfig(cc);
+      if (cc) setCertConfig({ 
+        enabled: cc.enabled, 
+        releaseDate: cc.releaseDate ? toLocalInput(cc.releaseDate) : "" 
+      });
       setLoading(false);
     };
     load();
