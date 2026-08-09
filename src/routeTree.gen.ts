@@ -36,10 +36,6 @@ import { Route as BerkasUmumRouteImport } from './routes/berkas.umum'
 import { Route as BerkasTerkirimRouteImport } from './routes/berkas.terkirim'
 import { Route as BerkasPrestasiRouteImport } from './routes/berkas.prestasi'
 import { Route as BerkasEkonomiRouteImport } from './routes/berkas.ekonomi'
-import { Route as BagikanPosterYatimRouteImport } from './routes/bagikan-poster.yatim'
-import { Route as BagikanPosterUmumRouteImport } from './routes/bagikan-poster.umum'
-import { Route as BagikanPosterPrestasiRouteImport } from './routes/bagikan-poster.prestasi'
-import { Route as BagikanPosterEkonomiRouteImport } from './routes/bagikan-poster.ekonomi'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as AdminWhatsappRouteImport } from './routes/admin.whatsapp'
 import { Route as AdminSistemUpdateRouteImport } from './routes/admin.sistem-update'
@@ -204,26 +200,6 @@ const BerkasEkonomiRoute = BerkasEkonomiRouteImport.update({
   id: '/berkas/ekonomi',
   path: '/berkas/ekonomi',
   getParentRoute: () => rootRouteImport,
-} as any)
-const BagikanPosterYatimRoute = BagikanPosterYatimRouteImport.update({
-  id: '/yatim',
-  path: '/yatim',
-  getParentRoute: () => BagikanPosterRoute,
-} as any)
-const BagikanPosterUmumRoute = BagikanPosterUmumRouteImport.update({
-  id: '/umum',
-  path: '/umum',
-  getParentRoute: () => BagikanPosterRoute,
-} as any)
-const BagikanPosterPrestasiRoute = BagikanPosterPrestasiRouteImport.update({
-  id: '/prestasi',
-  path: '/prestasi',
-  getParentRoute: () => BagikanPosterRoute,
-} as any)
-const BagikanPosterEkonomiRoute = BagikanPosterEkonomiRouteImport.update({
-  id: '/ekonomi',
-  path: '/ekonomi',
-  getParentRoute: () => BagikanPosterRoute,
 } as any)
 const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
   id: '/artikel/$slug',
@@ -405,10 +381,6 @@ export interface FileRoutesByFullPath {
   '/admin/sistem-update': typeof AdminSistemUpdateRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
-  '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
-  '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
-  '/bagikan-poster/umum': typeof BagikanPosterUmumRoute
-  '/bagikan-poster/yatim': typeof BagikanPosterYatimRoute
   '/berkas/ekonomi': typeof BerkasEkonomiRouteWithChildren
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
   '/berkas/terkirim': typeof BerkasTerkirimRoute
@@ -465,10 +437,6 @@ export interface FileRoutesByTo {
   '/admin/sistem-update': typeof AdminSistemUpdateRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
-  '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
-  '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
-  '/bagikan-poster/umum': typeof BagikanPosterUmumRoute
-  '/bagikan-poster/yatim': typeof BagikanPosterYatimRoute
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
@@ -524,10 +492,6 @@ export interface FileRoutesById {
   '/admin/sistem-update': typeof AdminSistemUpdateRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
-  '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
-  '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
-  '/bagikan-poster/umum': typeof BagikanPosterUmumRoute
-  '/bagikan-poster/yatim': typeof BagikanPosterYatimRoute
   '/berkas/ekonomi': typeof BerkasEkonomiRouteWithChildren
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
   '/berkas/terkirim': typeof BerkasTerkirimRoute
@@ -588,10 +552,6 @@ export interface FileRouteTypes {
     | '/admin/sistem-update'
     | '/admin/whatsapp'
     | '/artikel/$slug'
-    | '/bagikan-poster/ekonomi'
-    | '/bagikan-poster/prestasi'
-    | '/bagikan-poster/umum'
-    | '/bagikan-poster/yatim'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
     | '/berkas/terkirim'
@@ -648,10 +608,6 @@ export interface FileRouteTypes {
     | '/admin/sistem-update'
     | '/admin/whatsapp'
     | '/artikel/$slug'
-    | '/bagikan-poster/ekonomi'
-    | '/bagikan-poster/prestasi'
-    | '/bagikan-poster/umum'
-    | '/bagikan-poster/yatim'
     | '/berkas/terkirim'
     | '/donasi/terima-kasih'
     | '/pendaftaran/ekonomi'
@@ -706,10 +662,6 @@ export interface FileRouteTypes {
     | '/admin/sistem-update'
     | '/admin/whatsapp'
     | '/artikel/$slug'
-    | '/bagikan-poster/ekonomi'
-    | '/bagikan-poster/prestasi'
-    | '/bagikan-poster/umum'
-    | '/bagikan-poster/yatim'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
     | '/berkas/terkirim'
@@ -954,34 +906,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/berkas/ekonomi'
       preLoaderRoute: typeof BerkasEkonomiRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/bagikan-poster/yatim': {
-      id: '/bagikan-poster/yatim'
-      path: '/yatim'
-      fullPath: '/bagikan-poster/yatim'
-      preLoaderRoute: typeof BagikanPosterYatimRouteImport
-      parentRoute: typeof BagikanPosterRoute
-    }
-    '/bagikan-poster/umum': {
-      id: '/bagikan-poster/umum'
-      path: '/umum'
-      fullPath: '/bagikan-poster/umum'
-      preLoaderRoute: typeof BagikanPosterUmumRouteImport
-      parentRoute: typeof BagikanPosterRoute
-    }
-    '/bagikan-poster/prestasi': {
-      id: '/bagikan-poster/prestasi'
-      path: '/prestasi'
-      fullPath: '/bagikan-poster/prestasi'
-      preLoaderRoute: typeof BagikanPosterPrestasiRouteImport
-      parentRoute: typeof BagikanPosterRoute
-    }
-    '/bagikan-poster/ekonomi': {
-      id: '/bagikan-poster/ekonomi'
-      path: '/ekonomi'
-      fullPath: '/bagikan-poster/ekonomi'
-      preLoaderRoute: typeof BagikanPosterEkonomiRouteImport
-      parentRoute: typeof BagikanPosterRoute
     }
     '/artikel/$slug': {
       id: '/artikel/$slug'
@@ -1240,18 +1164,10 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface BagikanPosterRouteChildren {
-  BagikanPosterEkonomiRoute: typeof BagikanPosterEkonomiRoute
-  BagikanPosterPrestasiRoute: typeof BagikanPosterPrestasiRoute
-  BagikanPosterUmumRoute: typeof BagikanPosterUmumRoute
-  BagikanPosterYatimRoute: typeof BagikanPosterYatimRoute
   BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
 }
 
 const BagikanPosterRouteChildren: BagikanPosterRouteChildren = {
-  BagikanPosterEkonomiRoute: BagikanPosterEkonomiRoute,
-  BagikanPosterPrestasiRoute: BagikanPosterPrestasiRoute,
-  BagikanPosterUmumRoute: BagikanPosterUmumRoute,
-  BagikanPosterYatimRoute: BagikanPosterYatimRoute,
   BagikanPosterIndexRoute: BagikanPosterIndexRoute,
 }
 
