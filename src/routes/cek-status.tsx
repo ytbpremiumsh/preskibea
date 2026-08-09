@@ -238,9 +238,9 @@ function StatusResult({ data }: { data: StatusData }) {
 
 
       {/* Benefit Card - Certificate */}
-      {certEnabled && (
+      {certConfig.enabled && (
         <div className="mt-6 rounded-2xl border-2 border-primary/20 bg-primary/5 p-5">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
             <div className="flex items-start gap-4">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
                 <Award size={24} />
@@ -250,20 +250,32 @@ function StatusResult({ data }: { data: StatusData }) {
                 <p className="mt-1 text-sm text-muted-foreground">
                   Selamat! Kamu berhak mendapatkan e-sertifikat resmi sebagai peserta Beasiswa Prestasi Kita Batch #8.
                 </p>
+                {!canDownload && certConfig.releaseDate && (
+                  <div className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-amber-100 px-2.5 py-1 text-[11px] font-bold text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                    📅 Unduhan dibuka pada: {new Date(certConfig.releaseDate).toLocaleString("id-ID", { dateStyle: "long", timeStyle: "short" })}
+                  </div>
+                )}
               </div>
             </div>
-            <button
-              onClick={downloadCert}
-              disabled={downloading}
-              className="btn-block inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground transition-all hover:opacity-95 disabled:opacity-60"
-            >
-              {downloading ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
+            {canDownload ? (
+              <button
+                onClick={downloadCert}
+                disabled={downloading}
+                className="btn-block inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground transition-all hover:opacity-95 disabled:opacity-60"
+              >
+                {downloading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Download size={16} />
+                )}
+                Unduh PDF
+              </button>
+            ) : (
+              <div className="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-muted px-5 text-sm font-bold text-muted-foreground border-2 border-dashed border-muted-foreground/30 cursor-not-allowed">
                 <Download size={16} />
-              )}
-              Unduh PDF
-            </button>
+                Unduh Belum Dibuka
+              </div>
+            )}
           </div>
         </div>
       )}
