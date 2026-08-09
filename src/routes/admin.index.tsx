@@ -81,6 +81,8 @@ function AdminOverview() {
         totalRes,
         prestasiRes,
         ekonomiRes,
+        umumRes,
+        yatimRes,
         pendingRes,
         todayRes,
         docsRes,
@@ -97,6 +99,8 @@ function AdminOverview() {
         supabase.from("registrations").select("id", { count: "exact", head: true }),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "prestasi"),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "ekonomi"),
+        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "umum"),
+        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "yatim"),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("registrations").select("id", { count: "exact", head: true }).gte("created_at", startToday.toISOString()),
         supabase.from("documents").select("id", { count: "exact", head: true }),
@@ -110,11 +114,14 @@ function AdminOverview() {
         total: totalRes.count ?? 0,
         prestasi: prestasiRes.count ?? 0,
         ekonomi: ekonomiRes.count ?? 0,
+        umum: umumRes.count ?? 0,
+        yatim: yatimRes.count ?? 0,
         pending: pendingRes.count ?? 0,
         today: todayRes.count ?? 0,
         docs: docsRes.count ?? 0,
         fastTrack: fastTrackRes.count ?? 0,
       });
+
       setLoading(false);
     };
     load();
