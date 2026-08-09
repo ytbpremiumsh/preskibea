@@ -504,69 +504,61 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
 
           <KetentuanBerkasCard kind={kind} />
 
-          <div
-            className={`card-block p-6 md:p-7 ${(!registrant || !essayDone) ? "opacity-60 pointer-events-none select-none" : ""}`}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
-              {!registrant ? (
-                <span className="text-[11px] font-semibold text-muted-foreground">
-                  Verifikasi kode dulu
-                </span>
-              ) : !essayDone && (
-                <span className="text-[11px] font-semibold text-destructive">
-                  Selesaikan esai dulu
-                </span>
-              )}
-            </div>
-            <div className="mt-5 space-y-6">
-              {docs.map((d) => {
-                const v = values[d.key] ?? "";
-                const showError = v.trim().length > 0 && !isValidUrl(v);
-                return (
-                  <label key={d.id} className="block">
-                    <span className="flex items-center gap-2 flex-wrap text-xs font-medium text-foreground/80">
-                      <span>
-                        {d.label}
-                        {d.required && <span className="text-destructive"> *</span>}
-                      </span>
-                      {!d.required && (
-                        <span className="text-[10px] font-semibold uppercase rounded-full bg-secondary text-muted-foreground px-2 py-0.5">
-                          Opsional
+          {registrant && essayDone && (
+            <div className="card-block p-6 md:p-7">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
+              </div>
+              <div className="mt-5 space-y-6">
+                {docs.map((d) => {
+                  const v = values[d.key] ?? "";
+                  const showError = v.trim().length > 0 && !isValidUrl(v);
+                  return (
+                    <label key={d.id} className="block">
+                      <span className="flex items-center gap-2 flex-wrap text-xs font-medium text-foreground/80">
+                        <span>
+                          {d.label}
+                          {d.required && <span className="text-destructive"> *</span>}
                         </span>
-                      )}
-                    </span>
-                    <div className="mt-1.5 relative">
-                      <LinkIcon
-                        size={14}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                      />
-                      <input
-                        type="url"
-                        value={v}
-                        onChange={(e) => setVal(d.key, e.target.value)}
-                        placeholder="https://drive.google.com/..."
-                        disabled={!registrant || !essayDone}
-                        className={`w-full rounded-xl border bg-background pl-9 pr-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${showError ? "border-destructive" : "border-border focus:border-primary"}`}
-                        required={d.required}
-                      />
-                    </div>
-                    {showError && (
-                      <div className="mt-1 text-[11px] text-destructive">
-                        URL tidak valid (gunakan http/https)
+                        {!d.required && (
+                          <span className="text-[10px] font-semibold uppercase rounded-full bg-secondary text-muted-foreground px-2 py-0.5">
+                            Opsional
+                          </span>
+                        )}
+                      </span>
+                      <div className="mt-1.5 relative">
+                        <LinkIcon
+                          size={14}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                        />
+                        <input
+                          type="url"
+                          value={v}
+                          onChange={(e) => setVal(d.key, e.target.value)}
+                          placeholder="https://drive.google.com/..."
+                          disabled={!registrant || !essayDone}
+                          className={`w-full rounded-xl border bg-background pl-9 pr-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${showError ? "border-destructive" : "border-border focus:border-primary"}`}
+                          required={d.required}
+                        />
                       </div>
-                    )}
-                  </label>
-                );
-              })}
-              {docs.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  Belum ada daftar berkas. Admin belum mengonfigurasi.
-                </p>
-              )}
+                      {showError && (
+                        <div className="mt-1 text-[11px] text-destructive">
+                          URL tidak valid (gunakan http/https)
+                        </div>
+                      )}
+                    </label>
+                  );
+                })}
+                {docs.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    Belum ada daftar berkas. Admin belum mengonfigurasi.
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
+
 
         {registrant && (
           <div className="lg:col-span-2 card-block p-6 md:p-7">
