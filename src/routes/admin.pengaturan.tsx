@@ -45,12 +45,26 @@ function AdminSettings() {
     footer_logo_url: string;
     hero_image_url: string;
     benefit_image_url: string;
+    poster_image_url: string;
+    category_images: {
+      prestasi: string;
+      ekonomi: string;
+      umum: string;
+      yatim: string;
+    };
     alumni_images: string[];
   }>({
     header_logo_url: "",
     footer_logo_url: "",
     hero_image_url: "",
     benefit_image_url: "",
+    poster_image_url: "",
+    category_images: {
+      prestasi: "",
+      ekonomi: "",
+      umum: "",
+      yatim: "",
+    },
     alumni_images: ["", "", ""],
   });
 
@@ -65,6 +79,13 @@ function AdminSettings() {
         footer_logo_url?: string; 
         hero_image_url?: string;
         benefit_image_url?: string;
+        poster_image_url?: string;
+        category_images?: {
+          prestasi?: string;
+          ekonomi?: string;
+          umum?: string;
+          yatim?: string;
+        };
         alumni_images?: string[];
       } | undefined;
       
@@ -80,6 +101,13 @@ function AdminSettings() {
         footer_logo_url: br.footer_logo_url || "",
         hero_image_url: br.hero_image_url || "",
         benefit_image_url: br.benefit_image_url || "",
+        poster_image_url: br.poster_image_url || "",
+        category_images: {
+          prestasi: br.category_images?.prestasi || "",
+          ekonomi: br.category_images?.ekonomi || "",
+          umum: br.category_images?.umum || "",
+          yatim: br.category_images?.yatim || "",
+        },
         alumni_images: br.alumni_images?.length ? br.alumni_images : ["", "", ""],
       });
       setLoading(false);
@@ -225,6 +253,64 @@ function AdminSettings() {
               value={branding.benefit_image_url}
               onChange={(e) => setBranding({ ...branding, benefit_image_url: e.target.value })}
             />
+          </div>
+          <div className="space-y-2">
+            <Label>URL Poster Beasiswa</Label>
+            <Input
+              placeholder="https://vps-anda.com/poster.png"
+              value={branding.poster_image_url}
+              onChange={(e) => setBranding({ ...branding, poster_image_url: e.target.value })}
+            />
+          </div>
+        </div>
+
+        <div className="pt-4 space-y-4 border-t border-border">
+          <h3 className="text-sm font-semibold text-foreground">URL Gambar Kategori Beasiswa</h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-xs">Jalur Prestasi</Label>
+              <Input
+                placeholder="URL Gambar Jalur Prestasi"
+                value={branding.category_images.prestasi}
+                onChange={(e) => setBranding({ 
+                  ...branding, 
+                  category_images: { ...branding.category_images, prestasi: e.target.value } 
+                })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs">Jalur Ekonomi</Label>
+              <Input
+                placeholder="URL Gambar Jalur Ekonomi"
+                value={branding.category_images.ekonomi}
+                onChange={(e) => setBranding({ 
+                  ...branding, 
+                  category_images: { ...branding.category_images, ekonomi: e.target.value } 
+                })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs">Jalur Umum</Label>
+              <Input
+                placeholder="URL Gambar Jalur Umum"
+                value={branding.category_images.umum}
+                onChange={(e) => setBranding({ 
+                  ...branding, 
+                  category_images: { ...branding.category_images, umum: e.target.value } 
+                })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs">Jalur Yatim</Label>
+              <Input
+                placeholder="URL Gambar Jalur Yatim"
+                value={branding.category_images.yatim}
+                onChange={(e) => setBranding({ 
+                  ...branding, 
+                  category_images: { ...branding.category_images, yatim: e.target.value } 
+                })}
+              />
+            </div>
           </div>
         </div>
 

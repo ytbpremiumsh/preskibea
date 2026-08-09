@@ -11,6 +11,13 @@ export type BrandingSettings = {
   footer_logo_url?: string;
   hero_image_url?: string;
   benefit_image_url?: string;
+  poster_image_url?: string;
+  category_images?: {
+    prestasi?: string;
+    ekonomi?: string;
+    umum?: string;
+    yatim?: string;
+  };
   alumni_images?: string[];
 };
 
@@ -39,6 +46,8 @@ export function useBranding() {
     footerLogo: branding.footer_logo_url || branding.header_logo_url || defaultLogo,
     heroImage: branding.hero_image_url || null,
     benefitImage: branding.benefit_image_url || null,
+    posterImage: branding.poster_image_url || null,
+    categoryImages: branding.category_images || {},
     alumniImages: branding.alumni_images || [],
   };
 }

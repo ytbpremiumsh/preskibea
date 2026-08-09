@@ -1,4 +1,6 @@
 import { Award, BookOpen, Wallet } from "lucide-react";
+import posterDefault from "@/assets/poster-beasiswa.png";
+import { useBranding } from "@/hooks/use-branding";
 
 const features = [
   {
@@ -19,6 +21,9 @@ const features = [
 ];
 
 export function AboutMockup() {
+  const { posterImage } = useBranding();
+  const posterImg = posterImage || posterDefault;
+
   return (
     <section className="container-page py-20">
       <div className="text-center max-w-2xl mx-auto">
@@ -35,19 +40,31 @@ export function AboutMockup() {
         </p>
       </div>
 
-      <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {features.map((f) => (
-          <div
-            key={f.title}
-            className="card-block group p-6 transition"
-          >
-            <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary-soft text-primary group-hover:scale-105 transition">
-              <f.icon size={20} />
+      <div className="mt-16 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="order-2 lg:order-1 grid sm:grid-cols-2 lg:grid-cols-1 gap-5">
+          {features.map((f) => (
+            <div
+              key={f.title}
+              className="card-block group p-6 transition"
+            >
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary-soft text-primary group-hover:scale-105 transition">
+                <f.icon size={20} />
+              </div>
+              <h3 className="mt-4 text-lg font-semibold text-foreground">{f.title}</h3>
+              <p className="mt-1.5 text-sm text-muted-foreground">{f.desc}</p>
             </div>
-            <h3 className="mt-4 text-lg font-semibold text-foreground">{f.title}</h3>
-            <p className="mt-1.5 text-sm text-muted-foreground">{f.desc}</p>
+          ))}
+        </div>
+        
+        <div className="order-1 lg:order-2 flex justify-center">
+          <div className="card-block overflow-hidden max-w-md w-full rotate-2 hover:rotate-0 transition-transform duration-500">
+            <img 
+              src={posterImg} 
+              alt="Poster Beasiswa Prestasi Kita" 
+              className="w-full h-auto object-contain shadow-2xl"
+            />
           </div>
-        ))}
+        </div>
       </div>
     </section>
   );

@@ -4,6 +4,7 @@ import ilustrasiPrestasi from "@/assets/jalur-prestasi.jpg";
 import ilustrasiEkonomi from "@/assets/jalur-ekonomi.jpg";
 import ilustrasiUmum from "@/assets/jalur-umum.jpg";
 import ilustrasiYatim from "@/assets/jalur-yatim.jpg";
+import { useBranding } from "@/hooks/use-branding";
 
 export const Route = createFileRoute("/daftar")({
   head: () => ({
@@ -16,6 +17,8 @@ export const Route = createFileRoute("/daftar")({
 });
 
 function DaftarSelector() {
+  const { categoryImages } = useBranding();
+
   return (
     <main className="container-page py-16">
       <header className="max-w-2xl mx-auto text-center">
@@ -31,7 +34,7 @@ function DaftarSelector() {
           title="Beasiswa Prestasi"
           desc="Untuk pelajar dengan prestasi akademik maupun non-akademik."
           cta="Daftar Prestasi"
-          illustration={ilustrasiPrestasi}
+          illustration={categoryImages.prestasi || ilustrasiPrestasi}
         />
         <CategoryCard
           to="/beasiswa-ekonomi"
@@ -39,7 +42,7 @@ function DaftarSelector() {
           title="Beasiswa Ekonomi"
           desc="Dukungan finansial bagi pelajar dari keluarga prasejahtera."
           cta="Daftar Ekonomi"
-          illustration={ilustrasiEkonomi}
+          illustration={categoryImages.ekonomi || ilustrasiEkonomi}
         />
         <CategoryCard
           to="/beasiswa-umum"
@@ -47,7 +50,7 @@ function DaftarSelector() {
           title="Beasiswa Umum"
           desc="Jalur terbuka untuk semua pelajar & mahasiswa aktif di Indonesia."
           cta="Daftar Umum"
-          illustration={ilustrasiUmum}
+          illustration={categoryImages.umum || ilustrasiUmum}
         />
         <CategoryCard
           to="/beasiswa-yatim"
@@ -55,7 +58,7 @@ function DaftarSelector() {
           title="Beasiswa Yatim"
           desc="Jalur khusus bagi anak yatim, piatu, dan yatim piatu."
           cta="Daftar Yatim"
-          illustration={ilustrasiYatim}
+          illustration={categoryImages.yatim || ilustrasiYatim}
         />
       </section>
     </main>
