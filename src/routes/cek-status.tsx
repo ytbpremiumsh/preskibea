@@ -233,51 +233,7 @@ function StatusResult({ data }: { data: StatusData }) {
         />
       </div>
 
-      {/* Essai detail */}
-      {!isFast && (
-        <div className="mt-6 rounded-2xl border border-border bg-background p-4">
-          <div className="flex items-center gap-2 text-sm font-bold text-foreground">
-            <PenLine size={16} className="text-primary" /> Status Esai Singkat
-          </div>
-          {essayDone ? (
-            <div className="mt-3 rounded-xl border border-green-200 bg-green-50 p-3 text-xs text-green-800 dark:border-green-900/40 dark:bg-green-950/30 dark:text-green-200">
-              ✓ Esai sudah dikirim
-              {data.essay_submitted_at ? ` pada ${new Date(data.essay_submitted_at).toLocaleString("id-ID")}` : ""}.
-            </div>
-          ) : (
-            <>
-              <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
-                ⚠️ Anda belum mengirim esai singkat. Esai wajib diisi sebelum mengirim berkas administrasi.
-              </div>
-              <Link
-                to="/esai"
-                search={{ token: data.token }}
-                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
-              >
-                Isi Esai Sekarang <ArrowRight size={16} />
-              </Link>
-            </>
-          )}
-        </div>
-      )}
 
-      {/* Berkas detail */}
-      <div className="mt-6 rounded-2xl border border-border bg-background p-4">
-        <div className="flex items-center gap-2 text-sm font-bold text-foreground">
-          <FileText size={16} className="text-primary" /> Detail Berkas
-        </div>
-        {hasDocs ? (
-          <div className="mt-3 grid grid-cols-3 gap-3 text-center">
-            <Stat label="Diproses" value={data.docs.pending} cls="text-amber-600 dark:text-amber-400" />
-            <Stat label="Disetujui" value={data.docs.approved} cls="text-green-600 dark:text-green-400" />
-            <Stat label="Ditolak" value={data.docs.rejected} cls="text-destructive" />
-          </div>
-        ) : (
-          <div className="mt-3 rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:border-amber-900/40 dark:text-amber-200">
-            ⚠️ Anda belum mengirim berkas pendukung. Pendaftaran belum lengkap.
-          </div>
-        )}
-      </div>
 
       {/* Benefit Card - Certificate */}
       {certEnabled && (
@@ -310,15 +266,28 @@ function StatusResult({ data }: { data: StatusData }) {
         </div>
       )}
 
-      {!hasDocs && essayDone && (
-        <Link
-          to={berkasTo as "/berkas/prestasi/upload" | "/berkas/ekonomi/upload" | "/berkas/umum/upload" | "/berkas/yatim/upload"}
-          search={{ token: data.token } as any}
-          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
-        >
-          Kirim Berkas Sekarang <ArrowRight size={16} />
-        </Link>
-      )}
+      {/* Call to Actions */}
+      <div className="mt-6 flex flex-col gap-3">
+        {!isFast && !essayDone && (
+          <Link
+            to="/esai"
+            search={{ token: data.token }}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+          >
+            Lengkapi Esai Sekarang <ArrowRight size={16} />
+          </Link>
+        )}
+
+        {!hasDocs && essayDone && (
+          <Link
+            to={berkasTo as any}
+            search={{ token: data.token } as any}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+          >
+            Kirim Berkas Sekarang <ArrowRight size={16} />
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
