@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
 
     const { data: reg, error } = await supabase
       .from("registrations")
-      .select("id, full_name, kind, status, candidate_status, created_at")
+      .select("id, full_name, kind, status, candidate_status, created_at, fast_track, payment_status, extra")
       .eq("token", tokenRaw)
       .maybeSingle();
     if (error) throw error;
