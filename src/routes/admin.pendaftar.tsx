@@ -101,11 +101,18 @@ function AdminPendaftar() {
   }, [rows, docs]);
 
   const totals = useMemo(() => {
-    const prestasi = rows.filter((r) => r.kind === "prestasi").length;
-    const ekonomi = rows.filter((r) => r.kind === "ekonomi").length;
+    const byKind = (k: string) => rows.filter((r) => r.kind === k).length;
     const fast = rows.filter((r) => !!r.fast_track).length;
-    return { prestasi, ekonomi, fast, total: rows.length };
+    return {
+      prestasi: byKind("prestasi"),
+      ekonomi: byKind("ekonomi"),
+      umum: byKind("umum"),
+      yatim: byKind("yatim"),
+      fast,
+      total: rows.length,
+    };
   }, [rows]);
+
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
