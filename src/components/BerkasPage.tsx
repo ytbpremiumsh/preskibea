@@ -504,9 +504,10 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
 
           <KetentuanBerkasCard kind={kind} />
 
-          <div
-            className={`card-block p-6 md:p-7 ${(!registrant || !essayDone) ? "opacity-60 pointer-events-none select-none" : ""}`}
-          >
+          {registrant && essayDone && (
+            <div
+              className="card-block p-6 md:p-7"
+            >
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
               {!registrant ? (
