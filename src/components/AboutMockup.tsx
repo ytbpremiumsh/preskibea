@@ -1,5 +1,5 @@
 import { Award, BookOpen, Wallet } from "lucide-react";
-import posterDefault from "@/assets/poster-beasiswa.png.asset.json";
+import posterDefault from "@/assets/poster-beasiswa.png";
 import { useBranding } from "@/hooks/use-branding";
 
 const features = [
@@ -22,7 +22,7 @@ const features = [
 
 export function AboutMockup() {
   const { posterImage } = useBranding();
-  const posterImg = posterImage || posterDefault.url;
+  const posterImg = posterImage || posterDefault;
 
   return (
     <section className="container-page py-20">
