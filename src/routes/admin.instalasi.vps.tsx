@@ -14,8 +14,22 @@ function VpsInstallPage() {
         icon={Server}
         badge="VPS · aaPanel · Nginx"
         title="Instalasi di VPS (aaPanel & Standar)"
-        desc="Deploy Prestasi Kita ke VPS Linux melalui aaPanel atau instalasi standar. Build hasilnya dipublikasikan sebagai static site di webroot Nginx."
+        desc="Deploy Prestasi Kita ke VPS Linux melalui aaPanel atau instalasi standar secara langsung dari terminal VPS. Dilarang melakukan upload file manual via FTP/File Manager karena akan merusak struktur aset dan routing aplikasi."
       />
+
+      {/* Warning */}
+      <div className="rounded-2xl border-2 border-destructive bg-destructive/5 p-4 text-destructive">
+        <div className="flex items-center gap-3">
+          <Rocket className="h-6 w-6 shrink-0 rotate-180" />
+          <div>
+            <h3 className="text-sm font-bold uppercase">Peringatan Penting</h3>
+            <p className="text-xs font-medium leading-relaxed">
+              Jalankan instalasi <strong>langsung di dalam terminal VPS</strong> menggunakan perintah GIT dan NPM yang tersedia di bawah. 
+              <strong> JANGAN UPLOAD MANUAL</strong> (seperti via File Manager, FTP, atau ZIP) karena akan menyebabkan aset gambar tidak muncul dan error 404 pada routing.
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Arsitektur */}
       <Card className="rounded-2xl p-6">
