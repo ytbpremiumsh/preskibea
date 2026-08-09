@@ -17,7 +17,7 @@ export const Route = createFileRoute("/beasiswa-prestasi")({
       title="Beasiswa untuk Pelajar & Mahasiswa Berprestasi"
       desc="Program beasiswa bagi pelajar dan mahasiswa yang memiliki prestasi akademik maupun non akademik. Tunjukkan pencapaianmu dan raih dukungan pendidikan terbaik."
       registerTo="/pendaftaran/prestasi"
-      shareTo="/bagikan-poster/prestasi"
+      shareTo="/bagikan-poster"
     />
   ),
 });
