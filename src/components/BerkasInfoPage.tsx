@@ -23,9 +23,9 @@ const docsByKind = {
     "Kartu Pelajar / Kartu Mahasiswa",
     "Rapor / KHS / Transkrip Nilai Terakhir (Minimal 1 Semester)",
     "Curriculum Vitae (CV) / Portofolio Singkat",
-    "Surat Rekomendasi (Guru/Dosen/Tokoh Masyarakat)",
+    "Video Motivasi Diri (Link Drive/YouTube) — Wajib",
     "Sertifikat Pendukung Lainnya (Organisasi/Keahlian) — opsional",
-    "Video Motivasi Diri (Link Drive/YouTube) — opsional",
+    "Berkas Pendukung Lainnya (Opsional)",
   ],
   yatim: [
     "Kartu Pelajar / Kartu Mahasiswa",
