@@ -20,6 +20,7 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
   prestasi: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
     { id: "achievement_certs", key: "achievement_certs", label: "Sertifikat Prestasi (Akademik maupun Non-Akademik)", required: true },
+    { id: "transcript", key: "transcript", label: "Rapor / Transkrip Nilai Terakhir", required: true },
     { id: "org_certs", key: "org_certs", label: "Sertifikat Organisasi/Kepanitiaan", required: false },
     { id: "cv", key: "cv", label: "Curriculum Vitae (CV) Kreatif", required: true },
     { id: "supporting", key: "supporting", label: "Berkas Pendukung Lainnya (Opsional)", required: false },
