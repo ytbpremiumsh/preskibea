@@ -48,6 +48,13 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
   ],
 };
 
+const ESSAY_QUESTIONS = [
+  "Kenapa kamu layak menerima beasiswa ini?",
+  "Bantuan biaya pendidikan ini akan kamu gunakan untuk apa?",
+  "Apa rencana atau targetmu dalam 1 tahun ke depan setelah menerima beasiswa ini?",
+];
+const MIN_ESSAY_CHARS = 100;
+
 function isValidUrl(v: string) {
   try {
     const u = new URL(v.trim());
@@ -70,6 +77,7 @@ type RegInfo = {
   address?: string | null;
   grade?: string | null;
   token?: string | null;
+  fast_track?: boolean | null;
 };
 
 const tokenPrefix = (k: "prestasi" | "ekonomi" | "umum" | "yatim") =>
@@ -88,12 +96,15 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   const [verifying, setVerifying] = useState(false);
   const [registrant, setRegistrant] = useState<RegInfo | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [essays, setEssays] = useState<string[]>(["", "", ""]);
+  const isFastTrack = !!registrant?.fast_track;
 
   useEffect(() => {
     let mounted = true;
     setLoading(true);
     setDocs(defaultDocs[kind]);
     setValues({});
+    setEssays(["", "", ""]);
 
     (async () => {
       try {
@@ -174,6 +185,13 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
       toast.error("Verifikasi kode pendaftar terlebih dahulu");
       return;
     }
+    if (!isFastTrack) {
+      const kurang = essays.findIndex((a) => a.trim().length < MIN_ESSAY_CHARS);
+      if (kurang !== -1) {
+        toast.error(`Esai singkat No. ${kurang + 1} minimal ${MIN_ESSAY_CHARS} karakter`);
+        return;
+      }
+    }
     const missing = docs.filter((d) => d.required && !(values[d.key] ?? "").trim());
     if (missing.length > 0) {
       toast.error(`Lengkapi: ${missing.map((d) => d.label).join(", ")}`);
@@ -210,6 +228,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
         token: token.trim().toUpperCase(),
         kind,
         documents: submittedDocs,
+        essays: isFastTrack
+          ? undefined
+          : ESSAY_QUESTIONS.map((q, i) => ({ question: q, answer: essays[i].trim() })),
       });
 
       supabase.functions
@@ -502,6 +523,57 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
             </div>
           </div>
         </div>
+
+        {registrant && (
+          <div className="lg:col-span-2 card-block p-6 md:p-7">
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <UserCheck size={16} className="text-primary" /> Esai Singkat (Wajib)
+            </h2>
+            {isFastTrack ? (
+              <div className="mt-4 flex items-start gap-2 rounded-xl border border-primary/30 bg-primary-soft/40 p-4 text-sm text-foreground">
+                <CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" />
+                <div>
+                  <span className="font-semibold">Kamu jalur Fast Track — esai otomatis lolos.</span>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Tidak perlu mengisi esai singkat. Silakan langsung lengkapi berkas di bawah.
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Jawab 3 pertanyaan berikut dengan jujur dan singkat (minimal {MIN_ESSAY_CHARS} karakter per jawaban).
+                </p>
+                <div className="mt-5 space-y-5">
+                  {ESSAY_QUESTIONS.map((q, i) => {
+                    const val = essays[i];
+                    const len = val.trim().length;
+                    return (
+                      <label key={q} className="block">
+                        <span className="text-xs font-medium text-foreground/80">
+                          {i + 1}. {q}<span className="text-destructive"> *</span>
+                        </span>
+                        <textarea
+                          value={val}
+                          onChange={(e) =>
+                            setEssays((s) => s.map((v, idx) => (idx === i ? e.target.value : v)))
+                          }
+                          rows={4}
+                          maxLength={3000}
+                          placeholder="Tulis jawabanmu di sini…"
+                          className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                        />
+                        <div className={`mt-1 text-[11px] ${len < MIN_ESSAY_CHARS ? "text-muted-foreground" : "text-primary"}`}>
+                          {len}/{MIN_ESSAY_CHARS} karakter minimum
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </div>
+        )}
 
         <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
           <div className="card-block p-6">
