@@ -130,23 +130,23 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
           Lengkapi seluruh tahapan berikut agar pendaftaranmu dapat diproses ke tahap selanjutnya.
         </p>
 
-        <ol className="mt-6 grid md:grid-cols-2 gap-4">
+        <ol className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
             { t: "Follow Instagram @prestasikita dan @atskolla", d: "Pastikan kamu sudah mengikuti akun Instagram resmi @prestasikita dan @atskolla sebelum lanjut ke tahap berikutnya." },
             { t: "Sebar ke 5 grup WA atau 1 Instagram Feed", d: "Pilih salah satu: bagikan poster + caption ke minimal 5 grup WhatsApp, atau posting poster + caption ke 1 Instagram Feed kamu." },
             { t: "Komentar & tag 3 teman", d: "Komentari unggahan resmi @ayopintar_ dan mention 3 sahabatmu. Contoh: \"Yuk ikut daftar beasiswa ini 🥳✨ @temanA @temanB @temanC\"." },
             { t: "Konfirmasi bukti via WhatsApp", d: "Kirim screenshot (Story, postingan, dan grup) melalui tombol konfirmasi di bawah agar tim verifikasi mencatat partisipasimu." },
           ].map((item, i) => (
-            <li key={item.t} className="flex gap-4 rounded-2xl border border-border bg-background p-4">
+            <li key={item.t} className="flex flex-col sm:flex-row gap-4 rounded-2xl border border-border bg-background p-4 h-full">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary font-bold">
                 {i + 1}
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 size={16} className="text-primary" />
-                  <h3 className="text-sm font-semibold text-foreground">{item.t}</h3>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="text-primary mt-0.5 shrink-0" />
+                  <h3 className="text-sm font-semibold text-foreground leading-tight break-words">{item.t}</h3>
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">{item.d}</p>
+                <p className="mt-1 text-xs sm:text-sm text-muted-foreground leading-relaxed break-words">{item.d}</p>
               </div>
             </li>
           ))}
