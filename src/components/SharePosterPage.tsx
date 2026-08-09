@@ -49,7 +49,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 
   const [cfg, setCfg] = useState<PosterCfg>({
     image_url: defaultPoster,
-    download_url: defaultPoster,
+    download_url: "",
     caption: defaultCaption,
     wa_number: "6281280010302",
     wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Prestasi Kita.",
