@@ -30,7 +30,7 @@ type Registration = {
   school_name: string;
   grade: string;
   kind: "prestasi" | "ekonomi" | "umum" | "yatim";
-  status: "pending" | "approved" | "rejected";
+  status: "pending" | "verified" | "approved" | "rejected";
   token?: string | null;
   fast_track?: boolean | null;
   payment_status?: string | null;
