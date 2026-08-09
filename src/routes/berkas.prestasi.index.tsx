@@ -8,5 +8,8 @@ export const Route = createFileRoute("/berkas/prestasi/")({
       { name: "description", content: "Persyaratan & informasi pengiriman berkas Beasiswa Prestasi." },
     ],
   }),
-  component: () => <BerkasInfoPage kind="prestasi" />,
+  component: () => {
+    const search = useSearch({ strict: false }) as { education_level?: string };
+    return <BerkasInfoPage kind="prestasi" educationLevel={search.education_level} />;
+  },
 });
