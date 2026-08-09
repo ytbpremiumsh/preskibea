@@ -61,7 +61,7 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
       "Surat keterangan yatim / piatu / yatim piatu dari kelurahan",
       "Akta atau surat keterangan kematian orang tua",
       "Kartu Keluarga (KK)",
-      "Esai dengan tema yang sudah ditentukan",
+      "Sertifikat Pendukung Lainnya (opsional)",
     ],
   },
 };
