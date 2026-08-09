@@ -58,7 +58,7 @@ function ChartFallback() {
 function AdminOverview() {
   const [recent, setRecent] = useState<RecentRow[]>([]);
   const [lite, setLite] = useState<LiteRow[]>([]);
-  const [counts, setCounts] = useState({ total: 0, prestasi: 0, ekonomi: 0, pending: 0, today: 0, docs: 0, fastTrack: 0 });
+  const [counts, setCounts] = useState({ total: 0, prestasi: 0, ekonomi: 0, umum: 0, yatim: 0, pending: 0, today: 0, docs: 0, fastTrack: 0 });
   const [loading, setLoading] = useState(true);
   const [notif, setNotif] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
