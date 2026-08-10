@@ -46,7 +46,7 @@ function getContextLinks(pathname: string): { title: string; links: AdminLink[] 
         { to: "/admin/formulir", label: "Benefit & Info Beasiswa" },
         { to: "/admin/artikel", label: "Artikel" },
         { to: "/admin/bagikan-poster", label: "Bagikan Poster" },
-        { to: "/admin/donasi", label: "Donasi" },
+        
       ],
     };
   }
@@ -95,12 +95,6 @@ function getContextLinks(pathname: string): { title: string; links: AdminLink[] 
         { to: "/admin/formulir", label: "Formulir" },
         { to: "/admin/pendaftar", label: "Daftar Pendaftar" },
       ],
-    };
-  }
-  if (pathname.startsWith("/donasi")) {
-    return {
-      title: "Edit Donasi",
-      links: [{ to: "/admin/donasi", label: "Kelola Donasi" }],
     };
   }
   if (pathname.startsWith("/tentang")) {

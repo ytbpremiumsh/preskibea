@@ -66,11 +66,10 @@ const groups: { label: string; items: Item[] }[] = [
     ],
   },
   {
-    label: "Komunikasi & Donasi",
+    label: "Komunikasi",
     items: [
       { title: "WhatsApp", url: "/admin/whatsapp", icon: MessageCircle },
       { title: "Balasan AI", url: "/admin/ai-balasan", icon: Bot },
-      { title: "Donasi", url: "/admin/donasi", icon: Heart },
     ],
   },
   {
