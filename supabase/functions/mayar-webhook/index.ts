@@ -12,22 +12,36 @@ const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
+const SECOND_APP_WEBHOOK_URL = "https://tvingnpdeueufagssdte.supabase.co/functions/v1/mayar-webhook";
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
   
   try {
-    const body = await req.json();
+    const rawBody = await req.text();
+    const body = JSON.parse(rawBody);
     console.log("Mayar Webhook received:", body);
 
-    // Mayar webhook structure usually has 'data' or top-level fields
-    // We assume it sends some identifier that we can map back to our registration
-    // For now, we'll try to find by email or an external_id if passed.
-    // Ideally, we include the registration token in the Mayar payment URL as a query param
-    // that Mayar returns in the webhook payload.
-    
+    // --- FORWARDING LOGIC ---
+    // We forward the raw request to the second app in parallel
+    // so both apps can process the same webhook event.
+    try {
+      console.log("Forwarding webhook to second app...");
+      fetch(SECOND_APP_WEBHOOK_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Forwarding necessary headers if any, or just plain POST
+        },
+        body: rawBody,
+      }).catch(err => console.error("Error forwarding to second app:", err.message));
+    } catch (forwardErr) {
+      console.error("Forwarding exception:", forwardErr.message);
+    }
+    // ------------------------
+
     const email = (body?.customer?.email || body?.email || body?.data?.customer?.email || body?.data?.email)?.trim();
     const status = body?.status || body?.data?.status; 
-    const mobile = body?.customer?.mobile || body?.mobile || body?.data?.customer?.mobile;
     const tokenFromExtra = body?.extraData?.noCustomer || body?.data?.extraData?.noCustomer;
 
     if (status === "success" || status === "paid" || body?.event === "payment.success" || body?.data?.event === "payment.success") {
@@ -43,8 +57,6 @@ serve(async (req) => {
          q = q.eq("token", tokenFromExtra);
        } else if (email) {
          q = q.eq("email", email);
-       } else {
-         throw new Error("Missing email or token in webhook payload");
        }
 
        const { data: reg } = await q.limit(1).maybeSingle();
@@ -61,22 +73,19 @@ serve(async (req) => {
          console.log(`Registration ${reg.token} marked as paid.`);
 
           try {
-            const regDetail = reg; // Already selected in the updated query above
+            const regDetail = reg;
 
-           if (regDetail) {
-             await supabaseAdmin.functions.invoke("send-whatsapp", {
-               body: {
-                 type: "pendaftaran_sukses", // Template for successful payment
-                 full_name: regDetail.full_name,
-                 email: regDetail.email,
-                 whatsapp: regDetail.whatsapp,
-                 kind: regDetail.kind,
-                 token: reg.token,
-               },
-             });
-            }
+            await supabaseAdmin.functions.invoke("send-whatsapp", {
+              body: {
+                type: "pendaftaran_sukses",
+                full_name: regDetail.full_name,
+                email: regDetail.email,
+                whatsapp: regDetail.whatsapp,
+                kind: regDetail.kind,
+                token: reg.token,
+              },
+            });
 
-            // Also send email confirmation on successful payment
             await supabaseAdmin.functions.invoke("notify-user", {
               body: {
                 type: "registration",
@@ -89,12 +98,14 @@ serve(async (req) => {
             });
 
           } catch (err) {
-           console.error("Failed to send WA success notification:", err.message);
-         }
+            console.error("Failed to send success notifications:", err.message);
+          }
+       } else {
+         console.log("No matching pending fast-track registration found for this app. Skipping local processing.");
        }
     }
 
-    return new Response(JSON.stringify({ received: true }), {
+    return new Response(JSON.stringify({ received: true, forwarded: true }), {
       status: 200,
       headers: { ...cors, "Content-Type": "application/json" },
     });
