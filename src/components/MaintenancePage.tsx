@@ -126,14 +126,10 @@ export function MaintenancePage({ config }: { config: MaintenanceConfig }) {
             </div>
           )}
 
-          <div className="mt-8 grid gap-2 sm:grid-cols-2">
-            <div className="flex items-center justify-center gap-2 rounded-xl border-2 border-ink/10 bg-muted/50 px-3 py-2.5 text-xs font-semibold text-muted-foreground">
-              <ShieldCheck className="h-4 w-4 text-primary" /> Data pendaftaran tetap aman
-            </div>
-            <div className="flex items-center justify-center gap-2 rounded-xl border-2 border-ink/10 bg-muted/50 px-3 py-2.5 text-xs font-semibold text-muted-foreground">
-              <Sparkles className="h-4 w-4 text-primary" /> Peningkatan performa & fitur
-            </div>
+          <div className="mt-8 text-left">
+            <MaintenanceGame />
           </div>
+
         </div>
 
         <p className="mt-8 text-xs text-muted-foreground">
