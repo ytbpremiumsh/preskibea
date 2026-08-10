@@ -23,6 +23,7 @@ import {
   HardDrive,
   Rocket,
   Wrench,
+  CreditCard,
 } from "lucide-react";
 import {
   Sidebar,
@@ -54,6 +55,7 @@ const groups: { label: string; items: Item[] }[] = [
       { title: "Pendaftar", url: "/admin/pendaftar", icon: Users },
       { title: "Pengiriman Berkas", url: "/admin/berkas", icon: FolderArchive },
       { title: "Kandidat Lolos", url: "/admin/kandidat", icon: Trophy },
+      { title: "Transaksi Mayar", url: "/admin/donasi", icon: CreditCard },
     ],
   },
   {

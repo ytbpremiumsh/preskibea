@@ -47,6 +47,7 @@ import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
 import { Route as AdminIklanKustomRouteImport } from './routes/admin.iklan-kustom'
 import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
 import { Route as AdminEmailTemplateRouteImport } from './routes/admin.email-template'
+import { Route as AdminDonasiRouteImport } from './routes/admin.donasi'
 import { Route as AdminBrandingRouteImport } from './routes/admin.branding'
 import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
 import { Route as AdminBagikanPosterRouteImport } from './routes/admin.bagikan-poster'
@@ -253,6 +254,11 @@ const AdminEmailTemplateRoute = AdminEmailTemplateRouteImport.update({
   path: '/email-template',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminDonasiRoute = AdminDonasiRouteImport.update({
+  id: '/donasi',
+  path: '/donasi',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminBrandingRoute = AdminBrandingRouteImport.update({
   id: '/branding',
   path: '/branding',
@@ -349,6 +355,7 @@ export interface FileRoutesByFullPath {
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
+  '/admin/donasi': typeof AdminDonasiRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
@@ -403,6 +410,7 @@ export interface FileRoutesByTo {
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
+  '/admin/donasi': typeof AdminDonasiRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
@@ -455,6 +463,7 @@ export interface FileRoutesById {
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
+  '/admin/donasi': typeof AdminDonasiRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
@@ -512,6 +521,7 @@ export interface FileRouteTypes {
     | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/branding'
+    | '/admin/donasi'
     | '/admin/email-template'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
@@ -566,6 +576,7 @@ export interface FileRouteTypes {
     | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/branding'
+    | '/admin/donasi'
     | '/admin/email-template'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
@@ -617,6 +628,7 @@ export interface FileRouteTypes {
     | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/branding'
+    | '/admin/donasi'
     | '/admin/email-template'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
@@ -949,6 +961,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEmailTemplateRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/donasi': {
+      id: '/admin/donasi'
+      path: '/donasi'
+      fullPath: '/admin/donasi'
+      preLoaderRoute: typeof AdminDonasiRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/branding': {
       id: '/admin/branding'
       path: '/branding'
@@ -1065,6 +1084,7 @@ interface AdminRouteChildren {
   AdminBagikanPosterRoute: typeof AdminBagikanPosterRoute
   AdminBerkasRoute: typeof AdminBerkasRoute
   AdminBrandingRoute: typeof AdminBrandingRoute
+  AdminDonasiRoute: typeof AdminDonasiRoute
   AdminEmailTemplateRoute: typeof AdminEmailTemplateRoute
   AdminFormulirRoute: typeof AdminFormulirRoute
   AdminIklanKustomRoute: typeof AdminIklanKustomRoute
@@ -1088,6 +1108,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBagikanPosterRoute: AdminBagikanPosterRoute,
   AdminBerkasRoute: AdminBerkasRoute,
   AdminBrandingRoute: AdminBrandingRoute,
+  AdminDonasiRoute: AdminDonasiRoute,
   AdminEmailTemplateRoute: AdminEmailTemplateRoute,
   AdminFormulirRoute: AdminFormulirRoute,
   AdminIklanKustomRoute: AdminIklanKustomRoute,
