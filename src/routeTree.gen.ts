@@ -44,10 +44,10 @@ import { Route as AdminMaintenanceRouteImport } from './routes/admin.maintenance
 import { Route as AdminKodeKustomRouteImport } from './routes/admin.kode-kustom'
 import { Route as AdminKeamananRouteImport } from './routes/admin.keamanan'
 import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
+import { Route as AdminIntegrasiRouteImport } from './routes/admin.integrasi'
 import { Route as AdminIklanKustomRouteImport } from './routes/admin.iklan-kustom'
 import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
 import { Route as AdminEmailTemplateRouteImport } from './routes/admin.email-template'
-import { Route as AdminDonasiRouteImport } from './routes/admin.donasi'
 import { Route as AdminBrandingRouteImport } from './routes/admin.branding'
 import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
 import { Route as AdminBagikanPosterRouteImport } from './routes/admin.bagikan-poster'
@@ -239,6 +239,11 @@ const AdminKandidatRoute = AdminKandidatRouteImport.update({
   path: '/kandidat',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminIntegrasiRoute = AdminIntegrasiRouteImport.update({
+  id: '/integrasi',
+  path: '/integrasi',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminIklanKustomRoute = AdminIklanKustomRouteImport.update({
   id: '/iklan-kustom',
   path: '/iklan-kustom',
@@ -252,11 +257,6 @@ const AdminFormulirRoute = AdminFormulirRouteImport.update({
 const AdminEmailTemplateRoute = AdminEmailTemplateRouteImport.update({
   id: '/email-template',
   path: '/email-template',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminDonasiRoute = AdminDonasiRouteImport.update({
-  id: '/donasi',
-  path: '/donasi',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminBrandingRoute = AdminBrandingRouteImport.update({
@@ -355,10 +355,10 @@ export interface FileRoutesByFullPath {
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
-  '/admin/donasi': typeof AdminDonasiRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
+  '/admin/integrasi': typeof AdminIntegrasiRoute
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
@@ -410,10 +410,10 @@ export interface FileRoutesByTo {
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
-  '/admin/donasi': typeof AdminDonasiRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
+  '/admin/integrasi': typeof AdminIntegrasiRoute
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
@@ -463,10 +463,10 @@ export interface FileRoutesById {
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
-  '/admin/donasi': typeof AdminDonasiRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
+  '/admin/integrasi': typeof AdminIntegrasiRoute
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
@@ -521,10 +521,10 @@ export interface FileRouteTypes {
     | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/branding'
-    | '/admin/donasi'
     | '/admin/email-template'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
+    | '/admin/integrasi'
     | '/admin/kandidat'
     | '/admin/keamanan'
     | '/admin/kode-kustom'
@@ -576,10 +576,10 @@ export interface FileRouteTypes {
     | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/branding'
-    | '/admin/donasi'
     | '/admin/email-template'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
+    | '/admin/integrasi'
     | '/admin/kandidat'
     | '/admin/keamanan'
     | '/admin/kode-kustom'
@@ -628,10 +628,10 @@ export interface FileRouteTypes {
     | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/branding'
-    | '/admin/donasi'
     | '/admin/email-template'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
+    | '/admin/integrasi'
     | '/admin/kandidat'
     | '/admin/keamanan'
     | '/admin/kode-kustom'
@@ -940,6 +940,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminKandidatRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/integrasi': {
+      id: '/admin/integrasi'
+      path: '/integrasi'
+      fullPath: '/admin/integrasi'
+      preLoaderRoute: typeof AdminIntegrasiRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/iklan-kustom': {
       id: '/admin/iklan-kustom'
       path: '/iklan-kustom'
@@ -959,13 +966,6 @@ declare module '@tanstack/react-router' {
       path: '/email-template'
       fullPath: '/admin/email-template'
       preLoaderRoute: typeof AdminEmailTemplateRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/donasi': {
-      id: '/admin/donasi'
-      path: '/donasi'
-      fullPath: '/admin/donasi'
-      preLoaderRoute: typeof AdminDonasiRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/branding': {
@@ -1084,10 +1084,10 @@ interface AdminRouteChildren {
   AdminBagikanPosterRoute: typeof AdminBagikanPosterRoute
   AdminBerkasRoute: typeof AdminBerkasRoute
   AdminBrandingRoute: typeof AdminBrandingRoute
-  AdminDonasiRoute: typeof AdminDonasiRoute
   AdminEmailTemplateRoute: typeof AdminEmailTemplateRoute
   AdminFormulirRoute: typeof AdminFormulirRoute
   AdminIklanKustomRoute: typeof AdminIklanKustomRoute
+  AdminIntegrasiRoute: typeof AdminIntegrasiRoute
   AdminKandidatRoute: typeof AdminKandidatRoute
   AdminKeamananRoute: typeof AdminKeamananRoute
   AdminKodeKustomRoute: typeof AdminKodeKustomRoute
@@ -1108,10 +1108,10 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBagikanPosterRoute: AdminBagikanPosterRoute,
   AdminBerkasRoute: AdminBerkasRoute,
   AdminBrandingRoute: AdminBrandingRoute,
-  AdminDonasiRoute: AdminDonasiRoute,
   AdminEmailTemplateRoute: AdminEmailTemplateRoute,
   AdminFormulirRoute: AdminFormulirRoute,
   AdminIklanKustomRoute: AdminIklanKustomRoute,
+  AdminIntegrasiRoute: AdminIntegrasiRoute,
   AdminKandidatRoute: AdminKandidatRoute,
   AdminKeamananRoute: AdminKeamananRoute,
   AdminKodeKustomRoute: AdminKodeKustomRoute,
