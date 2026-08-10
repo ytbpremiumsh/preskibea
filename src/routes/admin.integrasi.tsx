@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/donasi")({
+export const Route = createFileRoute("/admin/integrasi")({
   component: AdminDonasi,
 });
 

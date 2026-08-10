@@ -77,7 +77,7 @@ const groups: { label: string; items: Item[] }[] = [
     label: "Integrasi & Pengaturan",
     items: [
       { title: "Pengaturan Situs", url: "/admin/pengaturan", icon: Settings },
-      { title: "Integrasi Mayar", url: "/admin/donasi", icon: CreditCard },
+      { title: "Integrasi Mayar", url: "/admin/integrasi", icon: CreditCard },
       { title: "Logo Situs", url: "/admin/branding", icon: ImageIcon },
       { title: "Template Email", url: "/admin/email-template", icon: Mail },
       { title: "Keamanan (2FA)", url: "/admin/keamanan", icon: ShieldCheck },
