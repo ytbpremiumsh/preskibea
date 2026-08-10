@@ -43,7 +43,7 @@ const benefits = [
 
 export function BenefitsSection() {
   const { benefitImage } = useBranding();
-  const benefitImg = benefitImage || benefitDefault.url;
+  const benefitImg = benefitImage || (typeof benefitDefault === 'object' && 'url' in benefitDefault ? (benefitDefault as any).url : "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/branding/benefit-prestasi-kita-batch-8.png");
 
   return (
     <section className="container-page py-20">
