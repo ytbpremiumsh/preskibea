@@ -72,9 +72,22 @@ serve(async (req) => {
          
          console.log(`Registration ${reg.token} marked as paid.`);
 
+         // Record payment in payments table
+         try {
+           const amount = body?.amount || body?.data?.amount || 15000;
+           await supabaseAdmin.from("payments").insert({
+             registration_id: reg.id,
+             amount: Number(amount),
+             status: status,
+             payment_url: body?.payment_url || body?.data?.payment_url || null,
+             external_id: body?.id || body?.data?.id || null
+           });
+         } catch (payErr) {
+           console.error("Failed to record payment:", payErr.message);
+         }
+
           try {
             const regDetail = reg;
-
             await supabaseAdmin.functions.invoke("send-whatsapp", {
               body: {
                 type: "pendaftaran_sukses",
@@ -96,7 +109,6 @@ serve(async (req) => {
                 status: "approved"
               },
             });
-
           } catch (err) {
             console.error("Failed to send success notifications:", err.message);
           }
