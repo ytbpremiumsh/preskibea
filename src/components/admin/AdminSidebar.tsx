@@ -23,6 +23,7 @@ import {
   HardDrive,
   Rocket,
   Wrench,
+  CreditCard,
 } from "lucide-react";
 import {
   Sidebar,
