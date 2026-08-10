@@ -38,7 +38,7 @@ const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Beasiswa Umum", "Beas
 
 function Index() {
   const { heroImage } = useBranding();
-  const heroImg = heroImage || heroDefault;
+  const heroImg = heroImage || "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/branding/students-hero.png";
 
   return (
     <>
