@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { Wrench, Clock, Mail, ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
+import { Wrench, Clock, Mail, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MaintenanceGame } from "@/components/MaintenanceGame";
+
 
 export type MaintenanceConfig = {
   enabled?: boolean;
