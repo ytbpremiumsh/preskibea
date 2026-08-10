@@ -259,20 +259,21 @@ function AdminOverview() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Main Stats Row */}
         {items.slice(0, 4).map((it) => (
           <Link key={it.label} to={it.url as any} className="block transition-transform hover:scale-[1.02] active:scale-[0.98]">
-            <Card className="rounded-2xl p-4 shadow-soft sm:p-5 h-full border-2 border-transparent hover:border-primary/20">
-              <div className="flex items-start justify-between gap-2">
+            <Card className="rounded-2xl p-5 shadow-soft h-full border-2 border-primary/20 bg-white relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-primary/5 rounded-full transition-transform group-hover:scale-110" />
+              <div className="relative flex items-start justify-between">
                 <div className="min-w-0">
-                  <p className="text-2xl font-bold tabular-nums text-foreground sm:text-3xl">
-                    {loading ? <span className="inline-block h-7 w-12 animate-pulse rounded bg-muted" /> : it.value}
+                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-1">{it.label}</p>
+                  <p className="text-3xl font-black tabular-nums text-foreground sm:text-4xl">
+                    {loading ? <span className="inline-block h-8 w-16 animate-pulse rounded bg-muted" /> : it.value}
                   </p>
-                  <p className="mt-1 truncate text-xs font-medium text-muted-foreground uppercase tracking-wider">{it.label}</p>
                 </div>
-                <div className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${it.bg} ${it.color} shadow-sm`}>
-                  <it.icon className="h-5 w-5" />
+                <div className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${it.bg} ${it.color} shadow-sm border border-current/10`}>
+                  <it.icon className="h-6 w-6" />
                 </div>
               </div>
             </Card>
@@ -280,19 +281,19 @@ function AdminOverview() {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Category Stats Row */}
         {items.slice(4).map((it) => (
           <Link key={it.label} to={it.url as any} className="block transition-transform hover:scale-[1.02] active:scale-[0.98]">
-            <Card className="rounded-2xl p-4 shadow-sm sm:p-5 h-full bg-muted/30 border-none hover:bg-muted/50">
-              <div className="flex items-center gap-3">
-                <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${it.bg} ${it.color}`}>
-                  <it.icon className="h-4 w-4" />
+            <Card className="rounded-2xl p-5 shadow-sm h-full bg-white border-2 border-muted hover:border-primary/20 transition-colors">
+              <div className="flex items-center gap-4">
+                <div className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${it.bg} ${it.color} shadow-sm border border-current/10`}>
+                  <it.icon className="h-6 w-6" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-muted-foreground truncate">{it.label}</p>
-                  <p className="text-xl font-bold tabular-nums text-foreground">
-                    {loading ? <span className="inline-block h-5 w-10 animate-pulse rounded bg-muted" /> : it.value}
+                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-0.5">{it.label}</p>
+                  <p className="text-2xl font-black tabular-nums text-foreground">
+                    {loading ? <span className="inline-block h-7 w-12 animate-pulse rounded bg-muted" /> : it.value}
                   </p>
                 </div>
               </div>

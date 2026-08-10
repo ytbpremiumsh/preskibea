@@ -281,74 +281,78 @@ function AdminPendaftar() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-4">
-        {/* Main Stats */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Main Stats Row */}
         <StatCard
           label="Total Pendaftar"
           value={totals.total}
-          icon={<Users className="h-5 w-5" />}
-          gradient="from-primary/10 to-primary/5"
-          iconBg="bg-primary/20 text-primary"
-          className="border-2 border-primary/20"
+          icon={<Users className="h-6 w-6" />}
+          gradient="bg-white"
+          iconBg="bg-primary/10 text-primary border border-primary/20"
+          className="border-2 border-primary/20 shadow-soft p-5"
         />
         <StatCard
           label="Sudah Kirim Berkas"
           value={counts.submitted}
-          icon={<FileCheck className="h-5 w-5" />}
-          gradient="from-sky-500/10 to-sky-500/5"
-          iconBg="bg-sky-500/20 text-sky-600"
-          className="border-2 border-sky-500/20"
+          icon={<FileCheck className="h-6 w-6" />}
+          gradient="bg-white"
+          iconBg="bg-sky-500/10 text-sky-600 border border-sky-500/20"
+          className="border-2 border-sky-500/20 shadow-soft p-5"
         />
         <StatCard
           label="Fast Track"
           value={totals.fast}
-          icon={<Zap className="h-5 w-5" />}
-          gradient="from-amber-500/15 to-amber-500/5"
-          iconBg="bg-amber-500/20 text-amber-600"
-          className="border-2 border-amber-500/20"
+          icon={<Zap className="h-6 w-6" />}
+          gradient="bg-white"
+          iconBg="bg-amber-500/10 text-amber-600 border border-amber-500/20"
+          className="border-2 border-amber-500/20 shadow-soft p-5"
         />
         <StatCard
           label="Belum Kirim"
           value={counts.pending}
-          icon={<Clock className="h-5 w-5" />}
-          gradient="from-slate-500/10 to-slate-500/5"
-          iconBg="bg-slate-500/20 text-slate-600"
-          className="border-2 border-slate-500/20"
+          icon={<Clock className="h-6 w-6" />}
+          gradient="bg-white"
+          iconBg="bg-slate-500/10 text-slate-600 border border-slate-500/20"
+          className="border-2 border-slate-500/20 shadow-soft p-5"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-4">
-        {/* Categories Grouped */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Category Stats Row */}
         <StatCard
-          label="Prestasi"
+          label="Beasiswa Prestasi"
           value={totals.prestasi}
-          icon={<Award className="h-4 w-4" />}
-          gradient="bg-muted/30"
-          iconBg="bg-indigo-500/10 text-indigo-600"
+          icon={<Award className="h-5 w-5" />}
+          gradient="bg-white"
+          iconBg="bg-indigo-500/10 text-indigo-600 border border-indigo-500/20"
+          className="border-2 border-muted hover:border-primary/20 shadow-sm p-5 transition-colors"
           isSmall
         />
         <StatCard
-          label="Ekonomi"
+          label="Beasiswa Ekonomi"
           value={totals.ekonomi}
-          icon={<HeartHandshake className="h-4 w-4" />}
-          gradient="bg-muted/30"
-          iconBg="bg-emerald-500/10 text-emerald-600"
+          icon={<HeartHandshake className="h-5 w-5" />}
+          gradient="bg-white"
+          iconBg="bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
+          className="border-2 border-muted hover:border-primary/20 shadow-sm p-5 transition-colors"
           isSmall
         />
         <StatCard
-          label="Umum"
+          label="Beasiswa Umum"
           value={totals.umum}
-          icon={<Users className="h-4 w-4" />}
-          gradient="bg-muted/30"
-          iconBg="bg-teal-500/10 text-teal-600"
+          icon={<Users className="h-5 w-5" />}
+          gradient="bg-white"
+          iconBg="bg-teal-500/10 text-teal-600 border border-teal-500/20"
+          className="border-2 border-muted hover:border-primary/20 shadow-sm p-5 transition-colors"
           isSmall
         />
         <StatCard
-          label="Yatim"
+          label="Beasiswa Yatim"
           value={totals.yatim}
-          icon={<HeartHandshake className="h-4 w-4" />}
-          gradient="bg-muted/30"
-          iconBg="bg-fuchsia-500/10 text-fuchsia-600"
+          icon={<HeartHandshake className="h-5 w-5" />}
+          gradient="bg-white"
+          iconBg="bg-fuchsia-500/10 text-fuchsia-600 border border-fuchsia-500/20"
+          className="border-2 border-muted hover:border-primary/20 shadow-sm p-5 transition-colors"
           isSmall
         />
       </div>
@@ -632,44 +636,29 @@ function DocLink({ type, url }: { type: string; url: string }) {
 }
 
 
-function StatCard({ 
-  label, 
-  value, 
-  icon, 
-  gradient, 
-  iconBg, 
-  className,
-  isSmall 
-}: { 
-  label: string; 
-  value: number; 
-  icon: ReactNode; 
-  gradient: string; 
+function StatCard({ label, value, icon, gradient, iconBg, className = "", isSmall = false }: {
+  label: string;
+  value: number;
+  icon: ReactNode;
+  gradient: string;
   iconBg: string;
   className?: string;
   isSmall?: boolean;
 }) {
-  if (isSmall) {
-    return (
-      <Card className={`rounded-2xl p-4 shadow-sm h-full ${gradient} border-none`}>
-        <div className="flex items-center gap-3">
-          <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}>{icon}</div>
-          <div className="min-w-0">
-            <div className="text-xs font-medium text-muted-foreground truncate">{label}</div>
-            <div className="text-lg font-bold text-foreground leading-tight">{value}</div>
-          </div>
-        </div>
-      </Card>
-    );
-  }
-
   return (
-    <Card className={`rounded-2xl p-4 shadow-soft bg-gradient-to-br ${gradient} border-border/60 ${className}`}>
-      <div className="flex items-center gap-3">
-        <div className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${iconBg}`}>{icon}</div>
+    <Card className={`rounded-2xl relative overflow-hidden group ${gradient} ${className}`}>
+      {!isSmall && (
+        <div className="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-black/[0.02] rounded-full transition-transform group-hover:scale-110" />
+      )}
+      <div className="relative flex items-center justify-between gap-4">
         <div className="min-w-0">
-          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</div>
-          <div className="text-2xl font-bold text-foreground leading-tight">{value}</div>
+          <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
+          <p className={`${isSmall ? "text-2xl" : "text-3xl sm:text-4xl"} font-black tabular-nums text-foreground`}>
+            {value}
+          </p>
+        </div>
+        <div className={`inline-flex ${isSmall ? "h-10 w-10" : "h-12 w-12"} shrink-0 items-center justify-center rounded-2xl ${iconBg} shadow-sm`}>
+          {icon}
         </div>
       </div>
     </Card>
