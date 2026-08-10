@@ -75,7 +75,7 @@ function AdminDonasi() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground font-heading">Riwayat Transaksi Mayar</h1>
+          <h1 className="text-2xl font-bold text-foreground font-heading">Integrasi Mayar</h1>
           <p className="text-sm text-muted-foreground">
             Monitoring pembayaran Fast Track dan Donasi melalui Mayar.
           </p>
