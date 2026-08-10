@@ -1,7 +1,7 @@
 import { Quote, Trophy } from "lucide-react";
 import { useBranding } from "@/hooks/use-branding";
 
-const FALLBACK_IMAGES = [
+const FALLBACK_ALUMNI_IMAGES = [
   "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/alumni/peraih-batch7-1.png",
   "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/alumni/peraih-batch7-2.png",
   "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/alumni/peraih-batch7-3.png",
@@ -33,12 +33,12 @@ export function AlumniSection() {
 
   const alumni = alumniBase.map((a, i) => ({
     ...a,
-    img: alumniImages[i] || FALLBACK_IMAGES[i],
+    img: alumniImages[i] || FALLBACK_ALUMNI_IMAGES[i],
   }));
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, index: number) => {
     const target = e.currentTarget;
-    const fallback = FALLBACK_IMAGES[index];
+    const fallback = FALLBACK_ALUMNI_IMAGES[index];
     if (fallback && target.src !== fallback) target.src = fallback;
   };
 

@@ -16,6 +16,8 @@ const persyaratan = [
 
 
 
+const FALLBACK_BENEFIT_IMAGE = "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/branding/benefit-prestasi-kita-batch-8.png";
+
 const BENEFIT_IMAGE_URL = benefitAsset.url;
 
 const benefitList = [
@@ -34,6 +36,8 @@ const benefitList = [
   },
 ];
 
+import { useBranding } from "@/hooks/use-branding";
+
 export function CategoryPage({
   kind,
   title,
@@ -49,6 +53,7 @@ export function CategoryPage({
   registerTo: "/pendaftaran/prestasi" | "/pendaftaran/ekonomi" | "/pendaftaran/umum" | "/pendaftaran/yatim";
   shareTo: "/bagikan-poster";
 }) {
+  const { benefitImage } = useBranding();
   const isGold = kind === "ekonomi";
   const Icon: ReactNode = isGold ? <HeartHandshake /> : kind === "umum" ? <Users /> : kind === "yatim" ? <Heart /> : <Trophy />;
 
@@ -139,12 +144,16 @@ export function CategoryPage({
 
           <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-secondary/30">
             <img
-              src={BENEFIT_IMAGE_URL}
+              src={benefitImage || BENEFIT_IMAGE_URL}
               alt="Benefit Beasiswa Prestasi Kita"
               loading="lazy"
               decoding="async"
               width={1200}
               height={800}
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (target.src !== FALLBACK_BENEFIT_IMAGE) target.src = FALLBACK_BENEFIT_IMAGE;
+              }}
               className="w-full h-auto object-cover"
             />
           </div>
