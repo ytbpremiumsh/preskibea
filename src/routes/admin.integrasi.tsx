@@ -22,7 +22,7 @@ import {
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/integrasi")({
-  component: AdminDonasi,
+  component: AdminIntegrasi,
 });
 
 type Transaction = {
