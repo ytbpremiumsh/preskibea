@@ -5,7 +5,20 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Search, RotateCcw, CreditCard, ExternalLink, Calendar } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { 
+  Loader2, 
+  Search, 
+  RotateCcw, 
+  CreditCard, 
+  ExternalLink, 
+  Calendar,
+  Settings,
+  Webhook,
+  Key,
+  Copy,
+  Save
+} from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/donasi")({
@@ -30,10 +43,14 @@ type Transaction = {
 function AdminDonasi() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [q, setQ] = useState("");
+  const [mayarApiKey, setMayarApiKey] = useState("");
+  const [webhookUrl, setWebhookUrl] = useState("");
 
   const load = async () => {
     setLoading(true);
+    // Load transactions
     const { data, error } = await supabase
       .from("payments" as any)
       .select("*, registrations(full_name, email, token, kind)")
@@ -45,7 +62,45 @@ function AdminDonasi() {
     } else {
       setTransactions((data as any) || []);
     }
+
+    // Load Mayar API Key from site_settings
+    const { data: settings } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "mayar_config")
+      .single();
+    
+    if (settings?.value) {
+      const config = settings.value as { api_key?: string };
+      setMayarApiKey(config.api_key || "");
+    }
+
+    // Set Webhook URL
+    const baseUrl = window.location.origin.includes("localhost") 
+      ? "https://ltmfvbcazebowndigkyi.supabase.co" 
+      : `${window.location.origin.replace(".lovable.app", ".lovable.app")}`;
+    
+    // In production, we usually want the Supabase edge function URL directly
+    setWebhookUrl("https://ltmfvbcazebowndigkyi.supabase.co/functions/v1/mayar-webhook");
+
     setLoading(false);
+  };
+
+  const saveConfig = async () => {
+    setSaving(true);
+    const { error } = await supabase
+      .from("site_settings")
+      .upsert({ 
+        key: "mayar_config", 
+        value: { api_key: mayarApiKey } 
+      }, { onConflict: "key" });
+
+    if (error) {
+      toast.error("Gagal menyimpan API Key");
+    } else {
+      toast.success("Konfigurasi Mayar berhasil disimpan");
+    }
+    setSaving(false);
   };
 
   useEffect(() => {
