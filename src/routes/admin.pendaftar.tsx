@@ -148,7 +148,12 @@ function AdminPendaftar() {
   }, [rows, q, filterKind, filterBerkas, filterJalur, docs]);
 
   const setPayment = async (r: Registration, next: "paid" | "pending") => {
-    if (next === "paid" && !confirm(`Validasi manual pembayaran Fast Track untuk "${r.full_name}"?`)) return;
+    if (next === "paid") {
+      if (!confirm(`Validasi manual pembayaran Fast Track untuk "${r.full_name}"?`)) return;
+    } else {
+      if (!confirm(`PERINGATAN: Batalkan validasi pembayaran Fast Track untuk "${r.full_name}"?\nStatus akan kembali menjadi pending.`)) return;
+    }
+
     const { error } = await supabase
       .from("registrations")
       .update({ payment_status: next, status: next === "paid" ? "verified" : "pending" })
@@ -488,11 +493,12 @@ function AdminPendaftar() {
                         {r.fast_track && r.payment_status === "paid" && (
                           <Button
                             size="sm"
-                            variant="ghost"
+                            variant="destructive"
+                            className="bg-red-600 hover:bg-red-700 text-white"
                             onClick={() => setPayment(r, "pending")}
                             title="Batalkan validasi"
                           >
-                            <RotateCcw className="h-4 w-4" />
+                            <RotateCcw className="h-4 w-4 mr-1" /> Batal Validasi
                           </Button>
                         )}
                         <Button
