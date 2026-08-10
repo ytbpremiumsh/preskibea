@@ -128,9 +128,7 @@ export function MaintenancePage({ config }: { config: MaintenanceConfig }) {
             </div>
           )}
 
-          <div className="mt-8 text-left">
-            <MaintenanceGame />
-          </div>
+
 
         </div>
 
