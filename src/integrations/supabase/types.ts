@@ -361,6 +361,44 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          external_id: string | null
+          id: string
+          payment_url: string | null
+          registration_id: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          external_id?: string | null
+          id?: string
+          payment_url?: string | null
+          registration_id: string
+          status: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          external_id?: string | null
+          id?: string
+          payment_url?: string | null
+          registration_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       registrations: {
         Row: {
           address: string
