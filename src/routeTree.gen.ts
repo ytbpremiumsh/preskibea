@@ -29,7 +29,6 @@ import { Route as PendaftaranUmumRouteImport } from './routes/pendaftaran.umum'
 import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran.sukses'
 import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
 import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
-import { Route as DonasiTerimaKasihRouteImport } from './routes/donasi.terima-kasih'
 import { Route as BerkasYatimRouteImport } from './routes/berkas.yatim'
 import { Route as BerkasUmumRouteImport } from './routes/berkas.umum'
 import { Route as BerkasTerkirimRouteImport } from './routes/berkas.terkirim'
@@ -48,7 +47,6 @@ import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
 import { Route as AdminIklanKustomRouteImport } from './routes/admin.iklan-kustom'
 import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
 import { Route as AdminEmailTemplateRouteImport } from './routes/admin.email-template'
-import { Route as AdminDonasiRouteImport } from './routes/admin.donasi'
 import { Route as AdminBrandingRouteImport } from './routes/admin.branding'
 import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
 import { Route as AdminBagikanPosterRouteImport } from './routes/admin.bagikan-poster'
@@ -165,11 +163,6 @@ const PendaftaranEkonomiRoute = PendaftaranEkonomiRouteImport.update({
   path: '/pendaftaran/ekonomi',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DonasiTerimaKasihRoute = DonasiTerimaKasihRouteImport.update({
-  id: '/donasi/terima-kasih',
-  path: '/donasi/terima-kasih',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BerkasYatimRoute = BerkasYatimRouteImport.update({
   id: '/berkas/yatim',
   path: '/berkas/yatim',
@@ -258,11 +251,6 @@ const AdminFormulirRoute = AdminFormulirRouteImport.update({
 const AdminEmailTemplateRoute = AdminEmailTemplateRouteImport.update({
   id: '/email-template',
   path: '/email-template',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminDonasiRoute = AdminDonasiRouteImport.update({
-  id: '/donasi',
-  path: '/donasi',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminBrandingRoute = AdminBrandingRouteImport.update({
@@ -361,7 +349,6 @@ export interface FileRoutesByFullPath {
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
-  '/admin/donasi': typeof AdminDonasiRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
@@ -380,7 +367,6 @@ export interface FileRoutesByFullPath {
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/berkas/umum': typeof BerkasUmumRouteWithChildren
   '/berkas/yatim': typeof BerkasYatimRouteWithChildren
-  '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
@@ -417,7 +403,6 @@ export interface FileRoutesByTo {
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
-  '/admin/donasi': typeof AdminDonasiRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
@@ -432,7 +417,6 @@ export interface FileRoutesByTo {
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/berkas/terkirim': typeof BerkasTerkirimRoute
-  '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
@@ -471,7 +455,6 @@ export interface FileRoutesById {
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
-  '/admin/donasi': typeof AdminDonasiRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
@@ -490,7 +473,6 @@ export interface FileRoutesById {
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/berkas/umum': typeof BerkasUmumRouteWithChildren
   '/berkas/yatim': typeof BerkasYatimRouteWithChildren
-  '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
@@ -530,7 +512,6 @@ export interface FileRouteTypes {
     | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/branding'
-    | '/admin/donasi'
     | '/admin/email-template'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
@@ -549,7 +530,6 @@ export interface FileRouteTypes {
     | '/berkas/terkirim'
     | '/berkas/umum'
     | '/berkas/yatim'
-    | '/donasi/terima-kasih'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
@@ -586,7 +566,6 @@ export interface FileRouteTypes {
     | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/branding'
-    | '/admin/donasi'
     | '/admin/email-template'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
@@ -601,7 +580,6 @@ export interface FileRouteTypes {
     | '/admin/whatsapp'
     | '/artikel/$slug'
     | '/berkas/terkirim'
-    | '/donasi/terima-kasih'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
@@ -639,7 +617,6 @@ export interface FileRouteTypes {
     | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/branding'
-    | '/admin/donasi'
     | '/admin/email-template'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
@@ -658,7 +635,6 @@ export interface FileRouteTypes {
     | '/berkas/terkirim'
     | '/berkas/umum'
     | '/berkas/yatim'
-    | '/donasi/terima-kasih'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
@@ -696,7 +672,6 @@ export interface RootRouteChildren {
   BerkasTerkirimRoute: typeof BerkasTerkirimRoute
   BerkasUmumRoute: typeof BerkasUmumRouteWithChildren
   BerkasYatimRoute: typeof BerkasYatimRouteWithChildren
-  DonasiTerimaKasihRoute: typeof DonasiTerimaKasihRoute
   PendaftaranEkonomiRoute: typeof PendaftaranEkonomiRoute
   PendaftaranPrestasiRoute: typeof PendaftaranPrestasiRoute
   PendaftaranSuksesRoute: typeof PendaftaranSuksesRoute
@@ -848,13 +823,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PendaftaranEkonomiRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/donasi/terima-kasih': {
-      id: '/donasi/terima-kasih'
-      path: '/donasi/terima-kasih'
-      fullPath: '/donasi/terima-kasih'
-      preLoaderRoute: typeof DonasiTerimaKasihRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/berkas/yatim': {
       id: '/berkas/yatim'
       path: '/berkas/yatim'
@@ -981,13 +949,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEmailTemplateRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/donasi': {
-      id: '/admin/donasi'
-      path: '/donasi'
-      fullPath: '/admin/donasi'
-      preLoaderRoute: typeof AdminDonasiRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/branding': {
       id: '/admin/branding'
       path: '/branding'
@@ -1104,7 +1065,6 @@ interface AdminRouteChildren {
   AdminBagikanPosterRoute: typeof AdminBagikanPosterRoute
   AdminBerkasRoute: typeof AdminBerkasRoute
   AdminBrandingRoute: typeof AdminBrandingRoute
-  AdminDonasiRoute: typeof AdminDonasiRoute
   AdminEmailTemplateRoute: typeof AdminEmailTemplateRoute
   AdminFormulirRoute: typeof AdminFormulirRoute
   AdminIklanKustomRoute: typeof AdminIklanKustomRoute
@@ -1128,7 +1088,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBagikanPosterRoute: AdminBagikanPosterRoute,
   AdminBerkasRoute: AdminBerkasRoute,
   AdminBrandingRoute: AdminBrandingRoute,
-  AdminDonasiRoute: AdminDonasiRoute,
   AdminEmailTemplateRoute: AdminEmailTemplateRoute,
   AdminFormulirRoute: AdminFormulirRoute,
   AdminIklanKustomRoute: AdminIklanKustomRoute,
@@ -1221,7 +1180,6 @@ const rootRouteChildren: RootRouteChildren = {
   BerkasTerkirimRoute: BerkasTerkirimRoute,
   BerkasUmumRoute: BerkasUmumRouteWithChildren,
   BerkasYatimRoute: BerkasYatimRouteWithChildren,
-  DonasiTerimaKasihRoute: DonasiTerimaKasihRoute,
   PendaftaranEkonomiRoute: PendaftaranEkonomiRoute,
   PendaftaranPrestasiRoute: PendaftaranPrestasiRoute,
   PendaftaranSuksesRoute: PendaftaranSuksesRoute,

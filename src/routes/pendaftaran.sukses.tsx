@@ -2,7 +2,7 @@ import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { CheckCircle2, ArrowRight, Heart, FileUp, KeyRound, Copy, Check, Share2, CreditCard } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { DonationCard } from "@/components/DonationCard";
+
 
 type Search = {
   name?: string;
@@ -184,23 +184,6 @@ function SuksesPage() {
           </Link>
         </div>
 
-        {/* Pemisah + soft-sell donasi */}
-        <div className="mt-10 mb-4 flex items-center gap-3">
-          <div className="h-px flex-1 bg-border" />
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-            <Heart size={12} className="fill-current" /> Sambil Menunggu
-          </div>
-          <div className="h-px flex-1 bg-border" />
-        </div>
-        <p className="text-center text-sm text-muted-foreground mb-4">
-          Program ini gratis untuk peserta. Kalau kamu merasa terbantu dan ingin ikut menjaga program ini tetap berjalan untuk pelajar lain, kamu bisa berdonasi sukarela di bawah 👇
-        </p>
-
-        <DonationCard
-          defaultName={name ?? ""}
-          defaultEmail={email ?? ""}
-          defaultWhatsapp={whatsapp ?? ""}
-        />
       </div>
     </main>
   );
