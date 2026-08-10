@@ -132,7 +132,7 @@ function AdminDonasi() {
         <div>
           <h1 className="text-2xl font-bold text-foreground font-heading">Integrasi Mayar</h1>
           <p className="text-sm text-muted-foreground">
-            Monitoring pembayaran Fast Track dan Donasi melalui Mayar.
+            Monitoring pembayaran Fast Track melalui Mayar.
           </p>
         </div>
         <Button variant="outline" onClick={load} disabled={loading}>
