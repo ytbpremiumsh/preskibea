@@ -259,25 +259,46 @@ function AdminOverview() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {items.map((it) => (
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-4">
+        {/* Main Stats Row */}
+        {items.slice(0, 4).map((it) => (
           <Link key={it.label} to={it.url as any} className="block transition-transform hover:scale-[1.02] active:scale-[0.98]">
-            <Card className="rounded-2xl p-4 shadow-soft sm:p-5 h-full">
+            <Card className="rounded-2xl p-4 shadow-soft sm:p-5 h-full border-2 border-transparent hover:border-primary/20">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="text-2xl font-bold tabular-nums text-foreground sm:text-3xl">
                     {loading ? <span className="inline-block h-7 w-12 animate-pulse rounded bg-muted" /> : it.value}
                   </p>
-                  <p className="mt-1 truncate text-xs text-muted-foreground">{it.label}</p>
+                  <p className="mt-1 truncate text-xs font-medium text-muted-foreground uppercase tracking-wider">{it.label}</p>
                 </div>
-                <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${it.bg} ${it.color}`}>
+                <div className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${it.bg} ${it.color} shadow-sm`}>
                   <it.icon className="h-5 w-5" />
                 </div>
               </div>
             </Card>
           </Link>
         ))}
+      </div>
 
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-4">
+        {/* Category Stats Row */}
+        {items.slice(4).map((it) => (
+          <Link key={it.label} to={it.url as any} className="block transition-transform hover:scale-[1.02] active:scale-[0.98]">
+            <Card className="rounded-2xl p-4 shadow-sm sm:p-5 h-full bg-muted/30 border-none hover:bg-muted/50">
+              <div className="flex items-center gap-3">
+                <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${it.bg} ${it.color}`}>
+                  <it.icon className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-muted-foreground truncate">{it.label}</p>
+                  <p className="text-xl font-bold tabular-nums text-foreground">
+                    {loading ? <span className="inline-block h-5 w-10 animate-pulse rounded bg-muted" /> : it.value}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+        ))}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
