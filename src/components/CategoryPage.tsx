@@ -144,7 +144,7 @@ export function CategoryPage({
 
           <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-secondary/30">
             <img
-              src={benefitImage || BENEFIT_IMAGE_URL}
+              src={benefitImage || FALLBACK_BENEFIT_IMAGE}
               alt="Benefit Beasiswa Prestasi Kita"
               loading="lazy"
               decoding="async"
