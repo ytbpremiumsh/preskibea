@@ -40,7 +40,7 @@ type Transaction = {
   };
 };
 
-function AdminDonasi() {
+function AdminIntegrasi() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
