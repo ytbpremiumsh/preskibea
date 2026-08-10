@@ -27,9 +27,9 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
     umum: [
       "Surat Keterangan Tidak Mampu (SKTM) dari kelurahan",
       "Keterangan penghasilan orang tua / wali",
-      "Bukti pembayaran listrik rumah terakhir",
       "Foto Rumah (Tampak Depan & Ruang Tamu)",
-      "Bukti Pembayaran Listrik/PBB",
+      "Foto Pembayaran Listrik Terakhir ( Wajib )",
+      "Bukti Pembayaran PBB",
     ],
   },
   umum: {
@@ -60,6 +60,7 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
       "Surat keterangan yatim / piatu / yatim piatu dari kelurahan",
       "Akta atau surat keterangan kematian orang tua",
       "Kartu Keluarga (KK)",
+      "Foto Pembayaran Listrik Terakhir ( Wajib )",
     ],
   },
 };
