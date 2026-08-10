@@ -29,7 +29,7 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "income_statement", key: "income_statement", label: "Surat Keterangan Penghasilan Orang Tua / Slip Gaji", required: true },
     { id: "sktm", key: "sktm", label: "Surat Keterangan Tidak Mampu (SKTM)", required: true },
     { id: "house_photos", key: "house_photos", label: "Foto Rumah (Tampak Depan & Ruang Tamu)", required: true },
-    { id: "utility_bill", key: "utility_bill", label: "Bukti Pembayaran Listrik/PBB", required: true },
+    { id: "utility_bill", key: "utility_bill", label: "Foto Pembayaran Listrik Terakhir ( Wajib )", required: true },
   ],
   umum: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
@@ -43,6 +43,7 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "orphan_letter", key: "orphan_letter", label: "Surat Keterangan Yatim / Piatu / Yatim Piatu", required: true },
     { id: "death_cert", key: "death_cert", label: "Akta Kematian Orang Tua", required: true },
     { id: "family_card", key: "family_card", label: "Kartu Keluarga (KK)", required: true },
+    { id: "utility_bill", key: "utility_bill", label: "Foto Pembayaran Listrik Terakhir ( Wajib )", required: true },
   ],
 };
 

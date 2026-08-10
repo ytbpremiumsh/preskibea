@@ -15,7 +15,7 @@ const docsByKind = {
     "Surat Keterangan Penghasilan Orang Tua / Slip Gaji",
     "Surat Keterangan Tidak Mampu (SKTM)",
     "Foto Rumah (Tampak Depan & Ruang Tamu)",
-    "Bukti Pembayaran Listrik/Pajak Bumi Bangunan",
+    "Foto Pembayaran Listrik Terakhir ( Wajib )",
   ],
   umum: [
     "Kartu Pelajar / Kartu Mahasiswa",
@@ -29,6 +29,7 @@ const docsByKind = {
     "Surat Keterangan Yatim / Piatu / Yatim Piatu",
     "Akta Kematian Orang Tua",
     "Kartu Keluarga (KK)",
+    "Foto Pembayaran Listrik Terakhir ( Wajib )",
   ],
 } as const;
 
