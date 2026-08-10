@@ -80,6 +80,12 @@ export function MaintenancePage({ config }: { config: MaintenanceConfig }) {
             {message}
           </p>
 
+          <div className="mt-6 text-left">
+            <MaintenanceGame />
+          </div>
+
+
+
           {cd && (
             <div className="mt-8">
               <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
