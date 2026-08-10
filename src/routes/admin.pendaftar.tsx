@@ -626,11 +626,41 @@ function DocLink({ type, url }: { type: string; url: string }) {
 }
 
 
-function StatCard({ label, value, icon, gradient, iconBg }: { label: string; value: number; icon: ReactNode; gradient: string; iconBg: string }) {
+function StatCard({ 
+  label, 
+  value, 
+  icon, 
+  gradient, 
+  iconBg, 
+  className,
+  isSmall 
+}: { 
+  label: string; 
+  value: number; 
+  icon: ReactNode; 
+  gradient: string; 
+  iconBg: string;
+  className?: string;
+  isSmall?: boolean;
+}) {
+  if (isSmall) {
+    return (
+      <Card className={`rounded-2xl p-4 shadow-sm h-full ${gradient} border-none`}>
+        <div className="flex items-center gap-3">
+          <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}>{icon}</div>
+          <div className="min-w-0">
+            <div className="text-xs font-medium text-muted-foreground truncate">{label}</div>
+            <div className="text-lg font-bold text-foreground leading-tight">{value}</div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   return (
-    <Card className={`rounded-2xl p-4 shadow-soft bg-gradient-to-br ${gradient} border-border/60`}>
+    <Card className={`rounded-2xl p-4 shadow-soft bg-gradient-to-br ${gradient} border-border/60 ${className}`}>
       <div className="flex items-center gap-3">
-        <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${iconBg}`}>{icon}</div>
+        <div className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${iconBg}`}>{icon}</div>
         <div className="min-w-0">
           <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</div>
           <div className="text-2xl font-bold text-foreground leading-tight">{value}</div>
