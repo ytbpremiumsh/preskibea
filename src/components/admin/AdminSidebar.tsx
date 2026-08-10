@@ -104,7 +104,7 @@ export function AdminSidebar() {
     url === "/admin" ? currentPath === "/admin" : currentPath.startsWith(url);
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border/60">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border/60 bg-sidebar shadow-xl md:shadow-none">
       <SidebarHeader className="border-b border-sidebar-border/60 bg-gradient-to-br from-primary/5 via-transparent to-transparent">
         <div className="flex items-center gap-3 px-2 py-3">
           <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/70 text-primary-foreground shadow-lg shadow-primary/30 ring-1 ring-primary/20">
