@@ -46,7 +46,7 @@ function getContextLinks(pathname: string): { title: string; links: AdminLink[] 
         { to: "/admin/formulir", label: "Benefit & Info Beasiswa" },
         { to: "/admin/artikel", label: "Artikel" },
         { to: "/admin/bagikan-poster", label: "Bagikan Poster" },
-        { to: "/admin/donasi", label: "Integrasi Mayar" },
+        { to: "/admin/integrasi", label: "Integrasi Mayar" },
         
       ],
     };
