@@ -276,55 +276,75 @@ function AdminPendaftar() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-4">
+        {/* Main Stats */}
         <StatCard
           label="Total Pendaftar"
           value={totals.total}
           icon={<Users className="h-5 w-5" />}
-          gradient="from-primary/15 to-primary/5"
-          iconBg="bg-primary/15 text-primary"
-        />
-        <StatCard
-          label="Prestasi"
-          value={totals.prestasi}
-          icon={<Award className="h-5 w-5" />}
-          gradient="from-indigo-500/15 to-indigo-500/5"
-          iconBg="bg-indigo-500/15 text-indigo-600"
-        />
-        <StatCard
-          label="Ekonomi"
-          value={totals.ekonomi}
-          icon={<HeartHandshake className="h-5 w-5" />}
-          gradient="from-emerald-500/15 to-emerald-500/5"
-          iconBg="bg-emerald-500/15 text-emerald-600"
-        />
-        <StatCard
-          label="Umum"
-          value={totals.umum}
-          icon={<Users className="h-5 w-5" />}
-          gradient="from-teal-500/15 to-teal-500/5"
-          iconBg="bg-teal-500/15 text-teal-600"
-        />
-        <StatCard
-          label="Yatim"
-          value={totals.yatim}
-          icon={<HeartHandshake className="h-5 w-5" />}
-          gradient="from-fuchsia-500/15 to-fuchsia-500/5"
-          iconBg="bg-fuchsia-500/15 text-fuchsia-600"
-        />
-        <StatCard
-          label="Fast Track"
-          value={totals.fast}
-          icon={<Zap className="h-5 w-5" />}
-          gradient="from-amber-500/20 to-amber-500/5"
-          iconBg="bg-amber-500/20 text-amber-600"
+          gradient="from-primary/10 to-primary/5"
+          iconBg="bg-primary/20 text-primary"
+          className="border-2 border-primary/20"
         />
         <StatCard
           label="Sudah Kirim Berkas"
           value={counts.submitted}
           icon={<FileCheck className="h-5 w-5" />}
-          gradient="from-sky-500/15 to-sky-500/5"
-          iconBg="bg-sky-500/15 text-sky-600"
+          gradient="from-sky-500/10 to-sky-500/5"
+          iconBg="bg-sky-500/20 text-sky-600"
+          className="border-2 border-sky-500/20"
+        />
+        <StatCard
+          label="Fast Track"
+          value={totals.fast}
+          icon={<Zap className="h-5 w-5" />}
+          gradient="from-amber-500/15 to-amber-500/5"
+          iconBg="bg-amber-500/20 text-amber-600"
+          className="border-2 border-amber-500/20"
+        />
+        <StatCard
+          label="Belum Kirim"
+          value={counts.pending}
+          icon={<Clock className="h-5 w-5" />}
+          gradient="from-slate-500/10 to-slate-500/5"
+          iconBg="bg-slate-500/20 text-slate-600"
+          className="border-2 border-slate-500/20"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-4">
+        {/* Categories Grouped */}
+        <StatCard
+          label="Prestasi"
+          value={totals.prestasi}
+          icon={<Award className="h-4 w-4" />}
+          gradient="bg-muted/30"
+          iconBg="bg-indigo-500/10 text-indigo-600"
+          isSmall
+        />
+        <StatCard
+          label="Ekonomi"
+          value={totals.ekonomi}
+          icon={<HeartHandshake className="h-4 w-4" />}
+          gradient="bg-muted/30"
+          iconBg="bg-emerald-500/10 text-emerald-600"
+          isSmall
+        />
+        <StatCard
+          label="Umum"
+          value={totals.umum}
+          icon={<Users className="h-4 w-4" />}
+          gradient="bg-muted/30"
+          iconBg="bg-teal-500/10 text-teal-600"
+          isSmall
+        />
+        <StatCard
+          label="Yatim"
+          value={totals.yatim}
+          icon={<HeartHandshake className="h-4 w-4" />}
+          gradient="bg-muted/30"
+          iconBg="bg-fuchsia-500/10 text-fuchsia-600"
+          isSmall
         />
       </div>
 
