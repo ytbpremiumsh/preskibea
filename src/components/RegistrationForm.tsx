@@ -37,16 +37,6 @@ const FALLBACK: Record<"prestasi" | "ekonomi" | "umum" | "yatim", FormSchema> = 
   ekonomi: {
     fields: [
       ...BASE_FIELDS,
-      f("parent_income", "Penghasilan Orang Tua per Bulan", "select", {
-        required: true,
-        options: [
-          "< Rp1.000.000",
-          "Rp1.000.000 – Rp2.500.000",
-          "Rp2.500.000 – Rp5.000.000",
-          "> Rp5.000.000",
-        ],
-      }),
-      f("dependents", "Jumlah Tanggungan Keluarga", "number", { required: true }),
     ],
   },
   umum: {
