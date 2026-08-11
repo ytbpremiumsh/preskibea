@@ -55,10 +55,12 @@ function AdminIntegrasi() {
   const [aulaaConfig, setAulaaConfig] = useState({
     project_id: "",
     api_key: "",
-    webhook_secret: ""
+    webhook_secret: "",
+    qris_only: false
   });
   const [fastTrackFee, setFastTrackFee] = useState<string>("15000");
   const [webhookUrl, setWebhookUrl] = useState("");
+
 
   const load = async () => {
     setLoading(true);
@@ -263,7 +265,20 @@ function AdminIntegrasi() {
                     className="bg-background"
                   />
                 </div>
+                <div className="flex items-center gap-2 pt-2">
+                  <input 
+                    type="checkbox"
+                    id="qris_only"
+                    checked={aulaaConfig.qris_only || false}
+                    onChange={(e) => setAulaaConfig(prev => ({ ...prev, qris_only: e.target.checked }))}
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <Label htmlFor="qris_only" className="text-sm font-medium cursor-pointer">
+                    Hanya Aktifkan QRIS (Nonaktifkan VA & Retail)
+                  </Label>
+                </div>
               </div>
+
             </TabsContent>
           </Tabs>
 

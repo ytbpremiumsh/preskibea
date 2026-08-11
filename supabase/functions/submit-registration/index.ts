@@ -202,12 +202,16 @@ serve(async (req) => {
         } else if (provider === "aulaa") {
           const aulaaConfig = settings?.find(s => s.key === "aulaa_config")?.value as any;
           if (aulaaConfig?.api_key) {
-            const aulaaBody = {
+            const aulaaBody: any = {
               order_id: token,
               amount: amount,
-              // We use flexible method (flexible) by leaving payment_method empty
-              // The user will choose on the Aulaa page
             };
+
+            // If QRIS only is enabled in config
+            if (aulaaConfig?.qris_only) {
+              aulaaBody.payment_method = "qris";
+            }
+
 
             const aulaaRes = await fetch("https://api.aulaa.co/v1/payments", {
               method: "POST",
