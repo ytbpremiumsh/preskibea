@@ -216,13 +216,21 @@ serve(async (req) => {
 
           if (aulaaRes.ok) {
             const resJson = await aulaaRes.json();
-            const link = resJson?.data?.payment_url;
+            console.log("Aulaa response JSON:", resJson);
+            // Check for link in data.payment_url or data.link
+            const link = resJson?.data?.payment_url || resJson?.data?.link || resJson?.payment_url || resJson?.link;
             if (link) {
               finalInvoiceUrl = link;
-              await supabaseAdmin.from("registrations").update({ payment_url: link, extra: { ...data.extra, aulaa_payment_id: resJson?.data?.id } }).eq("id", registrationId);
+              await supabaseAdmin.from("registrations").update({ 
+                payment_url: link, 
+                extra: { ...data.extra, aulaa_payment_id: resJson?.data?.id || resJson?.id } 
+              }).eq("id", registrationId);
+            } else {
+              console.error("Aulaa Invoice Success but no link found in response:", JSON.stringify(resJson));
             }
           } else {
-             console.error("Aulaa Invoice Error:", await aulaaRes.text());
+            const errText = await aulaaRes.text();
+            console.error("Aulaa Invoice Error (HTTP " + aulaaRes.status + "):", errText);
           }
         }
       } catch (invoiceErr) {
