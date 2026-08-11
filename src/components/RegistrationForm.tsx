@@ -574,7 +574,12 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
         </div>
         <AdSlot placement="form_top" />
 
-      <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
+      <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-4 gap-6">
+        <aside className="hidden lg:block space-y-4 lg:sticky lg:top-24 h-fit">
+          <div className="w-full h-[400px] flex items-center justify-center bg-muted rounded-2xl border-2 border-dashed border-border text-muted-foreground text-sm font-medium">
+            IKLAN DISINI
+          </div>
+        </aside>
         <div className="lg:col-span-2 space-y-6">
           <Card title="Pilih Tipe Pendaftaran">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -700,41 +705,47 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
               </div>
             </Card>
           )}
+
+          <div className="space-y-4">
+            <div className="card-block p-5">
+              <h3 className="font-semibold text-foreground">Sebelum mengirim</h3>
+              <ul className="mt-3 space-y-2 text-xs text-foreground/85">
+                {[
+                  "Pastikan data pribadi sesuai Kartu Pelajar / Kartu Mahasiswa",
+                  "Email & WhatsApp aktif",
+                  "Tidak dipungut biaya apapun (Kecuali Jalur Fast Track)",
+                ].map((t) => (
+                  <li key={t} className="flex items-start gap-2">
+                    <CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition disabled:opacity-60"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" /> Mengirim…
+                </>
+              ) : (
+                <>
+                  Kirim Pendaftaran <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+            <p className="text-[11px] text-muted-foreground text-center">
+              Pastikan seluruh data sudah benar sebelum mengirim.
+            </p>
+          </div>
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
-          <div className="card-block p-5">
-            <h3 className="font-semibold text-foreground">Sebelum mengirim</h3>
-            <ul className="mt-3 space-y-2 text-xs text-foreground/85">
-              {[
-                "Pastikan data pribadi sesuai Kartu Pelajar / Kartu Mahasiswa",
-                "Email & WhatsApp aktif",
-                "Tidak dipungut biaya apapun (Kecuali Jalur Fast Track)",
-              ].map((t) => (
-                <li key={t} className="flex items-start gap-2">
-                  <CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}
-                </li>
-              ))}
-            </ul>
+          <div className="w-full h-[400px] flex items-center justify-center bg-muted rounded-2xl border-2 border-dashed border-border text-muted-foreground text-sm font-medium">
+            IKLAN DISINI
           </div>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition disabled:opacity-60"
-          >
-            {submitting ? (
-              <>
-                <Loader2 size={16} className="animate-spin" /> Mengirim…
-              </>
-            ) : (
-              <>
-                Kirim Pendaftaran <ArrowRight size={16} />
-              </>
-            )}
-          </button>
-          <p className="text-[11px] text-muted-foreground text-center">
-            Pastikan seluruh data sudah benar sebelum mengirim.
-          </p>
         </aside>
       </form>
       <AdSlot placement="form_bottom" />
