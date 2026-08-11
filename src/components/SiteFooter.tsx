@@ -53,7 +53,10 @@ export function SiteFooter() {
               loading="lazy"
               onError={(e) => {
                 const target = e.currentTarget;
-                if (target.src !== logoDefault.url) target.src = logoDefault.url;
+                const fallbackUrl = new URL(logoDefault.url, window.location.origin).href;
+                if (target.src.includes('undefined') || target.src.includes('null') || target.src !== fallbackUrl) {
+                  target.src = logoDefault.url;
+                }
               }}
             />
           </div>

@@ -152,7 +152,10 @@ export function CategoryPage({
               height={800}
               onError={(e) => {
                 const target = e.currentTarget;
-                if (target.src !== FALLBACK_BENEFIT_IMAGE) target.src = FALLBACK_BENEFIT_IMAGE;
+                const fallbackUrl = new URL(FALLBACK_BENEFIT_IMAGE, window.location.origin).href;
+                if (target.src.includes('undefined') || target.src.includes('null') || target.src !== fallbackUrl) {
+                  target.src = FALLBACK_BENEFIT_IMAGE;
+                }
               }}
               className="w-full h-auto object-cover"
             />

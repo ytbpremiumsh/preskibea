@@ -37,7 +37,10 @@ export function SiteHeader() {
             className="h-9 w-auto md:h-10" 
             onError={(e) => {
               const target = e.currentTarget;
-              if (target.src !== logoDefault.url) target.src = logoDefault.url;
+              const fallbackUrl = new URL(logoDefault.url, window.location.origin).href;
+              if (target.src.includes('undefined') || target.src.includes('null') || target.src !== fallbackUrl) {
+                target.src = logoDefault.url;
+              }
             }}
           />
         </Link>

@@ -64,7 +64,9 @@ export function AboutMockup() {
               className="w-full h-auto object-contain shadow-2xl"
               onError={(e) => {
                 const target = e.currentTarget;
-                if (target.src !== posterDefault) target.src = posterDefault;
+                if (target.src.includes('undefined') || target.src.includes('null') || (target.src !== new URL(posterDefault, window.location.origin).href)) {
+                  target.src = posterDefault;
+                }
               }}
             />
           </div>

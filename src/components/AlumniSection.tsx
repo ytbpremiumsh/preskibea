@@ -42,7 +42,12 @@ export function AlumniSection() {
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, index: number) => {
     const target = e.currentTarget;
     const fallback = FALLBACK_ALUMNI_IMAGES[index];
-    if (fallback && target.src !== fallback) target.src = fallback;
+    if (fallback) {
+      const fallbackUrl = new URL(fallback, window.location.origin).href;
+      if (target.src.includes('undefined') || target.src.includes('null') || target.src !== fallbackUrl) {
+        target.src = fallback;
+      }
+    }
   };
 
   return (
