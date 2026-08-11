@@ -705,7 +705,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
         <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
           <div className="card-block p-5">
             <h3 className="font-semibold text-foreground">Sebelum mengirim</h3>
-            <ul className="mt-4 space-y-3 text-sm text-foreground/85">
+            <ul className="mt-3 space-y-2 text-xs text-foreground/85">
               {[
                 "Pastikan data pribadi sesuai Kartu Pelajar / Kartu Mahasiswa",
                 "Email & WhatsApp aktif",
