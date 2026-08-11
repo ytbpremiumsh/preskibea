@@ -151,10 +151,11 @@ serve(async (req) => {
         const { data: settings } = await supabaseAdmin
           .from("site_settings")
           .select("key, value")
-          .in("key", ["payment_provider", "mayar_config", "aulaa_config"]);
+          .in("key", ["payment_provider", "mayar_config", "aulaa_config", "fast_track_fee"]);
         
         const provider = settings?.find(s => s.key === "payment_provider")?.value as string || "mayar";
-        const amount = 15000;
+        const feeSetting = settings?.find(s => s.key === "fast_track_fee")?.value;
+        const amount = feeSetting ? Number(feeSetting) : 15000;
         const description = `Pendaftaran Fast Track — ${data.full_name}`;
         const origin = req.headers.get("origin") || req.headers.get("referer") || "";
         const redirectUrl = origin 

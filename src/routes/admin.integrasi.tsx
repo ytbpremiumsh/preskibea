@@ -57,6 +57,7 @@ function AdminIntegrasi() {
     api_key: "",
     webhook_secret: ""
   });
+  const [fastTrackFee, setFastTrackFee] = useState<string>("15000");
   const [webhookUrl, setWebhookUrl] = useState("");
 
   const load = async () => {
@@ -78,7 +79,7 @@ function AdminIntegrasi() {
     const { data: settings } = await supabase
       .from("site_settings")
       .select("key, value")
-      .in("key", ["mayar_config", "payment_provider", "aulaa_config"]);
+      .in("key", ["mayar_config", "payment_provider", "aulaa_config", "fast_track_fee"]);
     
     if (settings) {
       const provider = settings.find(s => s.key === "payment_provider")?.value as string;
@@ -89,6 +90,9 @@ function AdminIntegrasi() {
 
       const aulaa = settings.find(s => s.key === "aulaa_config")?.value as any;
       if (aulaa) setAulaaConfig(aulaa);
+
+      const fee = settings.find(s => s.key === "fast_track_fee")?.value as string;
+      if (fee) setFastTrackFee(fee);
     }
 
     // Set Webhook URL
@@ -103,7 +107,8 @@ function AdminIntegrasi() {
       await Promise.all([
         supabase.from("site_settings").upsert({ key: "payment_provider", value: activeProvider }, { onConflict: "key" }),
         supabase.from("site_settings").upsert({ key: "mayar_config", value: { api_key: mayarApiKey } }, { onConflict: "key" }),
-        supabase.from("site_settings").upsert({ key: "aulaa_config", value: aulaaConfig }, { onConflict: "key" })
+        supabase.from("site_settings").upsert({ key: "aulaa_config", value: aulaaConfig }, { onConflict: "key" }),
+        supabase.from("site_settings").upsert({ key: "fast_track_fee", value: fastTrackFee }, { onConflict: "key" })
       ]);
       toast.success("Konfigurasi integrasi berhasil disimpan");
     } catch (err) {
@@ -180,6 +185,22 @@ function AdminIntegrasi() {
               <h2 className="font-bold font-heading">Pengaturan Provider</h2>
             </div>
             {saving && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
+          </div>
+
+          <div className="space-y-2 pb-2">
+            <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <CreditCard size={12} /> Biaya Fast Track (IDR)
+            </Label>
+            <Input 
+              type="number"
+              value={fastTrackFee}
+              onChange={(e) => setFastTrackFee(e.target.value)}
+              placeholder="15000"
+              className="bg-background font-bold"
+            />
+            <p className="text-[10px] text-muted-foreground italic">
+              * Nominal ini akan digunakan untuk pembuatan invoice pendaftar Fast Track.
+            </p>
           </div>
           
           <Tabs value={activeProvider} onValueChange={setActiveProvider} className="w-full">
