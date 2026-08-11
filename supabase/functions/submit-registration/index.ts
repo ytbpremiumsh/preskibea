@@ -227,6 +227,8 @@ serve(async (req) => {
                   payment_url: link, 
                   extra: { ...data.extra, aulaa_payment_id: paymentId } 
                 }).eq("id", registrationId);
+                // Also update payload extra for the response
+                payload.extra = { ...data.extra, aulaa_payment_id: paymentId };
               }
             }
           }
@@ -255,7 +257,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         token, 
-        invoice_url: finalInvoiceUrl 
+        invoice_url: finalInvoiceUrl,
+        aulaa_payment_id: (payload.extra as any)?.aulaa_payment_id || null
       }),
       { status: 200, headers: { ...cors, "Content-Type": "application/json" } },
     );
