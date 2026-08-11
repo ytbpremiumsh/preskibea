@@ -755,7 +755,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
         <div className="w-full max-w-2xl bg-white rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
           <div className="p-4 border-b flex items-center justify-between">
-            <h3 className="font-bold text-foreground">Pembayaran Fast Track</h3>
+            <h3 className="font-bold text-foreground">Konfirmasi Pembayaran</h3>
             <button 
               onClick={() => setShowAulaaIframe(false)}
               className="p-2 hover:bg-muted rounded-full transition"
@@ -770,7 +770,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
             <div>
               <h4 className="text-xl font-bold text-foreground">Selesaikan Pembayaran</h4>
               <p className="mt-2 text-sm text-muted-foreground">
-                Klik tombol di bawah untuk membuka halaman pembayaran Aulaa.co. 
+                Klik tombol di bawah untuk membuka halaman pembayaran. 
                 Sistem akan otomatis mendeteksi ketika pembayaran Anda berhasil.
               </p>
             </div>
