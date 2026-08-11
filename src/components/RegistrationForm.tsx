@@ -820,7 +820,7 @@ function FieldRenderer({
       <div className="mt-1">
         {field.type === "textarea" ? (
           <textarea
-            rows={3}
+            rows={2}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={ph}
