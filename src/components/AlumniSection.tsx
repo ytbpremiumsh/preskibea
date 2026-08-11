@@ -1,10 +1,13 @@
 import { Quote, Trophy } from "lucide-react";
 import { useBranding } from "@/hooks/use-branding";
+import alumni1 from "@/assets/peraih-batch7-1.png.asset.json";
+import alumni2 from "@/assets/peraih-batch7-2.png.asset.json";
+import alumni3 from "@/assets/peraih-batch7-3.png.asset.json";
 
 const FALLBACK_ALUMNI_IMAGES = [
-  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/alumni/peraih-batch7-1.png?t=1723334400123",
-  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/alumni/peraih-batch7-2.png?t=1723334400123",
-  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/alumni/peraih-batch7-3.png?t=1723334400123",
+  alumni1.url,
+  alumni2.url,
+  alumni3.url,
 ];
 
 const alumniBase = [
@@ -57,7 +60,7 @@ export function AlumniSection() {
       </div>
 
       <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
-        {alumni.map((a) => (
+        {alumni.map((a, i) => (
           <article
             key={a.name}
             className="group relative overflow-hidden card-block hover:shadow-soft hover:-translate-y-0.5 transition"
@@ -69,7 +72,7 @@ export function AlumniSection() {
                 width={768}
                 height={768}
                 loading="lazy"
-                onError={(e) => handleImageError(e, alumni.indexOf(a))}
+                onError={(e) => handleImageError(e, i)}
                 className="h-full w-full object-cover group-hover:scale-105 transition duration-500"
               />
             </div>
