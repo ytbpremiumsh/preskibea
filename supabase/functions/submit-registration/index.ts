@@ -144,6 +144,7 @@ serve(async (req) => {
     }
 
     let finalInvoiceUrl = data.payment_url || null;
+    let aulaaPaymentId: string | null = null;
 
     if (data.fast_track) {
       try {
@@ -227,8 +228,7 @@ serve(async (req) => {
                   payment_url: link, 
                   extra: { ...data.extra, aulaa_payment_id: paymentId } 
                 }).eq("id", registrationId);
-                // Also update payload extra for the response
-                payload.extra = { ...data.extra, aulaa_payment_id: paymentId };
+                aulaaPaymentId = paymentId;
               }
             }
           }
@@ -258,7 +258,7 @@ serve(async (req) => {
       JSON.stringify({ 
         token, 
         invoice_url: finalInvoiceUrl,
-        aulaa_payment_id: (payload.extra as any)?.aulaa_payment_id || null
+        aulaa_payment_id: aulaaPaymentId
       }),
       { status: 200, headers: { ...cors, "Content-Type": "application/json" } },
     );
