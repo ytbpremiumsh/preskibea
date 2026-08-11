@@ -148,16 +148,18 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
   const [values, setValues] = useState<Record<string, string>>({});
   const [files, setFiles] = useState<Record<string, File | null>>({});
   const [registrationType, setRegistrationType] = useState<"reguler" | "fast_track">("reguler");
-  const [mayarLink, setMayarLink] = useState<string | null>(null);
+  const [activePaymentLink, setActivePaymentLink] = useState<string | null>(null);
 
   useEffect(() => {
     supabase
       .from("site_settings")
-      .select("value")
-      .eq("key", "mayar_fast_track_link")
-      .maybeSingle()
+      .select("key, value")
+      .in("key", ["payment_provider", "mayar_fast_track_link"])
       .then(({ data }) => {
-        if (data?.value) setMayarLink(String(data.value));
+        if (!data) return;
+        const mayarLink = data.find(s => s.key === "mayar_fast_track_link")?.value as string;
+        
+        if (mayarLink) setActivePaymentLink(mayarLink);
       });
   }, []);
 
@@ -282,7 +284,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
         kind, 
         status: registrationType === "fast_track" ? "pending" : "approved",
         fast_track: registrationType === "fast_track",
-        payment_url: registrationType === "fast_track" ? mayarLink : null
+        payment_url: null // Will be populated by the Edge Function for Fast Track
       };
       const extra: Record<string, unknown> = {};
       for (const f of schema.fields) {
@@ -366,7 +368,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       
       // If fast track, redirect to payment gateway immediately
       if (registrationType === "fast_track") {
-        const finalRedirectUrl = invoiceUrl || mayarLink;
+        const finalRedirectUrl = invoiceUrl || activePaymentLink;
         if (finalRedirectUrl) {
           console.log("Redirecting to payment gateway:", finalRedirectUrl);
           toast.info("Mengarahkan ke pembayaran...");
