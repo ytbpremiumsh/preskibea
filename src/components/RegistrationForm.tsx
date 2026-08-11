@@ -364,11 +364,11 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
 
       toast.success("Pendaftaran berhasil dikirim!");
       
-      // If fast track, redirect to Mayar payment immediately
+      // If fast track, redirect to payment gateway immediately
       if (registrationType === "fast_track") {
         const finalRedirectUrl = invoiceUrl || mayarLink;
         if (finalRedirectUrl) {
-          console.log("Redirecting to Mayar:", finalRedirectUrl);
+          console.log("Redirecting to payment gateway:", finalRedirectUrl);
           toast.info("Mengarahkan ke pembayaran...");
           
           setTimeout(() => {
