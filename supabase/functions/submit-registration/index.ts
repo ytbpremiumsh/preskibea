@@ -205,11 +205,14 @@ serve(async (req) => {
             description: description
           };
 
+          console.log("Creating Aulaa invoice with body:", JSON.stringify(aulaaBody));
+
           const aulaaRes = await fetch("https://api.aulaa.co/v1/payments", {
             method: "POST",
             headers: {
               "Authorization": `Bearer ${aulaaConfig.api_key}`,
               "Content-Type": "application/json",
+              "Accept": "application/json"
             },
             body: JSON.stringify(aulaaBody),
           });
