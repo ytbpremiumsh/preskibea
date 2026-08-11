@@ -154,11 +154,21 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
     supabase
       .from("site_settings")
       .select("key, value")
-      .in("key", ["mayar_fast_track_link"])
+      .in("key", ["mayar_fast_track_link", "payment_provider", "aulaa_config"])
       .then(({ data }) => {
         if (!data) return;
+        
+        const provider = data.find(s => s.key === "payment_provider")?.value as string;
         const mayarLink = data.find(s => s.key === "mayar_fast_track_link")?.value as string;
-        if (mayarLink) setActivePaymentLink(mayarLink);
+        const aulaa = data.find(s => s.key === "aulaa_config")?.value as any;
+
+        if (provider === "aulaa" && aulaa?.project_id) {
+          // Fallback if Edge Function doesn't return URL
+          // But usually we prefer the dynamic one from submitRegistrationFn
+          setActivePaymentLink(null); 
+        } else if (mayarLink) {
+          setActivePaymentLink(mayarLink);
+        }
       });
   }, []);
 
@@ -284,7 +294,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
         kind, 
         status: registrationType === "fast_track" ? "pending" : "approved",
         fast_track: registrationType === "fast_track",
-        payment_url: null // Will be populated by the Edge Function for Fast Track
+        payment_url: null 
       };
       const extra: Record<string, unknown> = {};
       for (const f of schema.fields) {
