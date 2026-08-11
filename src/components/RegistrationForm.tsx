@@ -254,7 +254,10 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
   const title = `Pendaftaran ${kindLabel}`;
 
   const setVal = (name: string, v: string) => {
-    setValues((s) => ({ ...s, [name]: v }));
+    setValues((s) =>
+      name === "education_level" ? { ...s, [name]: v, grade: "" } : { ...s, [name]: v },
+    );
+
     if (name === "orphan_status" && kind === "yatim") {
       if (!["Yatim", "Yatim & Piatu"].includes(v)) {
         toast.error("Beasiswa Yatim hanya tersedia untuk status Yatim atau Yatim & Piatu");
