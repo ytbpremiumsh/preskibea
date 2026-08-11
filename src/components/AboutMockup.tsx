@@ -31,12 +31,13 @@ export function AboutMockup() {
           Tentang Program
         </span>
         <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-foreground">
-          Apa itu Beasiswa Prestasi Kita?
+          Prestasi Kita adalah?
         </h2>
         <p className="mt-3 text-muted-foreground">
-          Program beasiswa pendidikan nasional untuk mendukung pelajar Indonesia meraih
-          mimpi akademis dan non-akademis. Berbasis prestasi dan kebutuhan ekonomi,
-          dijalankan secara transparan dan tanpa biaya pendaftaran.
+          Prestasi Kita adalah sebuah lembaga pemberi beasiswa dan platform pengembangan diri yang berkomitmen 
+          untuk mendukung pelajar dan mahasiswa Indonesia dalam mencapai potensi maksimal mereka. 
+          Melalui program beasiswa pendidikan nasional, kami memberikan bantuan dana pendidikan dan apresiasi 
+          atas pencapaian akademik maupun non-akademik secara transparan dan tanpa biaya pendaftaran.
         </p>
       </div>
 
