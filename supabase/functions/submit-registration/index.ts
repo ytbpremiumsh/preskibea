@@ -1,5 +1,5 @@
 // supabase/functions/submit-registration/index.ts
-// Insert registrasi pendaftar + Create Mayar Invoice for Fast Track
+// Insert registrasi pendaftar + Create Invoice (Mayar/Aulaa.co) for Fast Track
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { z } from "https://esm.sh/zod@3.23.8";
@@ -140,29 +140,29 @@ serve(async (req) => {
       );
     }
 
-    // IF FAST TRACK, create Mayar Invoice
     let finalInvoiceUrl = data.payment_url || null;
 
     if (data.fast_track) {
       try {
-        const { data: mayarRow } = await supabaseAdmin
+        // Fetch provider and configs
+        const { data: settings } = await supabaseAdmin
           .from("site_settings")
-          .select("value")
-          .eq("key", "mayar_config")
-          .maybeSingle();
+          .select("key, value")
+          .in("key", ["payment_provider", "mayar_config", "aulaa_config"]);
         
-        const mayar = (mayarRow?.value ?? {}) as { api_key?: string };
-        
-        if (mayar.api_key) {
-          const expiredAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-          const description = `Pendaftaran Fast Track — ${data.full_name}`;
-          const amount = 15000;
-          
-          const origin = req.headers.get("origin") || req.headers.get("referer") || "";
-          const redirectUrl = origin 
-            ? `${origin.replace(/\/$/, "")}/pendaftaran/sukses?token=${token}&name=${encodeURIComponent(data.full_name)}&email=${encodeURIComponent(data.email)}&whatsapp=${encodeURIComponent(data.whatsapp)}&kind=${data.kind}`
-            : "https://prestasikita.com";
+        const provider = settings?.find(s => s.key === "payment_provider")?.value as string || "mayar";
+        const mayarConfig = settings?.find(s => s.key === "mayar_config")?.value as { api_key?: string };
+        const aulaaConfig = settings?.find(s => s.key === "aulaa_config")?.value as { api_key?: string };
 
+        const amount = 15000;
+        const description = `Pendaftaran Fast Track — ${data.full_name}`;
+        const origin = req.headers.get("origin") || req.headers.get("referer") || "";
+        const redirectUrl = origin 
+          ? `${origin.replace(/\/$/, "")}/pendaftaran/sukses?token=${token}&name=${encodeURIComponent(data.full_name)}&email=${encodeURIComponent(data.email)}&whatsapp=${encodeURIComponent(data.whatsapp)}&kind=${data.kind}`
+          : "https://prestasikita.com";
+
+        if (provider === "mayar" && mayarConfig?.api_key) {
+          const expiredAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
           const mayarBody = {
             name: data.full_name,
             email: data.email,
@@ -170,23 +170,14 @@ serve(async (req) => {
             redirectUrl,
             description,
             expiredAt,
-            items: [
-              {
-                quantity: 1,
-                rate: amount,
-                description: "Biaya Pendaftaran Jalur Fast Track Batch #8",
-              },
-            ],
-            extraData: {
-              noCustomer: token,
-              idProd: "FAST_TRACK_BATCH_8"
-            }
+            items: [{ quantity: 1, rate: amount, description: "Biaya Pendaftaran Jalur Fast Track Batch #8" }],
+            extraData: { noCustomer: token, idProd: "FAST_TRACK_BATCH_8" }
           };
 
           const mayarRes = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
             method: "POST",
             headers: {
-              "Authorization": `Bearer ${mayar.api_key}`,
+              "Authorization": `Bearer ${mayarConfig.api_key}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify(mayarBody),
@@ -195,22 +186,40 @@ serve(async (req) => {
           if (mayarRes.ok) {
             const resJson = await mayarRes.json();
             const link = resJson?.data?.link;
-            const invoiceId = resJson?.data?.id;
-            
             if (link) {
               finalInvoiceUrl = link;
-              // Update registration with invoice info
-              await supabaseAdmin
-                .from("registrations")
-                .update({ 
-                  payment_url: link,
-                  extra: { ...data.extra, mayar_invoice_id: invoiceId } 
-                })
-                .eq("id", registrationId);
+              await supabaseAdmin.from("registrations").update({ payment_url: link, extra: { ...data.extra, mayar_invoice_id: resJson?.data?.id } }).eq("id", registrationId);
+            }
+          }
+        } else if (provider === "aulaa" && aulaaConfig?.api_key) {
+          const aulaaBody = {
+            order_id: token,
+            amount: amount,
+            customer_name: data.full_name,
+            customer_email: data.email,
+            customer_phone: normalizeNumber(data.whatsapp) || "62800000000",
+            redirect_url: redirectUrl,
+            description: description
+          };
+
+          const aulaaRes = await fetch("https://api.aulaa.co/v1/payments", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${aulaaConfig.api_key}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(aulaaBody),
+          });
+
+          if (aulaaRes.ok) {
+            const resJson = await aulaaRes.json();
+            const link = resJson?.data?.payment_url;
+            if (link) {
+              finalInvoiceUrl = link;
+              await supabaseAdmin.from("registrations").update({ payment_url: link, extra: { ...data.extra, aulaa_payment_id: resJson?.data?.id } }).eq("id", registrationId);
             }
           } else {
-            const errJson = await mayarRes.json();
-            console.error("Mayar Invoice Error:", errJson);
+             console.error("Aulaa Invoice Error:", await aulaaRes.text());
           }
         }
       } catch (invoiceErr) {
@@ -218,7 +227,6 @@ serve(async (req) => {
       }
     }
 
-    // Trigger email notification
     try {
       await supabaseAdmin.functions.invoke("notify-user", {
         body: {
@@ -233,7 +241,6 @@ serve(async (req) => {
     } catch (emailErr) {
       console.error("Failed to trigger registration email:", emailErr.message);
     }
-
 
     return new Response(
       JSON.stringify({ 

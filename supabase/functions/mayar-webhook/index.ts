@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 const cors = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-mayar-signature, x-webhook-signature",
 };
 
 const supabaseAdmin = createClient(
@@ -14,24 +14,54 @@ const supabaseAdmin = createClient(
 
 const SECOND_APP_WEBHOOK_URL = "https://tvingnpdeueufagssdte.supabase.co/functions/v1/mayar-webhook";
 
+// Helpers for Aulaa.co Webhook Verification using Web Crypto API
+async function verifyAulaaWebhook(rawBody: string, signature: string, secret: string): Promise<boolean> {
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(secret);
+  const data = encoder.encode(rawBody);
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    keyData,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+
+  const signatureBuffer = await crypto.subtle.sign("HMAC", key, data);
+  const signatureArray = Array.from(new Uint8Array(signatureBuffer));
+  const signatureHex = signatureArray.map(b => b.toString(16).padStart(2, "0")).join("");
+
+  return signature === signatureHex;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
   
   try {
     const rawBody = await req.text();
-    const body = JSON.parse(rawBody);
-    console.log("Mayar Webhook received:", body);
+    let body;
+    try {
+      body = JSON.parse(rawBody);
+    } catch (e) {
+      console.error("Failed to parse JSON body:", e);
+      return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
+        status: 400,
+        headers: { ...cors, "Content-Type": "application/json" },
+      });
+    }
+
+    console.log("Webhook received:", body);
 
     // --- FORWARDING LOGIC ---
-    // We forward the raw request to the second app in parallel
-    // so both apps can process the same webhook event.
     try {
       console.log("Forwarding webhook to second app...");
       fetch(SECOND_APP_WEBHOOK_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Forwarding necessary headers if any, or just plain POST
+          "X-Mayar-Signature": req.headers.get("X-Mayar-Signature") || "",
+          "X-Webhook-Signature": req.headers.get("X-Webhook-Signature") || "",
         },
         body: rawBody,
       }).catch(err => console.error("Error forwarding to second app:", err.message));
@@ -40,11 +70,59 @@ serve(async (req) => {
     }
     // ------------------------
 
-    const email = (body?.customer?.email || body?.email || body?.data?.customer?.email || body?.data?.email)?.trim();
-    const status = body?.status || body?.data?.status; 
-    const tokenFromExtra = body?.extraData?.noCustomer || body?.data?.extraData?.noCustomer;
+    // Determine provider and extract relevant info
+    let provider: "mayar" | "aulaa" | "unknown" = "unknown";
+    let email: string | undefined;
+    let status: string | undefined;
+    let tokenFromExtra: string | undefined;
+    let paymentAmount: number | undefined;
+    let externalId: string | undefined;
+
+    const mayarSig = req.headers.get("X-Mayar-Signature");
+    const aulaaSig = req.headers.get("X-Webhook-Signature");
+
+    if (mayarSig) {
+      provider = "mayar";
+      email = (body?.customer?.email || body?.email || body?.data?.customer?.email || body?.data?.email)?.trim();
+      status = body?.status || body?.data?.status; 
+      tokenFromExtra = body?.extraData?.noCustomer || body?.data?.extraData?.noCustomer;
+      paymentAmount = body?.amount || body?.data?.amount;
+      externalId = body?.id || body?.data?.id;
+    } else if (aulaaSig) {
+      const { data: aulaaConfigRow } = await supabaseAdmin
+        .from("site_settings")
+        .select("value")
+        .eq("key", "aulaa_config")
+        .maybeSingle();
+      const aulaaConfig = (aulaaConfigRow?.value ?? {}) as { webhook_secret?: string };
+
+      if (aulaaConfig.webhook_secret && await verifyAulaaWebhook(rawBody, aulaaSig, aulaaConfig.webhook_secret)) {
+        provider = "aulaa";
+        email = body?.data?.customer_email?.trim();
+        status = body?.data?.status; // "paid", "pending", "failed"
+        // Aulaa.co order_id format is likely set as token in invoice creation
+        tokenFromExtra = body?.data?.order_id;
+        paymentAmount = body?.data?.amount;
+        externalId = body?.data?.id;
+      } else {
+        console.warn("Aulaa.co webhook received but signature verification failed or secret missing.");
+        return new Response(JSON.stringify({ error: "Verification failed" }), { status: 403, headers: cors });
+      }
+    } else {
+      // Fallback for Mayar if signature header is missing but body looks like Mayar
+      if (body?.extraData?.noCustomer || body?.data?.extraData?.noCustomer) {
+        provider = "mayar";
+        email = (body?.customer?.email || body?.email || body?.data?.customer?.email || body?.data?.email)?.trim();
+        status = body?.status || body?.data?.status; 
+        tokenFromExtra = body?.extraData?.noCustomer || body?.data?.extraData?.noCustomer;
+        paymentAmount = body?.amount || body?.data?.amount;
+        externalId = body?.id || body?.data?.id;
+      }
+    }
 
     if (status === "success" || status === "paid" || body?.event === "payment.success" || body?.data?.event === "payment.success") {
+       console.log(`Processing successful payment for ${provider}, token: ${tokenFromExtra}`);
+       
        // Search for the latest pending fast_track registration
        let q = supabaseAdmin
          .from("registrations")
@@ -70,31 +148,29 @@ serve(async (req) => {
            })
            .eq("id", reg.id);
          
-         console.log(`Registration ${reg.token} marked as paid.`);
+         console.log(`Registration ${reg.token} marked as paid via ${provider}.`);
 
          // Record payment in payments table
          try {
-           const amount = body?.amount || body?.data?.amount || 15000;
            await supabaseAdmin.from("payments").insert({
              registration_id: reg.id,
-             amount: Number(amount),
+             amount: Number(paymentAmount) || 0,
              status: status,
-             payment_url: body?.payment_url || body?.data?.payment_url || null,
-             external_id: body?.id || body?.data?.id || null
+             external_id: externalId,
+             provider: provider,
            });
          } catch (payErr) {
            console.error("Failed to record payment:", payErr.message);
          }
 
           try {
-            const regDetail = reg;
             await supabaseAdmin.functions.invoke("send-whatsapp", {
               body: {
                 type: "pendaftaran_sukses",
-                full_name: regDetail.full_name,
-                email: regDetail.email,
-                whatsapp: regDetail.whatsapp,
-                kind: regDetail.kind,
+                full_name: reg.full_name,
+                email: reg.email,
+                whatsapp: reg.whatsapp,
+                kind: reg.kind,
                 token: reg.token,
               },
             });
@@ -102,10 +178,10 @@ serve(async (req) => {
             await supabaseAdmin.functions.invoke("notify-user", {
               body: {
                 type: "registration",
-                full_name: regDetail.full_name,
-                email: regDetail.email,
+                full_name: reg.full_name,
+                email: reg.email,
                 token: reg.token,
-                kind: regDetail.kind,
+                kind: reg.kind,
                 status: "approved"
               },
             });
@@ -113,11 +189,11 @@ serve(async (req) => {
             console.error("Failed to send success notifications:", err.message);
           }
        } else {
-         console.log("No matching pending fast-track registration found for this app. Skipping local processing.");
+         console.log(`No matching pending fast-track registration found for token ${tokenFromExtra} / email ${email}.`);
        }
     }
 
-    return new Response(JSON.stringify({ received: true, forwarded: true }), {
+    return new Response(JSON.stringify({ received: true, provider }), {
       status: 200,
       headers: { ...cors, "Content-Type": "application/json" },
     });
