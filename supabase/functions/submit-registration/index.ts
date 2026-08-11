@@ -32,7 +32,10 @@ const Input = z.object({
   birth_place: z.string().trim().min(1).max(120),
   birth_date: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/),
   gender: z.string().trim().min(1).max(50),
-  address: z.string().trim().min(5).max(500),
+  address: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() !== "" ? v : "-"),
+    z.string().trim().max(500),
+  ),
   whatsapp: z.string().trim().regex(/^[+\d\s-]{6,25}$/),
   email: z.string().trim().toLowerCase().email().max(200),
   education_level: z.string().trim().min(1).max(80),
