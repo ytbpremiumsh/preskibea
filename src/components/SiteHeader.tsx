@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X, ArrowRight } from "lucide-react";
+import logoDefault from "@/assets/logo-prestasi-kita-atskolla.png.asset.json";
 import { useBranding } from "@/hooks/use-branding";
 
 const nav = [
@@ -30,7 +31,15 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/80 backdrop-blur-xl">
       <div className="container-page flex h-[72px] items-center justify-between gap-4">
         <Link to="/" className="flex shrink-0 items-center" aria-label="Prestasi Kita">
-          <img src={headerLogo} alt="Logo Prestasi Kita" className="h-9 w-auto md:h-10" />
+          <img 
+            src={headerLogo} 
+            alt="Logo Prestasi Kita" 
+            className="h-9 w-auto md:h-10" 
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (target.src !== logoDefault.url) target.src = logoDefault.url;
+            }}
+          />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1 rounded-full border border-border bg-secondary/60 p-1">
