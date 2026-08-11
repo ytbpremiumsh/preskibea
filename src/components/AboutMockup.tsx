@@ -62,6 +62,10 @@ export function AboutMockup() {
               src={posterImg} 
               alt="Poster Beasiswa Prestasi Kita" 
               className="w-full h-auto object-contain shadow-2xl"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (target.src !== posterDefault) target.src = posterDefault;
+              }}
             />
           </div>
         </div>
