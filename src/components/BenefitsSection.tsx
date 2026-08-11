@@ -68,7 +68,9 @@ export function BenefitsSection() {
             className="w-full h-auto object-contain"
             onError={(e) => {
               const target = e.currentTarget;
-              if (target.src !== benefitDefault.url) target.src = benefitDefault.url;
+              if (target.src !== benefitDefault.url) {
+                target.src = benefitDefault.url;
+              }
             }}
           />
         </div>
