@@ -12,6 +12,7 @@ import {
   Clock,
   HeartHandshake,
 } from "lucide-react";
+import logoDefault from "@/assets/logo-prestasi-kita-atskolla.png.asset.json";
 import { useBranding } from "@/hooks/use-branding";
 
 export function SiteFooter() {
@@ -50,6 +51,10 @@ export function SiteFooter() {
               alt="Logo Prestasi Kita x ATSkolla"
               className="h-10 w-auto"
               loading="lazy"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (target.src !== logoDefault.url) target.src = logoDefault.url;
+              }}
             />
           </div>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">

@@ -66,6 +66,10 @@ export function BenefitsSection() {
             src={benefitImg} 
             alt="Benefit Beasiswa Prestasi Kita" 
             className="w-full h-auto object-contain"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (target.src !== benefitDefault.url) target.src = benefitDefault.url;
+            }}
           />
         </div>
       </div>
