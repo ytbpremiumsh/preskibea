@@ -17,6 +17,21 @@ function f(
   return { id: name, name, label, type, standard: STANDARD_REG_COLUMNS.has(name), ...opts };
 }
 
+const EDUCATION_LEVELS = ["SMP/MTs", "SMA/SMK/MA", "Mahasiswa", "Gap Year"];
+
+const GRADE_OPTIONS: Record<string, string[]> = {
+  "SMP/MTs": ["Kelas 7", "Kelas 8", "Kelas 9"],
+  "SMA/SMK/MA": ["Kelas 10", "Kelas 11", "Kelas 12", "Kelas 13 (SMK 4 Tahun)"],
+  Mahasiswa: Array.from({ length: 14 }, (_, i) => `Semester ${i + 1}`),
+  "Gap Year": [
+    "Lulusan SMP/MTs",
+    "Lulusan SMA/SMK/MA",
+    "Lulusan D3",
+    "Lulusan S1",
+    "Calon Mahasiswa Baru",
+  ],
+};
+
 const BASE_FIELDS: FormField[] = [
   f("full_name", "Nama Lengkap", "text", { required: true }),
   f("email", "Email Aktif", "email", { required: true }),
@@ -26,11 +41,12 @@ const BASE_FIELDS: FormField[] = [
   f("gender", "Jenis Kelamin", "select", { required: true, options: ["Laki-laki", "Perempuan"] }),
   f("education_level", "Jenjang Pendidikan", "select", {
     required: true,
-    options: ["SMP/MTs", "SMA/SMK/MA", "Mahasiswa"],
+    options: EDUCATION_LEVELS,
   }),
   f("school_name", "Nama Sekolah / Kampus", "text", { required: true }),
-  f("grade", "Kelas / Semester", "text", { required: true }),
+  f("grade", "Kelas / Semester", "select", { required: true }),
 ];
+
 
 const FALLBACK: Record<"prestasi" | "ekonomi" | "umum" | "yatim", FormSchema> = {
   prestasi: { fields: [...BASE_FIELDS] },
