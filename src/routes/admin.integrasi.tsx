@@ -6,21 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Loader2, 
   Search, 
   RotateCcw, 
-  CreditCard, 
   ExternalLink, 
   Calendar,
   Settings,
   Webhook,
   Key,
   Copy,
-  Save,
-  ShieldCheck
+  Save
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -35,7 +31,6 @@ type Transaction = {
   status: string;
   payment_url: string;
   created_at: string;
-  provider?: string;
   registrations: {
     full_name: string;
     email: string;
@@ -51,10 +46,7 @@ function AdminIntegrasi() {
   const [q, setQ] = useState("");
   
   // Settings
-  const [provider, setProvider] = useState<"mayar" | "aulaa">("mayar");
   const [mayarApiKey, setMayarApiKey] = useState("");
-  const [aulaaApiKey, setAulaaApiKey] = useState("");
-  const [aulaaWebhookSecret, setAulaaWebhookSecret] = useState("");
   const [webhookUrl, setWebhookUrl] = useState("");
 
   const load = async () => {
@@ -76,21 +68,14 @@ function AdminIntegrasi() {
     const { data: settings } = await supabase
       .from("site_settings")
       .select("key, value")
-      .in("key", ["payment_provider", "mayar_config", "aulaa_config"]);
+      .in("key", ["mayar_config"]);
     
     if (settings) {
-      const p = settings.find(s => s.key === "payment_provider")?.value as string;
-      if (p === "mayar" || p === "aulaa") setProvider(p);
-
       const mayar = settings.find(s => s.key === "mayar_config")?.value as { api_key?: string };
       if (mayar?.api_key) setMayarApiKey(mayar.api_key);
-
-      const aulaa = settings.find(s => s.key === "aulaa_config")?.value as { api_key?: string, webhook_secret?: string };
-      if (aulaa?.api_key) setAulaaApiKey(aulaa.api_key);
-      if (aulaa?.webhook_secret) setAulaaWebhookSecret(aulaa.webhook_secret);
     }
 
-    // Set Webhook URL - Unified for both providers in our proxy
+    // Set Webhook URL
     setWebhookUrl("https://ltmfvbcazebowndigkyi.supabase.co/functions/v1/mayar-webhook");
 
     setLoading(false);
@@ -100,9 +85,8 @@ function AdminIntegrasi() {
     setSaving(true);
     try {
       await Promise.all([
-        supabase.from("site_settings").upsert({ key: "payment_provider", value: provider }, { onConflict: "key" }),
-        supabase.from("site_settings").upsert({ key: "mayar_config", value: { api_key: mayarApiKey } }, { onConflict: "key" }),
-        supabase.from("site_settings").upsert({ key: "aulaa_config", value: { api_key: aulaaApiKey, webhook_secret: aulaaWebhookSecret } }, { onConflict: "key" })
+        supabase.from("site_settings").upsert({ key: "payment_provider", value: "mayar" }, { onConflict: "key" }),
+        supabase.from("site_settings").upsert({ key: "mayar_config", value: { api_key: mayarApiKey } }, { onConflict: "key" })
       ]);
       toast.success("Konfigurasi integrasi berhasil disimpan");
     } catch (err) {
@@ -121,8 +105,7 @@ function AdminIntegrasi() {
       t.registrations?.full_name?.toLowerCase().includes(s) ||
       t.registrations?.email?.toLowerCase().includes(s) ||
       t.registrations?.token?.toLowerCase().includes(s) ||
-      t.status.toLowerCase().includes(s) ||
-      t.provider?.toLowerCase().includes(s)
+      t.status.toLowerCase().includes(s)
     );
   });
 
@@ -140,7 +123,7 @@ function AdminIntegrasi() {
         <div>
           <h1 className="text-2xl font-bold text-foreground font-heading">Integrasi Pembayaran</h1>
           <p className="text-sm text-muted-foreground">
-            Monitoring pembayaran Fast Track melalui Mayar & Aulaa.co.
+            Monitoring pembayaran Fast Track melalui Mayar.
           </p>
         </div>
         <Button variant="outline" onClick={load} disabled={loading}>
@@ -164,7 +147,7 @@ function AdminIntegrasi() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Cari nama, email, token, provider..."
+                placeholder="Cari nama, email, token..."
                 className="pl-9"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
@@ -177,88 +160,27 @@ function AdminIntegrasi() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-primary">
               <Settings className="h-5 w-5" />
-              <h2 className="font-bold font-heading">Pengaturan Gateway</h2>
+              <h2 className="font-bold font-heading">Pengaturan Mayar</h2>
             </div>
           </div>
           
           <div className="space-y-6">
-            <div className="p-3 bg-background rounded-lg border border-primary/10 space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="font-semibold text-sm">Provider Aktif</Label>
-                <Badge variant={provider === 'mayar' ? 'default' : 'secondary'} className="capitalize">{provider}</Badge>
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  size="sm" 
-                  variant={provider === 'mayar' ? 'default' : 'outline'}
-                  className="flex-1"
-                  onClick={() => setProvider('mayar')}
-                >
-                  Mayar
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant={provider === 'aulaa' ? 'default' : 'outline'}
-                  className="flex-1"
-                  onClick={() => setProvider('aulaa')}
-                >
-                  Aulaa.co
-                </Button>
-              </div>
+            <div className="space-y-2">
+              <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Key size={12} /> API Key Mayar
+              </Label>
+              <Input 
+                type="password"
+                value={mayarApiKey}
+                onChange={(e) => setMayarApiKey(e.target.value)}
+                placeholder="Mayar API Key"
+                className="bg-background"
+              />
             </div>
-
-            <Tabs defaultValue="mayar" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="mayar">Mayar</TabsTrigger>
-                <TabsTrigger value="aulaa">Aulaa.co</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="mayar" className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Key size={12} /> API Key Mayar
-                  </Label>
-                  <Input 
-                    type="password"
-                    value={mayarApiKey}
-                    onChange={(e) => setMayarApiKey(e.target.value)}
-                    placeholder="Mayar API Key"
-                    className="bg-background"
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="aulaa" className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Key size={12} /> API Key Aulaa.co
-                  </Label>
-                  <Input 
-                    type="password"
-                    value={aulaaApiKey}
-                    onChange={(e) => setAulaaApiKey(e.target.value)}
-                    placeholder="Aulaa.co API Key"
-                    className="bg-background"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <ShieldCheck size={12} /> Webhook Secret
-                  </Label>
-                  <Input 
-                    type="password"
-                    value={aulaaWebhookSecret}
-                    onChange={(e) => setAulaaWebhookSecret(e.target.value)}
-                    placeholder="Aulaa.co Webhook Secret"
-                    className="bg-background"
-                  />
-                </div>
-              </TabsContent>
-            </Tabs>
 
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Webhook size={12} /> URL Webhook (Gunakan ini)
+                <Webhook size={12} /> URL Webhook
               </Label>
               <div className="flex gap-2">
                 <Input 
@@ -279,7 +201,7 @@ function AdminIntegrasi() {
                 </Button>
               </div>
               <p className="text-[10px] text-muted-foreground italic">
-                * Masukkan URL ini ke Dashboard Payment Gateway &gt; Settings &gt; Webhook
+                * Masukkan URL ini ke Dashboard Mayar &gt; Settings &gt; Webhook
               </p>
             </div>
 
@@ -310,7 +232,6 @@ function AdminIntegrasi() {
               <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground font-semibold">
                 <tr>
                   <th className="px-4 py-3">Peserta</th>
-                  <th className="px-4 py-3">Gateway</th>
                   <th className="px-4 py-3">Token</th>
                   <th className="px-4 py-3">Nominal</th>
                   <th className="px-4 py-3">Status</th>
@@ -324,11 +245,6 @@ function AdminIntegrasi() {
                     <td className="px-4 py-3">
                       <div className="font-medium text-foreground">{t.registrations?.full_name}</div>
                       <div className="text-xs text-muted-foreground">{t.registrations?.email}</div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge variant="outline" className="capitalize text-[10px] py-0">
-                        {t.provider || 'mayar'}
-                      </Badge>
                     </td>
                     <td className="px-4 py-3 font-mono text-xs">{t.registrations?.token}</td>
                     <td className="px-4 py-3 font-semibold">
