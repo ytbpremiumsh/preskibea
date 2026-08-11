@@ -17,6 +17,21 @@ function f(
   return { id: name, name, label, type, standard: STANDARD_REG_COLUMNS.has(name), ...opts };
 }
 
+const EDUCATION_LEVELS = ["SMP/MTs", "SMA/SMK/MA", "Mahasiswa", "Gap Year"];
+
+const GRADE_OPTIONS: Record<string, string[]> = {
+  "SMP/MTs": ["Kelas 7", "Kelas 8", "Kelas 9"],
+  "SMA/SMK/MA": ["Kelas 10", "Kelas 11", "Kelas 12", "Kelas 13 (SMK 4 Tahun)"],
+  Mahasiswa: Array.from({ length: 14 }, (_, i) => `Semester ${i + 1}`),
+  "Gap Year": [
+    "Lulusan SMP/MTs",
+    "Lulusan SMA/SMK/MA",
+    "Lulusan D3",
+    "Lulusan S1",
+    "Calon Mahasiswa Baru",
+  ],
+};
+
 const BASE_FIELDS: FormField[] = [
   f("full_name", "Nama Lengkap", "text", { required: true }),
   f("email", "Email Aktif", "email", { required: true }),
@@ -26,11 +41,12 @@ const BASE_FIELDS: FormField[] = [
   f("gender", "Jenis Kelamin", "select", { required: true, options: ["Laki-laki", "Perempuan"] }),
   f("education_level", "Jenjang Pendidikan", "select", {
     required: true,
-    options: ["SMP/MTs", "SMA/SMK/MA", "Mahasiswa"],
+    options: EDUCATION_LEVELS,
   }),
   f("school_name", "Nama Sekolah / Kampus", "text", { required: true }),
-  f("grade", "Kelas / Semester", "text", { required: true }),
+  f("grade", "Kelas / Semester", "select", { required: true }),
 ];
+
 
 const FALLBACK: Record<"prestasi" | "ekonomi" | "umum" | "yatim", FormSchema> = {
   prestasi: { fields: [...BASE_FIELDS] },
@@ -238,7 +254,10 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
   const title = `Pendaftaran ${kindLabel}`;
 
   const setVal = (name: string, v: string) => {
-    setValues((s) => ({ ...s, [name]: v }));
+    setValues((s) =>
+      name === "education_level" ? { ...s, [name]: v, grade: "" } : { ...s, [name]: v },
+    );
+
     if (name === "orphan_status" && kind === "yatim") {
       if (!["Yatim", "Yatim & Piatu"].includes(v)) {
         toast.error("Beasiswa Yatim hanya tersedia untuk status Yatim atau Yatim & Piatu");
@@ -473,11 +492,28 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
   }, [showAulaaIframe, submittedToken, submittedData]);
 
   const grouped = useMemo(() => {
-    const fileFields = schema.fields.filter((f) => f.type === "file");
-    const requiredDataFields = schema.fields.filter((f) => f.type !== "file" && f.required);
-    const optionalDataFields = schema.fields.filter((f) => f.type !== "file" && !f.required);
+    const level = values["education_level"] ?? "";
+    const decorate = (f: FormField): FormField => {
+      if (f.name === "education_level") {
+        return { ...f, type: "select", options: EDUCATION_LEVELS };
+      }
+      if (f.name === "grade") {
+        return {
+          ...f,
+          type: "select",
+          label: level === "Mahasiswa" ? "Semester" : "Kelas / Semester",
+          options: GRADE_OPTIONS[level] ?? [],
+        };
+      }
+      return f;
+    };
+    const fields = schema.fields.map(decorate);
+    const fileFields = fields.filter((f) => f.type === "file");
+    const requiredDataFields = fields.filter((f) => f.type !== "file" && f.required);
+    const optionalDataFields = fields.filter((f) => f.type !== "file" && !f.required);
     return { requiredDataFields, optionalDataFields, fileFields };
-  }, [schema]);
+  }, [schema, values]);
+
 
   if (loading) {
     return (
