@@ -368,6 +368,7 @@ export type Database = {
           external_id: string | null
           id: string
           payment_url: string | null
+          provider: string | null
           registration_id: string
           status: string
         }
@@ -377,6 +378,7 @@ export type Database = {
           external_id?: string | null
           id?: string
           payment_url?: string | null
+          provider?: string | null
           registration_id: string
           status: string
         }
@@ -386,6 +388,7 @@ export type Database = {
           external_id?: string | null
           id?: string
           payment_url?: string | null
+          provider?: string | null
           registration_id?: string
           status?: string
         }
