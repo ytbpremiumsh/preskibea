@@ -22,7 +22,7 @@ const features = [
 
 export function AboutMockup() {
   const { posterImage } = useBranding();
-  const posterImg = posterImage || "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/branding/poster-beasiswa.png";
+  const posterImg = posterImage || "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/branding/poster-beasiswa.png?t=1723334400";
 
   return (
     <section className="container-page py-20">
