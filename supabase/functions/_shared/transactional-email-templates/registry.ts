@@ -1,5 +1,6 @@
 import type { ComponentType } from 'npm:react@18.3.1'
 import { template as registrationTemplate } from './registration.tsx'
+import { template as berkasTemplate } from './berkas.tsx'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -16,5 +17,7 @@ export interface TemplateEntry {
  */
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'registration': registrationTemplate,
+  'berkas': berkasTemplate,
 }
+
 

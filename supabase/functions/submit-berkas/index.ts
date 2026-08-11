@@ -114,7 +114,23 @@ serve(async (req) => {
         .eq("id", reg.id);
     }
 
+    try {
+      await supabaseAdmin.functions.invoke("notify-user", {
+        body: {
+          type: "berkas",
+          full_name: reg.full_name,
+          email: reg.email,
+          token: data.token,
+          kind: data.kind,
+          count: rows.length
+        },
+      });
+    } catch (emailErr) {
+      console.error("Failed to trigger berkas email:", emailErr.message);
+    }
+
     return new Response(JSON.stringify({ count: rows.length }), {
+
       status: 200,
       headers: { ...cors, "Content-Type": "application/json" },
     });
