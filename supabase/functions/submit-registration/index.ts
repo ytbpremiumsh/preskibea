@@ -147,49 +147,86 @@ serve(async (req) => {
 
     if (data.fast_track) {
       try {
-        // Fetch Mayar config
+        // Fetch configs
         const { data: settings } = await supabaseAdmin
           .from("site_settings")
           .select("key, value")
-          .in("key", ["mayar_config"]);
+          .in("key", ["payment_provider", "mayar_config", "aulaa_config"]);
         
-        const mayarConfig = settings?.find(s => s.key === "mayar_config")?.value as { api_key?: string };
-
+        const provider = settings?.find(s => s.key === "payment_provider")?.value as string || "mayar";
         const amount = 15000;
         const description = `Pendaftaran Fast Track — ${data.full_name}`;
         const origin = req.headers.get("origin") || req.headers.get("referer") || "";
         const redirectUrl = origin 
           ? `${origin.replace(/\/$/, "")}/pendaftaran/sukses?token=${token}&name=${encodeURIComponent(data.full_name)}&email=${encodeURIComponent(data.email)}&whatsapp=${encodeURIComponent(data.whatsapp)}&kind=${data.kind}`
-          : "https://prestasikita.com";
+          : "https://preskibea.lovable.app";
 
-        if (mayarConfig?.api_key) {
-          const expiredAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-          const mayarBody = {
-            name: data.full_name,
-            email: data.email,
-            mobile: normalizeNumber(data.whatsapp) || "62800000000",
-            redirectUrl,
-            description,
-            expiredAt,
-            items: [{ quantity: 1, rate: amount, description: "Biaya Pendaftaran Jalur Fast Track Batch #8" }],
-            extraData: { noCustomer: token, idProd: "FAST_TRACK_BATCH_8" }
-          };
+        if (provider === "mayar") {
+          const mayarConfig = settings?.find(s => s.key === "mayar_config")?.value as { api_key?: string };
+          if (mayarConfig?.api_key) {
+            const expiredAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+            const mayarBody = {
+              name: data.full_name,
+              email: data.email,
+              mobile: normalizeNumber(data.whatsapp) || "62800000000",
+              redirectUrl,
+              description,
+              expiredAt,
+              items: [{ quantity: 1, rate: amount, description: "Biaya Pendaftaran Jalur Fast Track Batch #8" }],
+              extraData: { noCustomer: token, idProd: "FAST_TRACK_BATCH_8" }
+            };
 
-          const mayarRes = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${mayarConfig.api_key}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(mayarBody),
-          });
+            const mayarRes = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${mayarConfig.api_key}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(mayarBody),
+            });
 
-          if (mayarRes.ok) {
-            const resJson = await mayarRes.json();
-            const link = resJson?.data?.link;
-            if (link) {
-              finalInvoiceUrl = link;
-              await supabaseAdmin.from("registrations").update({ payment_url: link, extra: { ...data.extra, mayar_invoice_id: resJson?.data?.id } }).eq("id", registrationId);
+            if (mayarRes.ok) {
+              const resJson = await mayarRes.json();
+              const link = resJson?.data?.link;
+              if (link) {
+                finalInvoiceUrl = link;
+                await supabaseAdmin.from("registrations").update({ 
+                  payment_url: link, 
+                  extra: { ...data.extra, mayar_invoice_id: resJson?.data?.id } 
+                }).eq("id", registrationId);
+              }
+            }
+          }
+        } else if (provider === "aulaa") {
+          const aulaaConfig = settings?.find(s => s.key === "aulaa_config")?.value as any;
+          if (aulaaConfig?.api_key) {
+            const aulaaBody = {
+              order_id: token,
+              amount: amount,
+              // We use flexible method (flexible) by leaving payment_method empty
+              // The user will choose on the Aulaa page
+            };
+
+            const aulaaRes = await fetch("https://api.aulaa.co/v1/payments", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${aulaaConfig.api_key}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(aulaaBody),
+            });
+
+            if (aulaaRes.ok) {
+              const resJson = await aulaaRes.json();
+              const paymentId = resJson?.id;
+              if (paymentId) {
+                const link = `https://payment.aulaa.co/pay/${paymentId}`;
+                finalInvoiceUrl = link;
+                await supabaseAdmin.from("registrations").update({ 
+                  payment_url: link, 
+                  extra: { ...data.extra, aulaa_payment_id: paymentId } 
+                }).eq("id", registrationId);
+              }
             }
           }
         }
