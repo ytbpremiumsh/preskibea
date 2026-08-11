@@ -808,7 +808,7 @@ function FieldRenderer({
   error?: string;
   fullWidth?: boolean;
 }) {
-  const cls = `w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${error ? "border-destructive" : "border-border focus:border-primary"}`;
+  const cls = `w-full rounded-xl border bg-background px-3.5 py-2 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${error ? "border-destructive" : "border-border focus:border-primary"}`;
   const ph = field.placeholder || defaultPlaceholder(field);
 
   return (
