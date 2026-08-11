@@ -129,6 +129,10 @@ function Index() {
               <div className="overflow-hidden rounded-3xl bg-secondary/50">
                 <img
                   src={heroImg}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src !== heroDefault) target.src = heroDefault;
+                  }}
                   alt="Ilustrasi pelajar Indonesia penerima Beasiswa Prestasi Kita"
                   width={1024}
                   height={1024}
