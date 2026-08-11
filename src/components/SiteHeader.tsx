@@ -57,12 +57,6 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden lg:flex items-center gap-2">
-          <Link
-            to="/cek-status"
-            className="rounded-full px-4 py-2.5 text-sm font-semibold text-foreground/80 transition hover:text-primary"
-          >
-            Cek Status
-          </Link>
           <button
             type="button"
             onClick={goToTimeline}
