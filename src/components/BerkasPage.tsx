@@ -30,6 +30,8 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "sktm", key: "sktm", label: "Surat Keterangan Tidak Mampu (SKTM)", required: true },
     { id: "house_photos", key: "house_photos", label: "Foto Rumah (Tampak Depan & Ruang Tamu)", required: true },
     { id: "utility_bill", key: "utility_bill", label: "Foto Pembayaran Listrik Terakhir ( Wajib )", required: true },
+    { id: "parent_income_val", key: "parent_income_val", label: "Penghasilan Orang Tua per Bulan", required: true },
+    { id: "dependents_count", key: "dependents_count", label: "Jumlah Tanggungan Keluarga", required: true },
   ],
   umum: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
