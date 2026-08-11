@@ -154,14 +154,14 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
     supabase
       .from("site_settings")
       .select("key, value")
-      .in("key", ["payment_provider", "mayar_fast_track_link"])
+      .in("key", ["mayar_fast_track_link"])
       .then(({ data }) => {
         if (!data) return;
         const mayarLink = data.find(s => s.key === "mayar_fast_track_link")?.value as string;
-        
         if (mayarLink) setActivePaymentLink(mayarLink);
       });
   }, []);
+
 
   useEffect(() => {
     supabase
