@@ -701,17 +701,32 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
               ✕
             </button>
           </div>
-          <div className="aspect-[4/5] sm:aspect-[16/9] w-full">
-            <iframe 
-              src={`https://payment.aulaa.co/pay/${aulaaPaymentId}`}
-              className="w-full h-full border-0"
-              title="Aulaa Payment"
-            />
-          </div>
-          <div className="p-4 bg-primary/5 text-center">
-            <p className="text-xs text-muted-foreground">
-              Jangan tutup halaman ini. Sistem akan otomatis mendeteksi jika pembayaran Anda sudah berhasil.
-            </p>
+          <div className="p-8 text-center space-y-6">
+            <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <UploadCloud size={32} />
+            </div>
+            <div>
+              <h4 className="text-xl font-bold text-foreground">Selesaikan Pembayaran</h4>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Klik tombol di bawah untuk membuka halaman pembayaran Aulaa.co. 
+                Sistem akan otomatis mendeteksi ketika pembayaran Anda berhasil.
+              </p>
+            </div>
+            
+            <a 
+              href={`https://payment.aulaa.co/pay/${aulaaPaymentId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-base font-bold text-primary-foreground shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5"
+            >
+              Bayar Sekarang
+            </a>
+
+            <div className="p-4 rounded-2xl bg-primary/5">
+              <p className="text-xs text-primary font-medium">
+                Jangan tutup halaman ini setelah membayar. Tunggu beberapa saat hingga sistem memverifikasi pembayaran Anda secara otomatis.
+              </p>
+            </div>
           </div>
         </div>
       </div>
