@@ -87,6 +87,18 @@ function CategoryCard({
           src={illustration} 
           alt={title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={(e) => {
+            const target = e.currentTarget;
+            const fallbacks: Record<string, string> = {
+              "Beasiswa Prestasi": ilustrasiPrestasi,
+              "Beasiswa Ekonomi": ilustrasiEkonomi,
+              "Beasiswa Umum": ilustrasiUmum,
+              "Beasiswa Yatim": ilustrasiYatim
+            };
+            if (fallbacks[title] && target.src !== fallbacks[title]) {
+              target.src = fallbacks[title];
+            }
+          }}
         />
       </div>
       <div className="p-6 flex flex-col flex-1">

@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap, Heart } from "lucide-react";
 import heroDefault from "@/assets/students-hero.png";
+import posterDefault from "@/assets/poster-beasiswa.png";
+import benefitDefault from "@/assets/benefit-prestasi-kita.png.asset.json";
 import { Countdown } from "@/components/Countdown";
 import { AboutMockup } from "@/components/AboutMockup";
 import { FAQSection } from "@/components/FAQSection";
@@ -37,8 +39,10 @@ const stats = [
 const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Beasiswa Umum", "Beasiswa Yatim", "Tanpa Biaya", "Seluruh Indonesia", "Sertifikat Resmi", "Merchandise", "Akses Magang"];
 
 function Index() {
-  const { heroImage } = useBranding();
+  const { heroImage, posterImage, benefitImage } = useBranding();
   const heroImg = heroImage || heroDefault;
+  const posterImg = posterImage || posterDefault;
+  const benefitImg = benefitImage || benefitDefault.url;
 
   return (
     <>
@@ -125,6 +129,10 @@ function Index() {
               <div className="overflow-hidden rounded-3xl bg-secondary/50">
                 <img
                   src={heroImg}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src !== heroDefault) target.src = heroDefault;
+                  }}
                   alt="Ilustrasi pelajar Indonesia penerima Beasiswa Prestasi Kita"
                   width={1024}
                   height={1024}
