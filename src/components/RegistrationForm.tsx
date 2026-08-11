@@ -873,12 +873,12 @@ function FileFieldRenderer({
 }) {
   return (
     <label className="block">
-      <span className="text-xs font-medium text-foreground/80">
+      <span className="text-[11px] font-semibold text-foreground/70 uppercase tracking-tight">
         {field.label}
-        {field.required && <span className="text-destructive"> *</span>}
+        {field.required && <span className="text-destructive ml-0.5">*</span>}
       </span>
       <div
-        className={`mt-1.5 flex items-center gap-3 rounded-xl border border-dashed bg-background px-3.5 py-3 hover:border-primary transition cursor-pointer ${error ? "border-destructive" : "border-border"}`}
+        className={`mt-1 flex items-center gap-3 rounded-xl border border-dashed bg-background px-3.5 py-2.5 hover:border-primary transition cursor-pointer ${error ? "border-destructive" : "border-border"}`}
       >
         <UploadCloud size={18} className="text-primary shrink-0" />
         <input
