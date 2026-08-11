@@ -68,7 +68,10 @@ export function BenefitsSection() {
             className="w-full h-auto object-contain"
             onError={(e) => {
               const target = e.currentTarget;
-              if (target.src !== benefitDefault.url) target.src = benefitDefault.url;
+              const fallbackUrl = new URL(benefitDefault.url, window.location.origin).href;
+              if (target.src.includes('undefined') || target.src.includes('null') || target.src !== fallbackUrl) {
+                target.src = benefitDefault.url;
+              }
             }}
           />
         </div>

@@ -95,8 +95,12 @@ function CategoryCard({
               "Beasiswa Umum": ilustrasiUmum,
               "Beasiswa Yatim": ilustrasiYatim
             };
-            if (fallbacks[title] && target.src !== fallbacks[title]) {
-              target.src = fallbacks[title];
+            const fallback = fallbacks[title];
+            if (fallback) {
+              const fallbackUrl = new URL(fallback, window.location.origin).href;
+              if (target.src.includes('undefined') || target.src.includes('null') || target.src !== fallbackUrl) {
+                target.src = fallback;
+              }
             }
           }}
         />

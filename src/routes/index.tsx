@@ -131,7 +131,9 @@ function Index() {
                   src={heroImg}
                   onError={(e) => {
                     const target = e.currentTarget;
-                    if (target.src !== heroDefault) target.src = heroDefault;
+                    if (target.src.includes('undefined') || target.src.includes('null') || (target.src !== new URL(heroDefault, window.location.origin).href)) {
+                      target.src = heroDefault;
+                    }
                   }}
                   alt="Ilustrasi pelajar Indonesia penerima Beasiswa Prestasi Kita"
                   width={1024}
