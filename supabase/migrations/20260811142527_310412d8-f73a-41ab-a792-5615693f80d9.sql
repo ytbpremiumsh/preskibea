@@ -1,0 +1,1 @@
+DELETE FROM public.site_settings WHERE key IN ('aulaa_config', 'payment_provider');
