@@ -52,8 +52,6 @@ function buildAdNode(slot: AdSlotConfig): HTMLElement | null {
   wrapper.setAttribute("aria-label", "Iklan");
 
   // Copy only non-script nodes (typically <ins class="adsbygoogle">).
-  // We'll trigger the push ourselves after AdSense is loaded — this avoids
-  // the user's inline `push({})` only running once for a single ad on the page.
   tpl.content.childNodes.forEach((node) => {
     if (node.nodeType === 1 && (node as HTMLElement).tagName === "SCRIPT") return;
     wrapper.appendChild(node.cloneNode(true));
@@ -76,17 +74,14 @@ function selectorFor(position: AdPosition): string | null {
     case "between_sections":
       return "section";
     case "before_timeline_button":
-      // Buttons (Link rendered as <a>) inside the public Timeline section
       return "#timeline a[class*='rounded-full'], #timeline button";
     case "before_each_button":
       return "button, a[role='button'], a[class*='rounded-full']";
     case "before_each_nav_link":
     case "after_each_nav_link":
-      // Any internal <a href="/..."> that leads to another page (excludes anchors, mail, tel, external)
       return "a[href]:not([href^='#']):not([href^='mailto']):not([href^='tel']):not([href^='http']):not([href^='javascript'])";
     case "before_each_card":
     case "after_each_card":
-      // Card-like containers (rounded + bg-card or shadow-card)
       return "div.rounded-3xl.bg-card, div.rounded-2xl.bg-card, div[class*='shadow-card']";
     default:
       return null;
@@ -115,16 +110,11 @@ function injectSlot(root: HTMLElement, slot: AdSlotConfig) {
   const candidates = Array.from(root.querySelectorAll<HTMLElement>(sel)).filter((el) => {
     if (el.closest(`[${MARK_ATTR}]`)) return false;
     if (isCardPos) {
-      // Skip nested cards / cards inside forms or asides — injecting here
-      // breaks form grids and creates messy spacing on mobile.
       if (el.closest("form, aside")) return false;
-      // Skip cards-in-cards (nested mini cards inside another card)
       const parentCard = el.parentElement?.closest(
         "div.rounded-3xl.bg-card, div.rounded-2xl.bg-card, div[class*='shadow-card']",
       );
       if (parentCard && parentCard !== el) return false;
-      // Skip when the card is a child of a grid/flex container — inserting
-      // a sibling div there becomes a grid/flex item and corrupts layout.
       const parent = el.parentElement;
       if (parent) {
         const cs = window.getComputedStyle(parent);
@@ -136,8 +126,6 @@ function injectSlot(root: HTMLElement, slot: AdSlotConfig) {
   let injected = 0;
   candidates.forEach((el, idx) => {
     if (injected >= maxPer) return;
-    // Start from the first match (0, N, 2N, ...) so pages with few
-    // candidates still get at least one ad instead of being skipped.
     if (idx % everyNth !== 0) return;
     const node = buildAdNode(slot);
     if (!node) return;
@@ -153,24 +141,30 @@ function pushAds(root: HTMLElement) {
     `[${MARK_ATTR}] ins.adsbygoogle:not([data-ad-pushed])`,
   );
   if (!insList.length) return;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const w = window as any;
   w.adsbygoogle = w.adsbygoogle || [];
   insList.forEach((ins) => {
     const tryPush = (attempt = 0) => {
       if (ins.getAttribute("data-ad-pushed") === "1") return;
-      // Ensure wrapper has measurable width — common on mobile where layout
-      // settles after route transition. Retry a few times before giving up.
-      const w0 = ins.offsetWidth;
-      if (w0 < 1) {
-        if (attempt < 8) {
-          window.setTimeout(() => tryPush(attempt + 1), 250);
+      
+      // Being extra careful: check visibility and measurable width
+      const rect = ins.getBoundingClientRect();
+      const style = window.getComputedStyle(ins);
+      const isVisible = style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0;
+
+      if (!isVisible) {
+        if (attempt < 10) {
+          window.setTimeout(() => tryPush(attempt + 1), 300);
         }
         return;
       }
+      
       try {
         ins.setAttribute("data-ad-pushed", "1");
-        w.adsbygoogle.push({});
+        // Only push if the API is ready
+        if (typeof w.adsbygoogle.push === 'function') {
+          w.adsbygoogle.push({});
+        }
       } catch (e) {
         ins.removeAttribute("data-ad-pushed");
         console.warn("[adsense] push failed", e);
@@ -197,8 +191,6 @@ export function AutoAdInjector() {
     );
 
     let cancelled = false;
-    let attempts = 0;
-    const maxAttempts = 40; // ~12s with 300ms interval
     const injectedPerSlot = new Map<string, number>();
     let observer: MutationObserver | null = null;
     let scheduled = false;
@@ -214,10 +206,6 @@ export function AutoAdInjector() {
         const cap = Math.max(1, Number(s.max_per_page) || 3);
         if (prev >= cap) return;
 
-        // Only remove this slot's previous wrappers if they haven't been
-        // pushed yet (no <ins> with data-ad-pushed / data-ad-status).
-        // This preserves already-rendered ads while still allowing
-        // re-injection for async-rendered targets.
         root
           .querySelectorAll<HTMLElement>(`[${SLOT_ATTR}="${s.id}"]`)
           .forEach((n) => {
@@ -234,8 +222,8 @@ export function AutoAdInjector() {
 
       if (injectedThisPass > 0) {
         prepareAdSenseIns(root, adsense.publisher_id);
-        window.setTimeout(() => pushAds(root), 60);
-        window.setTimeout(() => pushAds(root), 700);
+        window.setTimeout(() => pushAds(root), 100);
+        window.setTimeout(() => pushAds(root), 1000);
       }
     };
 
@@ -250,39 +238,16 @@ export function AutoAdInjector() {
 
     const tryInject = () => {
       if (cancelled) return;
-      attempts++;
       const root = document.querySelector("main") as HTMLElement | null;
       if (!root) {
-        if (attempts < maxAttempts) window.setTimeout(tryInject, 300);
+        window.setTimeout(tryInject, 500);
         return;
       }
-
-      // First attempt: clear leftover unpushed wrappers from previous route.
-      if (attempts === 1) {
-        root.querySelectorAll<HTMLElement>(`[${MARK_ATTR}]`).forEach((n) => {
-          const hasLiveAd = n.querySelector(
-            "ins.adsbygoogle[data-ad-pushed], ins.adsbygoogle[data-ad-status], ins.adsbygoogle iframe",
-          );
-          if (!hasLiveAd) n.remove();
-        });
-        injectedPerSlot.clear();
-      }
-
       runInjection();
-
-      const anyMissing = enabledSlots.some(
-        (s) => (injectedPerSlot.get(s.id) || 0) === 0,
-      );
-      if (anyMissing && attempts < maxAttempts) {
-        window.setTimeout(tryInject, 300);
-      }
     };
 
     const t = window.setTimeout(tryInject, 200);
 
-    // Observe DOM mutations so newly-rendered targets get ads.
-    // Ignore mutations inside ad wrappers (AdSense injects iframes which
-    // would otherwise cause an infinite re-inject loop).
     const mainEl = document.querySelector("main");
     if (mainEl && typeof MutationObserver !== "undefined") {
       observer = new MutationObserver((mutations) => {
@@ -293,7 +258,7 @@ export function AutoAdInjector() {
           if (tgt.closest?.("ins.adsbygoogle")) return false;
           return true;
         });
-        if (relevant) scheduleRun(250);
+        if (relevant) scheduleRun(300);
       });
       observer.observe(mainEl, { childList: true, subtree: true });
     }
