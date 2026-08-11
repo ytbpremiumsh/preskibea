@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Loader2, 
   Search, 
@@ -16,7 +17,9 @@ import {
   Webhook,
   Key,
   Copy,
-  Save
+  Save,
+  CreditCard,
+  Check
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -31,6 +34,7 @@ type Transaction = {
   status: string;
   payment_url: string;
   created_at: string;
+  provider: string | null;
   registrations: {
     full_name: string;
     email: string;
@@ -46,7 +50,13 @@ function AdminIntegrasi() {
   const [q, setQ] = useState("");
   
   // Settings
+  const [activeProvider, setActiveProvider] = useState<string>("mayar");
   const [mayarApiKey, setMayarApiKey] = useState("");
+  const [aulaaConfig, setAulaaConfig] = useState({
+    project_id: "",
+    api_key: "",
+    webhook_secret: ""
+  });
   const [webhookUrl, setWebhookUrl] = useState("");
 
   const load = async () => {
@@ -68,11 +78,17 @@ function AdminIntegrasi() {
     const { data: settings } = await supabase
       .from("site_settings")
       .select("key, value")
-      .in("key", ["mayar_config"]);
+      .in("key", ["mayar_config", "payment_provider", "aulaa_config"]);
     
     if (settings) {
+      const provider = settings.find(s => s.key === "payment_provider")?.value as string;
+      if (provider) setActiveProvider(provider);
+
       const mayar = settings.find(s => s.key === "mayar_config")?.value as { api_key?: string };
       if (mayar?.api_key) setMayarApiKey(mayar.api_key);
+
+      const aulaa = settings.find(s => s.key === "aulaa_config")?.value as any;
+      if (aulaa) setAulaaConfig(aulaa);
     }
 
     // Set Webhook URL
@@ -85,8 +101,9 @@ function AdminIntegrasi() {
     setSaving(true);
     try {
       await Promise.all([
-        supabase.from("site_settings").upsert({ key: "payment_provider", value: "mayar" }, { onConflict: "key" }),
-        supabase.from("site_settings").upsert({ key: "mayar_config", value: { api_key: mayarApiKey } }, { onConflict: "key" })
+        supabase.from("site_settings").upsert({ key: "payment_provider", value: activeProvider }, { onConflict: "key" }),
+        supabase.from("site_settings").upsert({ key: "mayar_config", value: { api_key: mayarApiKey } }, { onConflict: "key" }),
+        supabase.from("site_settings").upsert({ key: "aulaa_config", value: aulaaConfig }, { onConflict: "key" })
       ]);
       toast.success("Konfigurasi integrasi berhasil disimpan");
     } catch (err) {
@@ -123,7 +140,7 @@ function AdminIntegrasi() {
         <div>
           <h1 className="text-2xl font-bold text-foreground font-heading">Integrasi Pembayaran</h1>
           <p className="text-sm text-muted-foreground">
-            Monitoring pembayaran Fast Track melalui Mayar.
+            Monitoring pembayaran Fast Track melalui Mayar atau Aulaa.co.
           </p>
         </div>
         <Button variant="outline" onClick={load} disabled={loading}>
@@ -160,60 +177,110 @@ function AdminIntegrasi() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-primary">
               <Settings className="h-5 w-5" />
-              <h2 className="font-bold font-heading">Pengaturan Mayar</h2>
+              <h2 className="font-bold font-heading">Pengaturan Provider</h2>
             </div>
+            {saving && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
           </div>
           
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Key size={12} /> API Key Mayar
-              </Label>
-              <Input 
-                type="password"
-                value={mayarApiKey}
-                onChange={(e) => setMayarApiKey(e.target.value)}
-                placeholder="Mayar API Key"
-                className="bg-background"
-              />
-            </div>
+          <Tabs value={activeProvider} onValueChange={setActiveProvider} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="mayar">Mayar</TabsTrigger>
+              <TabsTrigger value="aulaa">Aulaa.co</TabsTrigger>
+            </TabsList>
 
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Webhook size={12} /> URL Webhook
-              </Label>
-              <div className="flex gap-2">
-                <Input 
-                  readOnly
-                  value={webhookUrl}
-                  className="bg-muted text-[10px] font-mono"
-                />
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  className="shrink-0"
-                  onClick={() => {
-                    navigator.clipboard.writeText(webhookUrl);
-                    toast.success("URL disalin ke clipboard");
-                  }}
-                >
-                  <Copy size={14} />
-                </Button>
+            <TabsContent value="mayar" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <Key size={12} /> API Key Mayar
+                  </Label>
+                  <Input 
+                    type="password"
+                    value={mayarApiKey}
+                    onChange={(e) => setMayarApiKey(e.target.value)}
+                    placeholder="Mayar API Key"
+                    className="bg-background"
+                  />
+                </div>
               </div>
-              <p className="text-[10px] text-muted-foreground italic">
-                * Masukkan URL ini ke Dashboard Mayar &gt; Settings &gt; Webhook
-              </p>
-            </div>
+            </TabsContent>
 
-            <Button 
-              className="w-full btn-block" 
-              onClick={saveConfig}
-              disabled={saving}
-            >
-              {saving ? <Loader2 size={16} className="animate-spin mr-2" /> : <Save size={16} className="mr-2" />}
-              Simpan Konfigurasi
-            </Button>
+            <TabsContent value="aulaa" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <Key size={12} /> Project ID
+                  </Label>
+                  <Input 
+                    value={aulaaConfig.project_id}
+                    onChange={(e) => setAulaaConfig(prev => ({ ...prev, project_id: e.target.value }))}
+                    placeholder="Aulaa Project ID"
+                    className="bg-background"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <Key size={12} /> API Key (Bearer)
+                  </Label>
+                  <Input 
+                    type="password"
+                    value={aulaaConfig.api_key}
+                    onChange={(e) => setAulaaConfig(prev => ({ ...prev, api_key: e.target.value }))}
+                    placeholder="pgw_id_..."
+                    className="bg-background"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <Key size={12} /> Webhook Secret
+                  </Label>
+                  <Input 
+                    type="password"
+                    value={aulaaConfig.webhook_secret}
+                    onChange={(e) => setAulaaConfig(prev => ({ ...prev, webhook_secret: e.target.value }))}
+                    placeholder="Webhook Secret"
+                    className="bg-background"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <div className="space-y-2 border-t pt-4 mt-4">
+            <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Webhook size={12} /> URL Webhook
+            </Label>
+            <div className="flex gap-2">
+              <Input 
+                readOnly
+                value={webhookUrl}
+                className="bg-muted text-[10px] font-mono"
+              />
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="shrink-0"
+                onClick={() => {
+                  navigator.clipboard.writeText(webhookUrl);
+                  toast.success("URL disalin ke clipboard");
+                }}
+              >
+                <Copy size={14} />
+              </Button>
+            </div>
+            <p className="text-[10px] text-muted-foreground italic">
+              * Masukkan URL ini ke Dashboard Provider &gt; Settings &gt; Webhook
+            </p>
           </div>
+
+          <Button 
+            className="w-full btn-block" 
+            onClick={saveConfig}
+            disabled={saving}
+          >
+            {saving ? <Loader2 size={16} className="animate-spin mr-2" /> : <Save size={16} className="mr-2" />}
+            Simpan Konfigurasi
+          </Button>
         </Card>
       </div>
 
@@ -233,6 +300,7 @@ function AdminIntegrasi() {
                 <tr>
                   <th className="px-4 py-3">Peserta</th>
                   <th className="px-4 py-3">Token</th>
+                  <th className="px-4 py-3">Provider</th>
                   <th className="px-4 py-3">Nominal</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Tanggal</th>
@@ -247,6 +315,11 @@ function AdminIntegrasi() {
                       <div className="text-xs text-muted-foreground">{t.registrations?.email}</div>
                     </td>
                     <td className="px-4 py-3 font-mono text-xs">{t.registrations?.token}</td>
+                    <td className="px-4 py-3 uppercase text-[10px] font-bold">
+                      <Badge variant="secondary" className="bg-muted text-muted-foreground">
+                        {t.provider || 'mayar'}
+                      </Badge>
+                    </td>
                     <td className="px-4 py-3 font-semibold">
                       {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(t.amount)}
                     </td>
