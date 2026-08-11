@@ -149,7 +149,11 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
   const [files, setFiles] = useState<Record<string, File | null>>({});
   const [registrationType, setRegistrationType] = useState<"reguler" | "fast_track">("reguler");
   const [activePaymentLink, setActivePaymentLink] = useState<string | null>(null);
+  const [aulaaPaymentId, setAulaaPaymentId] = useState<string | null>(null);
+  const [showAulaaIframe, setShowAulaaIframe] = useState(false);
   const [fastTrackFee, setFastTrackFee] = useState<number>(15000);
+  const [submittedToken, setSubmittedToken] = useState<string | null>(null);
+  const [submittedData, setSubmittedData] = useState<any>(null);
 
   useEffect(() => {
     supabase
@@ -332,7 +336,12 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       const res = await submitRegistrationFn({ data: payload as any });
       const token = res?.token;
       const invoiceUrl = (res as any)?.invoice_url;
-      console.log("Registration submitted, token:", token, "invoice:", invoiceUrl);
+      const paymentId = (res as any)?.aulaa_payment_id || (payload.extra as any)?.aulaa_payment_id;
+      
+      setSubmittedToken(token);
+      setSubmittedData(payload);
+      
+      console.log("Registration submitted, token:", token, "invoice:", invoiceUrl, "paymentId:", paymentId);
 
       // Fire-and-forget WA notification (include token)
       try {
@@ -380,8 +389,15 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
 
       toast.success("Pendaftaran berhasil dikirim!");
       
-      // If fast track, redirect to payment gateway immediately
+      // If fast track, handle payment
       if (registrationType === "fast_track") {
+        if (paymentId) {
+          // Aulaa with Iframe
+          setAulaaPaymentId(paymentId);
+          setShowAulaaIframe(true);
+          return;
+        }
+
         const finalRedirectUrl = invoiceUrl || activePaymentLink;
         if (finalRedirectUrl) {
           console.log("Redirecting to payment gateway:", finalRedirectUrl);
@@ -406,30 +422,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       setValues({});
       setFiles({});
       
-      try {
-        navigate({
-          to: "/pendaftaran/sukses",
-          search: {
-            name: String(payload.full_name ?? ""),
-            email: String(payload.email ?? ""),
-            whatsapp: String(payload.whatsapp ?? ""),
-            kind,
-            token,
-          },
-        });
-      } catch (navErr) {
-        console.error("navigate error", navErr);
-        if (typeof window !== "undefined") {
-          const params = new URLSearchParams({
-            name: String(payload.full_name ?? ""),
-            email: String(payload.email ?? ""),
-            whatsapp: String(payload.whatsapp ?? ""),
-            kind,
-            token,
-          });
-          window.location.href = `/pendaftaran/sukses?${params.toString()}`;
-        }
-      }
+      handleSuccessRedirect(payload, token);
     } catch (err) {
       console.error("registration submit error", err);
       const msg = serializeError(err);
@@ -438,6 +431,55 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       setSubmitting(false);
     }
   };
+
+  const handleSuccessRedirect = (payload: any, token: string) => {
+    try {
+      navigate({
+        to: "/pendaftaran/sukses",
+        search: {
+          name: String(payload.full_name ?? ""),
+          email: String(payload.email ?? ""),
+          whatsapp: String(payload.whatsapp ?? ""),
+          kind,
+          token,
+        },
+      });
+    } catch (navErr) {
+      console.error("navigate error", navErr);
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams({
+          name: String(payload.full_name ?? ""),
+          email: String(payload.email ?? ""),
+          whatsapp: String(payload.whatsapp ?? ""),
+          kind,
+          token,
+        });
+        window.location.href = `/pendaftaran/sukses?${params.toString()}`;
+      }
+    }
+  };
+
+  // Polling for Aulaa payment status
+  useEffect(() => {
+    if (!showAulaaIframe || !submittedToken) return;
+
+    const interval = setInterval(async () => {
+      const { data, error } = await supabase
+        .from("registrations")
+        .select("payment_status")
+        .eq("token", submittedToken)
+        .maybeSingle();
+
+      if (data?.payment_status === "paid") {
+        clearInterval(interval);
+        toast.success("Pembayaran Terverifikasi!");
+        setShowAulaaIframe(false);
+        handleSuccessRedirect(submittedData, submittedToken);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [showAulaaIframe, submittedToken, submittedData]);
 
   const grouped = useMemo(() => {
     const fileFields = schema.fields.filter((f) => f.type === "file");
@@ -655,6 +697,34 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
       </form>
       <AdSlot placement="form_bottom" />
     </section>
+
+    {showAulaaIframe && aulaaPaymentId && (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="w-full max-w-2xl bg-white rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+          <div className="p-4 border-b flex items-center justify-between">
+            <h3 className="font-bold text-foreground">Pembayaran Fast Track</h3>
+            <button 
+              onClick={() => setShowAulaaIframe(false)}
+              className="p-2 hover:bg-muted rounded-full transition"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="aspect-[4/5] sm:aspect-[16/9] w-full">
+            <iframe 
+              src={`https://payment.aulaa.co/pay/${aulaaPaymentId}`}
+              className="w-full h-full border-0"
+              title="Aulaa Payment"
+            />
+          </div>
+          <div className="p-4 bg-primary/5 text-center">
+            <p className="text-xs text-muted-foreground">
+              Jangan tutup halaman ini. Sistem akan otomatis mendeteksi jika pembayaran Anda sudah berhasil.
+            </p>
+          </div>
+        </div>
+      </div>
+    )}
     </>
   );
 }
