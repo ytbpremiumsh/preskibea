@@ -16,7 +16,7 @@ const persyaratan = [
 
 
 
-const FALLBACK_BENEFIT_IMAGE = "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/branding/benefit-prestasi-kita-batch-8.png";
+const FALLBACK_BENEFIT_IMAGE = "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/branding/benefit-prestasi-kita-batch-8.png?t=1723334400";
 
 const BENEFIT_IMAGE_URL = benefitAsset.url;
 
