@@ -473,11 +473,28 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
   }, [showAulaaIframe, submittedToken, submittedData]);
 
   const grouped = useMemo(() => {
-    const fileFields = schema.fields.filter((f) => f.type === "file");
-    const requiredDataFields = schema.fields.filter((f) => f.type !== "file" && f.required);
-    const optionalDataFields = schema.fields.filter((f) => f.type !== "file" && !f.required);
+    const level = values["education_level"] ?? "";
+    const decorate = (f: FormField): FormField => {
+      if (f.name === "education_level") {
+        return { ...f, type: "select", options: EDUCATION_LEVELS };
+      }
+      if (f.name === "grade") {
+        return {
+          ...f,
+          type: "select",
+          label: level === "Mahasiswa" ? "Semester" : "Kelas / Semester",
+          options: GRADE_OPTIONS[level] ?? [],
+        };
+      }
+      return f;
+    };
+    const fields = schema.fields.map(decorate);
+    const fileFields = fields.filter((f) => f.type === "file");
+    const requiredDataFields = fields.filter((f) => f.type !== "file" && f.required);
+    const optionalDataFields = fields.filter((f) => f.type !== "file" && !f.required);
     return { requiredDataFields, optionalDataFields, fileFields };
-  }, [schema]);
+  }, [schema, values]);
+
 
   if (loading) {
     return (
