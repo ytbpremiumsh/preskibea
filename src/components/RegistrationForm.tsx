@@ -813,11 +813,11 @@ function FieldRenderer({
 
   return (
     <label className={`block ${fullWidth ? "sm:col-span-2" : ""}`}>
-      <span className="text-xs font-medium text-foreground/80">
+      <span className="text-[11px] font-semibold text-foreground/70 uppercase tracking-tight">
         {field.label}
-        {field.required && <span className="text-destructive"> *</span>}
+        {field.required && <span className="text-destructive ml-0.5">*</span>}
       </span>
-      <div className="mt-1.5">
+      <div className="mt-1">
         {field.type === "textarea" ? (
           <textarea
             rows={3}
