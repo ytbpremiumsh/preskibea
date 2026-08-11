@@ -638,9 +638,24 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
             </div>
           </Card>
 
-          <Card title="Formulir Pendaftaran">
-            <div className="grid sm:grid-cols-2 gap-4">
-              {grouped.requiredDataFields.map((f) => (
+          <Card title="Informasi Pribadi">
+            <div className="grid sm:grid-cols-2 gap-x-4 gap-y-3">
+              {grouped.requiredDataFields.slice(0, 5).map((f) => (
+                <FieldRenderer
+                  key={f.id}
+                  field={f}
+                  value={values[f.name] ?? ""}
+                  error={errors[f.name]}
+                  onChange={(v) => setVal(f.name, v)}
+                  fullWidth={f.type === "textarea" || f.name === "address" || f.name === "email"}
+                />
+              ))}
+            </div>
+          </Card>
+
+          <Card title="Informasi Pendidikan">
+            <div className="grid sm:grid-cols-2 gap-x-4 gap-y-3">
+              {grouped.requiredDataFields.slice(5).map((f) => (
                 <FieldRenderer
                   key={f.id}
                   field={f}
