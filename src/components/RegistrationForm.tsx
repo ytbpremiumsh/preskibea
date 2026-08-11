@@ -211,6 +211,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
             const n = (f.name || "").toLowerCase();
             const l = (f.label || "").toLowerCase();
             if (n.includes("prestasi") || l.includes("prestasi utama")) return false;
+            if (kind === "ekonomi" && (n === "parent_income" || n === "dependents")) return false;
             return true;
           });
           if (fields.length > 0) setSchema({ ...raw, fields });
