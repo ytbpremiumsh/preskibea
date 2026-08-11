@@ -2,9 +2,9 @@ import { Quote, Trophy } from "lucide-react";
 import { useBranding } from "@/hooks/use-branding";
 
 const FALLBACK_ALUMNI_IMAGES = [
-  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/alumni/peraih-batch7-1.png",
-  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/alumni/peraih-batch7-2.png",
-  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/alumni/peraih-batch7-3.png",
+  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/alumni/peraih-batch7-1.png?t=1723334400123",
+  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/alumni/peraih-batch7-2.png?t=1723334400123",
+  "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/alumni/peraih-batch7-3.png?t=1723334400123",
 ];
 
 const alumniBase = [
