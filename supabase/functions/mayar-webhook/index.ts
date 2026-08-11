@@ -1,10 +1,12 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { crypto } from "https://deno.land/std@0.224.0/crypto/mod.ts";
+import { encodeHex } from "https://deno.land/std@0.224.0/encoding/hex.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-mayar-signature",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-mayar-signature, x-webhook-signature",
 };
 
 const supabaseAdmin = createClient(
@@ -13,6 +15,27 @@ const supabaseAdmin = createClient(
 );
 
 const SECOND_APP_WEBHOOK_URL = "https://tvingnpdeueufagssdte.supabase.co/functions/v1/mayar-webhook";
+
+async function verifyAulaaSignature(rawBody: string, signature: string, secret: string): Promise<boolean> {
+  if (!signature || !secret) return false;
+  
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  
+  const sigBuffer = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(rawBody)
+  );
+  
+  const expectedSignature = encodeHex(new Uint8Array(sigBuffer));
+  return signature === expectedSignature;
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
@@ -40,6 +63,7 @@ serve(async (req) => {
         headers: {
           "Content-Type": "application/json",
           "X-Mayar-Signature": req.headers.get("X-Mayar-Signature") || "",
+          "X-Webhook-Signature": req.headers.get("X-Webhook-Signature") || "",
         },
         body: rawBody,
       }).catch(err => console.error("Error forwarding to second app:", err.message));
@@ -48,15 +72,56 @@ serve(async (req) => {
     }
     // ------------------------
 
-    // Determine and extract relevant info (Mayar focused)
-    let email = (body?.customer?.email || body?.email || body?.data?.customer?.email || body?.data?.email)?.trim();
-    let status = body?.status || body?.data?.status; 
-    let tokenFromExtra = body?.extraData?.noCustomer || body?.data?.extraData?.noCustomer;
-    let paymentAmount = body?.amount || body?.data?.amount;
-    let externalId = body?.id || body?.data?.id;
+    // Identify Provider
+    const aulaaSignature = req.headers.get("x-webhook-signature");
+    let provider = "mayar";
+    let isSignatureValid = true; // Skip Mayar signature check for now if not needed
+
+    if (aulaaSignature) {
+      provider = "aulaa";
+      // Verify Aulaa Signature
+      const { data: settings } = await supabaseAdmin
+        .from("site_settings")
+        .select("value")
+        .eq("key", "aulaa_config")
+        .maybeSingle();
+      
+      const secret = (settings?.value as any)?.webhook_secret;
+      if (secret) {
+        isSignatureValid = await verifyAulaaSignature(rawBody, aulaaSignature, secret);
+      } else {
+        console.warn("Aulaa webhook secret not configured, skipping verification.");
+      }
+    }
+
+    if (!isSignatureValid) {
+      console.error("Invalid webhook signature from", provider);
+      return new Response(JSON.stringify({ error: "Invalid signature" }), {
+        status: 401,
+        headers: { ...cors, "Content-Type": "application/json" },
+      });
+    }
+
+    // Determine and extract relevant info
+    let email, status, tokenFromExtra, paymentAmount, externalId;
+
+    if (provider === "mayar") {
+      email = (body?.customer?.email || body?.email || body?.data?.customer?.email || body?.data?.email)?.trim();
+      status = body?.status || body?.data?.status; 
+      tokenFromExtra = body?.extraData?.noCustomer || body?.data?.extraData?.noCustomer;
+      paymentAmount = body?.amount || body?.data?.amount;
+      externalId = body?.id || body?.data?.id;
+    } else {
+      // Aulaa Payload
+      email = body?.email; // Optional in Aulaa webhook
+      status = body?.status;
+      tokenFromExtra = body?.order_id; // For Aulaa, order_id is our token
+      paymentAmount = body?.amount;
+      externalId = body?.id;
+    }
 
     if (status === "success" || status === "paid" || body?.event === "payment.success" || body?.data?.event === "payment.success") {
-       console.log(`Processing successful payment, token: ${tokenFromExtra}`);
+       console.log(`Processing successful payment (${provider}), token: ${tokenFromExtra}`);
        
        // Search for the latest pending fast_track registration
        let q = supabaseAdmin
@@ -92,7 +157,7 @@ serve(async (req) => {
              amount: Number(paymentAmount) || 0,
              status: status,
              external_id: externalId,
-             provider: "mayar",
+             provider: provider,
            });
          } catch (payErr) {
            console.error("Failed to record payment:", payErr.message);
@@ -128,7 +193,7 @@ serve(async (req) => {
        }
     }
 
-    return new Response(JSON.stringify({ received: true, provider: "mayar" }), {
+    return new Response(JSON.stringify({ received: true, provider }), {
       status: 200,
       headers: { ...cors, "Content-Type": "application/json" },
     });
