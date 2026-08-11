@@ -736,12 +736,6 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
             </p>
           </div>
         </div>
-
-        <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
-          <div className="w-full h-[400px] flex items-center justify-center bg-muted rounded-2xl border-2 border-dashed border-border text-muted-foreground text-sm font-medium">
-            IKLAN DISINI
-          </div>
-        </aside>
       </form>
       <AdSlot placement="form_bottom" />
     </section>
