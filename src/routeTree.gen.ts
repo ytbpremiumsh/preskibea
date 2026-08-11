@@ -9,109 +9,64 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TentangRouteImport } from './routes/tentang'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as EsaiRouteImport } from './routes/esai'
-import { Route as DaftarRouteImport } from './routes/daftar'
-import { Route as CekStatusRouteImport } from './routes/cek-status'
-import { Route as BeasiswaYatimRouteImport } from './routes/beasiswa-yatim'
-import { Route as BeasiswaUmumRouteImport } from './routes/beasiswa-umum'
-import { Route as BeasiswaPrestasiRouteImport } from './routes/beasiswa-prestasi'
-import { Route as BeasiswaEkonomiRouteImport } from './routes/beasiswa-ekonomi'
-import { Route as BagikanPosterRouteImport } from './routes/bagikan-poster'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BerkasIndexRouteImport } from './routes/berkas.index'
-import { Route as ArtikelIndexRouteImport } from './routes/artikel.index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as BagikanPosterRouteImport } from './routes/bagikan-poster'
+import { Route as BeasiswaEkonomiRouteImport } from './routes/beasiswa-ekonomi'
+import { Route as BeasiswaPrestasiRouteImport } from './routes/beasiswa-prestasi'
+import { Route as BeasiswaUmumRouteImport } from './routes/beasiswa-umum'
+import { Route as BeasiswaYatimRouteImport } from './routes/beasiswa-yatim'
+import { Route as CekStatusRouteImport } from './routes/cek-status'
+import { Route as DaftarRouteImport } from './routes/daftar'
+import { Route as EsaiRouteImport } from './routes/esai'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as PendaftaranYatimRouteImport } from './routes/pendaftaran.yatim'
-import { Route as PendaftaranUmumRouteImport } from './routes/pendaftaran.umum'
-import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran.sukses'
-import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
-import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
-import { Route as BerkasYatimRouteImport } from './routes/berkas.yatim'
-import { Route as BerkasUmumRouteImport } from './routes/berkas.umum'
-import { Route as BerkasTerkirimRouteImport } from './routes/berkas.terkirim'
-import { Route as BerkasPrestasiRouteImport } from './routes/berkas.prestasi'
-import { Route as BerkasEkonomiRouteImport } from './routes/berkas.ekonomi'
-import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
-import { Route as AdminWhatsappRouteImport } from './routes/admin.whatsapp'
-import { Route as AdminSistemUpdateRouteImport } from './routes/admin.sistem-update'
-import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
-import { Route as AdminPendaftarRouteImport } from './routes/admin.pendaftar'
-import { Route as AdminMediaRouteImport } from './routes/admin.media'
-import { Route as AdminMaintenanceRouteImport } from './routes/admin.maintenance'
-import { Route as AdminKodeKustomRouteImport } from './routes/admin.kode-kustom'
-import { Route as AdminKeamananRouteImport } from './routes/admin.keamanan'
-import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
-import { Route as AdminIntegrasiRouteImport } from './routes/admin.integrasi'
-import { Route as AdminIklanKustomRouteImport } from './routes/admin.iklan-kustom'
-import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
-import { Route as AdminEmailTemplateRouteImport } from './routes/admin.email-template'
-import { Route as AdminBrandingRouteImport } from './routes/admin.branding'
-import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
-import { Route as AdminBagikanPosterRouteImport } from './routes/admin.bagikan-poster'
-import { Route as AdminArtikelRouteImport } from './routes/admin.artikel'
-import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
-import { Route as AdminAiBalasanRouteImport } from './routes/admin.ai-balasan'
 import { Route as AdminAdsenseRouteImport } from './routes/admin.adsense'
-import { Route as BerkasYatimIndexRouteImport } from './routes/berkas.yatim.index'
-import { Route as BerkasUmumIndexRouteImport } from './routes/berkas.umum.index'
-import { Route as BerkasPrestasiIndexRouteImport } from './routes/berkas.prestasi.index'
+import { Route as AdminAiBalasanRouteImport } from './routes/admin.ai-balasan'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as AdminArtikelRouteImport } from './routes/admin.artikel'
+import { Route as AdminBagikanPosterRouteImport } from './routes/admin.bagikan-poster'
+import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
+import { Route as AdminBrandingRouteImport } from './routes/admin.branding'
+import { Route as AdminEmailTemplateRouteImport } from './routes/admin.email-template'
+import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
+import { Route as AdminIklanKustomRouteImport } from './routes/admin.iklan-kustom'
+import { Route as AdminIntegrasiRouteImport } from './routes/admin.integrasi'
+import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
+import { Route as AdminKeamananRouteImport } from './routes/admin.keamanan'
+import { Route as AdminKodeKustomRouteImport } from './routes/admin.kode-kustom'
+import { Route as AdminMaintenanceRouteImport } from './routes/admin.maintenance'
+import { Route as AdminMediaRouteImport } from './routes/admin.media'
+import { Route as AdminPendaftarRouteImport } from './routes/admin.pendaftar'
+import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
+import { Route as AdminSistemUpdateRouteImport } from './routes/admin.sistem-update'
+import { Route as AdminWhatsappRouteImport } from './routes/admin.whatsapp'
+import { Route as ArtikelIndexRouteImport } from './routes/artikel.index'
+import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
+import { Route as BerkasIndexRouteImport } from './routes/berkas.index'
+import { Route as BerkasEkonomiRouteImport } from './routes/berkas.ekonomi'
+import { Route as BerkasPrestasiRouteImport } from './routes/berkas.prestasi'
+import { Route as BerkasTerkirimRouteImport } from './routes/berkas.terkirim'
+import { Route as BerkasUmumRouteImport } from './routes/berkas.umum'
+import { Route as BerkasYatimRouteImport } from './routes/berkas.yatim'
+import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
+import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
+import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran.sukses'
+import { Route as PendaftaranUmumRouteImport } from './routes/pendaftaran.umum'
+import { Route as PendaftaranYatimRouteImport } from './routes/pendaftaran.yatim'
 import { Route as BerkasEkonomiIndexRouteImport } from './routes/berkas.ekonomi.index'
-import { Route as BerkasYatimUploadRouteImport } from './routes/berkas.yatim.upload'
-import { Route as BerkasUmumUploadRouteImport } from './routes/berkas.umum.upload'
-import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
 import { Route as BerkasEkonomiUploadRouteImport } from './routes/berkas.ekonomi.upload'
+import { Route as BerkasPrestasiIndexRouteImport } from './routes/berkas.prestasi.index'
+import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
+import { Route as BerkasUmumIndexRouteImport } from './routes/berkas.umum.index'
+import { Route as BerkasUmumUploadRouteImport } from './routes/berkas.umum.upload'
+import { Route as BerkasYatimIndexRouteImport } from './routes/berkas.yatim.index'
+import { Route as BerkasYatimUploadRouteImport } from './routes/berkas.yatim.upload'
 
-const TentangRoute = TentangRouteImport.update({
-  id: '/tentang',
-  path: '/tentang',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EsaiRoute = EsaiRouteImport.update({
-  id: '/esai',
-  path: '/esai',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DaftarRoute = DaftarRouteImport.update({
-  id: '/daftar',
-  path: '/daftar',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CekStatusRoute = CekStatusRouteImport.update({
-  id: '/cek-status',
-  path: '/cek-status',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BeasiswaYatimRoute = BeasiswaYatimRouteImport.update({
-  id: '/beasiswa-yatim',
-  path: '/beasiswa-yatim',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BeasiswaUmumRoute = BeasiswaUmumRouteImport.update({
-  id: '/beasiswa-umum',
-  path: '/beasiswa-umum',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BeasiswaPrestasiRoute = BeasiswaPrestasiRouteImport.update({
-  id: '/beasiswa-prestasi',
-  path: '/beasiswa-prestasi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BeasiswaEkonomiRoute = BeasiswaEkonomiRouteImport.update({
-  id: '/beasiswa-ekonomi',
-  path: '/beasiswa-ekonomi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BagikanPosterRoute = BagikanPosterRouteImport.update({
-  id: '/bagikan-poster',
-  path: '/bagikan-poster',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -119,19 +74,54 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const BagikanPosterRoute = BagikanPosterRouteImport.update({
+  id: '/bagikan-poster',
+  path: '/bagikan-poster',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BerkasIndexRoute = BerkasIndexRouteImport.update({
-  id: '/berkas/',
-  path: '/berkas/',
+const BeasiswaEkonomiRoute = BeasiswaEkonomiRouteImport.update({
+  id: '/beasiswa-ekonomi',
+  path: '/beasiswa-ekonomi',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ArtikelIndexRoute = ArtikelIndexRouteImport.update({
-  id: '/artikel/',
-  path: '/artikel/',
+const BeasiswaPrestasiRoute = BeasiswaPrestasiRouteImport.update({
+  id: '/beasiswa-prestasi',
+  path: '/beasiswa-prestasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BeasiswaUmumRoute = BeasiswaUmumRouteImport.update({
+  id: '/beasiswa-umum',
+  path: '/beasiswa-umum',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BeasiswaYatimRoute = BeasiswaYatimRouteImport.update({
+  id: '/beasiswa-yatim',
+  path: '/beasiswa-yatim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CekStatusRoute = CekStatusRouteImport.update({
+  id: '/cek-status',
+  path: '/cek-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DaftarRoute = DaftarRouteImport.update({
+  id: '/daftar',
+  path: '/daftar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsaiRoute = EsaiRouteImport.update({
+  id: '/esai',
+  path: '/esai',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TentangRoute = TentangRouteImport.update({
+  id: '/tentang',
+  path: '/tentang',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -139,149 +129,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
-const PendaftaranYatimRoute = PendaftaranYatimRouteImport.update({
-  id: '/pendaftaran/yatim',
-  path: '/pendaftaran/yatim',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PendaftaranUmumRoute = PendaftaranUmumRouteImport.update({
-  id: '/pendaftaran/umum',
-  path: '/pendaftaran/umum',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PendaftaranSuksesRoute = PendaftaranSuksesRouteImport.update({
-  id: '/pendaftaran/sukses',
-  path: '/pendaftaran/sukses',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PendaftaranPrestasiRoute = PendaftaranPrestasiRouteImport.update({
-  id: '/pendaftaran/prestasi',
-  path: '/pendaftaran/prestasi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PendaftaranEkonomiRoute = PendaftaranEkonomiRouteImport.update({
-  id: '/pendaftaran/ekonomi',
-  path: '/pendaftaran/ekonomi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BerkasYatimRoute = BerkasYatimRouteImport.update({
-  id: '/berkas/yatim',
-  path: '/berkas/yatim',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BerkasUmumRoute = BerkasUmumRouteImport.update({
-  id: '/berkas/umum',
-  path: '/berkas/umum',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BerkasTerkirimRoute = BerkasTerkirimRouteImport.update({
-  id: '/berkas/terkirim',
-  path: '/berkas/terkirim',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BerkasPrestasiRoute = BerkasPrestasiRouteImport.update({
-  id: '/berkas/prestasi',
-  path: '/berkas/prestasi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BerkasEkonomiRoute = BerkasEkonomiRouteImport.update({
-  id: '/berkas/ekonomi',
-  path: '/berkas/ekonomi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
-  id: '/artikel/$slug',
-  path: '/artikel/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminWhatsappRoute = AdminWhatsappRouteImport.update({
-  id: '/whatsapp',
-  path: '/whatsapp',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSistemUpdateRoute = AdminSistemUpdateRouteImport.update({
-  id: '/sistem-update',
-  path: '/sistem-update',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPengaturanRoute = AdminPengaturanRouteImport.update({
-  id: '/pengaturan',
-  path: '/pengaturan',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPendaftarRoute = AdminPendaftarRouteImport.update({
-  id: '/pendaftar',
-  path: '/pendaftar',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminMediaRoute = AdminMediaRouteImport.update({
-  id: '/media',
-  path: '/media',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminMaintenanceRoute = AdminMaintenanceRouteImport.update({
-  id: '/maintenance',
-  path: '/maintenance',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminKodeKustomRoute = AdminKodeKustomRouteImport.update({
-  id: '/kode-kustom',
-  path: '/kode-kustom',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminKeamananRoute = AdminKeamananRouteImport.update({
-  id: '/keamanan',
-  path: '/keamanan',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminKandidatRoute = AdminKandidatRouteImport.update({
-  id: '/kandidat',
-  path: '/kandidat',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminIntegrasiRoute = AdminIntegrasiRouteImport.update({
-  id: '/integrasi',
-  path: '/integrasi',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminIklanKustomRoute = AdminIklanKustomRouteImport.update({
-  id: '/iklan-kustom',
-  path: '/iklan-kustom',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminFormulirRoute = AdminFormulirRouteImport.update({
-  id: '/formulir',
-  path: '/formulir',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminEmailTemplateRoute = AdminEmailTemplateRouteImport.update({
-  id: '/email-template',
-  path: '/email-template',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminBrandingRoute = AdminBrandingRouteImport.update({
-  id: '/branding',
-  path: '/branding',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminBerkasRoute = AdminBerkasRouteImport.update({
-  id: '/berkas',
-  path: '/berkas',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminBagikanPosterRoute = AdminBagikanPosterRouteImport.update({
-  id: '/bagikan-poster',
-  path: '/bagikan-poster',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminArtikelRoute = AdminArtikelRouteImport.update({
-  id: '/artikel',
-  path: '/artikel',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
+const AdminAdsenseRoute = AdminAdsenseRouteImport.update({
+  id: '/adsense',
+  path: '/adsense',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminAiBalasanRoute = AdminAiBalasanRouteImport.update({
@@ -289,50 +139,200 @@ const AdminAiBalasanRoute = AdminAiBalasanRouteImport.update({
   path: '/ai-balasan',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminAdsenseRoute = AdminAdsenseRouteImport.update({
-  id: '/adsense',
-  path: '/adsense',
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => AdminRoute,
 } as any)
-const BerkasYatimIndexRoute = BerkasYatimIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => BerkasYatimRoute,
+const AdminArtikelRoute = AdminArtikelRouteImport.update({
+  id: '/artikel',
+  path: '/artikel',
+  getParentRoute: () => AdminRoute,
 } as any)
-const BerkasUmumIndexRoute = BerkasUmumIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => BerkasUmumRoute,
+const AdminBagikanPosterRoute = AdminBagikanPosterRouteImport.update({
+  id: '/bagikan-poster',
+  path: '/bagikan-poster',
+  getParentRoute: () => AdminRoute,
 } as any)
-const BerkasPrestasiIndexRoute = BerkasPrestasiIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => BerkasPrestasiRoute,
+const AdminBerkasRoute = AdminBerkasRouteImport.update({
+  id: '/berkas',
+  path: '/berkas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBrandingRoute = AdminBrandingRouteImport.update({
+  id: '/branding',
+  path: '/branding',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEmailTemplateRoute = AdminEmailTemplateRouteImport.update({
+  id: '/email-template',
+  path: '/email-template',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFormulirRoute = AdminFormulirRouteImport.update({
+  id: '/formulir',
+  path: '/formulir',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminIklanKustomRoute = AdminIklanKustomRouteImport.update({
+  id: '/iklan-kustom',
+  path: '/iklan-kustom',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminIntegrasiRoute = AdminIntegrasiRouteImport.update({
+  id: '/integrasi',
+  path: '/integrasi',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminKandidatRoute = AdminKandidatRouteImport.update({
+  id: '/kandidat',
+  path: '/kandidat',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminKeamananRoute = AdminKeamananRouteImport.update({
+  id: '/keamanan',
+  path: '/keamanan',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminKodeKustomRoute = AdminKodeKustomRouteImport.update({
+  id: '/kode-kustom',
+  path: '/kode-kustom',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMaintenanceRoute = AdminMaintenanceRouteImport.update({
+  id: '/maintenance',
+  path: '/maintenance',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMediaRoute = AdminMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPendaftarRoute = AdminPendaftarRouteImport.update({
+  id: '/pendaftar',
+  path: '/pendaftar',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPengaturanRoute = AdminPengaturanRouteImport.update({
+  id: '/pengaturan',
+  path: '/pengaturan',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSistemUpdateRoute = AdminSistemUpdateRouteImport.update({
+  id: '/sistem-update',
+  path: '/sistem-update',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminWhatsappRoute = AdminWhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => AdminRoute,
+} as any)
+const ArtikelIndexRoute = ArtikelIndexRouteImport.update({
+  id: '/artikel/',
+  path: '/artikel/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
+  id: '/artikel/$slug',
+  path: '/artikel/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BerkasIndexRoute = BerkasIndexRouteImport.update({
+  id: '/berkas/',
+  path: '/berkas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BerkasEkonomiRoute = BerkasEkonomiRouteImport.update({
+  id: '/berkas/ekonomi',
+  path: '/berkas/ekonomi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BerkasPrestasiRoute = BerkasPrestasiRouteImport.update({
+  id: '/berkas/prestasi',
+  path: '/berkas/prestasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BerkasTerkirimRoute = BerkasTerkirimRouteImport.update({
+  id: '/berkas/terkirim',
+  path: '/berkas/terkirim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BerkasUmumRoute = BerkasUmumRouteImport.update({
+  id: '/berkas/umum',
+  path: '/berkas/umum',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BerkasYatimRoute = BerkasYatimRouteImport.update({
+  id: '/berkas/yatim',
+  path: '/berkas/yatim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendaftaranEkonomiRoute = PendaftaranEkonomiRouteImport.update({
+  id: '/pendaftaran/ekonomi',
+  path: '/pendaftaran/ekonomi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendaftaranPrestasiRoute = PendaftaranPrestasiRouteImport.update({
+  id: '/pendaftaran/prestasi',
+  path: '/pendaftaran/prestasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendaftaranSuksesRoute = PendaftaranSuksesRouteImport.update({
+  id: '/pendaftaran/sukses',
+  path: '/pendaftaran/sukses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendaftaranUmumRoute = PendaftaranUmumRouteImport.update({
+  id: '/pendaftaran/umum',
+  path: '/pendaftaran/umum',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendaftaranYatimRoute = PendaftaranYatimRouteImport.update({
+  id: '/pendaftaran/yatim',
+  path: '/pendaftaran/yatim',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BerkasEkonomiIndexRoute = BerkasEkonomiIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => BerkasEkonomiRoute,
 } as any)
-const BerkasYatimUploadRoute = BerkasYatimUploadRouteImport.update({
+const BerkasEkonomiUploadRoute = BerkasEkonomiUploadRouteImport.update({
   id: '/upload',
   path: '/upload',
-  getParentRoute: () => BerkasYatimRoute,
+  getParentRoute: () => BerkasEkonomiRoute,
 } as any)
-const BerkasUmumUploadRoute = BerkasUmumUploadRouteImport.update({
-  id: '/upload',
-  path: '/upload',
-  getParentRoute: () => BerkasUmumRoute,
+const BerkasPrestasiIndexRoute = BerkasPrestasiIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BerkasPrestasiRoute,
 } as any)
 const BerkasPrestasiUploadRoute = BerkasPrestasiUploadRouteImport.update({
   id: '/upload',
   path: '/upload',
   getParentRoute: () => BerkasPrestasiRoute,
 } as any)
-const BerkasEkonomiUploadRoute = BerkasEkonomiUploadRouteImport.update({
+const BerkasUmumIndexRoute = BerkasUmumIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BerkasUmumRoute,
+} as any)
+const BerkasUmumUploadRoute = BerkasUmumUploadRouteImport.update({
   id: '/upload',
   path: '/upload',
-  getParentRoute: () => BerkasEkonomiRoute,
+  getParentRoute: () => BerkasUmumRoute,
+} as any)
+const BerkasYatimIndexRoute = BerkasYatimIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BerkasYatimRoute,
+} as any)
+const BerkasYatimUploadRoute = BerkasYatimUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => BerkasYatimRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -695,74 +695,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tentang': {
-      id: '/tentang'
-      path: '/tentang'
-      fullPath: '/tentang'
-      preLoaderRoute: typeof TentangRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/esai': {
-      id: '/esai'
-      path: '/esai'
-      fullPath: '/esai'
-      preLoaderRoute: typeof EsaiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/daftar': {
-      id: '/daftar'
-      path: '/daftar'
-      fullPath: '/daftar'
-      preLoaderRoute: typeof DaftarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cek-status': {
-      id: '/cek-status'
-      path: '/cek-status'
-      fullPath: '/cek-status'
-      preLoaderRoute: typeof CekStatusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/beasiswa-yatim': {
-      id: '/beasiswa-yatim'
-      path: '/beasiswa-yatim'
-      fullPath: '/beasiswa-yatim'
-      preLoaderRoute: typeof BeasiswaYatimRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/beasiswa-umum': {
-      id: '/beasiswa-umum'
-      path: '/beasiswa-umum'
-      fullPath: '/beasiswa-umum'
-      preLoaderRoute: typeof BeasiswaUmumRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/beasiswa-prestasi': {
-      id: '/beasiswa-prestasi'
-      path: '/beasiswa-prestasi'
-      fullPath: '/beasiswa-prestasi'
-      preLoaderRoute: typeof BeasiswaPrestasiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/beasiswa-ekonomi': {
-      id: '/beasiswa-ekonomi'
-      path: '/beasiswa-ekonomi'
-      fullPath: '/beasiswa-ekonomi'
-      preLoaderRoute: typeof BeasiswaEkonomiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bagikan-poster': {
-      id: '/bagikan-poster'
-      path: '/bagikan-poster'
-      fullPath: '/bagikan-poster'
-      preLoaderRoute: typeof BagikanPosterRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -772,25 +709,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/bagikan-poster': {
+      id: '/bagikan-poster'
+      path: '/bagikan-poster'
+      fullPath: '/bagikan-poster'
+      preLoaderRoute: typeof BagikanPosterRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/berkas/': {
-      id: '/berkas/'
-      path: '/berkas'
-      fullPath: '/berkas/'
-      preLoaderRoute: typeof BerkasIndexRouteImport
+    '/beasiswa-ekonomi': {
+      id: '/beasiswa-ekonomi'
+      path: '/beasiswa-ekonomi'
+      fullPath: '/beasiswa-ekonomi'
+      preLoaderRoute: typeof BeasiswaEkonomiRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/artikel/': {
-      id: '/artikel/'
-      path: '/artikel'
-      fullPath: '/artikel/'
-      preLoaderRoute: typeof ArtikelIndexRouteImport
+    '/beasiswa-prestasi': {
+      id: '/beasiswa-prestasi'
+      path: '/beasiswa-prestasi'
+      fullPath: '/beasiswa-prestasi'
+      preLoaderRoute: typeof BeasiswaPrestasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/beasiswa-umum': {
+      id: '/beasiswa-umum'
+      path: '/beasiswa-umum'
+      fullPath: '/beasiswa-umum'
+      preLoaderRoute: typeof BeasiswaUmumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/beasiswa-yatim': {
+      id: '/beasiswa-yatim'
+      path: '/beasiswa-yatim'
+      fullPath: '/beasiswa-yatim'
+      preLoaderRoute: typeof BeasiswaYatimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cek-status': {
+      id: '/cek-status'
+      path: '/cek-status'
+      fullPath: '/cek-status'
+      preLoaderRoute: typeof CekStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daftar': {
+      id: '/daftar'
+      path: '/daftar'
+      fullPath: '/daftar'
+      preLoaderRoute: typeof DaftarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/esai': {
+      id: '/esai'
+      path: '/esai'
+      fullPath: '/esai'
+      preLoaderRoute: typeof EsaiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tentang': {
+      id: '/tentang'
+      path: '/tentang'
+      fullPath: '/tentang'
+      preLoaderRoute: typeof TentangRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -800,207 +786,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/pendaftaran/yatim': {
-      id: '/pendaftaran/yatim'
-      path: '/pendaftaran/yatim'
-      fullPath: '/pendaftaran/yatim'
-      preLoaderRoute: typeof PendaftaranYatimRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pendaftaran/umum': {
-      id: '/pendaftaran/umum'
-      path: '/pendaftaran/umum'
-      fullPath: '/pendaftaran/umum'
-      preLoaderRoute: typeof PendaftaranUmumRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pendaftaran/sukses': {
-      id: '/pendaftaran/sukses'
-      path: '/pendaftaran/sukses'
-      fullPath: '/pendaftaran/sukses'
-      preLoaderRoute: typeof PendaftaranSuksesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pendaftaran/prestasi': {
-      id: '/pendaftaran/prestasi'
-      path: '/pendaftaran/prestasi'
-      fullPath: '/pendaftaran/prestasi'
-      preLoaderRoute: typeof PendaftaranPrestasiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pendaftaran/ekonomi': {
-      id: '/pendaftaran/ekonomi'
-      path: '/pendaftaran/ekonomi'
-      fullPath: '/pendaftaran/ekonomi'
-      preLoaderRoute: typeof PendaftaranEkonomiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/berkas/yatim': {
-      id: '/berkas/yatim'
-      path: '/berkas/yatim'
-      fullPath: '/berkas/yatim'
-      preLoaderRoute: typeof BerkasYatimRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/berkas/umum': {
-      id: '/berkas/umum'
-      path: '/berkas/umum'
-      fullPath: '/berkas/umum'
-      preLoaderRoute: typeof BerkasUmumRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/berkas/terkirim': {
-      id: '/berkas/terkirim'
-      path: '/berkas/terkirim'
-      fullPath: '/berkas/terkirim'
-      preLoaderRoute: typeof BerkasTerkirimRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/berkas/prestasi': {
-      id: '/berkas/prestasi'
-      path: '/berkas/prestasi'
-      fullPath: '/berkas/prestasi'
-      preLoaderRoute: typeof BerkasPrestasiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/berkas/ekonomi': {
-      id: '/berkas/ekonomi'
-      path: '/berkas/ekonomi'
-      fullPath: '/berkas/ekonomi'
-      preLoaderRoute: typeof BerkasEkonomiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/artikel/$slug': {
-      id: '/artikel/$slug'
-      path: '/artikel/$slug'
-      fullPath: '/artikel/$slug'
-      preLoaderRoute: typeof ArtikelSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/whatsapp': {
-      id: '/admin/whatsapp'
-      path: '/whatsapp'
-      fullPath: '/admin/whatsapp'
-      preLoaderRoute: typeof AdminWhatsappRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/sistem-update': {
-      id: '/admin/sistem-update'
-      path: '/sistem-update'
-      fullPath: '/admin/sistem-update'
-      preLoaderRoute: typeof AdminSistemUpdateRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/pengaturan': {
-      id: '/admin/pengaturan'
-      path: '/pengaturan'
-      fullPath: '/admin/pengaturan'
-      preLoaderRoute: typeof AdminPengaturanRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/pendaftar': {
-      id: '/admin/pendaftar'
-      path: '/pendaftar'
-      fullPath: '/admin/pendaftar'
-      preLoaderRoute: typeof AdminPendaftarRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/media': {
-      id: '/admin/media'
-      path: '/media'
-      fullPath: '/admin/media'
-      preLoaderRoute: typeof AdminMediaRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/maintenance': {
-      id: '/admin/maintenance'
-      path: '/maintenance'
-      fullPath: '/admin/maintenance'
-      preLoaderRoute: typeof AdminMaintenanceRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/kode-kustom': {
-      id: '/admin/kode-kustom'
-      path: '/kode-kustom'
-      fullPath: '/admin/kode-kustom'
-      preLoaderRoute: typeof AdminKodeKustomRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/keamanan': {
-      id: '/admin/keamanan'
-      path: '/keamanan'
-      fullPath: '/admin/keamanan'
-      preLoaderRoute: typeof AdminKeamananRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/kandidat': {
-      id: '/admin/kandidat'
-      path: '/kandidat'
-      fullPath: '/admin/kandidat'
-      preLoaderRoute: typeof AdminKandidatRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/integrasi': {
-      id: '/admin/integrasi'
-      path: '/integrasi'
-      fullPath: '/admin/integrasi'
-      preLoaderRoute: typeof AdminIntegrasiRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/iklan-kustom': {
-      id: '/admin/iklan-kustom'
-      path: '/iklan-kustom'
-      fullPath: '/admin/iklan-kustom'
-      preLoaderRoute: typeof AdminIklanKustomRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/formulir': {
-      id: '/admin/formulir'
-      path: '/formulir'
-      fullPath: '/admin/formulir'
-      preLoaderRoute: typeof AdminFormulirRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/email-template': {
-      id: '/admin/email-template'
-      path: '/email-template'
-      fullPath: '/admin/email-template'
-      preLoaderRoute: typeof AdminEmailTemplateRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/branding': {
-      id: '/admin/branding'
-      path: '/branding'
-      fullPath: '/admin/branding'
-      preLoaderRoute: typeof AdminBrandingRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/berkas': {
-      id: '/admin/berkas'
-      path: '/berkas'
-      fullPath: '/admin/berkas'
-      preLoaderRoute: typeof AdminBerkasRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/bagikan-poster': {
-      id: '/admin/bagikan-poster'
-      path: '/bagikan-poster'
-      fullPath: '/admin/bagikan-poster'
-      preLoaderRoute: typeof AdminBagikanPosterRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/artikel': {
-      id: '/admin/artikel'
-      path: '/artikel'
-      fullPath: '/admin/artikel'
-      preLoaderRoute: typeof AdminArtikelRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/analytics': {
-      id: '/admin/analytics'
-      path: '/analytics'
-      fullPath: '/admin/analytics'
-      preLoaderRoute: typeof AdminAnalyticsRouteImport
+    '/admin/adsense': {
+      id: '/admin/adsense'
+      path: '/adsense'
+      fullPath: '/admin/adsense'
+      preLoaderRoute: typeof AdminAdsenseRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/ai-balasan': {
@@ -1010,33 +800,222 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAiBalasanRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/adsense': {
-      id: '/admin/adsense'
-      path: '/adsense'
-      fullPath: '/admin/adsense'
-      preLoaderRoute: typeof AdminAdsenseRouteImport
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/berkas/yatim/': {
-      id: '/berkas/yatim/'
-      path: '/'
-      fullPath: '/berkas/yatim/'
-      preLoaderRoute: typeof BerkasYatimIndexRouteImport
-      parentRoute: typeof BerkasYatimRoute
+    '/admin/artikel': {
+      id: '/admin/artikel'
+      path: '/artikel'
+      fullPath: '/admin/artikel'
+      preLoaderRoute: typeof AdminArtikelRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/berkas/umum/': {
-      id: '/berkas/umum/'
-      path: '/'
-      fullPath: '/berkas/umum/'
-      preLoaderRoute: typeof BerkasUmumIndexRouteImport
-      parentRoute: typeof BerkasUmumRoute
+    '/admin/bagikan-poster': {
+      id: '/admin/bagikan-poster'
+      path: '/bagikan-poster'
+      fullPath: '/admin/bagikan-poster'
+      preLoaderRoute: typeof AdminBagikanPosterRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/berkas/prestasi/': {
-      id: '/berkas/prestasi/'
-      path: '/'
-      fullPath: '/berkas/prestasi/'
-      preLoaderRoute: typeof BerkasPrestasiIndexRouteImport
-      parentRoute: typeof BerkasPrestasiRoute
+    '/admin/berkas': {
+      id: '/admin/berkas'
+      path: '/berkas'
+      fullPath: '/admin/berkas'
+      preLoaderRoute: typeof AdminBerkasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/branding': {
+      id: '/admin/branding'
+      path: '/branding'
+      fullPath: '/admin/branding'
+      preLoaderRoute: typeof AdminBrandingRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/email-template': {
+      id: '/admin/email-template'
+      path: '/email-template'
+      fullPath: '/admin/email-template'
+      preLoaderRoute: typeof AdminEmailTemplateRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/formulir': {
+      id: '/admin/formulir'
+      path: '/formulir'
+      fullPath: '/admin/formulir'
+      preLoaderRoute: typeof AdminFormulirRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/iklan-kustom': {
+      id: '/admin/iklan-kustom'
+      path: '/iklan-kustom'
+      fullPath: '/admin/iklan-kustom'
+      preLoaderRoute: typeof AdminIklanKustomRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/integrasi': {
+      id: '/admin/integrasi'
+      path: '/integrasi'
+      fullPath: '/admin/integrasi'
+      preLoaderRoute: typeof AdminIntegrasiRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/kandidat': {
+      id: '/admin/kandidat'
+      path: '/kandidat'
+      fullPath: '/admin/kandidat'
+      preLoaderRoute: typeof AdminKandidatRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/keamanan': {
+      id: '/admin/keamanan'
+      path: '/keamanan'
+      fullPath: '/admin/keamanan'
+      preLoaderRoute: typeof AdminKeamananRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/kode-kustom': {
+      id: '/admin/kode-kustom'
+      path: '/kode-kustom'
+      fullPath: '/admin/kode-kustom'
+      preLoaderRoute: typeof AdminKodeKustomRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/maintenance': {
+      id: '/admin/maintenance'
+      path: '/maintenance'
+      fullPath: '/admin/maintenance'
+      preLoaderRoute: typeof AdminMaintenanceRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/media': {
+      id: '/admin/media'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AdminMediaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pendaftar': {
+      id: '/admin/pendaftar'
+      path: '/pendaftar'
+      fullPath: '/admin/pendaftar'
+      preLoaderRoute: typeof AdminPendaftarRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pengaturan': {
+      id: '/admin/pengaturan'
+      path: '/pengaturan'
+      fullPath: '/admin/pengaturan'
+      preLoaderRoute: typeof AdminPengaturanRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sistem-update': {
+      id: '/admin/sistem-update'
+      path: '/sistem-update'
+      fullPath: '/admin/sistem-update'
+      preLoaderRoute: typeof AdminSistemUpdateRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/whatsapp': {
+      id: '/admin/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/admin/whatsapp'
+      preLoaderRoute: typeof AdminWhatsappRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/artikel/': {
+      id: '/artikel/'
+      path: '/artikel'
+      fullPath: '/artikel/'
+      preLoaderRoute: typeof ArtikelIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/artikel/$slug': {
+      id: '/artikel/$slug'
+      path: '/artikel/$slug'
+      fullPath: '/artikel/$slug'
+      preLoaderRoute: typeof ArtikelSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/berkas/': {
+      id: '/berkas/'
+      path: '/berkas'
+      fullPath: '/berkas/'
+      preLoaderRoute: typeof BerkasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/berkas/ekonomi': {
+      id: '/berkas/ekonomi'
+      path: '/berkas/ekonomi'
+      fullPath: '/berkas/ekonomi'
+      preLoaderRoute: typeof BerkasEkonomiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/berkas/prestasi': {
+      id: '/berkas/prestasi'
+      path: '/berkas/prestasi'
+      fullPath: '/berkas/prestasi'
+      preLoaderRoute: typeof BerkasPrestasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/berkas/terkirim': {
+      id: '/berkas/terkirim'
+      path: '/berkas/terkirim'
+      fullPath: '/berkas/terkirim'
+      preLoaderRoute: typeof BerkasTerkirimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/berkas/umum': {
+      id: '/berkas/umum'
+      path: '/berkas/umum'
+      fullPath: '/berkas/umum'
+      preLoaderRoute: typeof BerkasUmumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/berkas/yatim': {
+      id: '/berkas/yatim'
+      path: '/berkas/yatim'
+      fullPath: '/berkas/yatim'
+      preLoaderRoute: typeof BerkasYatimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pendaftaran/ekonomi': {
+      id: '/pendaftaran/ekonomi'
+      path: '/pendaftaran/ekonomi'
+      fullPath: '/pendaftaran/ekonomi'
+      preLoaderRoute: typeof PendaftaranEkonomiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pendaftaran/prestasi': {
+      id: '/pendaftaran/prestasi'
+      path: '/pendaftaran/prestasi'
+      fullPath: '/pendaftaran/prestasi'
+      preLoaderRoute: typeof PendaftaranPrestasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pendaftaran/sukses': {
+      id: '/pendaftaran/sukses'
+      path: '/pendaftaran/sukses'
+      fullPath: '/pendaftaran/sukses'
+      preLoaderRoute: typeof PendaftaranSuksesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pendaftaran/umum': {
+      id: '/pendaftaran/umum'
+      path: '/pendaftaran/umum'
+      fullPath: '/pendaftaran/umum'
+      preLoaderRoute: typeof PendaftaranUmumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pendaftaran/yatim': {
+      id: '/pendaftaran/yatim'
+      path: '/pendaftaran/yatim'
+      fullPath: '/pendaftaran/yatim'
+      preLoaderRoute: typeof PendaftaranYatimRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/berkas/ekonomi/': {
       id: '/berkas/ekonomi/'
@@ -1045,19 +1024,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BerkasEkonomiIndexRouteImport
       parentRoute: typeof BerkasEkonomiRoute
     }
-    '/berkas/yatim/upload': {
-      id: '/berkas/yatim/upload'
+    '/berkas/ekonomi/upload': {
+      id: '/berkas/ekonomi/upload'
       path: '/upload'
-      fullPath: '/berkas/yatim/upload'
-      preLoaderRoute: typeof BerkasYatimUploadRouteImport
-      parentRoute: typeof BerkasYatimRoute
+      fullPath: '/berkas/ekonomi/upload'
+      preLoaderRoute: typeof BerkasEkonomiUploadRouteImport
+      parentRoute: typeof BerkasEkonomiRoute
     }
-    '/berkas/umum/upload': {
-      id: '/berkas/umum/upload'
-      path: '/upload'
-      fullPath: '/berkas/umum/upload'
-      preLoaderRoute: typeof BerkasUmumUploadRouteImport
-      parentRoute: typeof BerkasUmumRoute
+    '/berkas/prestasi/': {
+      id: '/berkas/prestasi/'
+      path: '/'
+      fullPath: '/berkas/prestasi/'
+      preLoaderRoute: typeof BerkasPrestasiIndexRouteImport
+      parentRoute: typeof BerkasPrestasiRoute
     }
     '/berkas/prestasi/upload': {
       id: '/berkas/prestasi/upload'
@@ -1066,12 +1045,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BerkasPrestasiUploadRouteImport
       parentRoute: typeof BerkasPrestasiRoute
     }
-    '/berkas/ekonomi/upload': {
-      id: '/berkas/ekonomi/upload'
+    '/berkas/umum/': {
+      id: '/berkas/umum/'
+      path: '/'
+      fullPath: '/berkas/umum/'
+      preLoaderRoute: typeof BerkasUmumIndexRouteImport
+      parentRoute: typeof BerkasUmumRoute
+    }
+    '/berkas/umum/upload': {
+      id: '/berkas/umum/upload'
       path: '/upload'
-      fullPath: '/berkas/ekonomi/upload'
-      preLoaderRoute: typeof BerkasEkonomiUploadRouteImport
-      parentRoute: typeof BerkasEkonomiRoute
+      fullPath: '/berkas/umum/upload'
+      preLoaderRoute: typeof BerkasUmumUploadRouteImport
+      parentRoute: typeof BerkasUmumRoute
+    }
+    '/berkas/yatim/': {
+      id: '/berkas/yatim/'
+      path: '/'
+      fullPath: '/berkas/yatim/'
+      preLoaderRoute: typeof BerkasYatimIndexRouteImport
+      parentRoute: typeof BerkasYatimRoute
+    }
+    '/berkas/yatim/upload': {
+      id: '/berkas/yatim/upload'
+      path: '/upload'
+      fullPath: '/berkas/yatim/upload'
+      preLoaderRoute: typeof BerkasYatimUploadRouteImport
+      parentRoute: typeof BerkasYatimRoute
     }
   }
 }
