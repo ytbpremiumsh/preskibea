@@ -43,7 +43,7 @@ const benefits = [
 
 export function BenefitsSection() {
   const { benefitImage } = useBranding();
-  const benefitImg = benefitImage || "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/branding/benefit-prestasi-kita-batch-8.png?t=1723334400";
+  const benefitImg = benefitImage || "https://ltmfvbcazebowndigkyi.supabase.co/storage/v1/object/public/admin-media/branding/benefit-prestasi-kita-batch-8.png?t=1723334400123";
 
   return (
     <section className="container-page py-20">
