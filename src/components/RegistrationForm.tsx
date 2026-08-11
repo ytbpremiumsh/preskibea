@@ -149,18 +149,22 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
   const [files, setFiles] = useState<Record<string, File | null>>({});
   const [registrationType, setRegistrationType] = useState<"reguler" | "fast_track">("reguler");
   const [activePaymentLink, setActivePaymentLink] = useState<string | null>(null);
+  const [fastTrackFee, setFastTrackFee] = useState<number>(15000);
 
   useEffect(() => {
     supabase
       .from("site_settings")
       .select("key, value")
-      .in("key", ["mayar_fast_track_link", "payment_provider", "aulaa_config"])
+      .in("key", ["mayar_fast_track_link", "payment_provider", "aulaa_config", "fast_track_fee"])
       .then(({ data }) => {
         if (!data) return;
         
         const provider = data.find(s => s.key === "payment_provider")?.value as string;
         const mayarLink = data.find(s => s.key === "mayar_fast_track_link")?.value as string;
         const aulaa = data.find(s => s.key === "aulaa_config")?.value as any;
+        const fee = data.find(s => s.key === "fast_track_fee")?.value;
+
+        if (fee) setFastTrackFee(Number(fee));
 
         if (provider === "aulaa" && aulaa?.project_id) {
           // Fallback if Edge Function doesn't return URL
@@ -557,7 +561,9 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
                 </ul>
                 <div className="mt-4 pt-3 border-t border-border w-full flex justify-between items-center">
                   <span className="text-[10px] font-semibold text-muted-foreground uppercase">BIAYA</span>
-                  <span className="text-sm font-bold text-[var(--gold)]">Rp15.000</span>
+                  <span className="text-sm font-bold text-[var(--gold)]">
+                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(fastTrackFee)}
+                  </span>
                 </div>
               </button>
             </div>
