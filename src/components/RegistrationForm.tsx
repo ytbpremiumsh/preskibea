@@ -638,9 +638,24 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
             </div>
           </Card>
 
-          <Card title="Formulir Pendaftaran">
-            <div className="grid sm:grid-cols-2 gap-4">
-              {grouped.requiredDataFields.map((f) => (
+          <Card title="Informasi Pribadi">
+            <div className="grid sm:grid-cols-2 gap-x-4 gap-y-3">
+              {grouped.requiredDataFields.slice(0, 5).map((f) => (
+                <FieldRenderer
+                  key={f.id}
+                  field={f}
+                  value={values[f.name] ?? ""}
+                  error={errors[f.name]}
+                  onChange={(v) => setVal(f.name, v)}
+                  fullWidth={f.type === "textarea" || f.name === "address" || f.name === "email"}
+                />
+              ))}
+            </div>
+          </Card>
+
+          <Card title="Informasi Pendidikan">
+            <div className="grid sm:grid-cols-2 gap-x-4 gap-y-3">
+              {grouped.requiredDataFields.slice(5).map((f) => (
                 <FieldRenderer
                   key={f.id}
                   field={f}
@@ -688,9 +703,9 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
-          <div className="card-block p-6">
+          <div className="card-block p-5">
             <h3 className="font-semibold text-foreground">Sebelum mengirim</h3>
-            <ul className="mt-4 space-y-3 text-sm text-foreground/85">
+            <ul className="mt-3 space-y-2 text-xs text-foreground/85">
               {[
                 "Pastikan data pribadi sesuai Kartu Pelajar / Kartu Mahasiswa",
                 "Email & WhatsApp aktif",
@@ -705,7 +720,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
           <button
             type="submit"
             disabled={submitting}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition disabled:opacity-60"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition disabled:opacity-60"
           >
             {submitting ? (
               <>
@@ -773,9 +788,9 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="card-block p-6 md:p-7">
-      <h2 className="text-base font-bold text-foreground">{title}</h2>
-      <div className="mt-5">{children}</div>
+    <div className="card-block p-5 md:p-6">
+      <h2 className="text-sm font-bold text-foreground border-l-4 border-primary pl-3">{title}</h2>
+      <div className="mt-4">{children}</div>
     </div>
   );
 }
@@ -793,26 +808,26 @@ function FieldRenderer({
   error?: string;
   fullWidth?: boolean;
 }) {
-  const cls = `w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${error ? "border-destructive" : "border-border focus:border-primary"}`;
+  const cls = `w-full rounded-xl border bg-background px-3.5 py-2 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${error ? "border-destructive" : "border-border focus:border-primary"}`;
   const ph = field.placeholder || defaultPlaceholder(field);
 
   return (
     <label className={`block ${fullWidth ? "sm:col-span-2" : ""}`}>
-      <span className="text-xs font-medium text-foreground/80">
+      <span className="text-[11px] font-semibold text-foreground/70 uppercase tracking-tight">
         {field.label}
-        {field.required && <span className="text-destructive"> *</span>}
+        {field.required && <span className="text-destructive ml-0.5">*</span>}
       </span>
-      <div className="mt-1.5">
+      <div className="mt-1">
         {field.type === "textarea" ? (
           <textarea
-            rows={3}
+            rows={2}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={ph}
             className={cls}
           />
         ) : field.type === "select" ? (
-          <select value={value} onChange={(e) => onChange(e.target.value)} className={cls}>
+          <select value={value} onChange={(e) => onChange(e.target.value)} className={`${cls} appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-10`}>
             <option value="">Pilih…</option>
             {(field.options ?? []).map((o) => (
               <option key={o} value={o}>
@@ -858,12 +873,12 @@ function FileFieldRenderer({
 }) {
   return (
     <label className="block">
-      <span className="text-xs font-medium text-foreground/80">
+      <span className="text-[11px] font-semibold text-foreground/70 uppercase tracking-tight">
         {field.label}
-        {field.required && <span className="text-destructive"> *</span>}
+        {field.required && <span className="text-destructive ml-0.5">*</span>}
       </span>
       <div
-        className={`mt-1.5 flex items-center gap-3 rounded-xl border border-dashed bg-background px-3.5 py-3 hover:border-primary transition cursor-pointer ${error ? "border-destructive" : "border-border"}`}
+        className={`mt-1 flex items-center gap-3 rounded-xl border border-dashed bg-background px-3.5 py-2.5 hover:border-primary transition cursor-pointer ${error ? "border-destructive" : "border-border"}`}
       >
         <UploadCloud size={18} className="text-primary shrink-0" />
         <input
