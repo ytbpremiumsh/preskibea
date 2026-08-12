@@ -99,7 +99,7 @@ function PilihTipePage() {
           </div>
 
           {/* Fast Track Card */}
-          <div className="card-block group flex flex-col p-8 transition-all hover:shadow-xl border-t-8 border-[oklch(0.70_0.15_80)] relative overflow-hidden bg-[oklch(0.98_0.02_80)]">
+          <div className="card-block group flex flex-col p-8 transition-all hover:shadow-xl border-t-8 border-[oklch(0.60_0.15_70)] relative overflow-hidden bg-[oklch(0.98_0.02_80)]">
             <div className="absolute top-0 right-0 bg-[var(--gold)] text-gold-foreground text-[10px] font-bold px-4 py-1.5 rounded-bl-2xl uppercase tracking-widest shadow-sm">
               Rekomendasi
             </div>
@@ -127,9 +127,9 @@ function PilihTipePage() {
               </li>
             </ul>
 
-            <div className="mb-6 p-4 rounded-2xl bg-[oklch(0.70_0.15_80)]/10 border border-[oklch(0.70_0.15_80)]/30 text-center">
-              <span className="text-xs font-bold text-[var(--gold)] uppercase tracking-wider block mb-1">BIAYA FAST TRACK</span>
-              <span className="text-2xl font-black text-[var(--gold)]">
+            <div className="mb-6 p-4 rounded-2xl bg-[oklch(0.60_0.15_70)]/10 border border-[oklch(0.60_0.15_70)]/30 text-center">
+              <span className="text-xs font-bold text-[oklch(0.50_0.15_70)] uppercase tracking-wider block mb-1">BIAYA FAST TRACK</span>
+              <span className="text-2xl font-black text-[oklch(0.50_0.15_70)]">
                 {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(fastTrackFee)}
               </span>
             </div>
