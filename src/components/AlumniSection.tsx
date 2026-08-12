@@ -34,10 +34,13 @@ const alumniBase = [
 export function AlumniSection() {
   const { alumniImages } = useBranding();
 
-  const alumni = alumniBase.map((a, i) => ({
-    ...a,
-    img: alumniImages[i] || FALLBACK_ALUMNI_IMAGES[i],
-  }));
+  const alumni = alumniBase.map((a, i) => {
+    const imgUrl = alumniImages[i];
+    return {
+      ...a,
+      img: imgUrl && imgUrl.startsWith('http') ? imgUrl : FALLBACK_ALUMNI_IMAGES[i],
+    };
+  });
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, index: number) => {
     const target = e.currentTarget;
