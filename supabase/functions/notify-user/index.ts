@@ -18,26 +18,7 @@ serve(async (req) => {
 
     console.log(`Attempting to send ${type} email to ${email} for ${full_name}`);
 
-    // If type is "registration" or "berkas", we use the React Email system directly
-    if (type === "registration" || type === "berkas") {
-      const result = await sendTemplateEmail(type, email, {
-        templateData: {
-          full_name,
-          token,
-          kind,
-          status,
-          whatsapp,
-          count,
-          siteName: "Prestasi Kita",
-        }
-      });
-      return new Response(JSON.stringify({ ok: true, sent: result.sent }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Fallback to legacy customizable templates via send-app-email for other types
+    // Unified email sending logic that prioritizes custom templates from site_settings
     const typeMap: Record<string, string> = {
       "registration": "registration-confirmation",
       "berkas": "berkas-confirmation"
@@ -45,7 +26,28 @@ serve(async (req) => {
 
     const templateName = typeMap[type] || type;
 
+    // Call send-app-email which already handles custom templates from site_settings
+    // and falls back to default layouts if custom ones are disabled.
     const result = await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-app-email`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        templateName,
+        recipientEmail: email,
+        templateData: {
+          full_name,
+          token,
+          kind,
+          status,
+          whatsapp,
+          count,
+          site_name: "Prestasi Kita",
+        },
+      }),
+    });
       method: "POST",
       headers: {
         "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
