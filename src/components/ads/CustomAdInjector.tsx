@@ -89,6 +89,7 @@ function pushAdsbygoogle() {
     el.style.minHeight = "50px";
     el.style.overflow = "visible";
     el.style.margin = "0 auto";
+    el.style.clear = "both";
     const tryPush = (attempt = 0) => {
       if (el.getAttribute("data-ad-pushed") === "1") return;
       if (el.offsetWidth < 1) {
