@@ -38,6 +38,7 @@ function prepareAdSenseIns(root: HTMLElement, fallbackClient: string) {
     ins.style.minHeight = "50px";
     ins.style.overflow = "visible";
     ins.style.margin = "0 auto";
+    ins.style.clear = "both";
   });
 }
 
