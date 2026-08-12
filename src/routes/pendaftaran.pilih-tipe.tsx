@@ -100,11 +100,11 @@ function PilihTipePage() {
 
           {/* Fast Track Card */}
           <div className="card-block group flex flex-col p-8 transition-all hover:shadow-xl border-t-8 border-[oklch(0.60_0.15_70)] relative overflow-hidden bg-[oklch(0.98_0.02_80)]">
-            <div className="absolute top-0 right-0 bg-[var(--gold)] text-gold-foreground text-[10px] font-bold px-4 py-1.5 rounded-bl-2xl uppercase tracking-widest shadow-sm">
+            <div className="absolute top-0 right-0 bg-[oklch(0.60_0.15_70)] text-white text-[10px] font-bold px-4 py-1.5 rounded-bl-2xl uppercase tracking-widest shadow-sm">
               Rekomendasi
             </div>
             
-            <div className="h-14 w-14 rounded-2xl bg-[var(--gold)]/10 text-[var(--gold)] flex items-center justify-center mb-6">
+            <div className="h-14 w-14 rounded-2xl bg-[oklch(0.60_0.15_70)]/10 text-[oklch(0.60_0.15_70)] flex items-center justify-center mb-6">
               <Zap size={32} />
             </div>
             <h2 className="text-2xl font-bold text-foreground mb-3">Jalur Fast Track</h2>
@@ -114,15 +114,15 @@ function PilihTipePage() {
             
             <ul className="space-y-3 mb-8">
               <li className="flex items-center gap-3 text-sm text-foreground/80">
-                <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
+                <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
                 <span className="font-semibold">Bebas Syarat Media Sosial & Share Poster</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
-                <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
+                <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
                 <span>E-Certificate Resmi Prestasi Kita Batch #8</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
-                <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
+                <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
                 <span>Akses Webinar & E-Book Pengembangan Diri</span>
               </li>
             </ul>
