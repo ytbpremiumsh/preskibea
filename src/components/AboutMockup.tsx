@@ -1,6 +1,8 @@
 import { Award, BookOpen, Wallet } from "lucide-react";
 import posterDefault from "@/assets/poster-beasiswa.png";
 import { useBranding } from "@/hooks/use-branding";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const features = [
   {
@@ -22,7 +24,31 @@ const features = [
 
 export function AboutMockup() {
   const { posterImage } = useBranding();
-  const posterImg = posterImage || posterDefault;
+  const [remotePoster, setRemotePoster] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPoster = async () => {
+      try {
+        const { data } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "share_poster")
+          .maybeSingle();
+
+        const v = data?.value as any;
+        // Check for unified poster first, matching logic in SharePosterPage
+        const url = v?.is_unified ? v?.unified?.image_url : v?.prestasi?.image_url;
+        if (url) {
+          setRemotePoster(url);
+        }
+      } catch (error) {
+        console.error("Error fetching poster:", error);
+      }
+    };
+    fetchPoster();
+  }, []);
+
+  const posterImg = remotePoster || posterImage || posterDefault;
 
   return (
     <section className="container-page py-20">
