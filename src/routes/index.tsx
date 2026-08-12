@@ -45,7 +45,7 @@ function Index() {
   const benefitImg = benefitImage || benefitDefault.url;
 
   return (
-    <>
+    <div className="animate-in fade-in duration-500">
       {/* HERO */}
       <section className="relative overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
         <div className="container-page py-12 md:py-20 grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
@@ -249,7 +249,7 @@ function Index() {
       <FAQSection />
 
       <AdSlot placement="after_faq" />
-    </>
+    </div>
   );
 }
 
