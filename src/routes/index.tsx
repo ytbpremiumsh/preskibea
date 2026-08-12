@@ -183,7 +183,9 @@ function Index() {
         </div>
       </div>
 
-      <AdSlot placement="after_hero" />
+      <div className="container-page overflow-visible">
+        <AdSlot placement="after_hero" />
+      </div>
 
       {/* COUNTDOWN */}
       <section className="container-page pt-16 pb-4">
@@ -232,23 +234,31 @@ function Index() {
         </div>
       </section>
 
-      <AdSlot placement="after_categories" />
+      <div className="container-page overflow-visible">
+        <AdSlot placement="after_categories" />
+      </div>
 
       <AboutMockup />
 
       <BenefitsSection />
 
-      <AdSlot placement="after_benefits" />
+      <div className="container-page overflow-visible">
+        <AdSlot placement="after_benefits" />
+      </div>
 
       <AlumniSection />
 
-      <AdSlot placement="after_alumni" />
+      <div className="container-page overflow-visible">
+        <AdSlot placement="after_alumni" />
+      </div>
 
       <TimelineSection />
 
       <FAQSection />
 
-      <AdSlot placement="after_faq" />
+      <div className="container-page overflow-visible">
+        <AdSlot placement="after_faq" />
+      </div>
     </div>
   );
 }

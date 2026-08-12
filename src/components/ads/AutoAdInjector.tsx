@@ -34,7 +34,10 @@ function prepareAdSenseIns(root: HTMLElement, fallbackClient: string) {
     }
     ins.style.display = "block";
     ins.style.width = "100%";
-    ins.style.maxWidth = "100%";
+    ins.style.minWidth = "250px";
+    ins.style.minHeight = "50px";
+    ins.style.overflow = "visible";
+    ins.style.margin = "0 auto";
   });
 }
 
@@ -44,9 +47,11 @@ function buildAdNode(slot: AdSlotConfig): HTMLElement | null {
   if (!tpl.content.childNodes.length) return null;
 
   const wrapper = document.createElement("div");
-  wrapper.className = "my-6 w-full overflow-hidden text-center";
+  wrapper.className = "my-6 w-full flex justify-center items-center overflow-visible text-center clear-both";
   wrapper.style.width = "100%";
-  wrapper.style.maxWidth = "100%";
+  wrapper.style.minWidth = "250px";
+  wrapper.style.minHeight = "90px";
+  wrapper.style.display = "flex";
   wrapper.setAttribute(MARK_ATTR, "1");
   wrapper.setAttribute(SLOT_ATTR, slot.id);
   wrapper.setAttribute("aria-label", "Iklan");
