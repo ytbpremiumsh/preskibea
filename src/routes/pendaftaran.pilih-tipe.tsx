@@ -128,7 +128,7 @@ function PilihTipePage() {
             </ul>
 
             <div className="mb-6 p-4 rounded-2xl bg-[var(--gold)]/5 border border-[var(--gold)]/20 text-center">
-              <span className="text-xs font-bold text-[var(--gold)] uppercase tracking-wider block mb-1">Biaya Donasi & Administrasi</span>
+              <span className="text-xs font-bold text-[var(--gold)] uppercase tracking-wider block mb-1">BIAYA FAST TRACK</span>
               <span className="text-2xl font-black text-[var(--gold)]">
                 {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(fastTrackFee)}
               </span>
