@@ -43,7 +43,7 @@ const benefits = [
 
 export function BenefitsSection() {
   const { benefitImage } = useBranding();
-  const benefitImg = benefitImage || benefitDefault.url;
+  const benefitImg = benefitImage && benefitImage.startsWith('http') ? benefitImage : benefitDefault.url;
 
   return (
     <section className="container-page py-20">

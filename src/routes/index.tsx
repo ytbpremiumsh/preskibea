@@ -40,9 +40,9 @@ const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Beasiswa Umum", "Beas
 
 function Index() {
   const { heroImage, posterImage, benefitImage } = useBranding();
-  const heroImg = heroImage || heroDefault;
-  const posterImg = posterImage || posterDefault;
-  const benefitImg = benefitImage || benefitDefault.url;
+  const heroImg = heroImage && heroImage.startsWith('http') ? heroImage : heroDefault;
+  const posterImg = posterImage && posterImage.startsWith('http') ? posterImage : posterDefault;
+  const benefitImg = benefitImage && benefitImage.startsWith('http') ? benefitImage : benefitDefault.url;
 
   return (
     <div className="animate-in fade-in duration-500">
