@@ -51,6 +51,7 @@ import { Route as BerkasTerkirimRouteImport } from './routes/berkas.terkirim'
 import { Route as BerkasUmumRouteImport } from './routes/berkas.umum'
 import { Route as BerkasYatimRouteImport } from './routes/berkas.yatim'
 import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
+import { Route as PendaftaranPilihTipeRouteImport } from './routes/pendaftaran.pilih-tipe'
 import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
 import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran.sukses'
 import { Route as PendaftaranUmumRouteImport } from './routes/pendaftaran.umum'
@@ -274,6 +275,11 @@ const PendaftaranEkonomiRoute = PendaftaranEkonomiRouteImport.update({
   path: '/pendaftaran/ekonomi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PendaftaranPilihTipeRoute = PendaftaranPilihTipeRouteImport.update({
+  id: '/pendaftaran/pilih-tipe',
+  path: '/pendaftaran/pilih-tipe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PendaftaranPrestasiRoute = PendaftaranPrestasiRouteImport.update({
   id: '/pendaftaran/prestasi',
   path: '/pendaftaran/prestasi',
@@ -375,6 +381,7 @@ export interface FileRoutesByFullPath {
   '/berkas/umum': typeof BerkasUmumRouteWithChildren
   '/berkas/yatim': typeof BerkasYatimRouteWithChildren
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
+  '/pendaftaran/pilih-tipe': typeof PendaftaranPilihTipeRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
   '/pendaftaran/umum': typeof PendaftaranUmumRoute
@@ -426,6 +433,7 @@ export interface FileRoutesByTo {
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
+  '/pendaftaran/pilih-tipe': typeof PendaftaranPilihTipeRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
   '/pendaftaran/umum': typeof PendaftaranUmumRoute
@@ -483,6 +491,7 @@ export interface FileRoutesById {
   '/berkas/umum': typeof BerkasUmumRouteWithChildren
   '/berkas/yatim': typeof BerkasYatimRouteWithChildren
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
+  '/pendaftaran/pilih-tipe': typeof PendaftaranPilihTipeRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
   '/pendaftaran/umum': typeof PendaftaranUmumRoute
@@ -541,6 +550,7 @@ export interface FileRouteTypes {
     | '/berkas/umum'
     | '/berkas/yatim'
     | '/pendaftaran/ekonomi'
+    | '/pendaftaran/pilih-tipe'
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
     | '/pendaftaran/umum'
@@ -592,6 +602,7 @@ export interface FileRouteTypes {
     | '/artikel/$slug'
     | '/berkas/terkirim'
     | '/pendaftaran/ekonomi'
+    | '/pendaftaran/pilih-tipe'
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
     | '/pendaftaran/umum'
@@ -648,6 +659,7 @@ export interface FileRouteTypes {
     | '/berkas/umum'
     | '/berkas/yatim'
     | '/pendaftaran/ekonomi'
+    | '/pendaftaran/pilih-tipe'
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
     | '/pendaftaran/umum'
@@ -685,6 +697,7 @@ export interface RootRouteChildren {
   BerkasUmumRoute: typeof BerkasUmumRouteWithChildren
   BerkasYatimRoute: typeof BerkasYatimRouteWithChildren
   PendaftaranEkonomiRoute: typeof PendaftaranEkonomiRoute
+  PendaftaranPilihTipeRoute: typeof PendaftaranPilihTipeRoute
   PendaftaranPrestasiRoute: typeof PendaftaranPrestasiRoute
   PendaftaranSuksesRoute: typeof PendaftaranSuksesRoute
   PendaftaranUmumRoute: typeof PendaftaranUmumRoute
@@ -989,6 +1002,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PendaftaranEkonomiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pendaftaran/pilih-tipe': {
+      id: '/pendaftaran/pilih-tipe'
+      path: '/pendaftaran/pilih-tipe'
+      fullPath: '/pendaftaran/pilih-tipe'
+      preLoaderRoute: typeof PendaftaranPilihTipeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pendaftaran/prestasi': {
       id: '/pendaftaran/prestasi'
       path: '/pendaftaran/prestasi'
@@ -1202,6 +1222,7 @@ const rootRouteChildren: RootRouteChildren = {
   BerkasUmumRoute: BerkasUmumRouteWithChildren,
   BerkasYatimRoute: BerkasYatimRouteWithChildren,
   PendaftaranEkonomiRoute: PendaftaranEkonomiRoute,
+  PendaftaranPilihTipeRoute: PendaftaranPilihTipeRoute,
   PendaftaranPrestasiRoute: PendaftaranPrestasiRoute,
   PendaftaranSuksesRoute: PendaftaranSuksesRoute,
   PendaftaranUmumRoute: PendaftaranUmumRoute,

@@ -16,7 +16,7 @@ export const Route = createFileRoute("/beasiswa-umum")({
       tagline="Beasiswa Umum"
       title="Beasiswa Jalur Umum untuk Semua Pelajar & Mahasiswa"
       desc="Jalur terbuka bagi siapa saja yang sedang menempuh pendidikan di Indonesia. Tanpa syarat prestasi khusus maupun kriteria ekonomi tertentu — cukup penuhi persyaratan dasar dan kirim berkasmu."
-      registerTo="/pendaftaran/umum"
+      
       shareTo="/bagikan-poster"
     />
   ),

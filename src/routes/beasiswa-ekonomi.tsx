@@ -16,7 +16,7 @@ export const Route = createFileRoute("/beasiswa-ekonomi")({
       tagline="Beasiswa Ekonomi"
       title="Beasiswa untuk Dukungan Pendidikan yang Setara"
       desc="Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial untuk pendidikan. Pendidikan berkualitas adalah hak semua anak Indonesia."
-      registerTo="/pendaftaran/ekonomi"
+      
       shareTo="/bagikan-poster"
     />
   ),

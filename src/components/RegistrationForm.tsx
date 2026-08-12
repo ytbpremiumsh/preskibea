@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Calendar, CheckCircle2, Loader2, UploadCloud } from "lucide-react";
+import { ArrowRight, Calendar, CheckCircle2, Loader2, UploadCloud, Zap, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { FormField, FormSchema } from "@/lib/form-schema";
@@ -12,9 +12,9 @@ function f(
   name: string,
   label: string,
   type: FormField["type"],
-  opts: Partial<FormField> = {},
+  opts: Partial<FormField> & { standard?: boolean } = {},
 ): FormField {
-  return { id: name, name, label, type, standard: STANDARD_REG_COLUMNS.has(name), ...opts };
+  return { id: name, name, label, type, standard: opts.standard ?? STANDARD_REG_COLUMNS.has(name), ...opts };
 }
 
 const EDUCATION_LEVELS = ["SMP/MTs", "SMA/SMK/MA", "Mahasiswa", "Gap Year"];
@@ -143,7 +143,13 @@ function defaultPlaceholder(field: FormField): string {
   return `Masukkan ${field.label.toLowerCase()}`;
 }
 
-export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "yatim" }) {
+export function RegistrationForm({ 
+  kind, 
+  initialType = "reguler" 
+}: { 
+  kind: "prestasi" | "ekonomi" | "umum" | "yatim";
+  initialType?: "reguler" | "fast_track";
+}) {
   const navigate = useNavigate();
   const sendEmail = sendAppEmail;
   const [schema, setSchema] = useState<FormSchema>(FALLBACK[kind]);
@@ -153,7 +159,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [values, setValues] = useState<Record<string, string>>({});
   const [files, setFiles] = useState<Record<string, File | null>>({});
-  const [registrationType, setRegistrationType] = useState<"reguler" | "fast_track">("reguler");
+  const [registrationType, setRegistrationType] = useState<"reguler" | "fast_track">(initialType);
   const [activePaymentLink, setActivePaymentLink] = useState<string | null>(null);
   const [aulaaPaymentId, setAulaaPaymentId] = useState<string | null>(null);
   const [showAulaaIframe, setShowAulaaIframe] = useState(false);
@@ -576,67 +582,28 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" | "umu
 
       <form onSubmit={handleSubmit} className="mt-10 max-w-4xl mx-auto">
         <div className="space-y-6">
-          <Card title="Pilih Tipe Pendaftaran">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => setRegistrationType("reguler")}
-                className={`flex flex-col items-start p-5 rounded-2xl border-2 transition-all text-left ${
-                  registrationType === "reguler"
-                    ? "border-primary bg-primary-soft/30 shadow-card"
-                    : "border-border bg-card hover:border-primary/50"
-                }`}
-              >
-                <div className="flex items-center gap-2 font-bold text-foreground">
-                  <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${registrationType === "reguler" ? "border-primary" : "border-muted-foreground"}`}>
-                    {registrationType === "reguler" && <span className="h-2 w-2 rounded-full bg-primary" />}
-                  </span>
-                  Reguler
+          <div className="p-4 rounded-2xl bg-primary-soft/30 border border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className={`h-10 w-10 rounded-full flex items-center justify-center ${registrationType === "fast_track" ? "bg-[var(--gold)]/20 text-[var(--gold)]" : "bg-primary/20 text-primary"}`}>
+                {registrationType === "fast_track" ? <Zap size={20} /> : <Clock size={20} />}
+              </div>
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tipe Pendaftaran</div>
+                <div className="text-lg font-black text-foreground uppercase tracking-tight">
+                  {registrationType === "fast_track" ? "Fast Track" : "Reguler"}
                 </div>
-                <ul className="mt-3 space-y-1.5 text-[11px] text-muted-foreground">
-                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-primary" /> Wajib Follow IG & TikTok</li>
-                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-primary" /> Wajib Share Poster</li>
-                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-primary" /> Seleksi Berkas Standar</li>
-                </ul>
-                <div className="mt-4 pt-3 border-t border-border w-full flex justify-between items-center">
-                  <span className="text-[10px] font-semibold text-muted-foreground uppercase">Biaya</span>
-                  <span className="text-sm font-bold text-primary">GRATIS</span>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setRegistrationType("fast_track")}
-                className={`flex flex-col items-start p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden ${
-                  registrationType === "fast_track"
-                    ? "border-[var(--gold)] bg-[var(--gold)]/5 shadow-card"
-                    : "border-border bg-card hover:border-[var(--gold)]/50"
-                }`}
-              >
-                <div className="absolute top-0 right-0 bg-[var(--gold)] text-gold-foreground text-[9px] font-bold px-2 py-0.5 rounded-bl-lg uppercase tracking-tighter">
-                  Prioritas
-                </div>
-                <div className="flex items-center gap-2 font-bold text-foreground">
-                  <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${registrationType === "fast_track" ? "border-[var(--gold)]" : "border-muted-foreground"}`}>
-                    {registrationType === "fast_track" && <span className="h-2 w-2 rounded-full bg-[var(--gold)]" />}
-                  </span>
-                  Fast Track
-                </div>
-                <ul className="mt-3 space-y-1.5 text-[11px] text-muted-foreground">
-                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-[var(--gold)]" /> Tanpa Follow Media Sosial</li>
-                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-[var(--gold)]" /> Tanpa Share Poster</li>
-                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-[var(--gold)]" /> E-Certificate Batch #8</li>
-                  <li className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-[var(--gold)]" /> Akses Webinar Eksklusif</li>
-                </ul>
-                <div className="mt-4 pt-3 border-t border-border w-full flex justify-between items-center">
-                  <span className="text-[10px] font-semibold text-muted-foreground uppercase">BIAYA</span>
-                  <span className="text-sm font-bold text-[var(--gold)]">
-                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(fastTrackFee)}
-                  </span>
-                </div>
-              </button>
+              </div>
             </div>
-          </Card>
+            
+            <Link 
+              to="/pendaftaran/pilih-tipe" 
+              search={{ kind }}
+              className="text-xs font-bold text-primary hover:underline px-4 py-2 bg-white rounded-full border border-primary/10 shadow-sm"
+            >
+              Ganti Tipe
+            </Link>
+          </div>
+
 
           <Card title="Informasi Pribadi">
             <div className="grid sm:grid-cols-2 gap-x-4 gap-y-3">

@@ -43,14 +43,12 @@ export function CategoryPage({
   title,
   tagline,
   desc,
-  registerTo,
   shareTo,
 }: {
   kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   title: string;
   tagline: string;
   desc: string;
-  registerTo: "/pendaftaran/prestasi" | "/pendaftaran/ekonomi" | "/pendaftaran/umum" | "/pendaftaran/yatim";
   shareTo: "/bagikan-poster";
 }) {
   const { benefitImage } = useBranding();
@@ -200,7 +198,11 @@ export function CategoryPage({
             <h3 className="text-xl md:text-2xl font-bold text-foreground">Sudah memenuhi persyaratan?</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">Lengkapi formulir pendaftaran beasiswa.</p>
           </div>
-          <Link to={registerTo} className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition">
+          <Link 
+            to="/pendaftaran/pilih-tipe" 
+            search={{ kind }}
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+          >
             Daftar Sekarang <ArrowRight size={16} />
           </Link>
         </div>
