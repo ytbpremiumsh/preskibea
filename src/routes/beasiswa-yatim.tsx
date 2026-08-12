@@ -16,7 +16,7 @@ export const Route = createFileRoute("/beasiswa-yatim")({
       tagline="Beasiswa Yatim"
       title="Beasiswa Jalur Yatim untuk Pelajar & Mahasiswa"
       desc="Jalur khusus bagi anak yatim, piatu, maupun yatim piatu yang ingin terus melanjutkan pendidikan. Cukup lengkapi berkas pendukung — tanpa minimal nilai dan tanpa biaya pendaftaran."
-      registerTo="/pendaftaran/yatim"
+      
       shareTo="/bagikan-poster"
     />
   ),
