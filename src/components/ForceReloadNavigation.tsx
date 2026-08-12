@@ -9,7 +9,9 @@ import { useRouterState } from "@tanstack/react-router";
  */
 export function ForceReloadNavigation() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const disabled = pathname.startsWith("/admin") || pathname.startsWith("/login");
+  // Disable ForceReload completely to keep SPA benefits (lightweight & fast)
+  const disabled = true; 
+
 
   useEffect(() => {
     if (disabled) return;
