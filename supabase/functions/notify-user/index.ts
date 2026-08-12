@@ -18,7 +18,26 @@ serve(async (req) => {
 
     console.log(`Attempting to send ${type} email to ${email} for ${full_name}`);
 
-    // Mapping type to the customizable setting key used by send-app-email
+    // If type is "registration" or "berkas", we use the React Email system directly
+    if (type === "registration" || type === "berkas") {
+      const result = await sendTemplateEmail(type, email, {
+        templateData: {
+          full_name,
+          token,
+          kind,
+          status,
+          whatsapp,
+          count,
+          siteName: "Prestasi Kita",
+        }
+      });
+      return new Response(JSON.stringify({ ok: true, sent: result.sent }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Fallback to legacy customizable templates via send-app-email for other types
     const typeMap: Record<string, string> = {
       "registration": "registration-confirmation",
       "berkas": "berkas-confirmation"
