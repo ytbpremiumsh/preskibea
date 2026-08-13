@@ -16,9 +16,8 @@ const persyaratan = [
 
 
 
-const FALLBACK_BENEFIT_IMAGE = benefitAsset.url;
-
-const BENEFIT_IMAGE_URL = benefitAsset.url;
+const FALLBACK_BENEFIT_IMAGE = "/benefit-lokal.png";
+const BENEFIT_IMAGE_URL = "/benefit-lokal.png";
 
 const benefitList = [
   { strong: "Dana Pendidikan Beasiswa", rest: "" },
