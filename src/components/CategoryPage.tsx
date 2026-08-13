@@ -139,22 +139,21 @@ export function CategoryPage({
           <h2 className="text-2xl font-bold text-foreground">Benefit Beasiswa</h2>
           <p className="mt-1 text-sm text-muted-foreground">Total beasiswa Rp17.000.000/semester serta benefit pendukung.</p>
 
-          <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-secondary/30">
+          <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-secondary/30 relative">
             <img
-              src={benefitImage || FALLBACK_BENEFIT_IMAGE}
+              src="/benefit-lokal.png"
               alt="Benefit Beasiswa Prestasi Kita"
               loading="lazy"
               decoding="async"
               width={1200}
               height={800}
+              className="w-full h-auto object-cover"
               onError={(e) => {
                 const target = e.currentTarget;
-                const fallbackUrl = new URL(FALLBACK_BENEFIT_IMAGE, window.location.origin).href;
-                if (target.src.includes('undefined') || target.src.includes('null') || target.src !== fallbackUrl) {
-                  target.src = FALLBACK_BENEFIT_IMAGE;
+                if (benefitImage && target.src !== benefitImage) {
+                  target.src = benefitImage;
                 }
               }}
-              className="w-full h-auto object-cover"
             />
           </div>
 
