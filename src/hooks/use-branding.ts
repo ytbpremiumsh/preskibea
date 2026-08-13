@@ -19,6 +19,11 @@ export type BrandingSettings = {
     yatim?: string;
   };
   alumni_images?: string[];
+  home_widgets?: {
+    widget1?: string;
+    widget2?: string;
+    widget3?: string;
+  };
 };
 
 export function useBranding() {
