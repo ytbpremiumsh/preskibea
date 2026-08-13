@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { RawHtmlWidget } from "@/components/ads/RawHtmlWidget";
+import { useBranding } from "@/hooks/use-branding";
 
 export const Route = createFileRoute("/artikel/")({
   head: () => ({
@@ -31,6 +33,7 @@ function ArtikelPage() {
   const [items, setItems] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [cat, setCat] = useState<string>("Semua");
+  const { articleWidgets } = useBranding();
 
   useEffect(() => {
     (async () => {
@@ -76,6 +79,12 @@ function ArtikelPage() {
       )}
 
       <AdSlot placement="article_list_top" />
+      
+      {articleWidgets.top && (
+        <div className="mt-8 overflow-visible">
+          <RawHtmlWidget id="article-widget-top" html={articleWidgets.top} />
+        </div>
+      )}
 
       {loading ? (
         <div className="mt-16 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
@@ -108,6 +117,12 @@ function ArtikelPage() {
         </section>
       )}
       <AdSlot placement="article_list_bottom" />
+
+      {articleWidgets.bottom && (
+        <div className="mt-8 overflow-visible">
+          <RawHtmlWidget id="article-widget-bottom" html={articleWidgets.bottom} />
+        </div>
+      )}
     </main>
   );
 }
