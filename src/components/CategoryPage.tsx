@@ -238,6 +238,13 @@ export function CategoryPage({
       </section>
 
       <AdSlot placement="category_bottom" />
+
+      {/* Widget Bawah khusus halaman kategori */}
+      {categoryWidgets.bottom && (
+        <div className="container-page pb-10 overflow-visible">
+          <RawHtmlWidget id="category-widget-bottom" html={categoryWidgets.bottom} />
+        </div>
+      )}
     </>
   );
 }
