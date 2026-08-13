@@ -47,8 +47,7 @@ export function MaintenanceGate({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  if (!loaded) return <>{children}</>;
+  if (config?.enabled && !isAdmin) return <MaintenancePage config={config} />;
   return <>{children}</>;
-  // if (!loaded) return <>{children}</>;
-  // if (config?.enabled && !isAdmin) return <MaintenancePage config={config} />;
-  // return <>{children}</>;
 }
