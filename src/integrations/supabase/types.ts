@@ -404,6 +404,7 @@ export type Database = {
       }
       registrations: {
         Row: {
+          additional_docs_url: string | null
           address: string
           birth_date: string
           birth_place: string
@@ -419,6 +420,7 @@ export type Database = {
           gender: string
           grade: string
           id: string
+          khs_url: string | null
           kind: Database["public"]["Enums"]["scholarship_kind"]
           main_achievement: string | null
           parent_income: string | null
@@ -429,10 +431,12 @@ export type Database = {
           status: Database["public"]["Enums"]["registration_status"]
           student_card_url: string | null
           token: string
+          transcript_custom_url: string | null
           updated_at: string
           whatsapp: string
         }
         Insert: {
+          additional_docs_url?: string | null
           address: string
           birth_date: string
           birth_place: string
@@ -448,6 +452,7 @@ export type Database = {
           gender: string
           grade: string
           id?: string
+          khs_url?: string | null
           kind: Database["public"]["Enums"]["scholarship_kind"]
           main_achievement?: string | null
           parent_income?: string | null
@@ -458,10 +463,12 @@ export type Database = {
           status?: Database["public"]["Enums"]["registration_status"]
           student_card_url?: string | null
           token: string
+          transcript_custom_url?: string | null
           updated_at?: string
           whatsapp: string
         }
         Update: {
+          additional_docs_url?: string | null
           address?: string
           birth_date?: string
           birth_place?: string
@@ -477,6 +484,7 @@ export type Database = {
           gender?: string
           grade?: string
           id?: string
+          khs_url?: string | null
           kind?: Database["public"]["Enums"]["scholarship_kind"]
           main_achievement?: string | null
           parent_income?: string | null
@@ -487,6 +495,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["registration_status"]
           student_card_url?: string | null
           token?: string
+          transcript_custom_url?: string | null
           updated_at?: string
           whatsapp?: string
         }

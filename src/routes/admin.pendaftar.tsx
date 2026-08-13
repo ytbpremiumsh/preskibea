@@ -30,6 +30,9 @@ type Registration = {
   school_name: string;
   grade: string;
   kind: "prestasi" | "ekonomi" | "umum" | "yatim";
+  khs_url?: string | null;
+  transcript_custom_url?: string | null;
+  additional_docs_url?: string | null;
   status: "pending" | "verified" | "approved" | "rejected";
   token?: string | null;
   fast_track?: boolean | null;
@@ -582,6 +585,9 @@ function DetailDialog({
           {row.parent_income && <Field label="Penghasilan Ortu" value={row.parent_income} />}
           {row.dependents != null && <Field label="Tanggungan" value={String(row.dependents)} />}
           {row.main_achievement && <Field label="Prestasi Utama" value={row.main_achievement} />}
+          {row.khs_url && <Field label="KHS (URL)" value={row.khs_url} />}
+          {row.transcript_custom_url && <Field label="Transkrip (URL)" value={row.transcript_custom_url} />}
+          {row.additional_docs_url && <Field label="Berkas Pendukung (URL)" value={row.additional_docs_url} />}
         </div>
 
         <div className="mt-6">
@@ -593,6 +599,9 @@ function DetailDialog({
             {row.student_card_url && (
               <DocLink type="Kartu Pelajar / Kartu Mahasiswa" url={row.student_card_url} />
             )}
+            {row.khs_url && <DocLink type="Kartu Hasil Studi (KHS)" url={row.khs_url} />}
+            {row.transcript_custom_url && <DocLink type="Transkrip Nilai" url={row.transcript_custom_url} />}
+            {row.additional_docs_url && <DocLink type="Berkas Pendukung Lainnya" url={row.additional_docs_url} />}
             {docs.map((d) => (
               <DocLink key={d.id} type={d.doc_type} url={d.file_url} />
             ))}
