@@ -40,7 +40,7 @@ const stats = [
 const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Beasiswa Umum", "Beasiswa Yatim", "Tanpa Biaya", "Seluruh Indonesia", "Sertifikat Resmi", "Merchandise", "Akses Magang"];
 
 function Index() {
-  const { heroImage, posterImage, benefitImage } = useBranding();
+  const { heroImage, posterImage, benefitImage, homeWidgets } = useBranding();
   const heroImg = heroImage && heroImage.startsWith('http') ? heroImage : heroDefault;
   const posterImg = posterImage && posterImage.startsWith('http') ? posterImage : posterDefault;
   const benefitImg = benefitImage && benefitImage.startsWith('http') ? benefitImage : benefitDefault.url;
