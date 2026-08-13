@@ -19,6 +19,8 @@ import { AnalyticsInjector } from "@/components/AnalyticsInjector";
 import { ForceReloadNavigation } from "@/components/ForceReloadNavigation";
 import { MaintenanceGate } from "@/components/MaintenanceGate";
 import { AdminBar } from "@/components/admin/AdminBar";
+import { useBranding } from "@/hooks/use-branding";
+import { RawHtmlWidget } from "@/components/ads/RawHtmlWidget";
 
 function NotFoundComponent() {
   return (
@@ -103,6 +105,7 @@ function RootComponent() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isBareLayout = pathname.startsWith("/admin") || pathname.startsWith("/login");
   const isPublic = !isBareLayout;
+  const { globalWidgets } = useBranding();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -125,9 +128,25 @@ function RootComponent() {
             <AdminBar />
             <div className="flex min-h-screen flex-col">
               <SiteHeader />
+              
+              {/* Global Top Widget */}
+              {globalWidgets.top && (
+                <div className="container-page py-4 overflow-visible">
+                  <RawHtmlWidget id="global-top-widget" html={globalWidgets.top} />
+                </div>
+              )}
+
               <main className="flex-1">
                 <Outlet />
               </main>
+
+              {/* Global Bottom Widget */}
+              {globalWidgets.bottom && (
+                <div className="container-page py-4 overflow-visible">
+                  <RawHtmlWidget id="global-bottom-widget" html={globalWidgets.bottom} />
+                </div>
+              )}
+
               <SiteFooter />
             </div>
           </MaintenanceGate>

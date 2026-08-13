@@ -18,6 +18,11 @@ type HomeWidgets = {
   widget3?: string;
 };
 
+type GlobalWidgets = {
+  top?: string;
+  bottom?: string;
+};
+
 function AdminWidgets() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -25,6 +30,10 @@ function AdminWidgets() {
     widget1: "",
     widget2: "",
     widget3: "",
+  });
+  const [globalWidgets, setGlobalWidgets] = useState<GlobalWidgets>({
+    top: "",
+    bottom: "",
   });
 
   useEffect(() => {
@@ -42,6 +51,12 @@ function AdminWidgets() {
             widget1: branding.home_widgets.widget1 || "",
             widget2: branding.home_widgets.widget2 || "",
             widget3: branding.home_widgets.widget3 || "",
+          });
+        }
+        if (branding.global_widgets) {
+          setGlobalWidgets({
+            top: branding.global_widgets.top || "",
+            bottom: branding.global_widgets.bottom || "",
           });
         }
       }
@@ -62,7 +77,8 @@ function AdminWidgets() {
       const currentBranding = (data?.value as any) || {};
       const newBranding = {
         ...currentBranding,
-        home_widgets: widgets
+        home_widgets: widgets,
+        global_widgets: globalWidgets
       };
 
       const { error } = await supabase
@@ -91,10 +107,10 @@ function AdminWidgets() {
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <Layout className="h-6 w-6 text-primary" /> Widget Halaman Utama
+            <Layout className="h-6 w-6 text-primary" /> Pengaturan Widget & Iklan
           </h1>
           <p className="text-sm text-muted-foreground">
-            Kelola kode HTML/Scripts untuk widget yang muncul di halaman beranda.
+            Kelola kode HTML/Scripts untuk widget yang muncul di seluruh halaman situs.
           </p>
         </div>
         <Button onClick={save} disabled={saving}>
@@ -104,26 +120,49 @@ function AdminWidgets() {
       </div>
 
       <div className="grid gap-6">
-        <WidgetEditor
-          title="Widget 1 (Di bawah Hero)"
-          description="Slot ini muncul tepat setelah bagian hero di halaman utama."
-          value={widgets.widget1}
-          onChange={(v) => setWidgets({ ...widgets, widget1: v })}
-        />
-        
-        <WidgetEditor
-          title="Widget 2 (Di bawah Kategori)"
-          description="Slot ini muncul setelah daftar kategori beasiswa."
-          value={widgets.widget2}
-          onChange={(v) => setWidgets({ ...widgets, widget2: v })}
-        />
-        
-        <WidgetEditor
-          title="Widget 3 (Di bawah Benefit)"
-          description="Slot ini muncul setelah bagian keuntungan beasiswa."
-          value={widgets.widget3}
-          onChange={(v) => setWidgets({ ...widgets, widget3: v })}
-        />
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold">Widget Global (Semua Halaman)</h2>
+          <div className="grid gap-6">
+            <WidgetEditor
+              title="Global Top (Header)"
+              description="Slot ini muncul di bagian paling atas di SEMUA halaman (setelah header)."
+              value={globalWidgets.top}
+              onChange={(v) => setGlobalWidgets({ ...globalWidgets, top: v })}
+            />
+            <WidgetEditor
+              title="Global Bottom (Footer)"
+              description="Slot ini muncul di bagian paling bawah di SEMUA halaman (sebelum footer)."
+              value={globalWidgets.bottom}
+              onChange={(v) => setGlobalWidgets({ ...globalWidgets, bottom: v })}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold">Widget Halaman Utama (Beranda)</h2>
+          <div className="grid gap-6">
+            <WidgetEditor
+              title="Widget 1 (Di bawah Hero)"
+              description="Slot ini muncul tepat setelah bagian hero di halaman utama."
+              value={widgets.widget1}
+              onChange={(v) => setWidgets({ ...widgets, widget1: v })}
+            />
+            
+            <WidgetEditor
+              title="Widget 2 (Di bawah Kategori)"
+              description="Slot ini muncul setelah daftar kategori beasiswa."
+              value={widgets.widget2}
+              onChange={(v) => setWidgets({ ...widgets, widget2: v })}
+            />
+            
+            <WidgetEditor
+              title="Widget 3 (Di bawah Benefit)"
+              description="Slot ini muncul setelah bagian keuntungan beasiswa."
+              value={widgets.widget3}
+              onChange={(v) => setWidgets({ ...widgets, widget3: v })}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

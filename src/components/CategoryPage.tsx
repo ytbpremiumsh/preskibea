@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake, Users, Heart } from "lucide-react";
 import type { ReactNode } from "react";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { RawHtmlWidget } from "@/components/ads/RawHtmlWidget";
 import benefitAsset from "@/assets/benefit-prestasi-kita.png.asset.json";
 
 const persyaratan = [
@@ -50,7 +51,7 @@ export function CategoryPage({
   desc: string;
   shareTo: "/bagikan-poster";
 }) {
-  const { benefitImage } = useBranding();
+  const { benefitImage, globalWidgets } = useBranding();
   const isGold = kind === "ekonomi";
   const Icon: ReactNode = isGold ? <HeartHandshake /> : kind === "umum" ? <Users /> : kind === "yatim" ? <Heart /> : <Trophy />;
 
@@ -188,6 +189,11 @@ export function CategoryPage({
       </section>
 
       <AdSlot placement="category_middle" />
+      
+      {/* Widget 2 khusus halaman kategori */}
+      <div className="container-page py-4 overflow-visible">
+        <RawHtmlWidget id="category-widget-middle" html={globalWidgets.bottom || ""} />
+      </div>
 
       {/* CTA — Pendaftaran (terpisah dari berkas) */}
       <section className="container-page pb-10">
