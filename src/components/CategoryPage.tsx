@@ -141,7 +141,7 @@ export function CategoryPage({
 
           <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-secondary/30 relative">
             <img
-              src={benefitImage || "/benefit-lokal.png"}
+              src="/benefit-lokal.png"
               alt="Benefit Beasiswa Prestasi Kita"
               loading="lazy"
               decoding="async"
@@ -150,8 +150,8 @@ export function CategoryPage({
               className="w-full h-auto object-cover"
               onError={(e) => {
                 const target = e.currentTarget;
-                if (target.src !== "/benefit-lokal.png") {
-                  target.src = "/benefit-lokal.png";
+                if (benefitImage && target.src !== benefitImage) {
+                  target.src = benefitImage;
                 }
               }}
             />
