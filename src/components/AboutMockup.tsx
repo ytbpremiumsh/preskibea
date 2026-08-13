@@ -1,4 +1,4 @@
-import { Award, BookOpen, Wallet, CheckCircle } from "lucide-react";
+import { Award, BookOpen, Wallet, Gift } from "lucide-react";
 import posterDefault from "@/assets/poster-beasiswa.png";
 import { useBranding } from "@/hooks/use-branding";
 import { useEffect, useState } from "react";
