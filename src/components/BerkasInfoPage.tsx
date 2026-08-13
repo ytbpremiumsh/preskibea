@@ -6,8 +6,8 @@ import { AdSlot } from "@/components/ads/AdSlot";
 const docsByKind = {
   prestasi: [
     "Kartu Pelajar / Kartu Mahasiswa",
-    "Kartu Hasil Studi (KHS) (khusus Mahasiswa)",
-    "Transkrip Nilai (khusus Pelajar & Gapyear)",
+    "Kartu Hasil Studi (KHS) (Wajib untuk Mahasiswa)",
+    "Transkrip Nilai (Wajib untuk Pelajar & Gapyear)",
     "Sertifikat Prestasi (Akademik maupun Non-Akademik)",
     "Curriculum Vitae (CV) Kreatif",
     "Berkas Pendukung Lainnya (Opsional)",
