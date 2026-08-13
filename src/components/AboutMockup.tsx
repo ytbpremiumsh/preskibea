@@ -1,5 +1,5 @@
 import { Award, BookOpen, Wallet } from "lucide-react";
-import posterDefault from "@/assets/poster-beasiswa.png";
+import benefitDefault from "@/assets/benefit-prestasi-kita.png.asset.json";
 import { useBranding } from "@/hooks/use-branding";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,8 +23,8 @@ const features = [
 ];
 
 export function AboutMockup() {
-  const { posterImage } = useBranding();
-  const [remotePoster, setRemotePoster] = useState<string | null>(null);
+  const { benefitImage } = useBranding();
+  const [remoteBenefit, setRemoteBenefit] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPoster = async () => {
@@ -32,23 +32,21 @@ export function AboutMockup() {
         const { data } = await supabase
           .from("site_settings")
           .select("value")
-          .eq("key", "share_poster")
+          .eq("key", "branding")
           .maybeSingle();
 
         const v = data?.value as any;
-        // Check for unified poster first, matching logic in SharePosterPage
-        const url = v?.is_unified ? v?.unified?.image_url : v?.prestasi?.image_url;
-        if (url) {
-          setRemotePoster(url);
+        if (v?.benefit_image_url) {
+          setRemoteBenefit(v.benefit_image_url);
         }
       } catch (error) {
-        console.error("Error fetching poster:", error);
+        console.error("Error fetching branding:", error);
       }
     };
     fetchPoster();
   }, []);
 
-  const posterImg = remotePoster || posterImage || posterDefault;
+  const benefitImg = remoteBenefit || benefitImage || benefitDefault.url;
 
   return (
     <section className="container-page py-20">
@@ -86,13 +84,13 @@ export function AboutMockup() {
         <div className="order-1 lg:order-2 flex justify-center">
           <div className="card-block overflow-hidden max-w-md w-full rotate-2 hover:rotate-0 transition-transform duration-500">
             <img 
-              src={posterImg} 
-              alt="Poster Beasiswa Prestasi Kita" 
+              src={benefitImg} 
+              alt="Benefit Beasiswa Prestasi Kita" 
               className="w-full h-auto object-contain shadow-2xl"
               onError={(e) => {
                 const target = e.currentTarget;
-                if (target.src.includes('undefined') || target.src.includes('null') || (target.src !== new URL(posterDefault, window.location.origin).href)) {
-                  target.src = posterDefault;
+                if (target.src !== benefitDefault.url) {
+                  target.src = benefitDefault.url;
                 }
               }}
             />
