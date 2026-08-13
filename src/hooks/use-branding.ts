@@ -54,5 +54,6 @@ export function useBranding() {
     posterImage: branding.poster_image_url || null,
     categoryImages: branding.category_images || {},
     alumniImages: branding.alumni_images || [],
+    homeWidgets: branding.home_widgets || {},
   };
 }
