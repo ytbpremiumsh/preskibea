@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, HeartHandshake, Trophy, Users, Heart } from "lucide-react";
+import { RawHtmlWidget } from "@/components/ads/RawHtmlWidget";
 import ilustrasiPrestasi from "@/assets/jalur-prestasi.jpg";
 import ilustrasiEkonomi from "@/assets/jalur-ekonomi.jpg";
 import ilustrasiUmum from "@/assets/jalur-umum.jpg";
@@ -17,10 +18,16 @@ export const Route = createFileRoute("/daftar")({
 });
 
 function DaftarSelector() {
-  const { categoryImages } = useBranding();
+  const { categoryImages, registrationWidgets } = useBranding();
 
   return (
     <main className="container-page py-16">
+      {/* Widget Atas Pendaftaran */}
+      {registrationWidgets.top && (
+        <div className="mb-10 overflow-visible">
+          <RawHtmlWidget id="reg-widget-top" html={registrationWidgets.top} />
+        </div>
+      )}
       <header className="max-w-2xl mx-auto text-center">
         <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">Pendaftaran</span>
         <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Pilih Jalur Beasiswa</h1>
@@ -61,6 +68,13 @@ function DaftarSelector() {
           illustration={categoryImages.yatim || ilustrasiYatim}
         />
       </section>
+
+      {/* Widget Bawah Pendaftaran */}
+      {registrationWidgets.bottom && (
+        <div className="mt-16 overflow-visible">
+          <RawHtmlWidget id="reg-widget-bottom" html={registrationWidgets.bottom} />
+        </div>
+      )}
     </main>
   );
 }

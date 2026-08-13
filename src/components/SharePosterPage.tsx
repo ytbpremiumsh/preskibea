@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Download, Share2, Facebook, Instagram, ListChecks, MessageCircle, Info, CheckCircle2, Copy, Check } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useBranding } from "@/hooks/use-branding";
+import { RawHtmlWidget } from "@/components/ads/RawHtmlWidget";
 import defaultPoster from "@/assets/poster-beasiswa.png";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +17,7 @@ type PosterCfg = {
 
 export function SharePosterPage({ kind: initialKind }: { kind?: "prestasi" | "ekonomi" | "umum" | "yatim" }) {
   const kind = initialKind || "prestasi";
+  const { posterWidgets } = useBranding();
   const isGold = kind === "ekonomi";
   const label = kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "umum" ? "Beasiswa Umum" : kind === "yatim" ? "Beasiswa Yatim" : "Beasiswa Prestasi";
   const path = kind === "ekonomi" ? "/beasiswa-ekonomi" : kind === "umum" ? "/beasiswa-umum" : kind === "yatim" ? "/beasiswa-yatim" : "/beasiswa-prestasi";
@@ -112,6 +115,13 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
   return (
     <section className="container-page py-16">
       <Link to="/" className="text-xs font-semibold text-primary hover:underline">← Kembali ke Beranda</Link>
+
+      {/* Widget Atas Poster */}
+      {posterWidgets.top && (
+        <div className="mt-6 overflow-visible">
+          <RawHtmlWidget id="poster-widget-top" html={posterWidgets.top} />
+        </div>
+      )}
 
       <div className="mt-4">
         <h1 className="text-3xl md:text-4xl font-extrabold text-foreground">Bagikan Poster Beasiswa</h1>
@@ -253,6 +263,13 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
         </div>
       </div>
       <AdSlot placement="share_bottom" />
+
+      {/* Widget Bawah Poster */}
+      {posterWidgets.bottom && (
+        <div className="mt-10 overflow-visible">
+          <RawHtmlWidget id="poster-widget-bottom" html={posterWidgets.bottom} />
+        </div>
+      )}
     </section>
   );
 }

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake, Users, Heart } from "lucide-react";
+import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake, Users, Heart, AlertTriangle } from "lucide-react";
 import type { ReactNode } from "react";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { RawHtmlWidget } from "@/components/ads/RawHtmlWidget";

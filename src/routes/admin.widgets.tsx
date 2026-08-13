@@ -40,7 +40,7 @@ type CategoryWidgets = {
   bottom?: string;
 };
 
-type PageTab = "global" | "home" | "article" | "category";
+type PageTab = "global" | "home" | "article" | "category" | "registration" | "berkas" | "poster";
 
 function AdminWidgets() {
   const [loading, setLoading] = useState(true);
@@ -60,6 +60,18 @@ function AdminWidgets() {
     bottom: "",
   });
   const [categoryWidgets, setCategoryWidgets] = useState<CategoryWidgets>({
+    top: "",
+    bottom: "",
+  });
+  const [registrationWidgets, setRegistrationWidgets] = useState<CategoryWidgets>({
+    top: "",
+    bottom: "",
+  });
+  const [berkasWidgets, setBerkasWidgets] = useState<CategoryWidgets>({
+    top: "",
+    bottom: "",
+  });
+  const [posterWidgets, setPosterWidgets] = useState<CategoryWidgets>({
     top: "",
     bottom: "",
   });
@@ -99,6 +111,24 @@ function AdminWidgets() {
             bottom: branding.category_widgets.bottom || "",
           });
         }
+        if (branding.registration_widgets) {
+          setRegistrationWidgets({
+            top: branding.registration_widgets.top || "",
+            bottom: branding.registration_widgets.bottom || "",
+          });
+        }
+        if (branding.berkas_widgets) {
+          setBerkasWidgets({
+            top: branding.berkas_widgets.top || "",
+            bottom: branding.berkas_widgets.bottom || "",
+          });
+        }
+        if (branding.poster_widgets) {
+          setPosterWidgets({
+            top: branding.poster_widgets.top || "",
+            bottom: branding.poster_widgets.bottom || "",
+          });
+        }
       }
       setLoading(false);
     })();
@@ -121,6 +151,9 @@ function AdminWidgets() {
         global_widgets: globalWidgets,
         article_widgets: articleWidgets,
         category_widgets: categoryWidgets,
+        registration_widgets: registrationWidgets,
+        berkas_widgets: berkasWidgets,
+        poster_widgets: posterWidgets,
       };
 
       const { error } = await supabase
@@ -164,7 +197,10 @@ function AdminWidgets() {
               <SelectItem value="global">Global (Semua Halaman)</SelectItem>
               <SelectItem value="home">Halaman Utama</SelectItem>
               <SelectItem value="article">Halaman Artikel</SelectItem>
-              <SelectItem value="category">Halaman Kategori</SelectItem>
+              <SelectItem value="category">Halaman Benefit (Kategori)</SelectItem>
+              <SelectItem value="registration">Halaman Pendaftaran</SelectItem>
+              <SelectItem value="berkas">Halaman Berkas</SelectItem>
+              <SelectItem value="poster">Halaman Bagikan Poster</SelectItem>
             </SelectContent>
           </Select>
 
@@ -257,6 +293,66 @@ function AdminWidgets() {
                 description="Slot ini muncul di bagian bawah halaman kategori."
                 value={categoryWidgets.bottom}
                 onChange={(v) => setCategoryWidgets({ ...categoryWidgets, bottom: v })}
+              />
+            </div>
+          </div>
+        )}
+
+        {activeTab === "registration" && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold">Widget Halaman Pendaftaran</h2>
+            <div className="grid gap-6">
+              <WidgetEditor
+                title="Registration Top"
+                description="Slot ini muncul di bagian atas halaman pendaftaran."
+                value={registrationWidgets.top}
+                onChange={(v) => setRegistrationWidgets({ ...registrationWidgets, top: v })}
+              />
+              <WidgetEditor
+                title="Registration Bottom"
+                description="Slot ini muncul di bagian bawah halaman pendaftaran."
+                value={registrationWidgets.bottom}
+                onChange={(v) => setRegistrationWidgets({ ...registrationWidgets, bottom: v })}
+              />
+            </div>
+          </div>
+        )}
+
+        {activeTab === "berkas" && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold">Widget Halaman Berkas</h2>
+            <div className="grid gap-6">
+              <WidgetEditor
+                title="Berkas Top"
+                description="Slot ini muncul di bagian atas halaman pengiriman berkas."
+                value={berkasWidgets.top}
+                onChange={(v) => setBerkasWidgets({ ...berkasWidgets, top: v })}
+              />
+              <WidgetEditor
+                title="Berkas Bottom"
+                description="Slot ini muncul di bagian bawah halaman pengiriman berkas."
+                value={berkasWidgets.bottom}
+                onChange={(v) => setBerkasWidgets({ ...berkasWidgets, bottom: v })}
+              />
+            </div>
+          </div>
+        )}
+
+        {activeTab === "poster" && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold">Widget Halaman Bagikan Poster</h2>
+            <div className="grid gap-6">
+              <WidgetEditor
+                title="Poster Top"
+                description="Slot ini muncul di bagian atas halaman bagikan poster."
+                value={posterWidgets.top}
+                onChange={(v) => setPosterWidgets({ ...posterWidgets, top: v })}
+              />
+              <WidgetEditor
+                title="Poster Bottom"
+                description="Slot ini muncul di bagian bawah halaman bagikan poster."
+                value={posterWidgets.bottom}
+                onChange={(v) => setPosterWidgets({ ...posterWidgets, bottom: v })}
               />
             </div>
           </div>
