@@ -30,6 +30,9 @@ type Registration = {
   school_name: string;
   grade: string;
   kind: "prestasi" | "ekonomi" | "umum" | "yatim";
+  khs_url?: string | null;
+  transcript_custom_url?: string | null;
+  additional_docs_url?: string | null;
   status: "pending" | "verified" | "approved" | "rejected";
   token?: string | null;
   fast_track?: boolean | null;
