@@ -1,4 +1,4 @@
-import { Award, BookOpen, Wallet } from "lucide-react";
+import { Award, BookOpen, Wallet, CheckCircle } from "lucide-react";
 import posterDefault from "@/assets/poster-beasiswa.png";
 import { useBranding } from "@/hooks/use-branding";
 import { useEffect, useState } from "react";
@@ -19,6 +19,11 @@ const features = [
     icon: Award,
     title: "Apresiasi Prestasi",
     desc: "Mengapresiasi pelajar berprestasi akademik maupun non-akademik tanpa minimal nilai.",
+  },
+  {
+    icon: CheckCircle,
+    title: "Seleksi Transparan",
+    desc: "Proses seleksi dilakukan secara objektif, adil, dan transparan bagi seluruh peserta.",
   },
 ];
 
@@ -68,7 +73,7 @@ export function AboutMockup() {
       </div>
 
       <div className="mt-16 grid lg:grid-cols-2 gap-12 items-center">
-        <div className="order-2 lg:order-1 grid sm:grid-cols-2 lg:grid-cols-1 gap-5">
+        <div className="order-2 lg:order-1 grid sm:grid-cols-2 gap-5">
           {features.map((f) => (
             <div
               key={f.title}
