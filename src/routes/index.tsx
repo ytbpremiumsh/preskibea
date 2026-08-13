@@ -253,7 +253,7 @@ function Index() {
       <div className="container-page overflow-visible">
         <AdSlot placement="after_benefits" />
         {/* WIDGET_CUSTOM_HOMEPAGE_3: Tambahkan kode HTML/Adsense di sini */}
-        <RawHtmlWidget id="home-widget-3" html={``} />
+        <RawHtmlWidget id="home-widget-3" html={homeWidgets.widget3 || ""} />
       </div>
 
       <AlumniSection />
