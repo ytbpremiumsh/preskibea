@@ -73,7 +73,7 @@ export function AboutMockup() {
       </div>
 
       <div className="mt-16 grid lg:grid-cols-2 gap-12 items-center">
-        <div className="order-2 lg:order-1 grid sm:grid-cols-2 lg:grid-cols-1 gap-5">
+        <div className="order-2 lg:order-1 grid sm:grid-cols-2 gap-5">
           {features.map((f) => (
             <div
               key={f.title}
