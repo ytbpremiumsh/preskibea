@@ -19,10 +19,11 @@ import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
 const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> = {
   prestasi: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
+    { id: "khs", key: "khs", label: "Kartu Hasil Studi (KHS) (khusus Mahasiswa)", required: false },
+    { id: "transcript_custom", key: "transcript_custom", label: "Transkrip Nilai (khusus Pelajar & Gapyear)", required: false },
     { id: "achievement_certs", key: "achievement_certs", label: "Sertifikat Prestasi (Akademik maupun Non-Akademik)", required: true },
-    { id: "transcript", key: "transcript", label: "Rapor / Transkrip Nilai Terakhir", required: true },
     { id: "cv", key: "cv", label: "Curriculum Vitae (CV) Kreatif", required: true },
-    
+    { id: "additional_docs", key: "additional_docs", label: "Berkas Pendukung Lainnya (Opsional)", required: false },
   ],
   ekonomi: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
