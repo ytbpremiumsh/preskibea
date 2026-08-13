@@ -24,6 +24,14 @@ export type BrandingSettings = {
     widget2?: string;
     widget3?: string;
   };
+  article_widgets?: {
+    top?: string;
+    bottom?: string;
+  };
+  category_widgets?: {
+    top?: string;
+    bottom?: string;
+  };
   global_widgets?: {
     top?: string;
     bottom?: string;
@@ -59,6 +67,8 @@ export function useBranding() {
     categoryImages: branding.category_images || {},
     alumniImages: branding.alumni_images || [],
     homeWidgets: branding.home_widgets || {},
+    articleWidgets: branding.article_widgets || {},
+    categoryWidgets: branding.category_widgets || {},
     globalWidgets: branding.global_widgets || {},
   };
 }

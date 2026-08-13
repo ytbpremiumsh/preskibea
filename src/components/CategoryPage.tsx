@@ -51,7 +51,7 @@ export function CategoryPage({
   desc: string;
   shareTo: "/bagikan-poster";
 }) {
-  const { benefitImage, globalWidgets } = useBranding();
+  const { benefitImage, globalWidgets, categoryWidgets } = useBranding();
   const isGold = kind === "ekonomi";
   const Icon: ReactNode = isGold ? <HeartHandshake /> : kind === "umum" ? <Users /> : kind === "yatim" ? <Heart /> : <Trophy />;
 
@@ -75,6 +75,13 @@ export function CategoryPage({
           </div>
         </div>
       </section>
+
+      {/* Widget Atas khusus halaman kategori */}
+      {categoryWidgets.top && (
+        <div className="container-page py-4 overflow-visible">
+          <RawHtmlWidget id="category-widget-top" html={categoryWidgets.top} />
+        </div>
+      )}
 
       {/* INFO */}
       <section className="container-page py-16 grid lg:grid-cols-2 gap-8 items-start">
@@ -192,7 +199,7 @@ export function CategoryPage({
       
       {/* Widget 2 khusus halaman kategori */}
       <div className="container-page py-4 overflow-visible">
-        <RawHtmlWidget id="category-widget-middle" html={globalWidgets.bottom || ""} />
+        <RawHtmlWidget id="category-widget-middle" html={categoryWidgets.bottom || ""} />
       </div>
 
       {/* CTA — Pendaftaran (terpisah dari berkas) */}
