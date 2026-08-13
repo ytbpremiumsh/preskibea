@@ -37,6 +37,7 @@ type ArticleWidgets = {
 
 type CategoryWidgets = {
   top?: string;
+  above_button?: string;
   bottom?: string;
 };
 
@@ -61,6 +62,7 @@ function AdminWidgets() {
   });
   const [categoryWidgets, setCategoryWidgets] = useState<CategoryWidgets>({
     top: "",
+    above_button: "",
     bottom: "",
   });
   const [registrationWidgets, setRegistrationWidgets] = useState<CategoryWidgets>({
@@ -108,6 +110,7 @@ function AdminWidgets() {
         if (branding.category_widgets) {
           setCategoryWidgets({
             top: branding.category_widgets.top || "",
+            above_button: branding.category_widgets.above_button || "",
             bottom: branding.category_widgets.bottom || "",
           });
         }
@@ -287,6 +290,12 @@ function AdminWidgets() {
                 description="Slot ini muncul di tengah halaman kategori (setelah info persyaratan)."
                 value={categoryWidgets.top}
                 onChange={(v) => setCategoryWidgets({ ...categoryWidgets, top: v })}
+              />
+              <WidgetEditor
+                title="Category Above Button"
+                description="Slot ini muncul tepat di atas tombol pendaftaran/berkas."
+                value={categoryWidgets.above_button}
+                onChange={(v) => setCategoryWidgets({ ...categoryWidgets, above_button: v })}
               />
               <WidgetEditor
                 title="Category Bottom"

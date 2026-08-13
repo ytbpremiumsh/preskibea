@@ -202,6 +202,13 @@ export function CategoryPage({
         <RawHtmlWidget id="category-widget-middle" html={categoryWidgets.bottom || ""} />
       </div>
 
+      {/* Widget Di atas Tombol khusus halaman kategori */}
+      {categoryWidgets.above_button && (
+        <div className="container-page py-4 overflow-visible">
+          <RawHtmlWidget id="category-widget-above-button" html={categoryWidgets.above_button} />
+        </div>
+      )}
+
       {/* CTA — Pendaftaran (terpisah dari berkas) */}
       <section className="container-page pb-10">
         <div className="card-block p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">

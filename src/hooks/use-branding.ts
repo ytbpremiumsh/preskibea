@@ -30,6 +30,7 @@ export type BrandingSettings = {
   };
   category_widgets?: {
     top?: string;
+    above_button?: string;
     bottom?: string;
   };
   global_widgets?: {
