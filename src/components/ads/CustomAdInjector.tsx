@@ -47,11 +47,12 @@ function inject(target: HTMLElement, html: string, where: "prepend" | "append") 
   if (!html?.trim()) return;
   const wrapper = document.createElement("div");
   wrapper.setAttribute(MARK, "1");
-  wrapper.className = "custom-ad-block my-6 w-full flex justify-center items-center overflow-visible text-center clear-both";
+  wrapper.className = "custom-ad-block my-8 w-full flex justify-center items-center overflow-visible text-center clear-both px-4 box-border";
   wrapper.style.width = "100%";
   wrapper.style.minWidth = "250px";
-  wrapper.style.minHeight = "90px";
+  wrapper.style.minHeight = "100px";
   wrapper.style.display = "flex";
+  wrapper.style.flexDirection = "column";
   const tpl = document.createElement("template");
   tpl.innerHTML = html;
   Array.from(tpl.content.childNodes).forEach((node) => {
@@ -90,6 +91,15 @@ function pushAdsbygoogle() {
     el.style.overflow = "visible";
     el.style.margin = "0 auto";
     el.style.clear = "both";
+    
+    // Ensure parent doesn't restrict the ad height or width berantakan
+    const parent = el.parentElement;
+    if (parent) {
+      parent.style.overflow = "visible";
+      parent.style.minHeight = "auto";
+      parent.style.height = "auto";
+      parent.style.width = "100%";
+    }
     const tryPush = (attempt = 0) => {
       if (el.getAttribute("data-ad-pushed") === "1") return;
       if (el.offsetWidth < 1) {
