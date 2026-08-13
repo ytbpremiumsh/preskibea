@@ -41,6 +41,7 @@ const Input = z.object({
     )
     .max(10)
     .optional(),
+  registration_updates: z.record(z.any()).optional(),
 });
 
 serve(async (req) => {
@@ -111,6 +112,13 @@ serve(async (req) => {
             essay_submitted_at: submittedAt,
           },
         })
+        .eq("id", reg.id);
+    }
+    
+    if (data.registration_updates && Object.keys(data.registration_updates).length > 0) {
+      await supabaseAdmin
+        .from("registrations")
+        .update(data.registration_updates)
         .eq("id", reg.id);
     }
 

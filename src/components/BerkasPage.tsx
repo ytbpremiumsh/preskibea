@@ -259,6 +259,11 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
         token: token.trim().toUpperCase(),
         kind,
         documents: submittedDocs,
+        registration_updates: {
+          khs_url: (values["khs"] ?? "").trim() || null,
+          transcript_custom_url: (values["transcript_custom"] ?? "").trim() || null,
+          additional_docs_url: (values["additional_docs"] ?? "").trim() || null,
+        }
       });
 
       supabase.functions
