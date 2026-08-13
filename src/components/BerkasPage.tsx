@@ -19,11 +19,11 @@ import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
 const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> = {
   prestasi: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
-    { id: "khs", key: "khs", label: "Kartu Hasil Studi (KHS) (khusus Mahasiswa)", required: false },
-    { id: "transcript_custom", key: "transcript_custom", label: "Transkrip Nilai (khusus Pelajar & Gapyear)", required: false },
+    { id: "khs", key: "khs", label: "Kartu Hasil Studi (KHS)", required: false },
+    { id: "transcript_custom", key: "transcript_custom", label: "Transkrip Nilai", required: false },
     { id: "achievement_certs", key: "achievement_certs", label: "Sertifikat Prestasi (Akademik maupun Non-Akademik)", required: true },
     { id: "cv", key: "cv", label: "Curriculum Vitae (CV) Kreatif", required: true },
-    { id: "additional_docs", key: "additional_docs", label: "Berkas Pendukung Lainnya (Opsional)", required: false },
+    { id: "additional_docs", key: "additional_docs", label: "Berkas Pendukung Lainnya (Optional)", required: false },
   ],
   ekonomi: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
@@ -100,10 +100,11 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
     setLoading(true);
     const level = registrant?.education_level?.toLowerCase() || "";
     const isMahasiswa = level.includes("mahasiswa") || level.includes("s1") || level.includes("diploma");
+    const isPelajarOrGapyear = level.includes("smp") || level.includes("sma") || level.includes("smk") || level.includes("ma") || level.includes("gap year") || level.includes("lulusan");
     
     let baseDocs = [...defaultDocs[kind]];
     
-    // Adjust label based on education level
+    // Adjust label and visibility based on education level
     baseDocs = baseDocs.map(d => {
       if (d.key === "transcript") {
         return { 
@@ -118,6 +119,16 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
         };
       }
       return d;
+    }).filter(d => {
+      // Logic from user: 
+      // KHS only for Mahasiswa
+      // Transkrip Nilai only for Pelajar and Gapyear
+      // Berkas Pendukung (additional_docs) for everyone
+      if (kind === "prestasi") {
+        if (d.key === "khs" && !isMahasiswa) return false;
+        if (d.key === "transcript_custom" && !isPelajarOrGapyear) return false;
+      }
+      return true;
     });
 
     setDocs(baseDocs);
@@ -198,16 +209,33 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
     if (registrant) {
       const level = registrant.education_level?.toLowerCase() || "";
       const isMahasiswa = level.includes("mahasiswa") || level.includes("s1") || level.includes("diploma");
+      const isPelajarOrGapyear = level.includes("smp") || level.includes("sma") || level.includes("smk") || level.includes("ma") || level.includes("gap year") || level.includes("lulusan");
       
-      setDocs(prev => prev.map(d => {
+      let baseDocs = [...defaultDocs[kind]];
+      
+      baseDocs = baseDocs.map(d => {
         if (d.key === "transcript") {
           return { 
             ...d, 
             label: isMahasiswa ? "KHS / Transkrip Nilai Terakhir" : "Rapor Terakhir" 
           };
         }
+        if (d.key === "identity") {
+          return { 
+            ...d, 
+            label: isMahasiswa ? "Kartu Tanda Mahasiswa (KTM)" : "Kartu Pelajar / Kartu Identitas" 
+          };
+        }
         return d;
-      }));
+      }).filter(d => {
+        if (kind === "prestasi") {
+          if (d.key === "khs" && !isMahasiswa) return false;
+          if (d.key === "transcript_custom" && !isPelajarOrGapyear) return false;
+        }
+        return true;
+      });
+
+      setDocs(baseDocs);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search.token, kind, registrant]);
