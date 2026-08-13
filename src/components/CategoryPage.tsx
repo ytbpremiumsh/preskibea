@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake, Users, Heart } from "lucide-react";
+import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake, Users, Heart, AlertTriangle } from "lucide-react";
 import type { ReactNode } from "react";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { RawHtmlWidget } from "@/components/ads/RawHtmlWidget";
@@ -238,6 +238,13 @@ export function CategoryPage({
       </section>
 
       <AdSlot placement="category_bottom" />
+
+      {/* Widget Bawah khusus halaman kategori */}
+      {categoryWidgets.bottom && (
+        <div className="container-page pb-10 overflow-visible">
+          <RawHtmlWidget id="category-widget-bottom" html={categoryWidgets.bottom} />
+        </div>
+      )}
     </>
   );
 }

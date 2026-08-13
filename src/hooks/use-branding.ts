@@ -36,6 +36,18 @@ export type BrandingSettings = {
     top?: string;
     bottom?: string;
   };
+  registration_widgets?: {
+    top?: string;
+    bottom?: string;
+  };
+  berkas_widgets?: {
+    top?: string;
+    bottom?: string;
+  };
+  poster_widgets?: {
+    top?: string;
+    bottom?: string;
+  };
 };
 
 export function useBranding() {
@@ -70,5 +82,8 @@ export function useBranding() {
     articleWidgets: branding.article_widgets || {},
     categoryWidgets: branding.category_widgets || {},
     globalWidgets: branding.global_widgets || {},
+    registrationWidgets: branding.registration_widgets || {},
+    berkasWidgets: branding.berkas_widgets || {},
+    posterWidgets: branding.poster_widgets || {},
   };
 }

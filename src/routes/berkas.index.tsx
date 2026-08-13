@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, FileText, HeartHandshake, Trophy, Users, Heart } from "lucide-react";
+import { useBranding } from "@/hooks/use-branding";
+import { RawHtmlWidget } from "@/components/ads/RawHtmlWidget";
 
 export const Route = createFileRoute("/berkas/")({
   head: () => ({
@@ -12,8 +14,16 @@ export const Route = createFileRoute("/berkas/")({
 });
 
 function BerkasSelector() {
+  const { berkasWidgets } = useBranding();
+
   return (
     <main className="container-page py-16">
+      {/* Widget Atas Berkas */}
+      {berkasWidgets.top && (
+        <div className="mb-10 overflow-visible">
+          <RawHtmlWidget id="berkas-widget-top" html={berkasWidgets.top} />
+        </div>
+      )}
       <header className="max-w-2xl mx-auto text-center">
         <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">Pengiriman Berkas</span>
         <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Pilih Kategori Berkas</h1>
@@ -26,6 +36,13 @@ function BerkasSelector() {
         <Card to="/berkas/umum" icon={<Users size={20} />} title="Berkas Beasiswa Umum" desc="Lihat persyaratan dan unggah berkas untuk jalur umum." />
         <Card to="/berkas/yatim" icon={<Heart size={20} />} title="Berkas Beasiswa Yatim" desc="Lihat persyaratan dan unggah berkas untuk jalur yatim." />
       </section>
+
+      {/* Widget Bawah Berkas */}
+      {berkasWidgets.bottom && (
+        <div className="mt-16 overflow-visible">
+          <RawHtmlWidget id="berkas-widget-bottom" html={berkasWidgets.bottom} />
+        </div>
+      )}
     </main>
   );
 }
