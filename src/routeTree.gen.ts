@@ -42,6 +42,7 @@ import { Route as AdminPendaftarRouteImport } from './routes/admin.pendaftar'
 import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminSistemUpdateRouteImport } from './routes/admin.sistem-update'
 import { Route as AdminWhatsappRouteImport } from './routes/admin.whatsapp'
+import { Route as AdminWidgetsRouteImport } from './routes/admin.widgets'
 import { Route as ArtikelIndexRouteImport } from './routes/artikel.index'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as BerkasIndexRouteImport } from './routes/berkas.index'
@@ -230,6 +231,11 @@ const AdminWhatsappRoute = AdminWhatsappRouteImport.update({
   path: '/whatsapp',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminWidgetsRoute = AdminWidgetsRouteImport.update({
+  id: '/widgets',
+  path: '/widgets',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ArtikelIndexRoute = ArtikelIndexRouteImport.update({
   id: '/artikel/',
   path: '/artikel/',
@@ -374,6 +380,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan': typeof AdminPengaturanRoute
   '/admin/sistem-update': typeof AdminSistemUpdateRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
+  '/admin/widgets': typeof AdminWidgetsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/berkas/ekonomi': typeof BerkasEkonomiRouteWithChildren
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
@@ -430,6 +437,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan': typeof AdminPengaturanRoute
   '/admin/sistem-update': typeof AdminSistemUpdateRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
+  '/admin/widgets': typeof AdminWidgetsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
@@ -484,6 +492,7 @@ export interface FileRoutesById {
   '/admin/pengaturan': typeof AdminPengaturanRoute
   '/admin/sistem-update': typeof AdminSistemUpdateRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
+  '/admin/widgets': typeof AdminWidgetsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/berkas/ekonomi': typeof BerkasEkonomiRouteWithChildren
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
@@ -543,6 +552,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan'
     | '/admin/sistem-update'
     | '/admin/whatsapp'
+    | '/admin/widgets'
     | '/artikel/$slug'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
@@ -599,6 +609,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan'
     | '/admin/sistem-update'
     | '/admin/whatsapp'
+    | '/admin/widgets'
     | '/artikel/$slug'
     | '/berkas/terkirim'
     | '/pendaftaran/ekonomi'
@@ -652,6 +663,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan'
     | '/admin/sistem-update'
     | '/admin/whatsapp'
+    | '/admin/widgets'
     | '/artikel/$slug'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
@@ -939,6 +951,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWhatsappRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/widgets': {
+      id: '/admin/widgets'
+      path: '/widgets'
+      fullPath: '/admin/widgets'
+      preLoaderRoute: typeof AdminWidgetsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/artikel/': {
       id: '/artikel/'
       path: '/artikel'
@@ -1117,6 +1136,7 @@ interface AdminRouteChildren {
   AdminPengaturanRoute: typeof AdminPengaturanRoute
   AdminSistemUpdateRoute: typeof AdminSistemUpdateRoute
   AdminWhatsappRoute: typeof AdminWhatsappRoute
+  AdminWidgetsRoute: typeof AdminWidgetsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -1141,6 +1161,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPengaturanRoute: AdminPengaturanRoute,
   AdminSistemUpdateRoute: AdminSistemUpdateRoute,
   AdminWhatsappRoute: AdminWhatsappRoute,
+  AdminWidgetsRoute: AdminWidgetsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 

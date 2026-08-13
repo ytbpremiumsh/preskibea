@@ -19,6 +19,11 @@ export type BrandingSettings = {
     yatim?: string;
   };
   alumni_images?: string[];
+  home_widgets?: {
+    widget1?: string;
+    widget2?: string;
+    widget3?: string;
+  };
 };
 
 export function useBranding() {
@@ -49,5 +54,6 @@ export function useBranding() {
     posterImage: branding.poster_image_url || null,
     categoryImages: branding.category_images || {},
     alumniImages: branding.alumni_images || [],
+    homeWidgets: branding.home_widgets || {},
   };
 }

@@ -40,7 +40,7 @@ const stats = [
 const marquee = ["Beasiswa Prestasi", "Beasiswa Ekonomi", "Beasiswa Umum", "Beasiswa Yatim", "Tanpa Biaya", "Seluruh Indonesia", "Sertifikat Resmi", "Merchandise", "Akses Magang"];
 
 function Index() {
-  const { heroImage, posterImage, benefitImage } = useBranding();
+  const { heroImage, posterImage, benefitImage, homeWidgets } = useBranding();
   const heroImg = heroImage && heroImage.startsWith('http') ? heroImage : heroDefault;
   const posterImg = posterImage && posterImage.startsWith('http') ? posterImage : posterDefault;
   const benefitImg = benefitImage && benefitImage.startsWith('http') ? benefitImage : benefitDefault.url;
@@ -189,13 +189,7 @@ function Index() {
         {/* WIDGET_CUSTOM_HOMEPAGE_1: Tambahkan kode HTML/Adsense di sini */}
         <RawHtmlWidget 
           id="home-widget-1"
-          html={`
-            <!-- Contoh Widget HTML Manual -->
-            <div style="display:none; background: #fdf6e3; border: 2px dashed #d3af37; padding: 20px; border-radius: 15px; text-align: center; margin: 20px 0;">
-              <h3 style="margin: 0; color: #d3af37; font-weight: 800;">WIDGET CUSTOM 1</h3>
-              <p style="margin: 5px 0 0; font-size: 14px; color: #657b83;">Tempel kode HTML atau AdSense Anda di src/routes/index.tsx</p>
-            </div>
-          `}
+          html={homeWidgets.widget1 || ""}
         />
       </div>
 
@@ -249,7 +243,7 @@ function Index() {
       <div className="container-page overflow-visible">
         <AdSlot placement="after_categories" />
         {/* WIDGET_CUSTOM_HOMEPAGE_2: Tambahkan kode HTML/Adsense di sini */}
-        <RawHtmlWidget id="home-widget-2" html={``} />
+        <RawHtmlWidget id="home-widget-2" html={homeWidgets.widget2 || ""} />
       </div>
 
       <AboutMockup />
@@ -259,7 +253,7 @@ function Index() {
       <div className="container-page overflow-visible">
         <AdSlot placement="after_benefits" />
         {/* WIDGET_CUSTOM_HOMEPAGE_3: Tambahkan kode HTML/Adsense di sini */}
-        <RawHtmlWidget id="home-widget-3" html={``} />
+        <RawHtmlWidget id="home-widget-3" html={homeWidgets.widget3 || ""} />
       </div>
 
       <AlumniSection />
