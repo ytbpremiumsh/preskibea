@@ -39,6 +39,15 @@ function prepareAdSenseIns(root: HTMLElement, fallbackClient: string) {
     ins.style.overflow = "visible";
     ins.style.margin = "0 auto";
     ins.style.clear = "both";
+    
+    // Ensure parent doesn't restrict the ad height or width berantakan
+    const parent = ins.parentElement;
+    if (parent) {
+      parent.style.overflow = "visible";
+      parent.style.minHeight = "auto";
+      parent.style.height = "auto";
+      parent.style.width = "100%";
+    }
   });
 }
 
@@ -48,11 +57,12 @@ function buildAdNode(slot: AdSlotConfig): HTMLElement | null {
   if (!tpl.content.childNodes.length) return null;
 
   const wrapper = document.createElement("div");
-  wrapper.className = "my-6 w-full flex justify-center items-center overflow-visible text-center clear-both";
+  wrapper.className = "my-8 w-full flex justify-center items-center overflow-visible text-center clear-both px-4 box-border";
   wrapper.style.width = "100%";
   wrapper.style.minWidth = "250px";
-  wrapper.style.minHeight = "90px";
+  wrapper.style.minHeight = "100px";
   wrapper.style.display = "flex";
+  wrapper.style.flexDirection = "column";
   wrapper.setAttribute(MARK_ATTR, "1");
   wrapper.setAttribute(SLOT_ATTR, slot.id);
   wrapper.setAttribute("aria-label", "Iklan");
