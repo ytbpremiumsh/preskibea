@@ -1,8 +1,8 @@
 import { Quote, Trophy } from "lucide-react";
 import { useBranding } from "@/hooks/use-branding";
-import alumni1 from "@/assets/peraih-batch7-1.png";
-import alumni2 from "@/assets/peraih-batch7-2.png";
-import alumni3 from "@/assets/peraih-batch7-3.png";
+import alumni1 from "@/assets/peraih-1.png";
+import alumni2 from "@/assets/peraih-2.png";
+import alumni3 from "@/assets/peraih-3.png";
 
 const FALLBACK_ALUMNI_IMAGES = [
   alumni1,
