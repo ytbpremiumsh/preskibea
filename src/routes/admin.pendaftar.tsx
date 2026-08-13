@@ -44,9 +44,6 @@ type Registration = {
   photo_url: string | null;
   student_card_url: string | null;
   created_at: string;
-  khs_url?: string | null;
-  transcript_custom_url?: string | null;
-  additional_docs_url?: string | null;
 };
 
 type Document = {
