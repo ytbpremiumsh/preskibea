@@ -189,13 +189,7 @@ function Index() {
         {/* WIDGET_CUSTOM_HOMEPAGE_1: Tambahkan kode HTML/Adsense di sini */}
         <RawHtmlWidget 
           id="home-widget-1"
-          html={`
-            <!-- Contoh Widget HTML Manual -->
-            <div style="display:none; background: #fdf6e3; border: 2px dashed #d3af37; padding: 20px; border-radius: 15px; text-align: center; margin: 20px 0;">
-              <h3 style="margin: 0; color: #d3af37; font-weight: 800;">WIDGET CUSTOM 1</h3>
-              <p style="margin: 5px 0 0; font-size: 14px; color: #657b83;">Tempel kode HTML atau AdSense Anda di src/routes/index.tsx</p>
-            </div>
-          `}
+          html={homeWidgets.widget1 || ""}
         />
       </div>
 
