@@ -1,4 +1,4 @@
-import { Award, BookOpen, Wallet } from "lucide-react";
+import { Award, BookOpen, Wallet, CheckCircle } from "lucide-react";
 import posterDefault from "@/assets/poster-beasiswa.png";
 import { useBranding } from "@/hooks/use-branding";
 import { useEffect, useState } from "react";
@@ -19,6 +19,11 @@ const features = [
     icon: Award,
     title: "Apresiasi Prestasi",
     desc: "Mengapresiasi pelajar berprestasi akademik maupun non-akademik tanpa minimal nilai.",
+  },
+  {
+    icon: CheckCircle,
+    title: "Seleksi Transparan",
+    desc: "Proses seleksi dilakukan secara objektif, adil, dan transparan bagi seluruh peserta.",
   },
 ];
 
