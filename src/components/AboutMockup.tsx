@@ -21,9 +21,9 @@ const features = [
     desc: "Mengapresiasi pelajar berprestasi akademik maupun non-akademik tanpa minimal nilai.",
   },
   {
-    icon: CheckCircle,
-    title: "Seleksi Transparan",
-    desc: "Proses seleksi dilakukan secara objektif, adil, dan transparan bagi seluruh peserta.",
+    icon: Gift,
+    title: "Merchandise Eksklusif",
+    desc: "Paket merchandise menarik dari Prestasi Kita untuk menunjang semangat belajarmu.",
   },
 ];
 
