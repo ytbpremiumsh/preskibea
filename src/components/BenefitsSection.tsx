@@ -60,22 +60,6 @@ export function BenefitsSection() {
         </p>
       </div>
 
-      <div className="mt-12 mb-16 flex justify-center">
-        <div className="card-block overflow-hidden max-w-4xl w-full">
-          <img 
-            src={benefitImg} 
-            alt="Benefit Beasiswa Prestasi Kita" 
-            className="w-full h-auto object-contain"
-            onError={(e) => {
-              const target = e.currentTarget;
-              const fallbackUrl = new URL(benefitDefault.url, window.location.origin).href;
-              if (target.src.includes('undefined') || target.src.includes('null') || target.src !== fallbackUrl) {
-                target.src = benefitDefault.url;
-              }
-            }}
-          />
-        </div>
-      </div>
 
       <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
         {benefits.map((b) => (
