@@ -243,7 +243,7 @@ function Index() {
       <div className="container-page overflow-visible">
         <AdSlot placement="after_categories" />
         {/* WIDGET_CUSTOM_HOMEPAGE_2: Tambahkan kode HTML/Adsense di sini */}
-        <RawHtmlWidget id="home-widget-2" html={``} />
+        <RawHtmlWidget id="home-widget-2" html={homeWidgets.widget2 || ""} />
       </div>
 
       <AboutMockup />
