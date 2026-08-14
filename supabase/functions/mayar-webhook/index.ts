@@ -108,6 +108,7 @@ serve(async (req) => {
         const requestId = req.headers.get("request-id");
         const timestamp = req.headers.get("request-timestamp");
         const target = "/functions/v1/mayar-webhook"; 
+        const dokuTarget = "/checkout/v1/payment/notify"; // Standard Doku notify path if forwarded
         
         const digestBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(rawBody));
         const digest = btoa(String.fromCharCode(...new Uint8Array(digestBuffer)));

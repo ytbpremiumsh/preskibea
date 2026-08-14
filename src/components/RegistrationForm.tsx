@@ -162,7 +162,9 @@ export function RegistrationForm({
   const [registrationType, setRegistrationType] = useState<"reguler" | "fast_track">(initialType);
   const [activePaymentLink, setActivePaymentLink] = useState<string | null>(null);
   const [aulaaPaymentId, setAulaaPaymentId] = useState<string | null>(null);
-  const [showAulaaIframe, setShowAulaaIframe] = useState(false);
+  const [dokuPaymentUrl, setDokuPaymentUrl] = useState<string | null>(null);
+  const [showPaymentIframe, setShowPaymentIframe] = useState(false);
+  const [paymentProvider, setPaymentProvider] = useState<string>("mayar");
   const [fastTrackFee, setFastTrackFee] = useState<number>(15000);
   const [submittedToken, setSubmittedToken] = useState<string | null>(null);
   const [submittedData, setSubmittedData] = useState<any>(null);
@@ -176,6 +178,7 @@ export function RegistrationForm({
         if (!data) return;
         
         const provider = data.find(s => s.key === "payment_provider")?.value as string;
+        setPaymentProvider(provider || "mayar");
         const mayarLink = data.find(s => s.key === "mayar_fast_track_link")?.value as string;
         const aulaa = data.find(s => s.key === "aulaa_config")?.value as any;
         const fee = data.find(s => s.key === "fast_track_fee")?.value;
@@ -410,10 +413,15 @@ export function RegistrationForm({
       
       // If fast track, handle payment
       if (registrationType === "fast_track") {
-        if (paymentId) {
-          // Aulaa with Iframe
+        if (paymentProvider === "aulaa" && paymentId) {
           setAulaaPaymentId(paymentId);
-          setShowAulaaIframe(true);
+          setShowPaymentIframe(true);
+          return;
+        }
+
+        if (paymentProvider === "doku" && invoiceUrl) {
+          setDokuPaymentUrl(invoiceUrl);
+          setShowPaymentIframe(true);
           return;
         }
 
@@ -478,9 +486,9 @@ export function RegistrationForm({
     }
   };
 
-  // Polling for Aulaa payment status
+  // Polling for payment status (Aulaa/Doku)
   useEffect(() => {
-    if (!showAulaaIframe || !submittedToken) return;
+    if (!showPaymentIframe || !submittedToken) return;
 
     const interval = setInterval(async () => {
       const { data, error } = await supabase
@@ -492,13 +500,13 @@ export function RegistrationForm({
       if (data?.payment_status === "paid") {
         clearInterval(interval);
         toast.success("Pembayaran Terverifikasi!");
-        setShowAulaaIframe(false);
+        setShowPaymentIframe(false);
         handleSuccessRedirect(submittedData, submittedToken);
       }
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [showAulaaIframe, submittedToken, submittedData]);
+  }, [showPaymentIframe, submittedToken, submittedData]);
 
   const grouped = useMemo(() => {
     const level = values["education_level"] ?? "";
@@ -710,44 +718,58 @@ export function RegistrationForm({
       <AdSlot placement="form_bottom" />
     </section>
 
-    {showAulaaIframe && aulaaPaymentId && (
+    {showPaymentIframe && (aulaaPaymentId || dokuPaymentUrl) && (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div className="w-full max-w-2xl bg-white rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
-          <div className="p-4 border-b flex items-center justify-between">
+        <div className="w-full max-w-2xl bg-white rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+          <div className="p-4 border-b flex items-center justify-between bg-white shrink-0">
             <h3 className="font-bold text-foreground">Konfirmasi Pembayaran</h3>
             <button 
-              onClick={() => setShowAulaaIframe(false)}
+              onClick={() => setShowPaymentIframe(false)}
               className="p-2 hover:bg-muted rounded-full transition"
             >
               ✕
             </button>
           </div>
-          <div className="p-8 text-center space-y-6">
-            <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-              <UploadCloud size={32} />
-            </div>
-            <div>
-              <h4 className="text-xl font-bold text-foreground">Selesaikan Pembayaran</h4>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Klik tombol di bawah untuk membuka halaman pembayaran. 
-                Sistem akan otomatis mendeteksi ketika pembayaran Anda berhasil.
-              </p>
-            </div>
-            
-            <a 
-              href={`https://payment.aulaa.co/pay/${aulaaPaymentId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-base font-bold text-primary-foreground shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5"
-            >
-              Bayar Sekarang
-            </a>
+          
+          <div className="flex-1 overflow-y-auto">
+            {paymentProvider === "doku" && dokuPaymentUrl ? (
+              <div className="w-full h-[600px] min-h-[50vh]">
+                <iframe 
+                  src={dokuPaymentUrl}
+                  className="w-full h-full border-0"
+                  title="Doku Payment"
+                  allow="payment"
+                />
+              </div>
+            ) : (
+              <div className="p-8 text-center space-y-6">
+                <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <UploadCloud size={32} />
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-foreground">Selesaikan Pembayaran</h4>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Klik tombol di bawah untuk membuka halaman pembayaran. 
+                    Sistem akan otomatis mendeteksi ketika pembayaran Anda berhasil.
+                  </p>
+                </div>
+                
+                <a 
+                  href={paymentProvider === "aulaa" ? `https://payment.aulaa.co/pay/${aulaaPaymentId}` : dokuPaymentUrl || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-base font-bold text-primary-foreground shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5"
+                >
+                  Bayar Sekarang
+                </a>
 
-            <div className="p-4 rounded-2xl bg-primary/5">
-              <p className="text-xs text-primary font-medium">
-                Jangan tutup halaman ini setelah membayar. Tunggu beberapa saat hingga sistem memverifikasi pembayaran Anda secara otomatis.
-              </p>
-            </div>
+                <div className="p-4 rounded-2xl bg-primary/5">
+                  <p className="text-xs text-primary font-medium">
+                    Jangan tutup halaman ini setelah membayar. Tunggu beberapa saat hingga sistem memverifikasi pembayaran Anda secara otomatis.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
