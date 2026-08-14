@@ -48,288 +48,297 @@ function Index() {
   return (
     <div className="animate-in fade-in duration-500">
       {/* HERO */}
-      <section className="relative overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
-        <div className="container-page py-12 md:py-20 grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground/75 shadow-card">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--gold)]" />
-              Prestasi Kita 2026 · Batch #8
-            </span>
+      <section className="relative overflow-hidden bg-primary py-16 md:py-24 text-primary-foreground">
+        <div className="absolute inset-0 z-0 opacity-10">
+          <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-white blur-3xl" />
+          <div className="absolute top-1/2 -right-24 h-64 w-64 -translate-y-1/2 rounded-full bg-white blur-3xl" />
+        </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-[3.65rem] font-extrabold leading-[1.03] tracking-tight text-foreground flex flex-col items-center lg:items-start">
-              Raih beasiswa
-              <span className="relative mt-1 block w-fit text-primary mx-auto lg:mx-0">
-                Prestasi Kita
-                <svg aria-hidden="true" viewBox="0 0 300 12" preserveAspectRatio="none" className="absolute -bottom-1.5 left-0 h-2.5 w-full text-[var(--gold)]">
-                  <path d="M3 8 Q 75 2, 150 6 T 297 5" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
-                </svg>
-              </span>
-              <span className="text-muted-foreground/80"> Batch #8</span>
-            </h1>
+        <div className="container-page relative z-10">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div className="max-w-2xl text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5 text-sm font-bold backdrop-blur-md">
+                <Sparkles size={16} className="text-yellow-300" />
+                <span>Pendaftaran Batch #8 Telah Dibuka!</span>
+              </div>
+              <h1 className="mt-6 text-4xl font-black leading-[1.1] md:text-6xl lg:text-7xl">
+                Wujudkan <span className="text-secondary italic">Impian</span> <br />
+                Pendidikanmu.
+              </h1>
+              <p className="mt-8 text-lg font-medium leading-relaxed opacity-90 md:text-xl">
+                Prestasi Kita hadir untuk mendukung pelajar dan mahasiswa Indonesia meraih potensi terbaiknya melalui bantuan dana pendidikan dan pengembangan diri.
+              </p>
 
-            <p className="max-w-xl text-base md:text-lg text-muted-foreground mx-auto lg:mx-0">
-              Program beasiswa pendidikan nasional untuk pelajar dan mahasiswa Indonesia —
-              jalur Prestasi, Ekonomi, Umum, dan Yatim, tanpa minimal nilai, tanpa biaya pendaftaran.
-            </p>
+              <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+                <Link
+                  to="/pendaftaran/pilih-tipe"
+                  className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl bg-secondary px-8 py-4 text-lg font-black text-secondary-foreground shadow-neo transition-all hover:-translate-y-1 active:translate-y-0"
+                >
+                  Daftar Sekarang <ArrowRight className="transition-transform group-hover:translate-x-1" />
+                </Link>
+                <Link
+                  to="/panduan"
+                  className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl border-2 border-white/30 bg-white/10 px-8 py-4 text-lg font-bold backdrop-blur-sm transition-all hover:bg-white/20"
+                >
+                  Panduan Program
+                </Link>
+              </div>
 
-            <div className="hidden sm:flex flex-col sm:flex-row gap-3">
-              <Link
-                to="/daftar"
-                className="btn-block group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground"
-              >
-                Daftar sekarang
-                <ArrowRight size={16} className="transition group-hover:translate-x-0.5" />
-              </Link>
-              <Link
-                to="/beasiswa-prestasi"
-                className="btn-block inline-flex items-center justify-center gap-2 rounded-full bg-card px-7 py-3.5 text-sm font-bold text-foreground hover:text-primary"
-              >
-                Lihat persyaratan
-              </Link>
-            </div>
-
-            <p className="hidden sm:block text-xs text-muted-foreground">
-              Gratis 100% · tanpa pungutan biaya · seleksi transparan
-            </p>
-
-            <div className="inline-flex items-center gap-2 rounded-2xl border border-border bg-secondary/50 px-3 py-2 sm:px-4 sm:py-3 w-fit">
-              <ShieldCheck size={16} className="text-primary shrink-0" />
-              <span className="text-[10px] sm:text-xs font-semibold text-foreground/80 whitespace-nowrap">Terbuka untuk</span>
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                {jenjang.map((j) => (
-                  <span key={j} className="rounded-full bg-card px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[11px] font-semibold text-foreground/75 shadow-card whitespace-nowrap">
-                    {j}
-                  </span>
+              <div className="mt-12 grid grid-cols-3 gap-6 border-t border-white/20 pt-8">
+                {stats.map((s) => (
+                  <div key={s.label}>
+                    <div className="text-2xl font-black md:text-3xl">{s.value}</div>
+                    <div className="mt-1 text-xs font-bold uppercase tracking-wider opacity-70">
+                      {s.label}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
 
-            <div className="sm:hidden flex flex-col gap-3">
-              <Link
-                to="/daftar"
-                className="btn-block group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground"
-              >
-                Daftar sekarang
-                <ArrowRight size={16} className="transition group-hover:translate-x-0.5" />
-              </Link>
-              <p className="text-center text-[10px] text-muted-foreground">
-                Gratis 100% · tanpa pungutan biaya
-              </p>
-            </div>
-          </div>
-
-          {/* Visual */}
-          <div className="relative">
-            <div className="card-block relative p-5">
-              <div className="flex items-center gap-1.5 pb-4">
-                <span className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[var(--gold)]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-primary/40" />
-                <span className="ml-3 text-[11px] font-semibold text-muted-foreground">Beasiswa Prestasi Kita · Batch #8</span>
-              </div>
-              <div className="overflow-hidden rounded-3xl bg-secondary/50">
+            <div className="relative hidden lg:block">
+              <div className="relative z-10 overflow-hidden rounded-[2.5rem] border-4 border-white/20 shadow-2xl">
                 <img
                   src={heroImg}
-                  onError={(e) => {
-                    const target = e.currentTarget;
-                    if (target.src.includes('undefined') || target.src.includes('null') || (target.src !== new URL(heroDefault, window.location.origin).href)) {
-                      target.src = heroDefault;
-                    }
-                  }}
-                  alt="Ilustrasi pelajar Indonesia penerima Beasiswa Prestasi Kita"
-                  width={1024}
-                  height={1024}
-                  className="mx-auto w-full max-w-md"
-                  fetchPriority="high"
+                  alt="Prestasi Kita Students"
+                  className="h-full w-full object-cover"
                 />
               </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <MiniStat icon={<Wallet size={15} />} value="Rp17.000.000" label="per semester" highlight />
-                <MiniStat icon={<GraduationCap size={15} />} value="SMP – Mahasiswa" label="semua jenjang" />
+              {/* Floating badges */}
+              <div className="absolute -left-6 top-1/4 z-20 animate-bounce-slow">
+                <div className="flex items-center gap-3 rounded-2xl border-2 border-white/20 bg-white p-4 text-primary shadow-neo">
+                  <div className="rounded-lg bg-primary/10 p-2">
+                    <Trophy className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-black">Prestasi</div>
+                    <div className="text-[10px] font-bold uppercase text-muted-foreground">Kategori Utama</div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute -bottom-6 right-10 z-20 animate-float">
+                <div className="flex items-center gap-3 rounded-2xl border-2 border-white/20 bg-white p-4 text-primary shadow-neo">
+                  <div className="rounded-lg bg-green-500/10 p-2">
+                    <Wallet className="h-6 w-6 text-green-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-black">Ekonomi</div>
+                    <div className="text-[10px] font-bold uppercase text-muted-foreground">Bantuan Dana</div>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div className="card-block absolute -left-4 bottom-24 hidden px-4 py-3 xl:block">
-              <div className="flex items-center gap-2 text-xs font-bold text-foreground">
-                <Users size={14} className="text-primary" /> Se-Indonesia
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        {/* STAT STRIP */}
-        <div className="container-page pb-14">
-          <div className="card-block grid grid-cols-1 sm:grid-cols-3 gap-4 px-6 py-7">
-            {stats.map((s) => (
-              <div key={s.label} className="text-center">
-                <div className="text-2xl md:text-3xl font-extrabold text-primary">{s.value}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{s.label}</div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
-      {/* MARQUEE BAND */}
-      <div className="overflow-hidden border-y border-primary/20 py-3.5 text-primary-foreground" style={{ background: "var(--gradient-primary)" }}>
-        <div className="flex w-max animate-marquee gap-8 whitespace-nowrap">
-          {[...marquee, ...marquee, ...marquee, ...marquee].map((m, i) => (
-            <span key={i} className="flex items-center gap-8 text-xs font-bold uppercase tracking-[0.18em]">
-              {m}
-              <Sparkles size={13} className="text-[var(--gold)]" />
+      {/* MARQUEE */}
+      <div className="relative z-20 -mt-6 overflow-hidden bg-secondary py-4 font-black text-secondary-foreground shadow-neo-sm rotate-1">
+        <div className="flex animate-marquee whitespace-nowrap">
+          {[...marquee, ...marquee].map((m, i) => (
+            <span key={i} className="mx-8 flex items-center gap-4 text-lg uppercase">
+              <Sparkles size={16} /> {m}
             </span>
           ))}
         </div>
       </div>
 
-      <div className="container-page overflow-visible">
-        <AdSlot placement="after_hero" />
-        {/* WIDGET_CUSTOM_HOMEPAGE_1: Tambahkan kode HTML/Adsense di sini */}
-        <RawHtmlWidget 
-          id="home-widget-1"
-          html={homeWidgets.widget1 || ""}
-        />
+      <div className="container-page py-12">
+        <AdSlot placement="home_top" />
       </div>
 
-      {/* COUNTDOWN */}
-      <section className="container-page pt-16 pb-4">
-        <Countdown />
-      </section>
-
-      {/* KATEGORI */}
-      <section className="container-page py-16">
-        <SectionHeader
-          eyebrow="Kategori Beasiswa"
-          title="Prestasi, Ekonomi, Umum, atau Yatim?"
-          desc="Satu program, empat jalur beasiswa. Pilih yang paling sesuai dengan kondisimu."
-        />
-
-        <div className="mt-12 grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          <CategoryCard
-            tag="Beasiswa Prestasi"
-            icon={<Trophy />}
-            title="Untuk yang berprestasi, akademik & non-akademik"
-            desc="Program beasiswa bagi pelajar dan mahasiswa yang memiliki prestasi akademik maupun non akademik."
-            to="/beasiswa-prestasi"
-          />
-          <CategoryCard
-            tag="Beasiswa Ekonomi"
-            icon={<HeartHandshake />}
-            title="Untuk yang membutuhkan dukungan finansial"
-            desc="Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial untuk pendidikan."
-            to="/beasiswa-ekonomi"
-            variant="dark"
-          />
-          <CategoryCard
-            tag="Beasiswa Umum"
-            icon={<Users />}
-            title="Untuk semua pelajar & mahasiswa aktif"
-            desc="Jalur terbuka tanpa syarat prestasi khusus maupun kriteria ekonomi tertentu. Siapa pun boleh mendaftar."
-            to="/beasiswa-umum"
-          />
-          <CategoryCard
-            tag="Beasiswa Yatim"
-            icon={<Heart />}
-            title="Untuk anak yatim, piatu & yatim piatu"
-            desc="Jalur khusus bagi pelajar dan mahasiswa yang telah kehilangan orang tua, agar pendidikan tetap berlanjut."
-            to="/beasiswa-yatim"
-            variant="dark"
-          />
+      {/* TIMELINE & COUNTDOWN */}
+      <section className="bg-muted py-20">
+        <div className="container-page">
+          <div className="mb-16 text-center">
+            <h2 className="text-sm font-black uppercase tracking-widest text-primary">Jadwal Program</h2>
+            <h3 className="mt-4 text-4xl font-black text-foreground md:text-5xl">Garis Waktu Batch #8</h3>
+          </div>
+          
+          <div className="grid gap-12 lg:grid-cols-[1fr_380px]">
+            <TimelineSection />
+            <div className="space-y-6">
+              <Countdown />
+              <div className="rounded-[2rem] bg-primary p-8 text-primary-foreground shadow-neo">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 text-white">
+                  <ShieldCheck size={24} />
+                </div>
+                <h4 className="mt-6 text-xl font-bold">100% Bebas Biaya</h4>
+                <p className="mt-3 text-sm opacity-80">
+                  Pendaftaran beasiswa ini tidak memungut biaya apapun dari peserta di jalur reguler. Hati-hati penipuan!
+                </p>
+                <Link to="/panduan" className="mt-6 inline-flex items-center gap-2 text-sm font-black hover:underline">
+                  Lihat Selengkapnya <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <div className="container-page overflow-visible">
-        <AdSlot placement="after_categories" />
-        {/* WIDGET_CUSTOM_HOMEPAGE_2: Tambahkan kode HTML/Adsense di sini */}
-        <RawHtmlWidget id="home-widget-2" html={homeWidgets.widget2 || ""} />
+      {/* ABOUT PROGRAM */}
+      <section id="program" className="py-24">
+        <div className="container-page">
+          <div className="grid items-center gap-16 lg:grid-cols-2">
+            <div className="order-2 lg:order-1">
+              <div className="relative overflow-hidden rounded-[2.5rem] border-4 border-muted shadow-neo">
+                <img
+                  src={posterImg}
+                  alt="Tentang Program Prestasi Kita"
+                  className="w-full"
+                />
+              </div>
+            </div>
+            <div className="order-1 lg:order-2">
+              <h2 className="text-sm font-black uppercase tracking-widest text-primary">Tentang Kami</h2>
+              <h3 className="mt-4 text-4xl font-black text-foreground md:text-5xl leading-tight">
+                Membangun Masa Depan <br /> Melalui Pendidikan.
+              </h3>
+              <p className="mt-8 text-lg leading-relaxed text-muted-foreground">
+                Beasiswa Prestasi Kita adalah inisiatif pendidikan nasional yang bertujuan untuk membantu pelajar dan mahasiswa Indonesia dalam meringankan biaya pendidikan serta memberikan pembekalan soft skills.
+              </p>
+              
+              <div className="mt-12 space-y-8">
+                <div className="flex items-start gap-6">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-neo-sm">
+                    <GraduationCap size={28} />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-black">Fokus Jenjang</h4>
+                    <p className="mt-2 text-muted-foreground">Terbuka untuk pelajar SMP, SMA/SMK/MA sederajat, hingga Mahasiswa S1/D3/D4 aktif.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-6">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary text-secondary-foreground shadow-neo-sm">
+                    <Users size={28} />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-black">Pilihan Jalur</h4>
+                    <p className="mt-2 text-muted-foreground">Empat jalur beasiswa yang disesuaikan dengan kondisi dan potensi masing-masing peserta.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-12">
+                <Link
+                  to="/tentang"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-muted px-8 py-4 font-black transition-all hover:bg-muted/80"
+                >
+                  Selengkapnya Tentang Kami <ArrowRight size={18} />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* MOCKUP SECTION */}
+      <AboutMockup />
+
+      <div className="container-page py-12">
+        <AdSlot placement="home_middle" />
       </div>
 
-      <AboutMockup />
+      {/* CATEGORIES SECTION */}
+      <section id="jalur" className="bg-primary py-24 text-primary-foreground">
+        <div className="container-page text-center">
+          <h2 className="text-sm font-black uppercase tracking-widest opacity-80">Jalur Beasiswa</h2>
+          <h3 className="mt-4 text-4xl font-black md:text-5xl">Pilih Kategori Yang Sesuai</h3>
+          
+          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <CategoryCard 
+              icon={<Trophy size={32} />}
+              title="Jalur Prestasi"
+              desc="Untuk kamu yang memiliki prestasi akademik atau non-akademik di tingkat sekolah atau nasional."
+              color="bg-white"
+            />
+            <CategoryCard 
+              icon={<Wallet size={32} />}
+              title="Jalur Ekonomi"
+              desc="Bantuan untuk peserta dengan keterbatasan ekonomi namun memiliki semangat belajar tinggi."
+              color="bg-white"
+            />
+            <CategoryCard 
+              icon={<Sparkles size={32} />}
+              title="Jalur Umum"
+              desc="Jalur pendaftaran terbuka bagi seluruh pelajar dan mahasiswa tanpa syarat prestasi khusus."
+              color="bg-white"
+            />
+            <CategoryCard 
+              icon={<Heart size={32} />}
+              title="Jalur Yatim"
+              desc="Dukungan khusus bagi pelajar dan mahasiswa yatim, piatu, atau yatim piatu."
+              color="bg-white"
+            />
+          </div>
+          
+          <div className="mt-16 text-center">
+            <Link
+              to="/pendaftaran/pilih-tipe"
+              className="inline-flex items-center gap-2 rounded-2xl bg-secondary px-10 py-5 text-xl font-black text-secondary-foreground shadow-neo transition-all hover:-translate-y-1"
+            >
+              Mulai Pendaftaran <ArrowRight />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <div className="container-page py-12">
+        <AdSlot placement="home_bottom" />
+      </div>
 
       <BenefitsSection />
 
-      <div className="container-page overflow-visible">
-        <AdSlot placement="after_benefits" />
-        {/* WIDGET_CUSTOM_HOMEPAGE_3: Tambahkan kode HTML/Adsense di sini */}
-        <RawHtmlWidget id="home-widget-3" html={homeWidgets.widget3 || ""} />
-      </div>
-
       <AlumniSection />
-
-      <div className="container-page overflow-visible">
-        <AdSlot placement="after_alumni" />
-      </div>
-
-      <TimelineSection />
 
       <FAQSection />
 
-      <div className="container-page overflow-visible">
-        <AdSlot placement="after_faq" />
-      </div>
-    </div>
-  );
-}
-
-function MiniStat({ icon, value, label, highlight }: { icon: React.ReactNode; value: string; label: string; highlight?: boolean }) {
-  return (
-    <div className={`rounded-2xl border-2 border-ink p-3.5 ${highlight ? "bg-primary text-primary-foreground" : "bg-card text-foreground"}`}>
-      <div className={`flex items-center gap-1.5 text-[11px] font-semibold ${highlight ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
-        {icon} {label}
-      </div>
-      <div className="mt-1 text-sm font-extrabold">{value}</div>
-    </div>
-  );
-}
-
-function SectionHeader({ eyebrow, title, desc }: { eyebrow: string; title: string; desc: string }) {
-  return (
-    <div className="text-center max-w-2xl mx-auto">
-      <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground/75 shadow-card">
-        <span className="h-1.5 w-1.5 rounded-full bg-[var(--gold)]" /> {eyebrow}
-      </span>
-      <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-foreground">{title}</h2>
-      <p className="mt-3 text-muted-foreground">{desc}</p>
-    </div>
-  );
-}
-
-function CategoryCard({ tag, icon, title, desc, to, variant }: { tag: string; icon: React.ReactNode; title: string; desc: string; to: "/beasiswa-prestasi" | "/beasiswa-ekonomi" | "/beasiswa-umum" | "/beasiswa-yatim"; variant?: "dark" }) {
-  const isDark = variant === "dark";
-  return (
-    <div
-      className={`group relative overflow-hidden p-8 ${isDark ? "card-block-dark" : "card-block"}`}
-    >
-      <div className={`absolute -top-16 -right-16 h-48 w-48 rounded-full blur-3xl ${isDark ? "bg-[var(--gold)]/25" : "bg-primary/10"}`} />
-      <div className="relative">
-        <div className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${isDark ? "bg-[var(--gold)] text-gold-foreground" : "bg-primary-soft text-primary"}`}>
-          {icon}
+      {/* CTA SECTION */}
+      <section className="bg-white py-24">
+        <div className="container-page">
+          <div className="relative overflow-hidden rounded-[3rem] bg-secondary p-12 text-center text-secondary-foreground shadow-neo md:p-20">
+            <div className="absolute top-0 right-0 p-8 opacity-20">
+              <Sparkles size={120} />
+            </div>
+            <div className="relative z-10 mx-auto max-w-3xl">
+              <h2 className="text-4xl font-black md:text-6xl">Siap Meraih Beasiswa?</h2>
+              <p className="mt-8 text-xl font-medium opacity-90">
+                Jangan lewatkan kesempatan emas untuk masa depan yang lebih baik. Pendaftaran ditutup 7 Februari 2027.
+              </p>
+              <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link
+                  to="/pendaftaran/pilih-tipe"
+                  className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl bg-primary px-10 py-5 text-xl font-black text-primary-foreground shadow-neo-sm transition-all hover:-translate-y-1"
+                >
+                  Daftar Sekarang <ArrowRight />
+                </Link>
+                <Link
+                  to="/panduan"
+                  className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl border-2 border-primary/20 bg-white/50 px-10 py-5 text-xl font-black backdrop-blur-sm transition-all hover:bg-white"
+                >
+                  Pelajari Dulu
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
-        <span className={`mt-5 inline-block rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${isDark ? "bg-[var(--gold)] text-gold-foreground" : "bg-primary-soft text-primary"}`}>
-          {tag}
-        </span>
-        <h3 className="mt-3 text-xl md:text-2xl font-bold">{title}</h3>
-        <p className={`mt-3 text-sm ${isDark ? "text-primary-foreground/80" : "text-muted-foreground"}`}>{desc}</p>
+      </section>
 
-        <ul className={`mt-5 space-y-2 text-sm ${isDark ? "text-primary-foreground/90" : "text-foreground/80"}`}>
-          {["Terbuka untuk SMP, SMA/SMK/MA, & Mahasiswa", "Tanpa minimal nilai rapor / IPK", "Tidak dipungut biaya"].map((x) => (
-            <li key={x} className="flex items-start gap-2">
-              <CheckCircle2 size={16} className={`mt-0.5 shrink-0 ${isDark ? "text-[var(--gold)]" : "text-primary"}`} /> {x}
-            </li>
-          ))}
-        </ul>
+      <RawHtmlWidget widgets={homeWidgets} />
+    </div>
+  );
+}
 
-        <Link
-          to={to}
-          className={`mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition hover:opacity-95 ${
-            isDark ? "bg-[var(--gold)] text-gold-foreground" : "bg-primary text-primary-foreground"
-          }`}
-        >
-          Lihat detail <ArrowRight size={16} />
-        </Link>
+function CategoryCard({ icon, title, desc, color }: { icon: React.ReactNode; title: string; desc: string; color: string }) {
+  return (
+    <div className={`rounded-3xl p-8 text-left transition-all hover:-translate-y-2 ${color} text-primary shadow-neo`}>
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+        {icon}
       </div>
+      <h4 className="mt-6 text-2xl font-black leading-tight">{title}</h4>
+      <p className="mt-4 text-sm font-medium leading-relaxed text-primary/70">
+        {desc}
+      </p>
     </div>
   );
 }
