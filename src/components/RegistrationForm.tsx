@@ -429,9 +429,13 @@ export function RegistrationForm({
         if (finalRedirectUrl) {
           console.log("Redirecting to payment gateway:", finalRedirectUrl);
           
-          if (paymentProvider === "doku" || paymentProvider === "aulaa") {
-             // For providers that support iframe, we've already set the state above
-             // But if we reach here, it might be a fallback
+          if (paymentProvider === "doku") {
+             setDokuPaymentUrl(finalRedirectUrl);
+             setShowPaymentIframe(true);
+             return;
+          }
+
+          if (paymentProvider === "aulaa") {
              setDokuPaymentUrl(finalRedirectUrl);
              setShowPaymentIframe(true);
              return;
