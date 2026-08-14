@@ -68,7 +68,7 @@ export function AboutMockup() {
           Prestasi Kita adalah sebuah lembaga pemberi beasiswa dan platform pengembangan diri yang berkomitmen 
           untuk mendukung pelajar dan mahasiswa Indonesia dalam mencapai potensi maksimal mereka. 
           Melalui program beasiswa pendidikan nasional, kami memberikan bantuan dana pendidikan dan apresiasi 
-          atas pencapaian akademik maupun non-akademik secara transparan dan tanpa biaya pendaftaran.
+          atas pencapaian akademik maupun non-akademik secara transparan.
         </p>
       </div>
 
