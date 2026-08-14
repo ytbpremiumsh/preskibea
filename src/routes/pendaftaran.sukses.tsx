@@ -108,8 +108,8 @@ function SuksesPage() {
           </div>
         )}
 
-        {/* Fast Track Payment CTA */}
-        {fastTrackPayUrl && (
+        {/* Status Fast Track */}
+        {fastTrackPayUrl ? (
           <div className="mt-6 rounded-3xl border-2 border-primary bg-primary-soft/30 p-6 md:p-7 shadow-card animate-in fade-in slide-in-from-bottom-2">
             <div className="flex items-start gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
@@ -119,7 +119,7 @@ function SuksesPage() {
                 <div className="text-xs font-bold uppercase tracking-wide text-primary">Pembayaran Fast Track</div>
                 <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Selesaikan Pembayaran</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Kamu memilih jalur <strong>Fast Track</strong>. Silakan selesaikan pembayaran Rp 15.000 agar status pendaftaran otomatis valid (Lolos Kirim Poster & Bebas Follow Sosmed).
+                  Kamu memilih jalur <strong>Fast Track</strong>. Silakan selesaikan pembayaran agar status pendaftaran otomatis valid (Lolos Kirim Poster & Bebas Follow Sosmed).
                 </p>
               </div>
             </div>
@@ -127,58 +127,92 @@ function SuksesPage() {
               href={fastTrackPayUrl}
               className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
             >
-              Bayar Sekarang (Rp 15.000) <ArrowRight size={16} />
+              Bayar Sekarang <ArrowRight size={16} />
             </a>
+          </div>
+        ) : (
+          <div className="mt-6 rounded-3xl border-2 border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20 p-6 md:p-7 shadow-card animate-in fade-in slide-in-from-bottom-2">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+                <CheckCircle2 size={20} />
+              </div>
+              <div className="flex-1">
+                <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Jalur Fast Track Aktif</div>
+                <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Otomatis Lolos Tahapan</h2>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  Selamat! Karena kamu menggunakan jalur <strong>Fast Track</strong>, kamu <strong>otomatis lolos</strong> tanpa perlu membagikan poster, follow sosial media, atau mengirim esai.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                    <Check size={10} /> BEBAS POSTER
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                    <Check size={10} /> BEBAS FOLLOW
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                    <Check size={10} /> BEBAS ESAI
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Langkah 2: Bagikan Poster */}
-        <div className="mt-6 rounded-3xl border-2 border-primary/30 bg-card p-6 md:p-7 shadow-card">
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Share2 size={20} />
+        {/* Langkah Lanjutan (Hanya untuk Reguler atau yang belum bayar) */}
+        {!(!fastTrackPayUrl && token?.startsWith("PK-FT-")) && (
+          <>
+            {/* Langkah 2: Bagikan Poster */}
+            <div className="mt-6 rounded-3xl border-2 border-primary/30 bg-card p-6 md:p-7 shadow-card">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <Share2 size={20} />
+                </div>
+                <div className="flex-1">
+                  <div className="text-xs font-bold uppercase tracking-wide text-primary">Langkah 2 dari 3</div>
+                  <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Bagikan Poster Beasiswa</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Sebelum kirim berkas, bantu sebarkan informasi beasiswa ini dengan membagikan poster ke media sosial atau grup WhatsApp.
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/bagikan-poster"
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+              >
+                Bagikan Poster Sekarang <ArrowRight size={16} />
+              </Link>
             </div>
-            <div className="flex-1">
-              <div className="text-xs font-bold uppercase tracking-wide text-primary">Langkah 2 dari 3</div>
-              <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Bagikan Poster Beasiswa</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Sebelum kirim berkas, bantu sebarkan informasi beasiswa ini dengan membagikan poster ke media sosial atau grup WhatsApp. Lalu kirim bukti share via WhatsApp admin.
-              </p>
-            </div>
-          </div>
-          <Link
-            to="/bagikan-poster"
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
-          >
-            Bagikan Poster Sekarang <ArrowRight size={16} />
-          </Link>
-        </div>
 
-        {/* Langkah 3: Kirim Berkas */}
-        <div className="card-block mt-6 p-6 md:p-7">
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
-              <FileUp size={20} />
+            {/* Langkah 3: Kirim Berkas */}
+            <div className="card-block mt-6 p-6 md:p-7">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
+                  <FileUp size={20} />
+                </div>
+                <div className="flex-1">
+                  <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Langkah 3 dari 3</div>
+                  <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Kirim Berkas Pendukung</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Siapkan dokumen sesuai persyaratan, lalu masukkan kode pendaftar untuk melengkapi pendaftaran.
+                  </p>
+                </div>
+              </div>
+              <Link
+                to={berkasTo as any}
+                search={{ token } as any}
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground hover:bg-muted transition"
+              >
+                Kirim Berkas <ArrowRight size={16} />
+              </Link>
             </div>
-            <div className="flex-1">
-              <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Langkah 3 dari 3</div>
-              <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Kirim Berkas Pendukung</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Setelah membagikan poster, lanjutkan dengan mengirim berkas. Siapkan dokumen sesuai persyaratan, lalu masukkan kode pendaftar.
-              </p>
-            </div>
-          </div>
-          <Link
-            to={berkasTo as "/berkas/prestasi/upload" | "/berkas/ekonomi/upload" | "/berkas/umum/upload" | "/berkas/yatim/upload"}
-            search={token ? { token } : undefined}
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground hover:bg-muted transition"
-          >
-            Kirim Berkas <ArrowRight size={16} />
-          </Link>
+          </>
+        )}
+
+        <div className="mt-6 flex flex-col gap-2">
           <Link
             to="/cek-status"
-            search={token ? { token } : undefined}
-            className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground hover:bg-muted transition"
+            search={{ token } as any}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground hover:bg-muted transition"
           >
             Cek Status Pendaftaran
           </Link>
