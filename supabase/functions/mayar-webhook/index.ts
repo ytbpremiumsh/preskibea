@@ -2,7 +2,6 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { crypto } from "https://deno.land/std@0.224.0/crypto/mod.ts";
 import { encodeHex } from "https://deno.land/std@0.224.0/encoding/hex.ts";
-import { encodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -36,32 +35,6 @@ async function verifyAulaaSignature(rawBody: string, signature: string, secret: 
   
   const expectedSignature = encodeHex(new Uint8Array(sigBuffer));
   return signature === expectedSignature;
-}
-
-async function verifyDokuSignature(headers: Headers, rawBody: string, secret: string): Promise<boolean> {
-  const signatureHeader = headers.get("Signature");
-  const clientId = headers.get("Client-Id");
-  const requestId = headers.get("Request-Id");
-  const timestamp = headers.get("Request-Timestamp");
-
-  if (!signatureHeader || !secret) return false;
-
-  const digest = encodeBase64(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(rawBody)));
-  // Note: Request-Target for notification is usually just the path
-  const requestTarget = "/functions/v1/mayar-webhook"; 
-  const signaturePayload = `Client-Id:${clientId}\nRequest-Id:${requestId}\nRequest-Timestamp:${timestamp}\nRequest-Target:${requestTarget}\nDigest:${digest}`;
-
-  const key = await crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-  const sigBuffer = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(signaturePayload));
-  const expectedSignature = `HMACSHA256=${encodeBase64(new Uint8Array(sigBuffer))}`;
-  
-  return signatureHeader === expectedSignature;
 }
 
 serve(async (req) => {
@@ -101,12 +74,12 @@ serve(async (req) => {
 
     // Identify Provider
     const aulaaSignature = req.headers.get("x-webhook-signature");
-    const dokuSignature = req.headers.get("Signature");
     let provider = "mayar";
-    let isSignatureValid = true;
+    let isSignatureValid = true; // Skip Mayar signature check for now if not needed
 
     if (aulaaSignature) {
       provider = "aulaa";
+      // Verify Aulaa Signature
       const { data: settings } = await supabaseAdmin
         .from("site_settings")
         .select("value")
@@ -116,18 +89,8 @@ serve(async (req) => {
       const secret = (settings?.value as any)?.webhook_secret;
       if (secret) {
         isSignatureValid = await verifyAulaaSignature(rawBody, aulaaSignature, secret);
-      }
-    } else if (dokuSignature) {
-      provider = "doku";
-      const { data: settings } = await supabaseAdmin
-        .from("site_settings")
-        .select("value")
-        .eq("key", "doku_config")
-        .maybeSingle();
-      
-      const secret = (settings?.value as any)?.secret_key;
-      if (secret) {
-        isSignatureValid = await verifyDokuSignature(req.headers, rawBody, secret);
+      } else {
+        console.warn("Aulaa webhook secret not configured, skipping verification.");
       }
     }
 
@@ -148,22 +111,16 @@ serve(async (req) => {
       tokenFromExtra = body?.extraData?.noCustomer || body?.data?.extraData?.noCustomer;
       paymentAmount = body?.amount || body?.data?.amount;
       externalId = body?.id || body?.data?.id;
-    } else if (provider === "aulaa") {
+    } else {
       // Aulaa Payload
       email = body?.email; // Optional in Aulaa webhook
       status = body?.status;
       tokenFromExtra = body?.order_id; // For Aulaa, order_id is our token
       paymentAmount = body?.amount;
       externalId = body?.id;
-    } else if (provider === "doku") {
-      // Doku Payload
-      status = body?.transaction?.status;
-      tokenFromExtra = body?.order?.invoice_number;
-      paymentAmount = body?.order?.amount;
-      externalId = body?.transaction?.original_request_id;
     }
 
-    if (status === "success" || status === "paid" || status === "SUCCESS" || body?.event === "payment.success" || body?.data?.event === "payment.success") {
+    if (status === "success" || status === "paid" || body?.event === "payment.success" || body?.data?.event === "payment.success") {
        console.log(`Processing successful payment (${provider}), token: ${tokenFromExtra}`);
        
        // Search for the latest pending fast_track registration

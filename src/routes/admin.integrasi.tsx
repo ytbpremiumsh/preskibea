@@ -19,8 +19,7 @@ import {
   Copy,
   Save,
   CreditCard,
-  Check,
-  Globe
+  Check
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -59,12 +58,6 @@ function AdminIntegrasi() {
     webhook_secret: "",
     qris_only: false
   });
-  const [dokuConfig, setDokuConfig] = useState({
-    client_id: "",
-    secret_key: "",
-    merchant_code: "",
-    is_production: false
-  });
   const [fastTrackFee, setFastTrackFee] = useState<string>("15000");
   const [webhookUrl, setWebhookUrl] = useState("");
 
@@ -88,7 +81,7 @@ function AdminIntegrasi() {
     const { data: settings } = await supabase
       .from("site_settings")
       .select("key, value")
-      .in("key", ["mayar_config", "payment_provider", "aulaa_config", "doku_config", "fast_track_fee"]);
+      .in("key", ["mayar_config", "payment_provider", "aulaa_config", "fast_track_fee"]);
     
     if (settings) {
       const provider = settings.find(s => s.key === "payment_provider")?.value as string;
@@ -99,9 +92,6 @@ function AdminIntegrasi() {
 
       const aulaa = settings.find(s => s.key === "aulaa_config")?.value as any;
       if (aulaa) setAulaaConfig(aulaa);
-
-      const doku = settings.find(s => s.key === "doku_config")?.value as any;
-      if (doku) setDokuConfig(doku);
 
       const fee = settings.find(s => s.key === "fast_track_fee")?.value as string;
       if (fee) setFastTrackFee(fee);
@@ -120,7 +110,6 @@ function AdminIntegrasi() {
         supabase.from("site_settings").upsert({ key: "payment_provider", value: activeProvider }, { onConflict: "key" }),
         supabase.from("site_settings").upsert({ key: "mayar_config", value: { api_key: mayarApiKey } }, { onConflict: "key" }),
         supabase.from("site_settings").upsert({ key: "aulaa_config", value: aulaaConfig }, { onConflict: "key" }),
-        supabase.from("site_settings").upsert({ key: "doku_config", value: dokuConfig }, { onConflict: "key" }),
         supabase.from("site_settings").upsert({ key: "fast_track_fee", value: fastTrackFee }, { onConflict: "key" })
       ]);
       toast.success("Konfigurasi integrasi berhasil disimpan");
@@ -158,7 +147,7 @@ function AdminIntegrasi() {
         <div>
           <h1 className="text-2xl font-bold text-foreground font-heading">Integrasi Pembayaran</h1>
           <p className="text-sm text-muted-foreground">
-            Monitoring pembayaran Fast Track melalui Mayar, Aulaa.co, atau Doku Wallet.
+            Monitoring pembayaran Fast Track melalui Mayar atau Aulaa.co.
           </p>
         </div>
         <Button variant="outline" onClick={load} disabled={loading}>
@@ -217,10 +206,9 @@ function AdminIntegrasi() {
           </div>
           
           <Tabs value={activeProvider} onValueChange={setActiveProvider} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="mayar">Mayar</TabsTrigger>
               <TabsTrigger value="aulaa">Aulaa.co</TabsTrigger>
-              <TabsTrigger value="doku">Doku</TabsTrigger>
             </TabsList>
 
             <TabsContent value="mayar" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
@@ -291,65 +279,6 @@ function AdminIntegrasi() {
                 </div>
               </div>
 
-            </TabsContent>
-            
-            <TabsContent value="doku" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Key size={12} /> Client ID
-                  </Label>
-                  <Input 
-                    value={dokuConfig.client_id}
-                    onChange={(e) => setDokuConfig(prev => ({ ...prev, client_id: e.target.value }))}
-                    placeholder="Doku Client ID"
-                    className="bg-background"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Key size={12} /> Secret Key
-                  </Label>
-                  <Input 
-                    type="password"
-                    value={dokuConfig.secret_key}
-                    onChange={(e) => setDokuConfig(prev => ({ ...prev, secret_key: e.target.value }))}
-                    placeholder="Doku Secret Key"
-                    className="bg-background"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Key size={12} /> Merchant Code
-                  </Label>
-                  <Input 
-                    value={dokuConfig.merchant_code}
-                    onChange={(e) => setDokuConfig(prev => ({ ...prev, merchant_code: e.target.value }))}
-                    placeholder="Doku Merchant Code"
-                    className="bg-background"
-                  />
-                </div>
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
-                  <p className="text-xs font-bold text-amber-800 flex items-center gap-1">
-                    <Globe size={12} /> Di mana mendapatkan Merchant Code?
-                  </p>
-                  <p className="text-[10px] text-amber-700 leading-relaxed">
-                    Merchant Code (Mall ID) dapat ditemukan di Dashboard Doku &gt; Configuration &gt; Integration Guide atau di email aktivasi akun Doku Anda.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 pt-2">
-                  <input 
-                    type="checkbox"
-                    id="doku_production"
-                    checked={dokuConfig.is_production || false}
-                    onChange={(e) => setDokuConfig(prev => ({ ...prev, is_production: e.target.checked }))}
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                  <Label htmlFor="doku_production" className="text-sm font-medium cursor-pointer">
-                    Mode Produksi (Live)
-                  </Label>
-                </div>
-              </div>
             </TabsContent>
           </Tabs>
 

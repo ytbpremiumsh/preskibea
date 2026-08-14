@@ -3,9 +3,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { z } from "https://esm.sh/zod@3.23.8";
-import { crypto } from "https://deno.land/std@0.224.0/crypto/mod.ts";
-import { encodeHex } from "https://deno.land/std@0.224.0/encoding/hex.ts";
-import { encodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -155,7 +152,7 @@ serve(async (req) => {
         const { data: settings } = await supabaseAdmin
           .from("site_settings")
           .select("key, value")
-          .in("key", ["payment_provider", "mayar_config", "aulaa_config", "doku_config", "fast_track_fee"]);
+          .in("key", ["payment_provider", "mayar_config", "aulaa_config", "fast_track_fee"]);
         
         const provider = settings?.find(s => s.key === "payment_provider")?.value as string || "mayar";
         const feeSetting = settings?.find(s => s.key === "fast_track_fee")?.value;
@@ -237,81 +234,6 @@ serve(async (req) => {
                 }).eq("id", registrationId);
                 aulaaPaymentId = paymentId;
               }
-            }
-          }
-        } else if (provider === "doku") {
-          const dokuConfig = settings?.find(s => s.key === "doku_config")?.value as any;
-          if (dokuConfig?.client_id && dokuConfig?.secret_key) {
-            const requestId = crypto.randomUUID();
-            const timestamp = new Date().toISOString().split('.')[0] + 'Z';
-            const requestTarget = "/checkout/v1/payment";
-            
-            const dokuBody = {
-              order: {
-                amount: amount,
-                invoice_number: token,
-                currency: "IDR",
-                callback_url: redirectUrl,
-                line_items: [
-                  {
-                    name: "Biaya Pendaftaran Jalur Fast Track Batch #8",
-                    price: amount,
-                    quantity: 1
-                  }
-                ]
-              },
-              customer: {
-                name: data.full_name,
-                email: data.email,
-                phone: normalizeNumber(data.whatsapp)
-              }
-            };
-
-            const bodyString = JSON.stringify(dokuBody);
-            
-            // Doku Signature generation
-            const digest = encodeBase64(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(bodyString)));
-            const signaturePayload = `Client-Id:${dokuConfig.client_id}\nRequest-Id:${requestId}\nRequest-Timestamp:${timestamp}\nRequest-Target:${requestTarget}\nDigest:${digest}`;
-            
-            const key = await crypto.subtle.importKey(
-              "raw",
-              new TextEncoder().encode(dokuConfig.secret_key),
-              { name: "HMAC", hash: "SHA-256" },
-              false,
-              ["sign"]
-            );
-            const sigBuffer = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(signaturePayload));
-            const signature = `HMACSHA256=${encodeBase64(new Uint8Array(sigBuffer))}`;
-
-            const dokuUrl = dokuConfig.is_production 
-              ? "https://api.doku.com/checkout/v1/payment" 
-              : "https://api-sandbox.doku.com/checkout/v1/payment";
-
-            const dokuRes = await fetch(dokuUrl, {
-              method: "POST",
-              headers: {
-                "Client-Id": dokuConfig.client_id,
-                "Request-Id": requestId,
-                "Request-Timestamp": timestamp,
-                "Signature": signature,
-                "Content-Type": "application/json",
-              },
-              body: bodyString,
-            });
-
-            if (dokuRes.ok) {
-              const resJson = await dokuRes.json();
-              const link = resJson?.response?.payment?.url;
-              if (link) {
-                finalInvoiceUrl = link;
-                await supabaseAdmin.from("registrations").update({ 
-                  payment_url: link, 
-                  extra: { ...data.extra, doku_request_id: requestId } 
-                }).eq("id", registrationId);
-              }
-            } else {
-              const errText = await dokuRes.text();
-              console.error("Doku API Error:", errText);
             }
           }
         }
