@@ -72,12 +72,13 @@ function Index() {
               <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                 <Link
                   to="/pendaftaran/pilih-tipe"
+                  search={{}}
                   className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl bg-secondary px-8 py-4 text-lg font-black text-secondary-foreground shadow-neo transition-all hover:-translate-y-1 active:translate-y-0"
                 >
                   Daftar Sekarang <ArrowRight className="transition-transform group-hover:translate-x-1" />
                 </Link>
                 <Link
-                  to="/panduan"
+                  to="/"
                   className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl border-2 border-white/30 bg-white/10 px-8 py-4 text-lg font-bold backdrop-blur-sm transition-all hover:bg-white/20"
                 >
                   Panduan Program
@@ -167,7 +168,7 @@ function Index() {
                 <p className="mt-3 text-sm opacity-80">
                   Pendaftaran beasiswa ini tidak memungut biaya apapun dari peserta di jalur reguler. Hati-hati penipuan!
                 </p>
-                <Link to="/panduan" className="mt-6 inline-flex items-center gap-2 text-sm font-black hover:underline">
+                <Link to="/" className="mt-6 inline-flex items-center gap-2 text-sm font-black hover:underline">
                   Lihat Selengkapnya <ArrowRight size={16} />
                 </Link>
               </div>
@@ -180,16 +181,14 @@ function Index() {
       <section id="program" className="py-24">
         <div className="container-page">
           <div className="grid items-center gap-16 lg:grid-cols-2">
-            <div className="order-2 lg:order-1">
-              <div className="relative overflow-hidden rounded-[2.5rem] border-4 border-muted shadow-neo">
-                <img
-                  src={posterImg}
-                  alt="Tentang Program Prestasi Kita"
-                  className="w-full"
-                />
-              </div>
+            <div className="relative overflow-hidden rounded-[2.5rem] border-4 border-muted shadow-neo">
+              <img
+                src={posterImg}
+                alt="Tentang Program Prestasi Kita"
+                className="w-full"
+              />
             </div>
-            <div className="order-1 lg:order-2">
+            <div>
               <h2 className="text-sm font-black uppercase tracking-widest text-primary">Tentang Kami</h2>
               <h3 className="mt-4 text-4xl font-black text-foreground md:text-5xl leading-tight">
                 Membangun Masa Depan <br /> Melalui Pendidikan.
@@ -275,6 +274,7 @@ function Index() {
           <div className="mt-16 text-center">
             <Link
               to="/pendaftaran/pilih-tipe"
+              search={{}}
               className="inline-flex items-center gap-2 rounded-2xl bg-secondary px-10 py-5 text-xl font-black text-secondary-foreground shadow-neo transition-all hover:-translate-y-1"
             >
               Mulai Pendaftaran <ArrowRight />
@@ -308,12 +308,13 @@ function Index() {
               <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   to="/pendaftaran/pilih-tipe"
+                  search={{}}
                   className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl bg-primary px-10 py-5 text-xl font-black text-primary-foreground shadow-neo-sm transition-all hover:-translate-y-1"
                 >
                   Daftar Sekarang <ArrowRight />
                 </Link>
                 <Link
-                  to="/panduan"
+                  to="/"
                   className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl border-2 border-primary/20 bg-white/50 px-10 py-5 text-xl font-black backdrop-blur-sm transition-all hover:bg-white"
                 >
                   Pelajari Dulu
@@ -324,7 +325,9 @@ function Index() {
         </div>
       </section>
 
-      <RawHtmlWidget widgets={homeWidgets} />
+      {homeWidgets?.widget1 && <RawHtmlWidget html={homeWidgets.widget1} />}
+      {homeWidgets?.widget2 && <RawHtmlWidget html={homeWidgets.widget2} />}
+      {homeWidgets?.widget3 && <RawHtmlWidget html={homeWidgets.widget3} />}
     </div>
   );
 }
