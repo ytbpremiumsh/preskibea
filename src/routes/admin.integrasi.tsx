@@ -18,8 +18,7 @@ import {
   Key,
   Copy,
   Save,
-  CreditCard,
-  Check
+  CreditCard
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -65,7 +64,6 @@ function AdminIntegrasi() {
   });
   const [fastTrackFee, setFastTrackFee] = useState<string>("15000");
   const [webhookUrl, setWebhookUrl] = useState("");
-
 
   const load = async () => {
     setLoading(true);
@@ -189,6 +187,82 @@ function AdminIntegrasi() {
                 />
               </div>
             </Card>
+
+            <Card className="shadow-soft overflow-hidden">
+              {loading ? (
+                <div className="p-12 flex justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : filtered.length === 0 ? (
+                <div className="p-12 text-center text-muted-foreground">
+                  Tidak ada data transaksi ditemukan.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground font-semibold">
+                      <tr>
+                        <th className="px-4 py-3">Peserta</th>
+                        <th className="px-4 py-3">Token</th>
+                        <th className="px-4 py-3">Provider</th>
+                        <th className="px-4 py-3">Nominal</th>
+                        <th className="px-4 py-3">Status</th>
+                        <th className="px-4 py-3">Tanggal</th>
+                        <th className="px-4 py-3">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {filtered.map((t) => (
+                        <tr key={t.id} className="hover:bg-muted/30 transition-colors">
+                          <td className="px-4 py-3">
+                            <div className="font-medium text-foreground">{t.registrations?.full_name}</div>
+                            <div className="text-xs text-muted-foreground">{t.registrations?.email}</div>
+                          </td>
+                          <td className="px-4 py-3 font-mono text-xs">{t.registrations?.token}</td>
+                          <td className="px-4 py-3 uppercase text-[10px] font-bold">
+                            <Badge variant="secondary" className="bg-muted text-muted-foreground">
+                              {t.provider || 'mayar'}
+                            </Badge>
+                          </td>
+                          <td className="px-4 py-3 font-semibold">
+                            {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(t.amount)}
+                          </td>
+                          <td className="px-4 py-3">
+                            <Badge 
+                              variant="outline" 
+                              className={
+                                t.status === 'success' || t.status === 'paid' 
+                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                                  : t.status === 'pending'
+                                  ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                  : 'bg-red-50 text-red-700 border-red-200'
+                              }
+                            >
+                              {t.status.toUpperCase()}
+                            </Badge>
+                          </td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            <div className="flex items-center gap-1.5">
+                              <Calendar size={12} />
+                              {new Date(t.created_at).toLocaleDateString('id-ID')}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            {t.payment_url && (
+                              <Button variant="ghost" size="sm" asChild>
+                                <a href={t.payment_url} target="_blank" rel="noopener noreferrer">
+                                  <ExternalLink size={14} className="mr-1" /> Link
+                                </a>
+                              </Button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card>
           </div>
 
           <Card className="p-6 border-primary/20 bg-primary/5 shadow-soft space-y-6 h-fit">
@@ -200,253 +274,177 @@ function AdminIntegrasi() {
               {saving && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
             </div>
 
-          <div className="space-y-2 pb-2">
-            <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <CreditCard size={12} /> Biaya Fast Track (IDR)
-            </Label>
-            <Input 
-              type="number"
-              value={fastTrackFee}
-              onChange={(e) => setFastTrackFee(e.target.value)}
-              placeholder="15000"
-              className="bg-background font-bold"
-            />
-            <p className="text-[10px] text-muted-foreground italic">
-              * Nominal ini akan digunakan untuk pembuatan invoice pendaftar Fast Track.
-            </p>
-          </div>
-          
-          <Tabs value={activeProvider} onValueChange={setActiveProvider} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
-              <TabsTrigger value="mayar">Mayar</TabsTrigger>
-              <TabsTrigger value="aulaa">Aulaa.co</TabsTrigger>
-              <TabsTrigger value="doku">Doku</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="mayar" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Key size={12} /> API Key Mayar
-                  </Label>
-                  <Input 
-                    type="password"
-                    value={mayarApiKey}
-                    onChange={(e) => setMayarApiKey(e.target.value)}
-                    placeholder="Mayar API Key"
-                    className="bg-background"
-                  />
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="aulaa" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Key size={12} /> Project ID
-                  </Label>
-                  <Input 
-                    value={aulaaConfig.project_id}
-                    onChange={(e) => setAulaaConfig(prev => ({ ...prev, project_id: e.target.value }))}
-                    placeholder="Aulaa Project ID"
-                    className="bg-background"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Key size={12} /> API Key (Bearer)
-                  </Label>
-                  <Input 
-                    type="password"
-                    value={aulaaConfig.api_key}
-                    onChange={(e) => setAulaaConfig(prev => ({ ...prev, api_key: e.target.value }))}
-                    placeholder="pgw_id_..."
-                    className="bg-background"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Key size={12} /> Webhook Secret
-                  </Label>
-                  <Input 
-                    type="password"
-                    value={aulaaConfig.webhook_secret}
-                    onChange={(e) => setAulaaConfig(prev => ({ ...prev, webhook_secret: e.target.value }))}
-                    placeholder="Webhook Secret"
-                    className="bg-background"
-                  />
-                </div>
-                <div className="flex items-center gap-2 pt-2">
-                  <input 
-                    type="checkbox"
-                    id="qris_only"
-                    checked={aulaaConfig.qris_only || false}
-                    onChange={(e) => setAulaaConfig(prev => ({ ...prev, qris_only: e.target.checked }))}
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                  <Label htmlFor="qris_only" className="text-sm font-medium cursor-pointer">
-                    Hanya Aktifkan QRIS (Nonaktifkan VA & Retail)
-                  </Label>
-                </div>
-              </div>
-
-            </TabsContent>
-
-            <TabsContent value="doku" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Key size={12} /> Doku Client ID
-                  </Label>
-                  <Input 
-                    value={dokuConfig.client_id}
-                    onChange={(e) => setDokuConfig(prev => ({ ...prev, client_id: e.target.value }))}
-                    placeholder="Client ID dari Doku Dashboard"
-                    className="bg-background"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Key size={12} /> Doku Secret Key
-                  </Label>
-                  <Input 
-                    type="password"
-                    value={dokuConfig.secret_key}
-                    onChange={(e) => setDokuConfig(prev => ({ ...prev, secret_key: e.target.value }))}
-                    placeholder="Secret Key dari Doku Dashboard"
-                    className="bg-background"
-                  />
-                </div>
-                <div className="flex items-center gap-2 pt-2">
-                  <input 
-                    type="checkbox"
-                    id="doku_production"
-                    checked={dokuConfig.is_production || false}
-                    onChange={(e) => setDokuConfig(prev => ({ ...prev, is_production: e.target.checked }))}
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                  <Label htmlFor="doku_production" className="text-sm font-medium cursor-pointer">
-                    Mode Production (Jangan centang jika masih Sandbox)
-                  </Label>
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
-
-          <div className="space-y-2 border-t pt-4 mt-4">
-            <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Webhook size={12} /> URL Webhook
-            </Label>
-            <div className="flex gap-2">
+            <div className="space-y-2 pb-2">
+              <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <CreditCard size={12} /> Biaya Fast Track (IDR)
+              </Label>
               <Input 
-                readOnly
-                value={webhookUrl}
-                className="bg-muted text-[10px] font-mono"
+                type="number"
+                value={fastTrackFee}
+                onChange={(e) => setFastTrackFee(e.target.value)}
+                placeholder="15000"
+                className="bg-background font-bold"
               />
-              <Button 
-                variant="outline" 
-                size="icon"
-                className="shrink-0"
-                onClick={() => {
-                  navigator.clipboard.writeText(webhookUrl);
-                  toast.success("URL disalin ke clipboard");
-                }}
-              >
-                <Copy size={14} />
-              </Button>
+              <p className="text-[10px] text-muted-foreground italic">
+                * Nominal ini akan digunakan untuk pembuatan invoice pendaftar Fast Track.
+              </p>
             </div>
-            <p className="text-[10px] text-muted-foreground italic">
-              * Masukkan URL ini ke Dashboard Provider &gt; Settings &gt; Webhook
-            </p>
-          </div>
+            
+            <Tabs value={activeProvider} onValueChange={setActiveProvider} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 mb-6">
+                <TabsTrigger value="mayar">Mayar</TabsTrigger>
+                <TabsTrigger value="aulaa">Aulaa.co</TabsTrigger>
+                <TabsTrigger value="doku">Doku</TabsTrigger>
+              </TabsList>
 
-          <Button 
-            className="w-full btn-block" 
-            onClick={saveConfig}
-            disabled={saving}
-          >
-            {saving ? <Loader2 size={16} className="animate-spin mr-2" /> : <Save size={16} className="mr-2" />}
-            Simpan Konfigurasi
-          </Button>
-        </Card>
+              <TabsContent value="mayar" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <Key size={12} /> API Key Mayar
+                    </Label>
+                    <Input 
+                      type="password"
+                      value={mayarApiKey}
+                      onChange={(e) => setMayarApiKey(e.target.value)}
+                      placeholder="Mayar API Key"
+                      className="bg-background"
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="aulaa" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <Key size={12} /> Project ID
+                    </Label>
+                    <Input 
+                      value={aulaaConfig.project_id}
+                      onChange={(e) => setAulaaConfig(prev => ({ ...prev, project_id: e.target.value }))}
+                      placeholder="Aulaa Project ID"
+                      className="bg-background"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <Key size={12} /> API Key (Bearer)
+                    </Label>
+                    <Input 
+                      type="password"
+                      value={aulaaConfig.api_key}
+                      onChange={(e) => setAulaaConfig(prev => ({ ...prev, api_key: e.target.value }))}
+                      placeholder="pgw_id_..."
+                      className="bg-background"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <Key size={12} /> Webhook Secret
+                    </Label>
+                    <Input 
+                      type="password"
+                      value={aulaaConfig.webhook_secret}
+                      onChange={(e) => setAulaaConfig(prev => ({ ...prev, webhook_secret: e.target.value }))}
+                      placeholder="Webhook Secret"
+                      className="bg-background"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 pt-2">
+                    <input 
+                      type="checkbox"
+                      id="qris_only"
+                      checked={aulaaConfig.qris_only || false}
+                      onChange={(e) => setAulaaConfig(prev => ({ ...prev, qris_only: e.target.checked }))}
+                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    />
+                    <Label htmlFor="qris_only" className="text-sm font-medium cursor-pointer">
+                      Hanya Aktifkan QRIS
+                    </Label>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="doku" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <Key size={12} /> Doku Client ID
+                    </Label>
+                    <Input 
+                      value={dokuConfig.client_id}
+                      onChange={(e) => setDokuConfig(prev => ({ ...prev, client_id: e.target.value }))}
+                      placeholder="Client ID dari Doku Dashboard"
+                      className="bg-background"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <Key size={12} /> Doku Secret Key
+                    </Label>
+                    <Input 
+                      type="password"
+                      value={dokuConfig.secret_key}
+                      onChange={(e) => setDokuConfig(prev => ({ ...prev, secret_key: e.target.value }))}
+                      placeholder="Secret Key dari Doku Dashboard"
+                      className="bg-background"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 pt-2">
+                    <input 
+                      type="checkbox"
+                      id="doku_production"
+                      checked={dokuConfig.is_production || false}
+                      onChange={(e) => setDokuConfig(prev => ({ ...prev, is_production: e.target.checked }))}
+                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    />
+                    <Label htmlFor="doku_production" className="text-sm font-medium cursor-pointer">
+                      Mode Production
+                    </Label>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            <div className="space-y-2 border-t pt-4 mt-4">
+              <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Webhook size={12} /> URL Webhook
+              </Label>
+              <div className="flex gap-2">
+                <Input 
+                  readOnly
+                  value={webhookUrl}
+                  className="bg-muted text-[10px] font-mono"
+                />
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  className="shrink-0"
+                  onClick={() => {
+                    navigator.clipboard.writeText(webhookUrl);
+                    toast.success("URL disalin ke clipboard");
+                  }}
+                >
+                  <Copy size={14} />
+                </Button>
+              </div>
+              <p className="text-[10px] text-muted-foreground italic">
+                * Masukkan URL ini ke Dashboard Provider
+              </p>
+            </div>
+
+            <Button 
+              className="w-full" 
+              onClick={saveConfig}
+              disabled={saving}
+            >
+              {saving ? <Loader2 size={16} className="animate-spin mr-2" /> : <Save size={16} className="mr-2" />}
+              Simpan Konfigurasi
+            </Button>
+          </Card>
+        </div>
       </div>
-
-      <Card className="shadow-soft overflow-hidden">
-        {loading ? (
-          <div className="p-12 flex justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="p-12 text-center text-muted-foreground">
-            Tidak ada data transaksi ditemukan.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground font-semibold">
-                <tr>
-                  <th className="px-4 py-3">Peserta</th>
-                  <th className="px-4 py-3">Token</th>
-                  <th className="px-4 py-3">Provider</th>
-                  <th className="px-4 py-3">Nominal</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Tanggal</th>
-                  <th className="px-4 py-3">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {filtered.map((t) => (
-                  <tr key={t.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-foreground">{t.registrations?.full_name}</div>
-                      <div className="text-xs text-muted-foreground">{t.registrations?.email}</div>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-xs">{t.registrations?.token}</td>
-                    <td className="px-4 py-3 uppercase text-[10px] font-bold">
-                      <Badge variant="secondary" className="bg-muted text-muted-foreground">
-                        {t.provider || 'mayar'}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 font-semibold">
-                      {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(t.amount)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge 
-                        variant="outline" 
-                        className={
-                          t.status === 'success' || t.status === 'paid' 
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                            : t.status === 'pending'
-                            ? 'bg-amber-50 text-amber-700 border-amber-200'
-                            : 'bg-red-50 text-red-700 border-red-200'
-                        }
-                      >
-                        {t.status.toUpperCase()}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar size={12} />
-                        {new Date(t.created_at).toLocaleDateString('id-ID')}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      {t.payment_url && (
-                        <Button variant="ghost" size="sm" asChild>
-                          <a href={t.payment_url} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink size={14} className="mr-1" /> Link
-                          </a>
-                        </Button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Card>
     </div>
   );
 }
