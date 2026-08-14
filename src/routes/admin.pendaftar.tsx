@@ -33,6 +33,7 @@ type Registration = {
   khs_url?: string | null;
   transcript_custom_url?: string | null;
   additional_docs_url?: string | null;
+  tiktok_video_url?: string | null;
   status: "pending" | "verified" | "approved" | "rejected";
   token?: string | null;
   fast_track?: boolean | null;
@@ -588,6 +589,7 @@ function DetailDialog({
           {row.khs_url && <Field label="KHS (URL)" value={row.khs_url} />}
           {row.transcript_custom_url && <Field label="Transkrip (URL)" value={row.transcript_custom_url} />}
           {row.additional_docs_url && <Field label="Berkas Pendukung (URL)" value={row.additional_docs_url} />}
+          {row.tiktok_video_url && <Field label="Video Tiktok (URL)" value={row.tiktok_video_url} />}
         </div>
 
         <div className="mt-6">
@@ -602,6 +604,7 @@ function DetailDialog({
             {row.khs_url && <DocLink type="Kartu Hasil Studi (KHS)" url={row.khs_url} />}
             {row.transcript_custom_url && <DocLink type="Transkrip Nilai" url={row.transcript_custom_url} />}
             {row.additional_docs_url && <DocLink type="Berkas Pendukung Lainnya" url={row.additional_docs_url} />}
+            {row.tiktok_video_url && <DocLink type="Video Tiktok" url={row.tiktok_video_url} />}
             {docs.map((d) => (
               <DocLink key={d.id} type={d.doc_type} url={d.file_url} />
             ))}

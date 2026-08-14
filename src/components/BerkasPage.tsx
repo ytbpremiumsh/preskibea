@@ -36,10 +36,10 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
   ],
   umum: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
-    { id: "transcript", key: "transcript", label: "Rapor / Transkrip Nilai Terakhir", required: true },
-    { id: "cv", key: "cv", label: "Curriculum Vitae (CV) / Portofolio Singkat", required: true },
-    { id: "video_motivation", key: "video_motivation", label: "Video Motivasi Diri (Link)", required: true },
-    
+    { id: "khs", key: "khs", label: "Kartu Hasil Studi (KHS)", required: true },
+    { id: "transcript_custom", key: "transcript_custom", label: "Transkrip Nilai", required: true },
+    { id: "tiktok_video", key: "tiktok_video", label: "Video Tiktok 1 Menit (Menjelaskan Beasiswa Prestasi Kita)", required: true },
+    { id: "additional_docs", key: "additional_docs", label: "Berkas Pendukung Lainnya (Optional)", required: false },
   ],
   yatim: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
@@ -124,7 +124,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
       // KHS only for Mahasiswa
       // Transkrip Nilai only for Pelajar and Gapyear
       // Berkas Pendukung (additional_docs) for everyone
-      if (kind === "prestasi") {
+      if (kind === "prestasi" || kind === "umum") {
         if (d.key === "khs" && !isMahasiswa) return false;
         if (d.key === "transcript_custom" && !isPelajarOrGapyear) return false;
       }
@@ -228,7 +228,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
         }
         return d;
       }).filter(d => {
-        if (kind === "prestasi") {
+        if (kind === "prestasi" || kind === "umum") {
           if (d.key === "khs" && !isMahasiswa) return false;
           if (d.key === "transcript_custom" && !isPelajarOrGapyear) return false;
         }
@@ -291,6 +291,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
           khs_url: (values["khs"] ?? "").trim() || null,
           transcript_custom_url: (values["transcript_custom"] ?? "").trim() || null,
           additional_docs_url: (values["additional_docs"] ?? "").trim() || null,
+          tiktok_video_url: (values["tiktok_video"] ?? "").trim() || null,
         }
       });
 
