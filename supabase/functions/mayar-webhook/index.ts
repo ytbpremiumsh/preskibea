@@ -111,13 +111,22 @@ serve(async (req) => {
       tokenFromExtra = body?.extraData?.noCustomer || body?.data?.extraData?.noCustomer;
       paymentAmount = body?.amount || body?.data?.amount;
       externalId = body?.id || body?.data?.id;
-    } else {
+    } else if (provider === "aulaa") {
       // Aulaa Payload
-      email = body?.email; // Optional in Aulaa webhook
+      email = body?.email;
       status = body?.status;
-      tokenFromExtra = body?.order_id; // For Aulaa, order_id is our token
+      tokenFromExtra = body?.order_id;
       paymentAmount = body?.amount;
       externalId = body?.id;
+    } else if (provider === "doku") {
+      // Doku Payload
+      email = body?.customer?.email;
+      status = body?.transaction?.status; // Doku uses transaction.status (SUCCESS, FAILED, etc.)
+      tokenFromExtra = body?.order?.invoice_number;
+      paymentAmount = body?.order?.amount;
+      externalId = body?.order?.invoice_number;
+      
+      if (status === "SUCCESS") status = "paid";
     }
 
     if (status === "success" || status === "paid" || body?.event === "payment.success" || body?.data?.event === "payment.success") {

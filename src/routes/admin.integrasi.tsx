@@ -58,6 +58,11 @@ function AdminIntegrasi() {
     webhook_secret: "",
     qris_only: false
   });
+  const [dokuConfig, setDokuConfig] = useState({
+    client_id: "",
+    secret_key: "",
+    is_production: false
+  });
   const [fastTrackFee, setFastTrackFee] = useState<string>("15000");
   const [webhookUrl, setWebhookUrl] = useState("");
 
@@ -81,7 +86,7 @@ function AdminIntegrasi() {
     const { data: settings } = await supabase
       .from("site_settings")
       .select("key, value")
-      .in("key", ["mayar_config", "payment_provider", "aulaa_config", "fast_track_fee"]);
+      .in("key", ["mayar_config", "payment_provider", "aulaa_config", "doku_config", "fast_track_fee"]);
     
     if (settings) {
       const provider = settings.find(s => s.key === "payment_provider")?.value as string;
@@ -95,6 +100,9 @@ function AdminIntegrasi() {
 
       const fee = settings.find(s => s.key === "fast_track_fee")?.value as string;
       if (fee) setFastTrackFee(fee);
+
+      const doku = settings.find(s => s.key === "doku_config")?.value as any;
+      if (doku) setDokuConfig(doku);
     }
 
     // Set Webhook URL
@@ -110,6 +118,7 @@ function AdminIntegrasi() {
         supabase.from("site_settings").upsert({ key: "payment_provider", value: activeProvider }, { onConflict: "key" }),
         supabase.from("site_settings").upsert({ key: "mayar_config", value: { api_key: mayarApiKey } }, { onConflict: "key" }),
         supabase.from("site_settings").upsert({ key: "aulaa_config", value: aulaaConfig }, { onConflict: "key" }),
+        supabase.from("site_settings").upsert({ key: "doku_config", value: dokuConfig }, { onConflict: "key" }),
         supabase.from("site_settings").upsert({ key: "fast_track_fee", value: fastTrackFee }, { onConflict: "key" })
       ]);
       toast.success("Konfigurasi integrasi berhasil disimpan");
@@ -147,7 +156,7 @@ function AdminIntegrasi() {
         <div>
           <h1 className="text-2xl font-bold text-foreground font-heading">Integrasi Pembayaran</h1>
           <p className="text-sm text-muted-foreground">
-            Monitoring pembayaran Fast Track melalui Mayar atau Aulaa.co.
+            Monitoring pembayaran Fast Track melalui Mayar, Aulaa.co, atau Doku.
           </p>
         </div>
         <Button variant="outline" onClick={load} disabled={loading}>
@@ -206,9 +215,10 @@ function AdminIntegrasi() {
           </div>
           
           <Tabs value={activeProvider} onValueChange={setActiveProvider} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="mayar">Mayar</TabsTrigger>
               <TabsTrigger value="aulaa">Aulaa.co</TabsTrigger>
+              <TabsTrigger value="doku">Doku</TabsTrigger>
             </TabsList>
 
             <TabsContent value="mayar" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
@@ -279,6 +289,46 @@ function AdminIntegrasi() {
                 </div>
               </div>
 
+            </TabsContent>
+
+            <TabsContent value="doku" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <Key size={12} /> Doku Client ID
+                  </Label>
+                  <Input 
+                    value={dokuConfig.client_id}
+                    onChange={(e) => setDokuConfig(prev => ({ ...prev, client_id: e.target.value }))}
+                    placeholder="Client ID dari Doku Dashboard"
+                    className="bg-background"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <Key size={12} /> Doku Secret Key
+                  </Label>
+                  <Input 
+                    type="password"
+                    value={dokuConfig.secret_key}
+                    onChange={(e) => setDokuConfig(prev => ({ ...prev, secret_key: e.target.value }))}
+                    placeholder="Secret Key dari Doku Dashboard"
+                    className="bg-background"
+                  />
+                </div>
+                <div className="flex items-center gap-2 pt-2">
+                  <input 
+                    type="checkbox"
+                    id="doku_production"
+                    checked={dokuConfig.is_production || false}
+                    onChange={(e) => setDokuConfig(prev => ({ ...prev, is_production: e.target.checked }))}
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <Label htmlFor="doku_production" className="text-sm font-medium cursor-pointer">
+                    Mode Production (Jangan centang jika masih Sandbox)
+                  </Label>
+                </div>
+              </div>
             </TabsContent>
           </Tabs>
 
