@@ -1,7 +1,18 @@
 /**
- * Pengaturan Provider card nya dibuatkan tab baru saja, pada halaman integrasi pembayaran
+ * Khusus Pendaftaran Fast Track halaman pendaftaran sukses
  *
- * IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Tidak ignore nada, tidak simplifique, implemente EXATAMENTE o que foi pedido.
+ * Jalur Fast Track Aktif
+ * Otomatis Lolos Tahapan
+ * Selamat! Karena kamu menggunakan jalur Fast Track, kamu otomatis lolos tanpa perlu membagikan poster, follow sosial media, atau mengirim esai.
+ *
+ * BEBAS POSTER
+ * BEBAS FOLLOW
+ * BEBAS ESAI
+ * Langkah 2 dari 3
+ * Bagikan Poster Beasiswa
+ * Sebelum kirim berkas, bantu sebarkan informasi beasiswa ini dengan membagikan poster ke media sosial atau grup WhatsApp.
+ *
+ * sembunyikan card bagikan poster beasiswa ( munculkan di reguler )
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap, Heart } from "lucide-react";
