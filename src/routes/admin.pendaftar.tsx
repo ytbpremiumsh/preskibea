@@ -1,4 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+/**
+ * Perbaikan: Menambahkan sistem paginasi (20/50 per halaman) pada daftar pendaftar admin agar lebih rapi dan ringan saat di-scroll.
+ */
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
