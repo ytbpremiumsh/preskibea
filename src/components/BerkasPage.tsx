@@ -292,6 +292,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
           transcript_custom_url: (values["transcript_custom"] ?? "").trim() || null,
           additional_docs_url: (values["additional_docs"] ?? "").trim() || null,
           tiktok_video_url: (values["tiktok_video"] ?? "").trim() || null,
+          status: "verified" // Set status to verified after docs are submitted
         }
       });
 
