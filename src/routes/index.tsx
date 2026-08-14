@@ -1,9 +1,7 @@
 /**
- * apakah semua settingan doku sudah benar mulai dari doku client id dan doku secret key? apakah masih ada kekeliruan
+ * Jika pembayaran sudah berhasil otomatis pop up close dan juga sistem langsungdirect ke sukses dan mendapatkan kode pendaftaran
  *
- * jawab dengan bahas aindonesia
- *
- * IMPORTANTE: Execute TODOS os detalhes desta tarefa dengan máxima precisão. Tidak ignore nada, tidak simplifique, implemente EXATAMENTE o que foi pedido.
+ * IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Não ignore nada, tidak simplifique, implemente EXATAMENTE o que foi pedido.
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap, Heart } from "lucide-react";
