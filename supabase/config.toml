@@ -10,3 +10,7 @@ project_id = "ltmfvbcazebowndigkyi"
   [functions.notify-user]
     verify_jwt = false
 
+  [functions.check-payment-status]
+    verify_jwt = false
+
+

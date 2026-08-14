@@ -503,27 +503,68 @@ export function RegistrationForm({
     }
   };
 
-  // Polling for payment status (Aulaa/Doku)
+  // Polling for payment status (Aulaa/Doku) — auto close popup + redirect on success
   useEffect(() => {
     if (!showPaymentIframe || !submittedToken) return;
 
-    const interval = setInterval(async () => {
-      const { data, error } = await supabase
+    let stopped = false;
+    let attempts = 0;
+
+    const finish = () => {
+      if (stopped) return;
+      stopped = true;
+      toast.success("Pembayaran berhasil diverifikasi!");
+      setShowPaymentIframe(false);
+      setDokuPaymentUrl(null);
+      setAulaaPaymentId(null);
+      setValues({});
+      setFiles({});
+      handleSuccessRedirect(submittedData, submittedToken);
+    };
+
+    const check = async () => {
+      if (stopped) return;
+      attempts += 1;
+
+      // 1) Cek status di database (diisi oleh webhook)
+      const { data } = await supabase
         .from("registrations")
         .select("payment_status")
         .eq("token", submittedToken)
         .maybeSingle();
 
-      if (data?.payment_status === "paid") {
-        clearInterval(interval);
-        toast.success("Pembayaran Terverifikasi!");
-        setShowPaymentIframe(false);
-        handleSuccessRedirect(submittedData, submittedToken);
-      }
-    }, 3000);
+      if (data?.payment_status === "paid") return finish();
 
-    return () => clearInterval(interval);
+      // 2) Fallback: tanya langsung ke payment gateway setiap ~6 detik
+      if (attempts % 2 === 0) {
+        try {
+          const { data: res } = await supabase.functions.invoke("check-payment-status", {
+            body: { token: submittedToken },
+          });
+          if ((res as any)?.status === "paid") return finish();
+        } catch {
+          /* ignore */
+        }
+      }
+    };
+
+    const interval = setInterval(check, 3000);
+    check();
+
+    // 3) Jika halaman pembayaran mengirim pesan sukses dari iframe
+    const onMessage = (ev: MessageEvent) => {
+      const raw = typeof ev.data === "string" ? ev.data : JSON.stringify(ev.data ?? "");
+      if (/success|settlement|paid/i.test(raw)) check();
+    };
+    window.addEventListener("message", onMessage);
+
+    return () => {
+      stopped = true;
+      clearInterval(interval);
+      window.removeEventListener("message", onMessage);
+    };
   }, [showPaymentIframe, submittedToken, submittedData]);
+
 
   const grouped = useMemo(() => {
     const level = values["education_level"] ?? "";
@@ -795,9 +836,15 @@ export function RegistrationForm({
               </div>
             )}
           </div>
+
+          <div className="border-t p-3 text-center text-[11px] font-semibold text-muted-foreground shrink-0">
+            <span className="inline-block h-2 w-2 rounded-full bg-primary animate-pulse mr-2 align-middle" />
+            Menunggu pembayaran… pop-up akan tertutup otomatis dan Anda diarahkan ke halaman sukses beserta kode pendaftaran.
+          </div>
         </div>
       </div>
     )}
+
     </>
   );
 }
