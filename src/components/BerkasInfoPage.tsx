@@ -21,10 +21,10 @@ const docsByKind = {
   ],
   umum: [
     "Kartu Pelajar / Kartu Mahasiswa",
-    "Rapor / KHS / Transkrip Nilai Terakhir (Minimal 1 Semester)",
-    "Curriculum Vitae (CV) / Portofolio Singkat",
-    "Video Motivasi Diri (Link Drive/YouTube) — Wajib",
-    
+    "Kartu Hasil Studi (KHS) (Wajib untuk Mahasiswa)",
+    "Transkrip Nilai (Wajib untuk Pelajar & Gapyear)",
+    "Video Tiktok 1 Menit ( Menjelaskan Beasiswa Prestasi Kita) — Wajib",
+    "Berkas Pendukung Lainnya (Opsional)",
   ],
   yatim: [
     "Kartu Pelajar / Kartu Mahasiswa",
