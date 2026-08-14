@@ -446,9 +446,19 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {registrant && (
-            <div className="rounded-2xl border border-primary/30 bg-primary-soft/40 p-4">
-              <div className="flex items-center gap-2 text-xs font-semibold text-primary">
-                <UserCheck size={14} /> Terverifikasi: {registrant.full_name}
+            <div className="rounded-2xl border border-primary/30 bg-primary-soft/40 p-5 space-y-3">
+              <div className="flex items-center gap-2 text-sm font-bold text-primary">
+                <UserCheck size={16} /> Terverifikasi: {registrant.full_name}
+              </div>
+              <div className="grid grid-cols-2 gap-4 border-t border-primary/10 pt-3">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider font-bold text-primary/60">Kode Pendaftaran</div>
+                  <div className="text-xs font-mono font-bold text-primary">{registrant.token || token}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider font-bold text-primary/60">Jenjang Pendidikan</div>
+                  <div className="text-xs font-bold text-primary capitalize">{registrant.education_level || "-"}</div>
+                </div>
               </div>
             </div>
           )}
