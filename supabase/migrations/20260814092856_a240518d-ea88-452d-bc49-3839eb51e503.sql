@@ -1,0 +1,1 @@
+DELETE FROM public.registrations WHERE email = 'tes-doku@example.com';
