@@ -18,7 +18,8 @@ import {
   Key,
   Copy,
   Save,
-  CreditCard
+  CreditCard,
+  Send
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -62,6 +63,12 @@ function AdminIntegrasi() {
     secret_key: "",
     is_production: false
   });
+  const [telegramConfig, setTelegramConfig] = useState({
+    enabled: false,
+    bot_token: "",
+    chat_id: "",
+    template: "🔔 *Pembayaran Baru Masuk!*\n\n👤 Nama: {nama}\n💰 Nominal: {nominal}\n🎫 Token: {token}\n💳 Provider: {provider}\n📅 Tanggal: {tanggal}\n\n✅ Pembayaran telah diverifikasi secara otomatis."
+  });
   const [fastTrackFee, setFastTrackFee] = useState<string>("15000");
   const [webhookUrl, setWebhookUrl] = useState("");
 
@@ -84,7 +91,7 @@ function AdminIntegrasi() {
     const { data: settings } = await supabase
       .from("site_settings")
       .select("key, value")
-      .in("key", ["mayar_config", "payment_provider", "aulaa_config", "doku_config", "fast_track_fee"]);
+      .in("key", ["mayar_config", "payment_provider", "aulaa_config", "doku_config", "fast_track_fee", "telegram_config"]);
     
     if (settings) {
       const provider = settings.find(s => s.key === "payment_provider")?.value as string;
@@ -101,6 +108,9 @@ function AdminIntegrasi() {
 
       const doku = settings.find(s => s.key === "doku_config")?.value as any;
       if (doku) setDokuConfig(doku);
+
+      const telegram = settings.find(s => s.key === "telegram_config")?.value as any;
+      if (telegram) setTelegramConfig(prev => ({ ...prev, ...telegram }));
     }
 
     // Set Webhook URL
@@ -118,7 +128,8 @@ function AdminIntegrasi() {
         supabase.from("site_settings").upsert({ key: "mayar_config", value: { api_key: mayarApiKey } }, { onConflict: "key" }),
         supabase.from("site_settings").upsert({ key: "aulaa_config", value: aulaaConfig }, { onConflict: "key" }),
         supabase.from("site_settings").upsert({ key: "doku_config", value: dokuConfig }, { onConflict: "key" }),
-        supabase.from("site_settings").upsert({ key: "fast_track_fee", value: fastTrackFee }, { onConflict: "key" })
+        supabase.from("site_settings").upsert({ key: "fast_track_fee", value: fastTrackFee }, { onConflict: "key" }),
+        supabase.from("site_settings").upsert({ key: "telegram_config", value: telegramConfig }, { onConflict: "key" })
       ]);
       toast.success("Konfigurasi integrasi berhasil disimpan");
     } catch (err) {
@@ -304,6 +315,7 @@ function AdminIntegrasi() {
                     <TabsTrigger value="mayar">Mayar</TabsTrigger>
                     <TabsTrigger value="aulaa">Aulaa.co</TabsTrigger>
                     <TabsTrigger value="doku">Doku</TabsTrigger>
+                    <TabsTrigger value="telegram">Telegram</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="mayar" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
@@ -411,6 +423,65 @@ function AdminIntegrasi() {
                         <Label htmlFor="doku_production" className="text-sm font-medium cursor-pointer">
                           Mode Production
                         </Label>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="telegram" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 border rounded-lg bg-background/50">
+                        <div className="space-y-0.5">
+                          <Label className="text-sm font-bold">Status Notifikasi</Label>
+                          <p className="text-[10px] text-muted-foreground">Aktifkan bot untuk mengirim pesan ke Telegram admin.</p>
+                        </div>
+                        <input 
+                          type="checkbox"
+                          checked={telegramConfig.enabled}
+                          onChange={(e) => setTelegramConfig(prev => ({ ...prev, enabled: e.target.checked }))}
+                          className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                          <Key size={12} /> Bot Token
+                        </Label>
+                        <Input 
+                          type="password"
+                          value={telegramConfig.bot_token}
+                          onChange={(e) => setTelegramConfig(prev => ({ ...prev, bot_token: e.target.value }))}
+                          placeholder="Contoh: 123456789:ABCDefgh..."
+                          className="bg-background"
+                        />
+                        <p className="text-[10px] text-muted-foreground italic">Dapatkan dari @BotFather di Telegram.</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                          <Send size={12} /> Chat ID
+                        </Label>
+                        <Input 
+                          value={telegramConfig.chat_id}
+                          onChange={(e) => setTelegramConfig(prev => ({ ...prev, chat_id: e.target.value }))}
+                          placeholder="Contoh: 123456789 atau -100123456789"
+                          className="bg-background"
+                        />
+                        <p className="text-[10px] text-muted-foreground italic">Dapatkan ID chat Anda melalui @userinfobot.</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                          <Webhook size={12} /> Template Pesan
+                        </Label>
+                        <textarea 
+                          className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          value={telegramConfig.template}
+                          onChange={(e) => setTelegramConfig(prev => ({ ...prev, template: e.target.value }))}
+                        />
+                        <div className="p-2 bg-muted rounded text-[10px] space-y-1">
+                          <p className="font-bold">Variabel tersedia:</p>
+                          <p>{"{nama}, {email}, {token}, {nominal}, {provider}, {tanggal}"}</p>
+                        </div>
                       </div>
                     </div>
                   </TabsContent>

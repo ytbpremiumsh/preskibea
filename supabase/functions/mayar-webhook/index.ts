@@ -170,6 +170,52 @@ serve(async (req) => {
     if (status === "success" || status === "paid" || body?.event === "payment.success" || body?.data?.event === "payment.success") {
        console.log(`Processing successful payment (${provider}), token: ${tokenFromExtra}`);
        
+       // Telegram Notification logic
+       try {
+         const { data: telSettings } = await supabaseAdmin
+           .from("site_settings")
+           .select("value")
+           .eq("key", "telegram_config")
+           .maybeSingle();
+         
+         const telCfg = (telSettings?.value as any);
+         if (telCfg?.enabled && telCfg?.bot_token && telCfg?.chat_id) {
+           const { data: regInfo } = await supabaseAdmin
+             .from("registrations")
+             .select("full_name, email, token")
+             .or(`token.eq.${tokenFromExtra},email.eq.${email}`)
+             .limit(1)
+             .maybeSingle();
+
+           const vars: Record<string, string> = {
+             nama: regInfo?.full_name || body?.customer?.name || body?.name || "-",
+             email: regInfo?.email || email || "-",
+             token: regInfo?.token || tokenFromExtra || "-",
+             nominal: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(paymentAmount) || 0),
+             provider: provider.toUpperCase(),
+             tanggal: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })
+           };
+
+           let message = telCfg.template || "Pembayaran Masuk: {nama} - {nominal}";
+           Object.keys(vars).forEach(key => {
+             message = message.replace(new RegExp(`\\{${key}\\}`, 'g'), vars[key]);
+           });
+
+           await fetch(`https://api.telegram.org/bot${telCfg.bot_token}/sendMessage`, {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({
+               chat_id: telCfg.chat_id,
+               text: message,
+               parse_mode: 'Markdown'
+             })
+           });
+           console.log("Telegram notification sent successfully.");
+         }
+       } catch (telErr) {
+         console.error("Failed to send Telegram notification:", telErr.message);
+       }
+
        let q = supabaseAdmin
          .from("registrations")
          .select("id, token, full_name, email, whatsapp, kind")
