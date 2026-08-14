@@ -320,7 +320,8 @@ export function RegistrationForm({
         kind, 
         status: registrationType === "fast_track" ? "pending" : "approved",
         fast_track: registrationType === "fast_track",
-        payment_url: null 
+        payment_url: null,
+        payment_status: registrationType === "fast_track" ? "pending" : "paid"
       };
       const extra: Record<string, unknown> = {};
       for (const f of schema.fields) {
