@@ -164,7 +164,7 @@ export function RegistrationForm({
   const [aulaaPaymentId, setAulaaPaymentId] = useState<string | null>(null);
   const [dokuPaymentUrl, setDokuPaymentUrl] = useState<string | null>(null);
   const [showPaymentIframe, setShowPaymentIframe] = useState(false);
-  const [paymentProvider, setPaymentProvider] = useState<string>("mayar");
+  const [paymentProvider, setPaymentProvider] = useState<string>("doku");
   const [fastTrackFee, setFastTrackFee] = useState<number>(15000);
   const [submittedToken, setSubmittedToken] = useState<string | null>(null);
   const [submittedData, setSubmittedData] = useState<any>(null);
@@ -178,7 +178,7 @@ export function RegistrationForm({
         if (!data) return;
         
         const provider = data.find(s => s.key === "payment_provider")?.value as string;
-        setPaymentProvider(provider || "mayar");
+        setPaymentProvider(provider || "doku");
         const mayarLink = data.find(s => s.key === "mayar_fast_track_link")?.value as string;
         const aulaa = data.find(s => s.key === "aulaa_config")?.value as any;
         const fee = data.find(s => s.key === "fast_track_fee")?.value;
@@ -428,8 +428,16 @@ export function RegistrationForm({
         const finalRedirectUrl = invoiceUrl || activePaymentLink;
         if (finalRedirectUrl) {
           console.log("Redirecting to payment gateway:", finalRedirectUrl);
-          toast.info("Mengarahkan ke pembayaran...");
           
+          if (paymentProvider === "doku" || paymentProvider === "aulaa") {
+             // For providers that support iframe, we've already set the state above
+             // But if we reach here, it might be a fallback
+             setDokuPaymentUrl(finalRedirectUrl);
+             setShowPaymentIframe(true);
+             return;
+          }
+
+          toast.info("Mengarahkan ke pembayaran...");
           setTimeout(() => {
             try {
               window.location.assign(finalRedirectUrl);
