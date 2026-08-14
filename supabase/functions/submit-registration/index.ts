@@ -244,16 +244,19 @@ serve(async (req) => {
     }
 
     try {
-      await supabaseAdmin.functions.invoke("notify-user", {
-        body: {
-          type: "registration",
-          full_name: data.full_name,
-          email: data.email,
-          token,
-          kind: data.kind,
-          status: data.fast_track ? "pending" : "approved"
-        },
-      });
+      // Hanya kirim email jika BUKAN Fast Track (karena Fast Track dikirim setelah bayar di webhook)
+      if (!data.fast_track) {
+        await supabaseAdmin.functions.invoke("notify-user", {
+          body: {
+            type: "registration",
+            full_name: data.full_name,
+            email: data.email,
+            token,
+            kind: data.kind,
+            status: "approved"
+          },
+        });
+      }
     } catch (emailErr) {
       console.error("Failed to trigger registration email:", emailErr.message);
     }
