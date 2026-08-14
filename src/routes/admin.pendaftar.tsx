@@ -419,6 +419,18 @@ function AdminPendaftar() {
             <option value="submitted">Sudah Kirim Berkas ({counts.submitted})</option>
             <option value="pending">Belum Kirim Berkas ({counts.pending})</option>
           </select>
+          <div className="flex items-center gap-2 text-sm ml-auto">
+            <span className="text-muted-foreground whitespace-nowrap">Tampilkan:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="rounded-md border border-input bg-background px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary"
+            >
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
         </div>
       </Card>
 
