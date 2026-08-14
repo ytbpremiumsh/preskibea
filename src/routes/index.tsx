@@ -1,3 +1,10 @@
+/**
+ * apakah semua settingan doku sudah benar mulai dari doku client id dan doku secret key? apakah masih ada kekeliruan
+ *
+ * jawab dengan bahas aindonesia
+ *
+ * IMPORTANTE: Execute TODOS os detalhes desta tarefa dengan máxima precisão. Tidak ignore nada, tidak simplifique, implemente EXATAMENTE o que foi pedido.
+ */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap, Heart } from "lucide-react";
 import heroDefault from "@/assets/students-hero.png";
