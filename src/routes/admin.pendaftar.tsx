@@ -73,6 +73,8 @@ function AdminPendaftar() {
   const [selectedRow, setSelectedRow] = useState<Registration | null>(null);
   const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Handle URL params for filtering from Dashboard
   useEffect(() => {
