@@ -599,12 +599,12 @@ function DetailDialog({
           <div className="space-y-2">
             {row.photo_url && <DocLink type="Foto" url={row.photo_url} />}
             {row.student_card_url && (
-              <DocLink type="Kartu Pelajar / Kartu Mahasiswa" url={row.student_card_url} />
+              <DocLink type="Kartu Identitas (Identity)" url={row.student_card_url} />
             )}
             {row.khs_url && <DocLink type="Kartu Hasil Studi (KHS)" url={row.khs_url} />}
-            {row.transcript_custom_url && <DocLink type="Transkrip Nilai" url={row.transcript_custom_url} />}
+            {row.transcript_custom_url && <DocLink type="Transkrip Nilai (Custom)" url={row.transcript_custom_url} />}
+            {row.tiktok_video_url && <DocLink type="Video Tiktok 1 Menit" url={row.tiktok_video_url} />}
             {row.additional_docs_url && <DocLink type="Berkas Pendukung Lainnya" url={row.additional_docs_url} />}
-            {row.tiktok_video_url && <DocLink type="Video Tiktok" url={row.tiktok_video_url} />}
             {docs.map((d) => (
               <DocLink key={d.id} type={d.doc_type} url={d.file_url} />
             ))}
