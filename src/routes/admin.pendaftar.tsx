@@ -156,6 +156,18 @@ function AdminPendaftar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, q, filterKind, filterBerkas, filterJalur, docs]);
 
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [q, filterKind, filterBerkas, filterJalur, pageSize]);
+
+  const paginatedRows = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filtered.length / pageSize);
+
   const setPayment = async (r: Registration, next: "paid" | "pending") => {
     if (next === "paid") {
       if (!confirm(`Validasi manual pembayaran Fast Track untuk "${r.full_name}"?`)) return;
