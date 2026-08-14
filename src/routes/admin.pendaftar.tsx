@@ -608,7 +608,7 @@ function DetailDialog({
             {docs.map((d) => (
               <DocLink key={d.id} type={d.doc_type} url={d.file_url} />
             ))}
-            {docs.length === 0 && !row.photo_url && !row.student_card_url && (
+            {docs.length === 0 && !row.photo_url && !row.student_card_url && !row.khs_url && !row.transcript_custom_url && !row.additional_docs_url && !row.tiktok_video_url && (
               <p className="text-sm text-muted-foreground">Belum ada berkas.</p>
             )}
           </div>
