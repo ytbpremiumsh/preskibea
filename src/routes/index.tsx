@@ -72,7 +72,7 @@ function Index() {
               <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                 <Link
                   to="/pendaftaran/pilih-tipe"
-                  search={{}}
+                  search={{ kind: "prestasi" }}
                   className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl bg-secondary px-8 py-4 text-lg font-black text-secondary-foreground shadow-neo transition-all hover:-translate-y-1 active:translate-y-0"
                 >
                   Daftar Sekarang <ArrowRight className="transition-transform group-hover:translate-x-1" />
@@ -274,7 +274,7 @@ function Index() {
           <div className="mt-16 text-center">
             <Link
               to="/pendaftaran/pilih-tipe"
-              search={{}}
+              search={{ kind: "prestasi" }}
               className="inline-flex items-center gap-2 rounded-2xl bg-secondary px-10 py-5 text-xl font-black text-secondary-foreground shadow-neo transition-all hover:-translate-y-1"
             >
               Mulai Pendaftaran <ArrowRight />
@@ -308,7 +308,7 @@ function Index() {
               <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   to="/pendaftaran/pilih-tipe"
-                  search={{}}
+                  search={{ kind: "prestasi" }}
                   className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl bg-primary px-10 py-5 text-xl font-black text-primary-foreground shadow-neo-sm transition-all hover:-translate-y-1"
                 >
                   Daftar Sekarang <ArrowRight />
