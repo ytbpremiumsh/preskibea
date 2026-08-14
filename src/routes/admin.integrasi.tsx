@@ -67,7 +67,7 @@ function AdminIntegrasi() {
     enabled: false,
     bot_token: "",
     chat_id: "",
-    template: "🔔 *Pembayaran Baru Masuk!*\n\n👤 Nama: {nama}\n💰 Nominal: {nominal}\n🎫 Token: {token}\n💳 Provider: {provider}\n📅 Tanggal: {tanggal}\n\n✅ Pembayaran telah diverifikasi secara otomatis."
+    template: "🔔 *Pembayaran Baru Masuk!*\n\n👤 Nama: {nama}\n📧 Email: {email}\n📱 WA: {whatsapp}\n💰 Nominal: {nominal}\n🎫 Token: {token}\n💳 Provider: {provider}\n📅 Tanggal: {tanggal}\n\n✅ Pembayaran telah diverifikasi secara otomatis."
   });
   const [testingTelegram, setTestingTelegram] = useState(false);
   const [fastTrackFee, setFastTrackFee] = useState<string>("15000");
@@ -131,6 +131,8 @@ function AdminIntegrasi() {
     try {
       const message = telegramConfig.template
         .replace(/{nama}/g, "Admin Test")
+        .replace(/{email}/g, "admin@test.com")
+        .replace(/{whatsapp}/g, "081234567890")
         .replace(/{nominal}/g, "Rp 0")
         .replace(/{token}/g, "PK-TEST-123")
         .replace(/{provider}/g, "Test System")
