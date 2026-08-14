@@ -180,21 +180,22 @@ serve(async (req) => {
          
          const telCfg = (telSettings?.value as any);
          if (telCfg?.enabled && telCfg?.bot_token && telCfg?.chat_id) {
-           const { data: regInfo } = await supabaseAdmin
-             .from("registrations")
-             .select("full_name, email, token")
+            const { data: regInfo } = await supabaseAdmin
+              .from("registrations")
+              .select("full_name, email, token, whatsapp")
              .or(`token.eq.${tokenFromExtra},email.eq.${email}`)
              .limit(1)
              .maybeSingle();
 
-           const vars: Record<string, string> = {
-             nama: regInfo?.full_name || body?.customer?.name || body?.name || "-",
-             email: regInfo?.email || email || "-",
-             token: regInfo?.token || tokenFromExtra || "-",
-             nominal: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(paymentAmount) || 0),
-             provider: provider.toUpperCase(),
-             tanggal: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })
-           };
+            const vars: Record<string, string> = {
+              nama: regInfo?.full_name || body?.customer?.name || body?.name || "-",
+              email: regInfo?.email || email || "-",
+              whatsapp: regInfo?.whatsapp || body?.customer?.phone || body?.phone || "-",
+              token: regInfo?.token || tokenFromExtra || "-",
+              nominal: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(paymentAmount) || 0),
+              provider: provider.toUpperCase(),
+              tanggal: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })
+            };
 
            let message = telCfg.template || "Pembayaran Masuk: {nama} - {nominal}";
            Object.keys(vars).forEach(key => {
