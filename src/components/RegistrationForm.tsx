@@ -419,27 +419,32 @@ export function RegistrationForm({
           return;
         }
 
-        if (paymentProvider === "doku" && invoiceUrl) {
-          setDokuPaymentUrl(invoiceUrl);
-          setShowPaymentIframe(true);
+        if (paymentProvider === "doku") {
+          if (invoiceUrl) {
+            setDokuPaymentUrl(invoiceUrl);
+            setShowPaymentIframe(true);
+          } else {
+            toast.error(
+              "Pembayaran Doku belum dapat dibuat. Periksa kembali Client ID & Secret Key Doku di dashboard admin.",
+            );
+          }
+          return;
+        }
+
+        if (paymentProvider === "aulaa") {
+          if (invoiceUrl) {
+            setDokuPaymentUrl(invoiceUrl);
+            setShowPaymentIframe(true);
+          } else {
+            toast.error("Pembayaran Aulaa.co belum dapat dibuat. Periksa konfigurasi Aulaa di dashboard admin.");
+          }
           return;
         }
 
         const finalRedirectUrl = invoiceUrl || activePaymentLink;
         if (finalRedirectUrl) {
           console.log("Redirecting to payment gateway:", finalRedirectUrl);
-          
-          if (paymentProvider === "doku") {
-             setDokuPaymentUrl(finalRedirectUrl);
-             setShowPaymentIframe(true);
-             return;
-          }
 
-          if (paymentProvider === "aulaa") {
-             setDokuPaymentUrl(finalRedirectUrl);
-             setShowPaymentIframe(true);
-             return;
-          }
 
           toast.info("Mengarahkan ke pembayaran...");
           setTimeout(() => {
