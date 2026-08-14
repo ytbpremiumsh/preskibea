@@ -106,7 +106,8 @@ function AdminIntegrasi() {
     }
 
     // Set Webhook URL
-    setWebhookUrl("https://ltmfvbcazebowndigkyi.supabase.co/functions/v1/mayar-webhook");
+    const functionUrl = "https://ltmfvbcazebowndigkyi.supabase.co/functions/v1/mayar-webhook";
+    setWebhookUrl(functionUrl);
 
     setLoading(false);
   };
