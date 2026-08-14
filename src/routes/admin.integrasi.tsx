@@ -311,7 +311,7 @@ function AdminIntegrasi() {
                 </div>
                 
                 <Tabs value={activeProvider} onValueChange={setActiveProvider} className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 mb-6">
+                  <TabsList className="grid w-full grid-cols-4 mb-6">
                     <TabsTrigger value="mayar">Mayar</TabsTrigger>
                     <TabsTrigger value="aulaa">Aulaa.co</TabsTrigger>
                     <TabsTrigger value="doku">Doku</TabsTrigger>
