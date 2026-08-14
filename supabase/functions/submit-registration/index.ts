@@ -266,7 +266,7 @@ serve(async (req) => {
                 amount: amount,
                 invoice_number: token,
                 currency: "IDR",
-                callback_url: redirectUrl,
+                callback_url: (cleanOrigin || "https://preskibea.lovable.app") + "/pendaftaran/sukses",
                 line_items: [
                   {
                     name: "Pendaftaran Fast Track Batch 8",
