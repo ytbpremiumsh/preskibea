@@ -1,7 +1,9 @@
 /**
- * Jika pembayaran sudah berhasil otomatis pop up close dan juga sistem langsungdirect ke sukses dan mendapatkan kode pendaftaran
+ * buatkan pada card agar shadow hitam card nya tidak terpotong ketika di kenakan mouse
  *
- * IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Não ignore nada, tidak simplifique, implemente EXATAMENTE o que foi pedido.
+ * agar terlihat full shadow black nya, terapkan di semua card dan button ( jika menggunakan )
+ *
+ * IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Tidak ignore nada, tidak simplifique, implemente EXATAMENTE o que foi pedido.
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap, Heart } from "lucide-react";

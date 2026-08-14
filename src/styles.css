@@ -246,9 +246,10 @@
   background-color: var(--card);
   box-shadow: 6px 6px 0 0 var(--ink);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 0 9px 9px 0;
 
   &:hover {
-    transform: translate(-2px, -2px);
+    transform: translate(-3px, -3px);
     box-shadow: 9px 9px 0 0 var(--ink);
   }
 }
@@ -259,9 +260,10 @@
   color: var(--primary-foreground);
   box-shadow: 6px 6px 0 0 var(--ink);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 0 9px 9px 0;
 
   &:hover {
-    transform: translate(-2px, -2px);
+    transform: translate(-3px, -3px);
     box-shadow: 9px 9px 0 0 var(--ink);
   }
 }
@@ -270,11 +272,13 @@
   border: 2px solid var(--ink);
   background-color: var(--card);
   box-shadow: 4px 4px 0 0 var(--ink);
+  margin: 0 4px 4px 0;
 }
 @utility btn-block {
   border: 2px solid var(--ink);
   box-shadow: 4px 4px 0 0 var(--ink);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  margin: 0 6px 6px 0;
 
   &:hover {
     transform: translate(-2px, -2px);
