@@ -199,7 +199,7 @@ function SuksesPage() {
               </div>
               <Link
                 to={berkasTo as any}
-                search={{ token: token }}
+                search={(prev: any) => ({ ...prev, token })}
                 className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground hover:bg-muted transition"
               >
                 Kirim Berkas <ArrowRight size={16} />
@@ -211,7 +211,7 @@ function SuksesPage() {
         <div className="mt-6 flex flex-col gap-2">
           <Link
             to="/cek-status"
-            search={{ token: token }}
+            search={(prev: any) => ({ ...prev, token })}
             className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground hover:bg-muted transition"
           >
             Cek Status Pendaftaran
