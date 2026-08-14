@@ -260,12 +260,14 @@ export function RegistrationForm({
   const title = `Pendaftaran ${kindLabel}`;
 
   const setVal = (name: string, v: string) => {
-    setValues((s) =>
-      name === "education_level" ? { ...s, [name]: v, grade: "" } : { ...s, [name]: v },
-    );
+    setValues((s) => {
+      const next = { ...s, [name]: v };
+      if (name === "education_level") next.grade = "";
+      return next;
+    });
 
     if (name === "orphan_status" && kind === "yatim") {
-      if (!["Yatim", "Yatim & Piatu"].includes(v)) {
+      if (v && !["Yatim", "Yatim & Piatu"].includes(v)) {
         toast.error("Beasiswa Yatim hanya tersedia untuk status Yatim atau Yatim & Piatu");
       }
     }
@@ -318,7 +320,8 @@ export function RegistrationForm({
         kind, 
         status: registrationType === "fast_track" ? "pending" : "approved",
         fast_track: registrationType === "fast_track",
-        payment_url: null 
+        payment_url: null,
+        payment_status: registrationType === "fast_track" ? "pending" : "paid"
       };
       const extra: Record<string, unknown> = {};
       for (const f of schema.fields) {

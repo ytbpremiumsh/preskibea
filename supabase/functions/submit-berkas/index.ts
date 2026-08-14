@@ -116,9 +116,17 @@ serve(async (req) => {
     }
     
     if (data.registration_updates && Object.keys(data.registration_updates).length > 0) {
+      const { status: newStatus, ...otherUpdates } = data.registration_updates;
+      
+      // If setting status to verified, only do it if not already approved/paid
+      const updates = { ...otherUpdates };
+      if (newStatus === "verified" && reg.status !== "approved") {
+        updates.status = "verified";
+      }
+
       await supabaseAdmin
         .from("registrations")
-        .update(data.registration_updates)
+        .update(updates)
         .eq("id", reg.id);
     }
 

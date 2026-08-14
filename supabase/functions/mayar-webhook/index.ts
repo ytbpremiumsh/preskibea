@@ -199,6 +199,16 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("Webhook error:", e.message);
+    // Log exception to DB for debugging
+    try {
+      await supabaseAdmin.from("site_settings").insert({
+        key: `webhook_error_${Date.now()}`,
+        value: { error: e.message, stack: e.stack, time: new Date().toISOString() }
+      });
+    } catch (logErr) {
+      console.error("Failed to log error to DB:", logErr.message);
+    }
+    
     return new Response(JSON.stringify({ error: e.message }), {
       status: 500,
       headers: { ...cors, "Content-Type": "application/json" },

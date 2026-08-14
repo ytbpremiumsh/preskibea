@@ -48,25 +48,6 @@ serve(async (req) => {
         },
       }),
     });
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        templateName,
-        recipientEmail: email,
-        templateData: {
-          full_name,
-          token,
-          kind,
-          status,
-          whatsapp,
-          count,
-          site_name: "Prestasi Kita",
-        },
-      }),
-    });
 
     const resJson = await result.json();
 

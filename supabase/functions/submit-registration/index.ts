@@ -157,11 +157,11 @@ serve(async (req) => {
         const provider = settings?.find(s => s.key === "payment_provider")?.value as string || "mayar";
         const feeSetting = settings?.find(s => s.key === "fast_track_fee")?.value;
         const amount = feeSetting ? Number(feeSetting) : 15000;
-        const description = `Pendaftaran Fast Track — ${data.full_name}`;
+        const description = `Pendaftaran Fast Track ${data.kind} — ${data.full_name}`;
         const origin = req.headers.get("origin") || req.headers.get("referer") || "";
         const redirectUrl = origin 
           ? `${origin.replace(/\/$/, "")}/pendaftaran/sukses?token=${token}&name=${encodeURIComponent(data.full_name)}&email=${encodeURIComponent(data.email)}&whatsapp=${encodeURIComponent(data.whatsapp)}&kind=${data.kind}`
-          : "https://preskibea.lovable.app";
+          : "https://preskibea.lovable.app/pendaftaran/sukses";
 
         if (provider === "mayar") {
           const mayarConfig = settings?.find(s => s.key === "mayar_config")?.value as { api_key?: string };
