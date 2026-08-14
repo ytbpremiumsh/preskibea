@@ -253,6 +253,14 @@ serve(async (req) => {
             const requestId = crypto.randomUUID();
             const timestamp = new Date().toISOString().split('.')[0] + 'Z';
             
+            // Doku hanya menerima: a-z A-Z 0-9 . - / + , = _ : ' @ % ( ) dan spasi
+            const sanitize = (s: string, max = 100) =>
+              (s || "")
+                .replace(/[^a-zA-Z0-9.\-/+,=_:'@%() ]/g, " ")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, max);
+
             const dokuBody = {
               order: {
                 amount: amount,
@@ -261,19 +269,21 @@ serve(async (req) => {
                 callback_url: redirectUrl,
                 line_items: [
                   {
-                    name: "Pendaftaran Fast Track Batch #8",
+                    name: "Pendaftaran Fast Track Batch 8",
                     price: amount,
                     quantity: 1
                   }
                 ]
               },
+              payment: { payment_due_date: 60 },
               customer: {
-                name: data.full_name,
+                name: sanitize(data.full_name, 100) || "Pendaftar",
                 email: data.email,
                 phone: normalizeNumber(data.whatsapp) || "62800000000",
-                address: data.address
+                address: sanitize(data.address, 200) || "-"
               }
             };
+
 
             const bodyString = JSON.stringify(dokuBody);
             
