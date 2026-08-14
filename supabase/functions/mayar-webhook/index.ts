@@ -101,12 +101,12 @@ serve(async (req) => {
 
     // Identify Provider
     const aulaaSignature = req.headers.get("x-webhook-signature");
+    const dokuSignature = req.headers.get("Signature");
     let provider = "mayar";
-    let isSignatureValid = true; // Skip Mayar signature check for now if not needed
+    let isSignatureValid = true;
 
     if (aulaaSignature) {
       provider = "aulaa";
-      // Verify Aulaa Signature
       const { data: settings } = await supabaseAdmin
         .from("site_settings")
         .select("value")
@@ -116,8 +116,18 @@ serve(async (req) => {
       const secret = (settings?.value as any)?.webhook_secret;
       if (secret) {
         isSignatureValid = await verifyAulaaSignature(rawBody, aulaaSignature, secret);
-      } else {
-        console.warn("Aulaa webhook secret not configured, skipping verification.");
+      }
+    } else if (dokuSignature) {
+      provider = "doku";
+      const { data: settings } = await supabaseAdmin
+        .from("site_settings")
+        .select("value")
+        .eq("key", "doku_config")
+        .maybeSingle();
+      
+      const secret = (settings?.value as any)?.secret_key;
+      if (secret) {
+        isSignatureValid = await verifyDokuSignature(req.headers, rawBody, secret);
       }
     }
 
