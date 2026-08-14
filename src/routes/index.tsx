@@ -1,7 +1,5 @@
 /**
- * Perbaikan pada Halaman Sukses Khusus Fast Track, berikan informasi bahwa dia sudah otomatis lolos Tanpa Bagikan Poster dan Follow dan Pengiriman Essai /pendaftaran/sukses? ( lalu path nya jangan terlalu panjang di jabarkan, di buat lebih professional )
- *
- * Lalu pada halaman Integrasi Pembayaran Pengaturan Provider card nya diperbaiki lagi agar lebih rapih tidak menyamping /admin/integrasi
+ * Pengaturan Provider card nya dibuatkan tab baru saja, pada halaman integrasi pembayaran
  *
  * IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Tidak ignore nada, tidak simplifique, implemente EXATAMENTE o que foi pedido.
  */
