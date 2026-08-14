@@ -329,6 +329,14 @@ function AdminIntegrasi() {
                     className="bg-background"
                   />
                 </div>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
+                  <p className="text-xs font-bold text-amber-800 flex items-center gap-1">
+                    <Globe size={12} /> Di mana mendapatkan Merchant Code?
+                  </p>
+                  <p className="text-[10px] text-amber-700 leading-relaxed">
+                    Merchant Code (Mall ID) dapat ditemukan di Dashboard Doku &gt; Configuration &gt; Integration Guide atau di email aktivasi akun Doku Anda.
+                  </p>
+                </div>
                 <div className="flex items-center gap-2 pt-2">
                   <input 
                     type="checkbox"
