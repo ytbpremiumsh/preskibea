@@ -466,7 +466,7 @@ function AdminPendaftar() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((r) => (
+                {paginatedRows.map((r) => (
                   <tr
                     key={r.id}
                     className={`border-t hover:bg-muted/30 ${selected.has(r.id) ? "bg-muted/40" : ""}`}
