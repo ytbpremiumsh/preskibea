@@ -1,4 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+/**
+ * Perbaikan: Menambahkan sistem paginasi (20/50 per halaman) pada daftar pendaftar admin agar lebih rapi dan ringan saat di-scroll.
+ */
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -68,6 +71,8 @@ function AdminPendaftar() {
   const [filterJalur, setFilterJalur] = useState<"all" | "fast" | "reguler">("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectedRow, setSelectedRow] = useState<Registration | null>(null);
+  const [pageSize, setPageSize] = useState(20);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Handle URL params for filtering from Dashboard
   useEffect(() => {
@@ -150,6 +155,18 @@ function AdminPendaftar() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, q, filterKind, filterBerkas, filterJalur, docs]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [q, filterKind, filterBerkas, filterJalur, pageSize]);
+
+  const paginatedRows = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filtered.length / pageSize);
 
   const setPayment = async (r: Registration, next: "paid" | "pending") => {
     if (next === "paid") {
@@ -402,6 +419,18 @@ function AdminPendaftar() {
             <option value="submitted">Sudah Kirim Berkas ({counts.submitted})</option>
             <option value="pending">Belum Kirim Berkas ({counts.pending})</option>
           </select>
+          <div className="flex items-center gap-2 text-sm ml-auto">
+            <span className="text-muted-foreground whitespace-nowrap">Tampilkan:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="rounded-md border border-input bg-background px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary"
+            >
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
         </div>
       </Card>
 
@@ -437,7 +466,7 @@ function AdminPendaftar() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((r) => (
+                {paginatedRows.map((r) => (
                   <tr
                     key={r.id}
                     className={`border-t hover:bg-muted/30 ${selected.has(r.id) ? "bg-muted/40" : ""}`}
@@ -524,6 +553,49 @@ function AdminPendaftar() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-muted/50 px-4 py-3 bg-muted/20">
+            <div className="text-xs text-muted-foreground">
+              Menampilkan {(currentPage - 1) * pageSize + 1} sampai {Math.min(currentPage * pageSize, filtered.length)} dari {filtered.length} pendaftar
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                Sebelumnya
+              </Button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                  .map((p, i, arr) => (
+                    <div key={p} className="flex items-center">
+                      {i > 0 && arr[i-1] !== p - 1 && <span className="px-1 text-muted-foreground">...</span>}
+                      <Button
+                        variant={currentPage === p ? "default" : "outline"}
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        onClick={() => setCurrentPage(p)}
+                      >
+                        {p}
+                      </Button>
+                    </div>
+                  ))}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Selanjutnya
+              </Button>
+            </div>
           </div>
         )}
       </Card>
