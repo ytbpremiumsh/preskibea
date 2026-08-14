@@ -1,7 +1,7 @@
 /**
- * buatkan pada card agar shadow hitam card nya tidak terpotong ketika di kenakan mouse
+ * Perbaikan pada Halaman Sukses Khusus Fast Track, berikan informasi bahwa dia sudah otomatis lolos Tanpa Bagikan Poster dan Follow dan Pengiriman Essai /pendaftaran/sukses? ( lalu path nya jangan terlalu panjang di jabarkan, di buat lebih professional )
  *
- * agar terlihat full shadow black nya, terapkan di semua card dan button ( jika menggunakan )
+ * Lalu pada halaman Integrasi Pembayaran Pengaturan Provider card nya diperbaiki lagi agar lebih rapih tidak menyamping /admin/integrasi
  *
  * IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Tidak ignore nada, tidak simplifique, implemente EXATAMENTE o que foi pedido.
  */

@@ -166,38 +166,39 @@ function AdminIntegrasi() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <StatCard label="Total Transaksi" value={stats.total} />
-            <StatCard label="Berhasil" value={stats.success} color="text-emerald-600" />
-            <StatCard 
-              label="Total Pendapatan" 
-              value={new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(stats.totalAmount)} 
-            />
-          </div>
-
-          <Card className="p-4 shadow-soft">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Cari nama, email, token..."
-                className="pl-9"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-              />
-            </div>
-          </Card>
+      <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <StatCard label="Total Transaksi" value={stats.total} />
+          <StatCard label="Berhasil" value={stats.success} color="text-emerald-600" />
+          <StatCard 
+            label="Total Pendapatan" 
+            value={new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(stats.totalAmount)} 
+          />
         </div>
 
-        <Card className="p-6 border-primary/20 bg-primary/5 shadow-soft space-y-6 h-fit">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-primary">
-              <Settings className="h-5 w-5" />
-              <h2 className="font-bold font-heading">Pengaturan Provider</h2>
-            </div>
-            {saving && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="p-4 shadow-soft">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Cari nama, email, token..."
+                  className="pl-9"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                />
+              </div>
+            </Card>
           </div>
+
+          <Card className="p-6 border-primary/20 bg-primary/5 shadow-soft space-y-6 h-fit">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-primary">
+                <Settings className="h-5 w-5" />
+                <h2 className="font-bold font-heading">Pengaturan Provider</h2>
+              </div>
+              {saving && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
+            </div>
 
           <div className="space-y-2 pb-2">
             <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
