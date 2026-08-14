@@ -167,10 +167,10 @@ export function CategoryPage({
 
           <div className="mt-6 rounded-2xl p-5 text-primary-foreground shadow-soft" style={{ background: "var(--gradient-primary)" }}>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider opacity-90">
-              <PlayCircle size={16} /> Video Motivasi
+              <PlayCircle size={16} /> Benefit Unggulan
             </div>
             <p className="mt-2 font-semibold text-lg leading-snug">
-              "Menghadapi Tantangan dan Meraih Keberhasilan dalam Studi"
+              Dukungan Finansial & Pengembangan Diri untuk Masa Depan
             </p>
           </div>
 
