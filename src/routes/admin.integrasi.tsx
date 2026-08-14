@@ -69,6 +69,7 @@ function AdminIntegrasi() {
     chat_id: "",
     template: "🔔 *Pembayaran Baru Masuk!*\n\n👤 Nama: {nama}\n💰 Nominal: {nominal}\n🎫 Token: {token}\n💳 Provider: {provider}\n📅 Tanggal: {tanggal}\n\n✅ Pembayaran telah diverifikasi secara otomatis."
   });
+  const [testingTelegram, setTestingTelegram] = useState(false);
   const [fastTrackFee, setFastTrackFee] = useState<string>("15000");
   const [webhookUrl, setWebhookUrl] = useState("");
 
@@ -118,6 +119,44 @@ function AdminIntegrasi() {
     setWebhookUrl(functionUrl);
 
     setLoading(false);
+  };
+
+  const testTelegram = async () => {
+    if (!telegramConfig.bot_token || !telegramConfig.chat_id) {
+      toast.error("Bot Token dan Chat ID wajib diisi untuk melakukan tes");
+      return;
+    }
+
+    setTestingTelegram(true);
+    try {
+      const message = telegramConfig.template
+        .replace(/{nama}/g, "Admin Test")
+        .replace(/{nominal}/g, "Rp 0")
+        .replace(/{token}/g, "PK-TEST-123")
+        .replace(/{provider}/g, "Test System")
+        .replace(/{tanggal}/g, new Date().toLocaleString('id-ID'));
+
+      const response = await fetch(`https://api.telegram.org/bot${telegramConfig.bot_token}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: telegramConfig.chat_id,
+          text: message,
+          parse_mode: "Markdown"
+        })
+      });
+
+      const result = await response.json();
+      if (result.ok) {
+        toast.success("Pesan tes berhasil dikirim ke Telegram!");
+      } else {
+        toast.error(`Gagal: ${result.description}`);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Terjadi kesalahan saat mengirim pesan tes");
+    }
+    setTestingTelegram(false);
   };
 
   const saveConfig = async () => {
@@ -483,6 +522,17 @@ function AdminIntegrasi() {
                           <p>{"{nama}, {email}, {token}, {nominal}, {provider}, {tanggal}"}</p>
                         </div>
                       </div>
+
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full mt-2" 
+                        onClick={testTelegram}
+                        disabled={testingTelegram}
+                      >
+                        {testingTelegram ? <Loader2 size={14} className="animate-spin mr-2" /> : <Send size={14} className="mr-2" />}
+                        Tes Kirim Notifikasi
+                      </Button>
                     </div>
                   </TabsContent>
                 </Tabs>
