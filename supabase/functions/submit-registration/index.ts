@@ -169,6 +169,7 @@ serve(async (req) => {
           const mayarConfig = settings?.find(s => s.key === "mayar_config")?.value as { api_key?: string };
           if (mayarConfig?.api_key) {
             const expiredAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+            const description = "Biaya Pendaftaran Jalur Fast Track Batch #8";
             const mayarBody = {
               name: data.full_name,
               email: data.email,
@@ -176,7 +177,7 @@ serve(async (req) => {
               redirectUrl,
               description,
               expiredAt,
-              items: [{ quantity: 1, rate: amount, description: "Biaya Pendaftaran Jalur Fast Track Batch #8" }],
+              items: [{ quantity: 1, rate: amount, description }],
               extraData: { noCustomer: token, idProd: "FAST_TRACK_BATCH_8" }
             };
 
