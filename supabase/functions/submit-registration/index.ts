@@ -165,6 +165,9 @@ serve(async (req) => {
           ? `${cleanOrigin}/pendaftaran/sukses?token=${token}&name=${encodeURIComponent(data.full_name)}&email=${encodeURIComponent(data.email)}&whatsapp=${encodeURIComponent(data.whatsapp)}&kind=${data.kind}`
           : "https://preskibea.lovable.app/pendaftaran/sukses";
 
+        // Jangan pakai link pembayaran bawaan (Mayar) jika provider aktif bukan Mayar
+        if (provider !== "mayar") finalInvoiceUrl = null;
+
         if (provider === "mayar") {
           const mayarConfig = settings?.find(s => s.key === "mayar_config")?.value as { api_key?: string };
           if (mayarConfig?.api_key) {
@@ -240,7 +243,12 @@ serve(async (req) => {
             }
           }
         } else if (provider === "doku") {
-          const dokuConfig = settings?.find(s => s.key === "doku_config")?.value as any;
+          const rawDoku = settings?.find(s => s.key === "doku_config")?.value as any;
+          const dokuConfig = rawDoku ? {
+            ...rawDoku,
+            client_id: String(rawDoku.client_id ?? "").trim(),
+            secret_key: String(rawDoku.secret_key ?? "").trim(),
+          } : null;
           if (dokuConfig?.client_id && dokuConfig?.secret_key) {
             const requestId = crypto.randomUUID();
             const timestamp = new Date().toISOString().split('.')[0] + 'Z';
@@ -302,6 +310,7 @@ serve(async (req) => {
                 "Request-Id": requestId,
                 "Request-Timestamp": timestamp,
                 "Signature": signature,
+                "Digest": digest,
                 "Content-Type": "application/json",
               },
               body: bodyString,
