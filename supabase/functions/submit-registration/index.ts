@@ -156,7 +156,7 @@ serve(async (req) => {
           .select("key, value")
           .in("key", ["payment_provider", "mayar_config", "aulaa_config", "doku_config", "fast_track_fee"]);
         
-        const provider = settings?.find(s => s.key === "payment_provider")?.value as string || "mayar";
+        const provider = settings?.find(s => s.key === "payment_provider")?.value as string || "doku";
         const feeSetting = settings?.find(s => s.key === "fast_track_fee")?.value;
         const amount = feeSetting ? Number(feeSetting) : 15000;
         const origin = req.headers.get("origin") || req.headers.get("referer") || "";
