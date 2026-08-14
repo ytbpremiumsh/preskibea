@@ -739,7 +739,14 @@ export function RegistrationForm({
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
         <div className="w-full max-w-2xl bg-white rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
           <div className="p-4 border-b flex items-center justify-between bg-white shrink-0">
-            <h3 className="font-bold text-foreground">Konfirmasi Pembayaran</h3>
+            <div>
+              <h3 className="font-bold text-foreground">Konfirmasi Pembayaran</h3>
+              {paymentProvider === "doku" && (
+                <p className="text-[10px] text-primary font-bold uppercase tracking-wider">
+                  Gunakan QRIS , jangan gunakan VA
+                </p>
+              )}
+            </div>
             <button 
               onClick={() => setShowPaymentIframe(false)}
               className="p-2 hover:bg-muted rounded-full transition"
