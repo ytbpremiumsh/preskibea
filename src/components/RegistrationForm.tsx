@@ -836,9 +836,15 @@ export function RegistrationForm({
               </div>
             )}
           </div>
+
+          <div className="border-t p-3 text-center text-[11px] font-semibold text-muted-foreground shrink-0">
+            <span className="inline-block h-2 w-2 rounded-full bg-primary animate-pulse mr-2 align-middle" />
+            Menunggu pembayaran… pop-up akan tertutup otomatis dan Anda diarahkan ke halaman sukses beserta kode pendaftaran.
+          </div>
         </div>
       </div>
     )}
+
     </>
   );
 }
