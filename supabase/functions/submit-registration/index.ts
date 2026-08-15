@@ -147,6 +147,7 @@ serve(async (req) => {
 
     let finalInvoiceUrl = data.payment_url || null;
     let aulaaPaymentId: string | null = null;
+    let activeProvider = "doku";
 
     if (data.fast_track) {
       try {
@@ -156,11 +157,23 @@ serve(async (req) => {
           .select("key, value")
           .in("key", ["payment_provider", "mayar_config", "aulaa_config", "doku_config", "fast_track_fee"]);
         
-        const provider = settings?.find(s => s.key === "payment_provider")?.value as string || "doku";
+        // Nilai bisa tersimpan sebagai string JSON ("\"doku\"") atau objek { provider: "doku" }
+        const rawProvider = settings?.find(s => s.key === "payment_provider")?.value as unknown;
+        const provider = (
+          typeof rawProvider === "string"
+            ? rawProvider
+            : (rawProvider as any)?.provider ?? ""
+        ).toString().replace(/["\s]/g, "").toLowerCase() || "doku";
+        activeProvider = provider;
         const feeSetting = settings?.find(s => s.key === "fast_track_fee")?.value;
         const amount = feeSetting ? Number(feeSetting) : 15000;
-        const origin = req.headers.get("origin") || req.headers.get("referer") || "";
-        const cleanOrigin = origin.split("?")[0].replace(/\/$/, "");
+        const originHeader = req.headers.get("origin") || req.headers.get("referer") || "";
+        let cleanOrigin = "";
+        try {
+          if (originHeader) cleanOrigin = new URL(originHeader).origin;
+        } catch {
+          cleanOrigin = originHeader.split("?")[0].replace(/\/$/, "");
+        }
         const redirectUrl = cleanOrigin 
           ? `${cleanOrigin}/pendaftaran/sukses?token=${token}&name=${encodeURIComponent(data.full_name)}&email=${encodeURIComponent(data.email)}&whatsapp=${encodeURIComponent(data.whatsapp)}&kind=${data.kind}`
           : "https://preskibea.lovable.app/pendaftaran/sukses";
