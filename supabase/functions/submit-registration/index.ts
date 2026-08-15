@@ -371,7 +371,8 @@ serve(async (req) => {
       JSON.stringify({ 
         token, 
         invoice_url: finalInvoiceUrl,
-        aulaa_payment_id: aulaaPaymentId
+        aulaa_payment_id: aulaaPaymentId,
+        provider: activeProvider,
       }),
       { status: 200, headers: { ...cors, "Content-Type": "application/json" } },
     );
