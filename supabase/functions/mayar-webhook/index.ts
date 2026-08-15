@@ -251,6 +251,15 @@ serve(async (req) => {
 
           try {
             await sendTelegramPaymentNotification(reg, Number(paymentAmount) || 0, provider);
+            const { data: cur } = await supabaseAdmin
+              .from("registrations")
+              .select("extra")
+              .eq("id", reg.id)
+              .maybeSingle();
+            await supabaseAdmin
+              .from("registrations")
+              .update({ extra: { ...((cur?.extra as Record<string, unknown>) || {}), telegram_notified: true } })
+              .eq("id", reg.id);
           } catch (telErr) {
             console.error("Telegram notification failed:", telErr.message);
           }
