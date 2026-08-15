@@ -107,12 +107,14 @@ serve(async (req) => {
 
     const { data: reg } = await supabaseAdmin
       .from("registrations")
-      .select("id, token, full_name, email, whatsapp, kind, payment_status, fast_track")
+      .select("id, token, full_name, email, whatsapp, kind, payment_status, fast_track, extra")
       .eq("token", token)
       .maybeSingle();
 
     if (!reg) return json({ status: "not_found" }, 404);
-    if (reg.payment_status === "paid") return json({ status: "paid" });
+    const alreadyNotified = (reg.extra as any)?.telegram_notified === true;
+    if (reg.payment_status === "paid" && alreadyNotified) return json({ status: "paid" });
+
 
     // Ask Doku directly (fallback when webhook is delayed / not delivered)
     const { data: settings } = await supabaseAdmin
@@ -164,33 +166,44 @@ serve(async (req) => {
       .maybeSingle();
 
     if (updateError) throw new Error(`Gagal memperbarui pembayaran: ${updateError.message}`);
-    if (!paidRegistration) return json({ status: "paid" });
+    const firstTransition = Boolean(paidRegistration);
 
-    try {
-      await supabaseAdmin.from("payments").insert({
-        registration_id: reg.id,
-        amount: Number(body?.order?.amount) || 0,
-        status: "paid",
-        external_id: token,
-        provider: "doku",
-      });
-    } catch (e) {
-      console.error("payment insert failed", (e as Error).message);
+    if (firstTransition) {
+      try {
+        await supabaseAdmin.from("payments").insert({
+          registration_id: reg.id,
+          amount: Number(body?.order?.amount) || 0,
+          status: "paid",
+          external_id: token,
+          provider: "doku",
+        });
+      } catch (e) {
+        console.error("payment insert failed", (e as Error).message);
+      }
     }
 
-    try {
-      await sendTelegramPaymentNotification(
-        {
-          full_name: reg.full_name,
-          email: reg.email,
-          whatsapp: reg.whatsapp,
-          token: reg.token,
-        },
-        Number(body?.order?.amount) || 0,
-      );
-    } catch (e) {
-      console.error("Telegram notification failed:", (e as Error).message);
+    if (!alreadyNotified) {
+      try {
+        await sendTelegramPaymentNotification(
+          {
+            full_name: reg.full_name,
+            email: reg.email,
+            whatsapp: reg.whatsapp,
+            token: reg.token,
+          },
+          Number(body?.order?.amount) || 0,
+        );
+        await supabaseAdmin
+          .from("registrations")
+          .update({ extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: true } })
+          .eq("id", reg.id);
+      } catch (e) {
+        console.error("Telegram notification failed:", (e as Error).message);
+      }
     }
+
+    if (!firstTransition) return json({ status: "paid" });
+
 
     try {
       await supabaseAdmin.functions.invoke("send-whatsapp", {
