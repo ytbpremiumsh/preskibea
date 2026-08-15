@@ -107,12 +107,14 @@ serve(async (req) => {
 
     const { data: reg } = await supabaseAdmin
       .from("registrations")
-      .select("id, token, full_name, email, whatsapp, kind, payment_status, fast_track")
+      .select("id, token, full_name, email, whatsapp, kind, payment_status, fast_track, extra")
       .eq("token", token)
       .maybeSingle();
 
     if (!reg) return json({ status: "not_found" }, 404);
-    if (reg.payment_status === "paid") return json({ status: "paid" });
+    const alreadyNotified = (reg.extra as any)?.telegram_notified === true;
+    if (reg.payment_status === "paid" && alreadyNotified) return json({ status: "paid" });
+
 
     // Ask Doku directly (fallback when webhook is delayed / not delivered)
     const { data: settings } = await supabaseAdmin
