@@ -779,7 +779,7 @@ export function RegistrationForm({
           <div className="p-4 border-b flex items-center justify-between bg-white shrink-0">
             <div>
               <h3 className="font-bold text-foreground">Konfirmasi Pembayaran</h3>
-              {paymentProvider === "doku" && (
+              {dokuPaymentUrl && (
                 <p className="text-[10px] text-primary font-bold uppercase tracking-wider">
                   Gunakan QRIS , jangan gunakan VA
                 </p>
@@ -794,7 +794,7 @@ export function RegistrationForm({
           </div>
           
           <div className="flex-1 overflow-y-auto">
-            {paymentProvider === "doku" && dokuPaymentUrl ? (
+            {dokuPaymentUrl ? (
               <div className="w-full h-[600px] min-h-[50vh]">
                 <iframe 
                   src={dokuPaymentUrl}
@@ -817,7 +817,7 @@ export function RegistrationForm({
                 </div>
                 
                 <a 
-                  href={paymentProvider === "aulaa" ? `https://payment.aulaa.co/pay/${aulaaPaymentId}` : dokuPaymentUrl || "#"}
+                  href={dokuPaymentUrl || (aulaaPaymentId ? `https://payment.aulaa.co/pay/${aulaaPaymentId}` : "#")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-base font-bold text-primary-foreground shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5"
