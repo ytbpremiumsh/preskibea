@@ -5,7 +5,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap, Heart } from "lucide-react";
 import heroDefault from "@/assets/students-hero.png";
 import posterDefault from "@/assets/poster-beasiswa.png";
-import benefitDefault from "@/assets/benefit-prestasi-kita.png.asset.json";
+import benefitDefault from "@/assets/benefit-prestasi-kita.webp";
 import { Countdown } from "@/components/Countdown";
 import { AboutMockup } from "@/components/AboutMockup";
 import { FAQSection } from "@/components/FAQSection";
@@ -46,7 +46,7 @@ function Index() {
   const { heroImage, posterImage, benefitImage, homeWidgets } = useBranding();
   const heroImg = heroImage && heroImage.startsWith('http') ? heroImage : heroDefault;
   const posterImg = posterImage && posterImage.startsWith('http') ? posterImage : posterDefault;
-  const benefitImg = benefitImage && benefitImage.startsWith('http') ? benefitImage : benefitDefault.url;
+  const benefitImg = benefitImage && benefitImage.startsWith('http') ? benefitImage : benefitDefault;
 
   return (
     <div className="animate-in fade-in duration-500">

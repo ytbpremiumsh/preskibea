@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X, ArrowRight } from "lucide-react";
-import logoDefault from "@/assets/logo-prestasi-kita-atskolla.png.asset.json";
+import logoDefault from "@/assets/logo-prestasi-kita-atskolla.png";
 import { useBranding } from "@/hooks/use-branding";
 
 const nav = [
@@ -37,9 +37,9 @@ export function SiteHeader() {
             className="h-9 w-auto md:h-10" 
             onError={(e) => {
               const target = e.currentTarget;
-              const fallbackUrl = new URL(logoDefault.url, window.location.origin).href;
+              const fallbackUrl = new URL(logoDefault, window.location.origin).href;
               if (target.src.includes('undefined') || target.src.includes('null') || target.src !== fallbackUrl) {
-                target.src = logoDefault.url;
+                target.src = logoDefault;
               }
             }}
           />

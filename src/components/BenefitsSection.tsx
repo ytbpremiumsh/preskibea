@@ -1,5 +1,5 @@
 import { Wallet, Award, Gift, PlayCircle, Users, Briefcase } from "lucide-react";
-import benefitDefault from "@/assets/benefit-prestasi-kita.png.asset.json";
+import benefitDefault from "@/assets/benefit-prestasi-kita.webp";
 import { useBranding } from "@/hooks/use-branding";
 
 const benefits = [
@@ -43,7 +43,7 @@ const benefits = [
 
 export function BenefitsSection() {
   const { benefitImage } = useBranding();
-  const benefitImg = benefitImage && benefitImage.startsWith('http') ? benefitImage : benefitDefault.url;
+  const benefitImg = benefitImage && benefitImage.startsWith('http') ? benefitImage : benefitDefault;
 
   return (
     <section className="container-page py-20">
