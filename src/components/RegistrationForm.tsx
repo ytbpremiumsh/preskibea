@@ -413,13 +413,24 @@ export function RegistrationForm({
       
       // If fast track, handle payment
       if (registrationType === "fast_track") {
-        if (paymentProvider === "aulaa" && paymentId) {
-          setAulaaPaymentId(paymentId);
-          setShowPaymentIframe(true);
+        // Provider yang dipakai server adalah sumber kebenaran (penting saat deploy di VPS)
+        const activeProviderResp = String((res as any)?.provider || paymentProvider || "doku").toLowerCase();
+
+        if (activeProviderResp === "aulaa") {
+          if (paymentId) {
+            setAulaaPaymentId(paymentId);
+            setShowPaymentIframe(true);
+          } else if (invoiceUrl) {
+            setDokuPaymentUrl(invoiceUrl);
+            setShowPaymentIframe(true);
+          } else {
+            toast.error("Pembayaran Aulaa.co belum dapat dibuat. Periksa konfigurasi Aulaa di dashboard admin.");
+            setSubmitting(false);
+          }
           return;
         }
 
-        if (paymentProvider === "doku") {
+        if (activeProviderResp === "doku") {
           if (invoiceUrl) {
             setDokuPaymentUrl(invoiceUrl);
             setShowPaymentIframe(true);
@@ -427,40 +438,24 @@ export function RegistrationForm({
             toast.error(
               "Pembayaran Doku belum dapat dibuat. Periksa kembali Client ID & Secret Key Doku di dashboard admin.",
             );
+            setSubmitting(false);
           }
           return;
         }
 
-        if (paymentProvider === "aulaa") {
-          if (invoiceUrl) {
-            setDokuPaymentUrl(invoiceUrl);
-            setShowPaymentIframe(true);
-          } else {
-            toast.error("Pembayaran Aulaa.co belum dapat dibuat. Periksa konfigurasi Aulaa di dashboard admin.");
-          }
-          return;
-        }
-
-        const finalRedirectUrl = invoiceUrl || activePaymentLink;
+        // Provider lain (Mayar) — pakai invoice dari server, fallback link statis hanya untuk Mayar
+        const finalRedirectUrl = invoiceUrl || (activeProviderResp === "mayar" ? activePaymentLink : null);
         if (finalRedirectUrl) {
-          console.log("Redirecting to payment gateway:", finalRedirectUrl);
-
-
           toast.info("Mengarahkan ke pembayaran...");
           setTimeout(() => {
-            try {
-              window.location.assign(finalRedirectUrl);
-            } catch (e) {
-              console.error("Redirect error", e);
-              window.location.href = finalRedirectUrl;
-            }
-          }, 1000);
-          return;
-        } else {
-          toast.error("Gagal membuat link pembayaran. Silakan hubungi admin.");
-          setSubmitting(false);
+            window.location.assign(finalRedirectUrl);
+          }, 800);
           return;
         }
+
+        toast.error("Gagal membuat link pembayaran. Silakan hubungi admin.");
+        setSubmitting(false);
+        return;
       }
 
       setValues({});
