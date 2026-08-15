@@ -166,33 +166,44 @@ serve(async (req) => {
       .maybeSingle();
 
     if (updateError) throw new Error(`Gagal memperbarui pembayaran: ${updateError.message}`);
-    if (!paidRegistration) return json({ status: "paid" });
+    const firstTransition = Boolean(paidRegistration);
 
-    try {
-      await supabaseAdmin.from("payments").insert({
-        registration_id: reg.id,
-        amount: Number(body?.order?.amount) || 0,
-        status: "paid",
-        external_id: token,
-        provider: "doku",
-      });
-    } catch (e) {
-      console.error("payment insert failed", (e as Error).message);
+    if (firstTransition) {
+      try {
+        await supabaseAdmin.from("payments").insert({
+          registration_id: reg.id,
+          amount: Number(body?.order?.amount) || 0,
+          status: "paid",
+          external_id: token,
+          provider: "doku",
+        });
+      } catch (e) {
+        console.error("payment insert failed", (e as Error).message);
+      }
     }
 
-    try {
-      await sendTelegramPaymentNotification(
-        {
-          full_name: reg.full_name,
-          email: reg.email,
-          whatsapp: reg.whatsapp,
-          token: reg.token,
-        },
-        Number(body?.order?.amount) || 0,
-      );
-    } catch (e) {
-      console.error("Telegram notification failed:", (e as Error).message);
+    if (!alreadyNotified) {
+      try {
+        await sendTelegramPaymentNotification(
+          {
+            full_name: reg.full_name,
+            email: reg.email,
+            whatsapp: reg.whatsapp,
+            token: reg.token,
+          },
+          Number(body?.order?.amount) || 0,
+        );
+        await supabaseAdmin
+          .from("registrations")
+          .update({ extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: true } })
+          .eq("id", reg.id);
+      } catch (e) {
+        console.error("Telegram notification failed:", (e as Error).message);
+      }
     }
+
+    if (!firstTransition) return json({ status: "paid" });
+
 
     try {
       await supabaseAdmin.functions.invoke("send-whatsapp", {
