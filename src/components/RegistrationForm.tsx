@@ -177,8 +177,10 @@ export function RegistrationForm({
       .then(({ data }) => {
         if (!data) return;
         
-        const provider = data.find(s => s.key === "payment_provider")?.value as string;
-        setPaymentProvider(provider || "doku");
+        const rawProvider = data.find(s => s.key === "payment_provider")?.value as any;
+        const provider = (typeof rawProvider === "string" ? rawProvider : rawProvider?.provider ?? "")
+          .toString().replace(/["\s]/g, "").toLowerCase() || "doku";
+        setPaymentProvider(provider);
         const mayarLink = data.find(s => s.key === "mayar_fast_track_link")?.value as string;
         const aulaa = data.find(s => s.key === "aulaa_config")?.value as any;
         const fee = data.find(s => s.key === "fast_track_fee")?.value;
