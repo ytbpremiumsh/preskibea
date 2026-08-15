@@ -177,8 +177,10 @@ export function RegistrationForm({
       .then(({ data }) => {
         if (!data) return;
         
-        const provider = data.find(s => s.key === "payment_provider")?.value as string;
-        setPaymentProvider(provider || "doku");
+        const rawProvider = data.find(s => s.key === "payment_provider")?.value as any;
+        const provider = (typeof rawProvider === "string" ? rawProvider : rawProvider?.provider ?? "")
+          .toString().replace(/["\s]/g, "").toLowerCase() || "doku";
+        setPaymentProvider(provider);
         const mayarLink = data.find(s => s.key === "mayar_fast_track_link")?.value as string;
         const aulaa = data.find(s => s.key === "aulaa_config")?.value as any;
         const fee = data.find(s => s.key === "fast_track_fee")?.value;
@@ -413,13 +415,24 @@ export function RegistrationForm({
       
       // If fast track, handle payment
       if (registrationType === "fast_track") {
-        if (paymentProvider === "aulaa" && paymentId) {
-          setAulaaPaymentId(paymentId);
-          setShowPaymentIframe(true);
+        // Provider yang dipakai server adalah sumber kebenaran (penting saat deploy di VPS)
+        const activeProviderResp = String((res as any)?.provider || paymentProvider || "doku").toLowerCase();
+
+        if (activeProviderResp === "aulaa") {
+          if (paymentId) {
+            setAulaaPaymentId(paymentId);
+            setShowPaymentIframe(true);
+          } else if (invoiceUrl) {
+            setDokuPaymentUrl(invoiceUrl);
+            setShowPaymentIframe(true);
+          } else {
+            toast.error("Pembayaran Aulaa.co belum dapat dibuat. Periksa konfigurasi Aulaa di dashboard admin.");
+            setSubmitting(false);
+          }
           return;
         }
 
-        if (paymentProvider === "doku") {
+        if (activeProviderResp === "doku") {
           if (invoiceUrl) {
             setDokuPaymentUrl(invoiceUrl);
             setShowPaymentIframe(true);
@@ -427,40 +440,24 @@ export function RegistrationForm({
             toast.error(
               "Pembayaran Doku belum dapat dibuat. Periksa kembali Client ID & Secret Key Doku di dashboard admin.",
             );
+            setSubmitting(false);
           }
           return;
         }
 
-        if (paymentProvider === "aulaa") {
-          if (invoiceUrl) {
-            setDokuPaymentUrl(invoiceUrl);
-            setShowPaymentIframe(true);
-          } else {
-            toast.error("Pembayaran Aulaa.co belum dapat dibuat. Periksa konfigurasi Aulaa di dashboard admin.");
-          }
-          return;
-        }
-
-        const finalRedirectUrl = invoiceUrl || activePaymentLink;
+        // Provider lain (Mayar) — pakai invoice dari server, fallback link statis hanya untuk Mayar
+        const finalRedirectUrl = invoiceUrl || (activeProviderResp === "mayar" ? activePaymentLink : null);
         if (finalRedirectUrl) {
-          console.log("Redirecting to payment gateway:", finalRedirectUrl);
-
-
           toast.info("Mengarahkan ke pembayaran...");
           setTimeout(() => {
-            try {
-              window.location.assign(finalRedirectUrl);
-            } catch (e) {
-              console.error("Redirect error", e);
-              window.location.href = finalRedirectUrl;
-            }
-          }, 1000);
-          return;
-        } else {
-          toast.error("Gagal membuat link pembayaran. Silakan hubungi admin.");
-          setSubmitting(false);
+            window.location.assign(finalRedirectUrl);
+          }, 800);
           return;
         }
+
+        toast.error("Gagal membuat link pembayaran. Silakan hubungi admin.");
+        setSubmitting(false);
+        return;
       }
 
       setValues({});
@@ -782,7 +779,7 @@ export function RegistrationForm({
           <div className="p-4 border-b flex items-center justify-between bg-white shrink-0">
             <div>
               <h3 className="font-bold text-foreground">Konfirmasi Pembayaran</h3>
-              {paymentProvider === "doku" && (
+              {dokuPaymentUrl && (
                 <p className="text-[10px] text-primary font-bold uppercase tracking-wider">
                   Gunakan QRIS , jangan gunakan VA
                 </p>
@@ -797,7 +794,7 @@ export function RegistrationForm({
           </div>
           
           <div className="flex-1 overflow-y-auto">
-            {paymentProvider === "doku" && dokuPaymentUrl ? (
+            {dokuPaymentUrl ? (
               <div className="w-full h-[600px] min-h-[50vh]">
                 <iframe 
                   src={dokuPaymentUrl}
@@ -820,7 +817,7 @@ export function RegistrationForm({
                 </div>
                 
                 <a 
-                  href={paymentProvider === "aulaa" ? `https://payment.aulaa.co/pay/${aulaaPaymentId}` : dokuPaymentUrl || "#"}
+                  href={dokuPaymentUrl || (aulaaPaymentId ? `https://payment.aulaa.co/pay/${aulaaPaymentId}` : "#")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-base font-bold text-primary-foreground shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5"

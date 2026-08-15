@@ -3,7 +3,7 @@ import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHa
 import type { ReactNode } from "react";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { RawHtmlWidget } from "@/components/ads/RawHtmlWidget";
-import benefitAsset from "@/assets/benefit-prestasi-kita.png.asset.json";
+import benefitAsset from "@/assets/benefit-prestasi-kita.webp";
 
 const persyaratan = [
   "Warga Negara Indonesia (WNI)",

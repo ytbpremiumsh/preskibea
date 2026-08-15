@@ -230,6 +230,7 @@ function AdminIntegrasi() {
           <TabsList className="mb-4">
             <TabsTrigger value="transactions">Daftar Transaksi</TabsTrigger>
             <TabsTrigger value="settings">Pengaturan Provider</TabsTrigger>
+            <TabsTrigger value="telegram">Telegram</TabsTrigger>
           </TabsList>
 
           <TabsContent value="transactions" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
@@ -352,11 +353,10 @@ function AdminIntegrasi() {
                 </div>
                 
                 <Tabs value={activeProvider} onValueChange={setActiveProvider} className="w-full">
-                  <TabsList className="grid w-full grid-cols-4 mb-6">
+                  <TabsList className="grid w-full grid-cols-3 mb-6">
                     <TabsTrigger value="mayar">Mayar</TabsTrigger>
                     <TabsTrigger value="aulaa">Aulaa.co</TabsTrigger>
                     <TabsTrigger value="doku">Doku</TabsTrigger>
-                    <TabsTrigger value="telegram">Telegram</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="mayar" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
@@ -468,75 +468,6 @@ function AdminIntegrasi() {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="telegram" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-3 border rounded-lg bg-background/50">
-                        <div className="space-y-0.5">
-                          <Label className="text-sm font-bold">Status Notifikasi</Label>
-                          <p className="text-[10px] text-muted-foreground">Aktifkan bot untuk mengirim pesan ke Telegram admin.</p>
-                        </div>
-                        <input 
-                          type="checkbox"
-                          checked={telegramConfig.enabled}
-                          onChange={(e) => setTelegramConfig(prev => ({ ...prev, enabled: e.target.checked }))}
-                          className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                          <Key size={12} /> Bot Token
-                        </Label>
-                        <Input 
-                          type="password"
-                          value={telegramConfig.bot_token}
-                          onChange={(e) => setTelegramConfig(prev => ({ ...prev, bot_token: e.target.value }))}
-                          placeholder="Contoh: 123456789:ABCDefgh..."
-                          className="bg-background"
-                        />
-                        <p className="text-[10px] text-muted-foreground italic">Dapatkan dari @BotFather di Telegram.</p>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                          <Send size={12} /> Chat ID
-                        </Label>
-                        <Input 
-                          value={telegramConfig.chat_id}
-                          onChange={(e) => setTelegramConfig(prev => ({ ...prev, chat_id: e.target.value }))}
-                          placeholder="Contoh: 123456789 atau -100123456789"
-                          className="bg-background"
-                        />
-                        <p className="text-[10px] text-muted-foreground italic">Dapatkan ID chat Anda melalui @userinfobot.</p>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                          <Webhook size={12} /> Template Pesan
-                        </Label>
-                        <textarea 
-                          className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          value={telegramConfig.template}
-                          onChange={(e) => setTelegramConfig(prev => ({ ...prev, template: e.target.value }))}
-                        />
-                        <div className="p-2 bg-muted rounded text-[10px] space-y-1">
-                          <p className="font-bold">Variabel tersedia:</p>
-                          <p>{"{nama}, {email}, {token}, {nominal}, {provider}, {tanggal}"}</p>
-                        </div>
-                      </div>
-
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full mt-2" 
-                        onClick={testTelegram}
-                        disabled={testingTelegram}
-                      >
-                        {testingTelegram ? <Loader2 size={14} className="animate-spin mr-2" /> : <Send size={14} className="mr-2" />}
-                        Tes Kirim Notifikasi
-                      </Button>
-                    </div>
-                  </TabsContent>
                 </Tabs>
 
                 <div className="space-y-2 border-t pt-4 mt-4">
@@ -571,6 +502,88 @@ function AdminIntegrasi() {
                   onClick={saveConfig}
                   disabled={saving}
                 >
+                  {saving ? <Loader2 size={16} className="animate-spin mr-2" /> : <Save size={16} className="mr-2" />}
+                  Simpan Konfigurasi
+                </Button>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="telegram" className="focus-visible:outline-none focus-visible:ring-0">
+            <div className="max-w-2xl mx-auto">
+              <Card className="p-6 border-primary/20 bg-primary/5 shadow-soft space-y-6">
+                <div className="flex items-center gap-2 text-primary">
+                  <Send className="h-5 w-5" />
+                  <h2 className="font-bold font-heading">Notifikasi Telegram Admin</h2>
+                </div>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between p-3 border rounded-lg bg-background/50">
+                            <div className="space-y-0.5">
+                              <Label className="text-sm font-bold">Status Notifikasi</Label>
+                              <p className="text-[10px] text-muted-foreground">Aktifkan bot untuk mengirim pesan ke Telegram admin.</p>
+                            </div>
+                            <input 
+                              type="checkbox"
+                              checked={telegramConfig.enabled}
+                              onChange={(e) => setTelegramConfig(prev => ({ ...prev, enabled: e.target.checked }))}
+                              className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                              <Key size={12} /> Bot Token
+                            </Label>
+                            <Input 
+                              type="password"
+                              value={telegramConfig.bot_token}
+                              onChange={(e) => setTelegramConfig(prev => ({ ...prev, bot_token: e.target.value }))}
+                              placeholder="Contoh: 123456789:ABCDefgh..."
+                              className="bg-background"
+                            />
+                            <p className="text-[10px] text-muted-foreground italic">Dapatkan dari @BotFather di Telegram.</p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                              <Send size={12} /> Chat ID
+                            </Label>
+                            <Input 
+                              value={telegramConfig.chat_id}
+                              onChange={(e) => setTelegramConfig(prev => ({ ...prev, chat_id: e.target.value }))}
+                              placeholder="Contoh: 123456789 atau -100123456789"
+                              className="bg-background"
+                            />
+                            <p className="text-[10px] text-muted-foreground italic">Dapatkan ID chat Anda melalui @userinfobot.</p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                              <Webhook size={12} /> Template Pesan
+                            </Label>
+                            <textarea 
+                              className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                              value={telegramConfig.template}
+                              onChange={(e) => setTelegramConfig(prev => ({ ...prev, template: e.target.value }))}
+                            />
+                            <div className="p-2 bg-muted rounded text-[10px] space-y-1">
+                              <p className="font-bold">Variabel tersedia:</p>
+                              <p>{"{nama}, {email}, {token}, {nominal}, {provider}, {tanggal}"}</p>
+                            </div>
+                          </div>
+
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full mt-2" 
+                            onClick={testTelegram}
+                            disabled={testingTelegram}
+                          >
+                            {testingTelegram ? <Loader2 size={14} className="animate-spin mr-2" /> : <Send size={14} className="mr-2" />}
+                            Tes Kirim Notifikasi
+                          </Button>
+                        </div>
+                <Button className="w-full" onClick={saveConfig} disabled={saving}>
                   {saving ? <Loader2 size={16} className="animate-spin mr-2" /> : <Save size={16} className="mr-2" />}
                   Simpan Konfigurasi
                 </Button>
