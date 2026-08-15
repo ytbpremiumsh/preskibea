@@ -32,6 +32,72 @@ async function hmacBase64(secret: string, payload: string) {
   return btoa(String.fromCharCode(...new Uint8Array(sig)));
 }
 
+async function sendTelegramPaymentNotification(
+  registration: {
+    full_name: string;
+    email: string;
+    whatsapp: string;
+    token: string;
+  },
+  amount: number,
+) {
+  const { data: setting, error: settingError } = await supabaseAdmin
+    .from("site_settings")
+    .select("value")
+    .eq("key", "telegram_config")
+    .maybeSingle();
+
+  if (settingError) throw new Error(`Gagal membaca pengaturan Telegram: ${settingError.message}`);
+
+  const config = setting?.value as {
+    enabled?: boolean;
+    bot_token?: string;
+    chat_id?: string;
+    template?: string;
+  } | null;
+
+  if (!config?.enabled) {
+    console.log("Telegram notification skipped: integration disabled");
+    return;
+  }
+  if (!config.bot_token || !config.chat_id) {
+    throw new Error("Konfigurasi Telegram belum lengkap");
+  }
+
+  const variables: Record<string, string> = {
+    nama: registration.full_name || "-",
+    email: registration.email || "-",
+    whatsapp: registration.whatsapp || "-",
+    token: registration.token || "-",
+    nominal: new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(amount),
+    provider: "DOKU",
+    tanggal: new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" }),
+  };
+
+  let message = config.template || "Pembayaran Masuk: {nama} - {nominal}";
+  for (const [key, value] of Object.entries(variables)) {
+    message = message.replace(new RegExp(`\\{${key}\\}`, "g"), value);
+  }
+
+  const response = await fetch(
+    `https://api.telegram.org/bot${config.bot_token}/sendMessage`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: config.chat_id, text: message }),
+    },
+  );
+  const responseBody = await response.text();
+  if (!response.ok) {
+    throw new Error(`Telegram API gagal [${response.status}]: ${responseBody}`);
+  }
+  console.log(`Telegram payment notification sent for ${registration.token}`);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
 
@@ -89,10 +155,16 @@ serve(async (req) => {
       return json({ status: "pending", doku_status: txStatus });
     }
 
-    await supabaseAdmin
+    const { data: paidRegistration, error: updateError } = await supabaseAdmin
       .from("registrations")
       .update({ payment_status: "paid", status: "approved" })
-      .eq("id", reg.id);
+      .eq("id", reg.id)
+      .eq("payment_status", "pending")
+      .select("id")
+      .maybeSingle();
+
+    if (updateError) throw new Error(`Gagal memperbarui pembayaran: ${updateError.message}`);
+    if (!paidRegistration) return json({ status: "paid" });
 
     try {
       await supabaseAdmin.from("payments").insert({
@@ -104,6 +176,20 @@ serve(async (req) => {
       });
     } catch (e) {
       console.error("payment insert failed", (e as Error).message);
+    }
+
+    try {
+      await sendTelegramPaymentNotification(
+        {
+          full_name: reg.full_name,
+          email: reg.email,
+          whatsapp: reg.whatsapp,
+          token: reg.token,
+        },
+        Number(body?.order?.amount) || 0,
+      );
+    } catch (e) {
+      console.error("Telegram notification failed:", (e as Error).message);
     }
 
     try {
