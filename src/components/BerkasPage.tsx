@@ -572,7 +572,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                             required={d.required}
                             className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                           >
-                            <option value="">Pilih Range Penghasilan</option>
+                            <option value="">{d.placeholder || "Pilih salah satu"}</option>
                             {(d.options || []).map(opt => (
                               <option key={opt.value} value={opt.value}>{opt.label}</option>
                             ))}
