@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { PaymentIframeModal } from "@/components/PaymentIframeModal";
 import {
   ArrowRight,
   CheckCircle2,
@@ -138,6 +139,7 @@ const tokenPrefix = (k: "prestasi" | "ekonomi" | "umum" | "yatim") =>
 
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "yatim" }) {
   const navigate = useNavigate();
+  const [payOpen, setPayOpen] = useState(false);
   const submitBerkas = submitBerkasDocuments;
   const sendEmail = sendAppEmail;
   const search = useSearch({ strict: false }) as { token?: string };
@@ -538,18 +540,31 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                     Kamu terdaftar pada jalur <strong>Fast Track</strong> namun pembayaran belum terkonfirmasi. Selesaikan pembayaran terlebih dahulu untuk dapat melanjutkan ke tahapan berikutnya.
                   </p>
                   {registrant.payment_url && (
-                    <a
-                      href={registrant.payment_url}
-                      target="_blank"
-                      rel="noreferrer"
+                    <button
+                      type="button"
+                      onClick={() => setPayOpen(true)}
                       className="mt-4 inline-flex items-center gap-2 rounded-full bg-destructive px-5 py-2.5 text-xs font-semibold text-white shadow-soft hover:opacity-90 transition"
                     >
                       Selesaikan Pembayaran <ArrowRight size={14} />
-                    </a>
+                    </button>
                   )}
                 </div>
               </div>
             </div>
+          )}
+
+          {registrant?.payment_url && (
+            <PaymentIframeModal
+              open={payOpen}
+              token={(registrant.token ?? token).trim().toUpperCase()}
+              paymentUrl={registrant.payment_url}
+              onClose={() => setPayOpen(false)}
+              onSuccess={() => {
+                setPayOpen(false);
+                const t = (registrant.token ?? token).trim().toUpperCase();
+                window.location.href = `/pendaftaran/sukses?token=${encodeURIComponent(t)}&kind=${kind}&name=${encodeURIComponent(registrant.full_name ?? "")}`;
+              }}
+            />
           )}
 
           {registrant && !paymentDue && !essayDone && (

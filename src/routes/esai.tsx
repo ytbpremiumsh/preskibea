@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AlertCircle, ArrowRight, CheckCircle2, KeyRound, Loader2, PenLine, UserCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { submitEsai } from "@/lib/api";
+import { PaymentIframeModal } from "@/components/PaymentIframeModal";
 import { toast } from "sonner";
 
 type Search = { token?: string };
@@ -82,6 +83,7 @@ function EsaiRoute() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [ann, setAnn] = useState<{ published: boolean; message?: string }>({ published: false });
+  const [payOpen, setPayOpen] = useState(false);
 
   useEffect(() => {
     supabase
@@ -108,19 +110,32 @@ function EsaiRoute() {
             Kamu terdaftar pada jalur <strong>Fast Track</strong> namun pembayaran belum terkonfirmasi. Selesaikan pembayaran terlebih dahulu untuk melanjutkan ke tahapan Esai dan Berkas.
           </p>
           {registrant.payment_url && (
-            <a
-              href={registrant.payment_url}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
+              onClick={() => setPayOpen(true)}
               className="mt-4 inline-flex items-center gap-2 rounded-full bg-destructive px-5 py-2.5 text-xs font-semibold text-white shadow-soft hover:opacity-90 transition"
             >
               Selesaikan Pembayaran <ArrowRight size={14} />
-            </a>
+            </button>
           )}
         </div>
       </div>
     </div>
   );
+
+  const paymentModal = registrant?.payment_url ? (
+    <PaymentIframeModal
+      open={payOpen}
+      token={(registrant.token ?? token).trim().toUpperCase()}
+      paymentUrl={registrant.payment_url}
+      onClose={() => setPayOpen(false)}
+      onSuccess={() => {
+        setPayOpen(false);
+        const t = (registrant.token ?? token).trim().toUpperCase();
+        window.location.href = `/pendaftaran/sukses?token=${encodeURIComponent(t)}${kind ? `&kind=${kind}` : ""}&name=${encodeURIComponent(registrant.full_name ?? "")}`;
+      }}
+    />
+  ) : null;
 
   const handleVerify = async (silent = false) => {
     const t = token.trim().toUpperCase();
@@ -313,6 +328,7 @@ function EsaiRoute() {
           )}
 
           {paymentBlock}
+          {paymentModal}
 
           {registrant && !paymentDue && (isFastTrack || done) && (
             <div className="card-block p-8 md:p-10 flex flex-col items-center text-center">
