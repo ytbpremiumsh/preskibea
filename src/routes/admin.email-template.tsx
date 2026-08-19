@@ -17,7 +17,7 @@ export const Route = createFileRoute("/admin/email-template")({
 
 type TplValue = { enabled: boolean; subject: string; html: string };
 
-const TABS: { key: string; settingKey: string; label: string; templateName: "registration-confirmation" | "berkas-confirmation" }[] = [
+const TABS: { key: string; settingKey: string; label: string; templateName: "registration-confirmation" | "berkas-confirmation" | "esai-confirmation" }[] = [
   {
     key: "registration",
     settingKey: "email_template_registration",
@@ -29,6 +29,12 @@ const TABS: { key: string; settingKey: string; label: string; templateName: "reg
     settingKey: "email_template_berkas",
     label: "Email Pengiriman Berkas",
     templateName: "berkas-confirmation",
+  },
+  {
+    key: "esai",
+    settingKey: "email_template_esai",
+    label: "Email Pengiriman Esai",
+    templateName: "esai-confirmation",
   },
 ];
 
@@ -92,9 +98,33 @@ const DEFAULT_BERKAS: TplValue = {
 </div>`,
 };
 
+const DEFAULT_ESAI: TplValue = {
+  enabled: false,
+  subject: "Esai {{kind_label}} Berhasil Dikirim",
+  html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#fff;color:#1a1530">
+  <h1 style="color:#5B2A9E;margin:0 0 8px">{{site_name}}</h1>
+  <p style="color:#7c7c87;margin:0 0 24px;font-size:12px;letter-spacing:1px;text-transform:uppercase">Beasiswa Batch #8</p>
+  <div style="border:1px solid #ece9f5;border-radius:16px;padding:28px">
+    <div style="display:inline-block;background:#e8f5ed;border-radius:20px;padding:6px 14px;margin-bottom:16px">
+      <span style="font-size:11px;font-weight:800;color:#0e7c4a;letter-spacing:1px">✓ ESAI DITERIMA</span>
+    </div>
+    <h2>Terima kasih, {{full_name}}!</h2>
+    <p>Jawaban esai singkat Anda untuk <strong>{{kind_label}}</strong> telah berhasil kami terima.</p>
+    <div style="background:#faf8ff;border:1px solid #ece9f5;border-radius:12px;padding:16px 20px;margin:20px 0">
+      <p style="margin:6px 0"><span style="color:#7c7c87">Kode Pendaftar</span> &nbsp; <strong style="font-family:monospace">{{token}}</strong></p>
+      <p style="margin:6px 0"><span style="color:#7c7c87">Status</span> &nbsp; <strong style="color:#b35900">Lanjut ke Pengiriman Berkas</strong></p>
+    </div>
+    <p>Silakan lanjutkan ke tahap <em>Pengiriman Berkas Administrasi</em> menggunakan kode pendaftar di atas.</p>
+    <hr style="border:none;border-top:1px solid #ece9f5;margin:20px 0">
+    <p style="font-size:11px;color:#a09bb0">© {{year}} {{site_name}}</p>
+  </div>
+</div>`,
+};
+
 const DEFAULTS: Record<string, TplValue> = {
   email_template_registration: DEFAULT_REGISTRATION,
   email_template_berkas: DEFAULT_BERKAS,
+  email_template_esai: DEFAULT_ESAI,
 };
 
 const SAMPLE_VALUES: Record<string, string> = {

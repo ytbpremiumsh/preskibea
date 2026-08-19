@@ -108,7 +108,7 @@ export async function sendAppEmail(args: { data: SendAppEmailInput }) {
 }
 
 export type SendTestEmailInput = {
-  templateName: "registration-confirmation" | "berkas-confirmation";
+  templateName: "registration-confirmation" | "berkas-confirmation" | "esai-confirmation";
   recipientEmail: string;
   subject: string;
   html: string;

@@ -22,6 +22,7 @@ const FROM_EMAIL = "Prestasi Kita <noreply@notify.prestasikita.com>";
 const CUSTOMIZABLE: Record<string, string> = {
   "registration-confirmation": "email_template_registration",
   "berkas-confirmation": "email_template_berkas",
+  "esai-confirmation": "email_template_esai",
 };
 
 const Input = z.object({
@@ -115,6 +116,17 @@ function defaultBody(templateName: string, props: Record<string, unknown>) {
   <h2>Berkas diterima, ${escapeHtml(p.full_name)}</h2>
   <p>Berkas <strong>${escapeHtml(p.kind_label)}</strong> Anda dengan kode <code>${escapeHtml(p.token)}</code> telah masuk antrian verifikasi.</p>
   <p>Jumlah dokumen: ${escapeHtml(p.count)}</p>
+  <p>© ${p.year} ${p.site_name}</p>
+</div>`,
+    };
+  }
+  if (templateName === "esai-confirmation") {
+    return {
+      subject: `Esai ${p.kind_label} Berhasil Dikirim`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px">
+  <h2>Esai diterima, ${escapeHtml(p.full_name)}</h2>
+  <p>Jawaban esai singkat Anda untuk <strong>${escapeHtml(p.kind_label)}</strong> dengan kode <code>${escapeHtml(p.token)}</code> telah kami terima.</p>
+  <p>Silakan lanjutkan ke tahap pengiriman berkas administrasi.</p>
   <p>© ${p.year} ${p.site_name}</p>
 </div>`,
     };

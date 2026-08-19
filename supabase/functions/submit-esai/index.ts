@@ -57,7 +57,7 @@ serve(async (req) => {
 
     const { data: reg, error: regErr } = await supabaseAdmin
       .from("registrations")
-      .select("id, extra, fast_track")
+      .select("id, extra, fast_track, email, full_name, whatsapp")
       .eq("token", data.token)
       .eq("kind", data.kind)
       .maybeSingle();
@@ -78,6 +78,25 @@ serve(async (req) => {
       .eq("id", reg.id);
 
     if (error) throw new Error(error.message);
+
+    const r = reg as unknown as { email?: string; full_name?: string; whatsapp?: string };
+    if (r.email) {
+      try {
+        await supabaseAdmin.functions.invoke("notify-user", {
+          body: {
+            type: "esai",
+            full_name: r.full_name,
+            email: r.email,
+            whatsapp: r.whatsapp,
+            token: data.token,
+            kind: data.kind,
+            count: data.essays.length,
+          },
+        });
+      } catch (emailErr) {
+        console.error("Failed to trigger esai email:", (emailErr as Error).message);
+      }
+    }
 
     return json({ ok: true });
   } catch (e) {
