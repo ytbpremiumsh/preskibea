@@ -32,6 +32,7 @@ export const Route = createFileRoute("/pendaftaran/sukses")({
 function SuksesPage() {
   const { name, email, whatsapp, kind, token } = useSearch({ from: "/pendaftaran/sukses" });
   const [fastTrackPayUrl, setFastTrackPayUrl] = useState<string | null>(null);
+  const [isFastTrack, setIsFastTrack] = useState(false);
 
   useEffect(() => {
     if (token && token.includes("-") && (token.startsWith("PK-") || token.startsWith("KP-"))) {
@@ -43,6 +44,7 @@ function SuksesPage() {
           .eq("token", token)
           .maybeSingle()
           .then(({ data }) => {
+            setIsFastTrack(Boolean(data?.fast_track));
             if (data?.fast_track && data?.payment_status === "pending" && data?.payment_url) {
               setFastTrackPayUrl(data.payment_url);
             }
@@ -108,8 +110,8 @@ function SuksesPage() {
           </div>
         )}
 
-        {/* Status Fast Track */}
-        {fastTrackPayUrl ? (
+        {/* Status Fast Track — hanya tampil untuk pendaftar Fast Track */}
+        {!isFastTrack ? null : fastTrackPayUrl ? (
           <div className="mt-6 rounded-3xl border-2 border-primary bg-primary-soft/30 p-6 md:p-7 shadow-card animate-in fade-in slide-in-from-bottom-2">
             <div className="flex items-start gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
@@ -159,7 +161,7 @@ function SuksesPage() {
         )}
 
         {/* Langkah Lanjutan (Hanya untuk Reguler atau yang belum bayar) */}
-        {!(!fastTrackPayUrl && token?.startsWith("PK-FT-")) && (
+        {!(isFastTrack && !fastTrackPayUrl) && (
           <>
             {/* Langkah 2: Bagikan Poster */}
             <div className="mt-6 rounded-3xl border-2 border-primary/30 bg-card p-6 md:p-7 shadow-card">
