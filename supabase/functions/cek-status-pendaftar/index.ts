@@ -73,6 +73,26 @@ Deno.serve(async (req) => {
       .maybeSingle();
     const admAnn = (admAnnRow?.value ?? {}) as { published?: boolean; message?: string };
 
+    const { data: tpaAnnRow } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "tpa_announcement")
+      .maybeSingle();
+    const tpaAnn = (tpaAnnRow?.value ?? {}) as { published?: boolean; message?: string };
+
+    const { data: itwAnnRow } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "interview_announcement")
+      .maybeSingle();
+    const itwAnn = (itwAnnRow?.value ?? {}) as { published?: boolean; message?: string };
+
+    const norm = (v: unknown) =>
+      v === "approved" || v === "rejected" ? (v as string) : "pending";
+    const tpaStatus = norm(extra.tpa_status);
+    const interviewStatus = norm(extra.interview_status);
+
+
     return new Response(JSON.stringify({
       ok: true,
       data: {
