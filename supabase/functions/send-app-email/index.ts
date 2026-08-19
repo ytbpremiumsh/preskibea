@@ -22,6 +22,7 @@ const FROM_EMAIL = "Prestasi Kita <noreply@notify.prestasikita.com>";
 const CUSTOMIZABLE: Record<string, string> = {
   "registration-confirmation": "email_template_registration",
   "berkas-confirmation": "email_template_berkas",
+  "esai-confirmation": "email_template_esai",
 };
 
 const Input = z.object({
