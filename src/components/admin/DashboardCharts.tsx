@@ -95,29 +95,30 @@ export function PieKind({ data }: { data: { name: string; value: number }[] }) {
   const total = data.reduce((s, d) => s + d.value, 0);
   const colors = KIND_COLORS;
   return (
-    <div className="relative h-full w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <defs>
-            {colors.map((c, i) => (
-              <linearGradient key={i} id={`pieGrad-${i}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={c} stopOpacity={1} />
-                <stop offset="100%" stopColor={c} stopOpacity={0.75} />
-              </linearGradient>
-            ))}
-          </defs>
-          <Tooltip content={<TooltipCard />} />
-          <Pie
-            data={data}
-            dataKey="value"
-            nameKey="name"
-            innerRadius="62%"
-            outerRadius="92%"
-            paddingAngle={3}
-            cornerRadius={6}
-            stroke="hsl(var(--background))"
-            strokeWidth={2}
-          >
+    <div className="relative h-full w-full flex flex-col items-center">
+      <div className="flex-1 w-full min-h-[180px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <defs>
+              {colors.map((c, i) => (
+                <linearGradient key={i} id={`pieGrad-${i}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={c} stopOpacity={1} />
+                  <stop offset="100%" stopColor={c} stopOpacity={0.75} />
+                </linearGradient>
+              ))}
+            </defs>
+            <Tooltip content={<TooltipCard />} />
+            <Pie
+              data={data}
+              dataKey="value"
+              nameKey="name"
+              innerRadius="65%"
+              outerRadius="90%"
+              paddingAngle={4}
+              cornerRadius={6}
+              stroke="hsl(var(--background))"
+              strokeWidth={3}
+            >
             {data.map((_, i) => (
               <Cell key={i} fill={`url(#pieGrad-${i % colors.length})`} />
             ))}
