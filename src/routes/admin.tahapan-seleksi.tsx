@@ -105,7 +105,10 @@ function AdminTahapanSeleksi() {
 
   const setStage = async (row: Row, field: "tpa_status" | "interview_status", status: Status) => {
     const nextExtra = { ...(row.extra ?? {}), [field]: status };
-    const { error } = await supabase.from("registrations").update({ extra: nextExtra }).eq("id", row.id);
+    const { error } = await supabase
+      .from("registrations")
+      .update({ extra: nextExtra as never })
+      .eq("id", row.id);
     if (error) return toast.error(error.message);
     setRows((prev) => prev.map((p) => (p.id === row.id ? { ...p, extra: nextExtra } : p)));
     toast.success(status === "approved" ? "Ditandai lolos" : "Ditandai tidak lolos");
