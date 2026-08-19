@@ -256,7 +256,7 @@ function StatusResult({ data }: { data: StatusData }) {
       )}
 
       {/* Timeline */}
-      <div className="mt-6 grid sm:grid-cols-4 gap-3 items-stretch">
+      <div className="mt-6 grid gap-3 items-stretch sm:grid-cols-2 lg:grid-cols-5">
         <Step
           n={1}
           label="Pendaftaran"
