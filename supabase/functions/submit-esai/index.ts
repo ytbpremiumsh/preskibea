@@ -57,7 +57,7 @@ serve(async (req) => {
 
     const { data: reg, error: regErr } = await supabaseAdmin
       .from("registrations")
-      .select("id, extra, fast_track")
+      .select("id, extra, fast_track, email, full_name, whatsapp")
       .eq("token", data.token)
       .eq("kind", data.kind)
       .maybeSingle();
