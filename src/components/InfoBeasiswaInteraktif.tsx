@@ -90,7 +90,7 @@ const benefits = [
 ];
 
 export function InfoBeasiswaInteraktif() {
-  const [active, setActive] = useState<string>("smp");
+  const [active, setActive] = useState<string>("pelajar");
   const current = data.find((d) => d.key === active)!;
 
   return (
