@@ -140,6 +140,18 @@ export function CategoryPage({
               ke teman atau hubungi admin via WhatsApp.
             </p>
           </div>
+          {/* Daftar Berkas */}
+          <div className="mt-8 border-t border-border pt-8">
+            <h2 className="text-2xl font-bold text-foreground">Berkas Pengiriman</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Persiapkan dokumen berikut untuk pengiriman berkas.</p>
+            <ul className="mt-6 space-y-3">
+              {docsByKind[kind].map((d) => (
+                <li key={d} className="flex items-start gap-3 rounded-xl bg-primary-soft/30 p-3 text-sm text-foreground/90 border border-primary/10">
+                  <FileText size={18} className="mt-0.5 text-primary shrink-0" /> {d}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {/* Benefit */}
