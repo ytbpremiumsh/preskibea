@@ -163,7 +163,7 @@ function StatusResult({ data }: { data: StatusData }) {
   const adminResultLabel = !hasDocs
     ? "Menunggu pengiriman berkas"
     : !adminPublished
-    ? "Menunggu validasi admin"
+    ? "Sedang diproses"
     : adminStatus === "approved"
     ? "Lolos seleksi administrasi"
     : adminStatus === "rejected"
