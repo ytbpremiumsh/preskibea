@@ -54,10 +54,10 @@ function BerkasTerkirim() {
     <section className="container-page py-16 md:py-24">
       <div className="mx-auto max-w-3xl">
         <div className="card-block p-8 md:p-10 text-center">
-          <div className="mx-auto inline-flex h-20 w-20 items-center justify-center rounded-full bg-primary-soft text-primary shadow-soft">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary-soft text-primary shadow-soft">
             <CheckCircle2 size={44} />
           </div>
-          <span className="mt-5 inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
+          <span className="mt-6 inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
             {jenis} — Batch #8
           </span>
           <h1 className="mt-4 text-3xl md:text-4xl font-extrabold text-foreground">
