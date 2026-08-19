@@ -151,9 +151,12 @@ function StatusResult({ data }: { data: StatusData }) {
   const berkasTo = data.kind === "prestasi" ? "/berkas/prestasi/upload" : data.kind === "ekonomi" ? "/berkas/ekonomi/upload" : data.kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/umum/upload";
   const hasDocs = data.docs.total > 0;
   const isFast = !!data.fast_track;
-  const essayDone = isFast || !!data.essay_submitted;
-  const essayStatus = isFast ? "approved" : (data.essay_status ?? "pending");
+  const fastPaid = isFast && data.payment_status === "paid";
+  const fastUnpaid = isFast && !fastPaid;
+  const essayDone = fastPaid || !!data.essay_submitted;
+  const essayStatus = fastPaid ? "approved" : (data.essay_status ?? "pending");
   const essayPublished = !!data.essay_announcement_published;
+
   const adminPublished = !!data.admin_announcement_published;
   const adminStatus = (data.candidate_status ?? "pending") as "pending" | "approved" | "rejected";
   const tpaPublished = !!data.tpa_announcement_published;
@@ -169,8 +172,11 @@ function StatusResult({ data }: { data: StatusData }) {
     : adminStatus === "rejected"
     ? "Belum lolos seleksi administrasi"
     : "Sedang diverifikasi";
-  const essayResultLabel = isFast
+  const essayResultLabel = fastUnpaid
+    ? "Menunggu pembayaran Fast Track"
+    : fastPaid
     ? "Lolos otomatis (Fast Track)"
+
     : !essayPublished
     ? "Pengumuman belum dirilis"
     : essayStatus === "approved"
@@ -256,10 +262,12 @@ function StatusResult({ data }: { data: StatusData }) {
         <Step
           n={2}
           label="Pengiriman Essai"
-          done={isFast || (essayPublished && essayStatus === "approved")}
+          done={fastPaid || (!isFast && essayPublished && essayStatus === "approved")}
           rejected={!isFast && essayPublished && essayStatus === "rejected"}
           desc={
-            isFast
+            fastUnpaid
+              ? "Menunggu pembayaran Fast Track diverifikasi"
+              : fastPaid
               ? "Otomatis lolos (Fast Track)"
               : !essayDone
               ? "Esai belum dikirim"
@@ -268,7 +276,9 @@ function StatusResult({ data }: { data: StatusData }) {
               : "Esai terkirim, sedang diproses"
           }
           status={
-            isFast
+            fastUnpaid
+              ? { text: "Menunggu", tone: "wait" }
+              : fastPaid
               ? { text: "⚡ Auto Lolos (Fast Track)", tone: "pass" }
               : essayPublished && essayStatus === "approved"
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
@@ -278,6 +288,7 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "Menunggu", tone: "wait" }
               : { text: "Selesaikan esai", tone: "wait" }
           }
+
         />
         <Step
           n={3}
