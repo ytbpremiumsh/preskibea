@@ -32,6 +32,7 @@ export const Route = createFileRoute("/pendaftaran/sukses")({
 function SuksesPage() {
   const { name, email, whatsapp, kind, token } = useSearch({ from: "/pendaftaran/sukses" });
   const [fastTrackPayUrl, setFastTrackPayUrl] = useState<string | null>(null);
+  const [isFastTrack, setIsFastTrack] = useState(false);
 
   useEffect(() => {
     if (token && token.includes("-") && (token.startsWith("PK-") || token.startsWith("KP-"))) {
@@ -43,6 +44,7 @@ function SuksesPage() {
           .eq("token", token)
           .maybeSingle()
           .then(({ data }) => {
+            setIsFastTrack(Boolean(data?.fast_track));
             if (data?.fast_track && data?.payment_status === "pending" && data?.payment_url) {
               setFastTrackPayUrl(data.payment_url);
             }
