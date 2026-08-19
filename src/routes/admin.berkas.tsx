@@ -93,6 +93,22 @@ function AdminBerkas() {
   const [filterStatus, setFilterStatus] = useState<"all" | CandidateStatus>("all");
   const [detail, setDetail] = useState<Group | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [admPublished, setAdmPublished] = useState(false);
+  const [admMessage, setAdmMessage] = useState("");
+  const [savingAdm, setSavingAdm] = useState(false);
+
+  const saveAdmAnnouncement = async (nextPublished = admPublished, nextMessage = admMessage) => {
+    setSavingAdm(true);
+    const { error } = await supabase
+      .from("site_settings")
+      .upsert(
+        { key: "administrasi_announcement", value: { published: nextPublished, message: nextMessage } },
+        { onConflict: "key" },
+      );
+    setSavingAdm(false);
+    if (error) return toast.error(error.message);
+    toast.success(nextPublished ? "Hasil administrasi dipublikasikan" : "Hasil administrasi ditahan");
+  };
 
   // Handle URL params for filtering from Dashboard
   useEffect(() => {
