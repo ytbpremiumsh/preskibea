@@ -56,6 +56,7 @@ const groups: { label: string; items: Item[] }[] = [
       { title: "Pendaftar", url: "/admin/pendaftar", icon: Users },
       { title: "Pengiriman Esai", url: "/admin/esai", icon: PenLine },
       { title: "Pengiriman Berkas", url: "/admin/berkas", icon: FolderArchive },
+      { title: "Tahapan Seleksi", url: "/admin/tahapan-seleksi", icon: ListChecks },
       { title: "Kandidat Lolos", url: "/admin/kandidat", icon: Trophy },
     ],
   },
