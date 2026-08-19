@@ -1,5 +1,5 @@
 /**
- * Berkas Pengiriman Berkas untuk masing-masing kategori telah dikonfigurasi di src/components/BerkasInfoPage.tsx.
+ * Form Penghasilan Orang Tua pada halaman berkas ekonomi telah diubah menjadi dropdown dengan range yang ditentukan.
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap, Heart } from "lucide-react";
