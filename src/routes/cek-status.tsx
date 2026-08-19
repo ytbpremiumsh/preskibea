@@ -512,21 +512,33 @@ function Step({
       ? "border-destructive/50 bg-destructive/5 text-destructive"
       : "border-border bg-muted text-muted-foreground";
   return (
-    <div className={`flex h-full flex-col rounded-2xl border-2 ${cls} p-4`}>
-      <div className="flex items-center gap-2">
+    <div className={`flex h-full min-w-0 flex-col rounded-2xl border-2 ${cls} p-3.5`}>
+      <div className="flex min-w-0 items-start gap-2">
         <div
-          className={`flex h-7 w-7 shrink-0 basis-7 aspect-square items-center justify-center rounded-full text-xs font-bold leading-none ${numCls}`}
+          className={`flex h-6 w-6 shrink-0 basis-6 aspect-square items-center justify-center rounded-full text-[11px] font-bold leading-none ${numCls}`}
         >
           {rejected ? "✕" : done ? "✓" : n}
         </div>
-        <div className="text-sm font-bold text-foreground">{label}</div>
+        <div className="min-w-0 flex-1 text-[13px] font-bold leading-snug text-foreground break-words hyphens-auto">
+          {label}
+        </div>
       </div>
-      <div className="mt-2 text-xs text-muted-foreground">{desc}</div>
+      <div className="mt-2 text-[11px] leading-snug text-muted-foreground break-words">{desc}</div>
       {status && (
         <div
-          className={`mt-3 inline-flex w-fit rounded-full border-2 px-2.5 py-1 text-[11px] font-bold ${badgeCls}`}
+          className={`mt-auto pt-3 text-[10px] font-bold leading-snug ${
+            status.tone === "pass"
+              ? "text-emerald-700 dark:text-emerald-300"
+              : status.tone === "fail"
+              ? "text-destructive"
+              : "text-muted-foreground"
+          }`}
         >
-          {status.text}
+          <span
+            className={`inline-block max-w-full rounded-lg border px-2 py-1 break-words ${badgeCls}`}
+          >
+            {status.text}
+          </span>
         </div>
       )}
     </div>
