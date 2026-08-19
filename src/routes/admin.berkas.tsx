@@ -362,6 +362,43 @@ function AdminBerkas() {
         />
       </div>
 
+      <Card className="rounded-2xl p-5 shadow-soft">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 className="font-bold text-foreground">Publikasi Hasil Seleksi Administrasi</h2>
+            <p className="mt-1 max-w-lg text-xs text-muted-foreground">
+              Selama toggle nonaktif, peserta melihat status “Menunggu validasi admin” pada Cek Status.
+              Setelah dipublikasikan, hasil validasi (lolos / tidak lolos) tampil ke peserta.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold text-muted-foreground">
+              {admPublished ? "Dipublikasikan" : "Ditahan"}
+            </span>
+            <Switch
+              checked={admPublished}
+              onCheckedChange={(v) => {
+                setAdmPublished(v);
+                saveAdmAnnouncement(v, admMessage);
+              }}
+            />
+          </div>
+        </div>
+        <div className="mt-4">
+          <label className="text-xs font-medium text-foreground/80">Pesan Pengumuman (opsional)</label>
+          <Textarea
+            value={admMessage}
+            onChange={(e) => setAdmMessage(e.target.value)}
+            rows={3}
+            placeholder="Contoh: Hasil seleksi administrasi telah diumumkan. Peserta yang lolos berhak mengikuti tahap verifikasi."
+            className="mt-1.5"
+          />
+          <Button size="sm" className="mt-3" disabled={savingAdm} onClick={() => saveAdmAnnouncement()}>
+            {savingAdm ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Simpan Pengumuman
+          </Button>
+        </div>
+      </Card>
+
       <Card className="rounded-2xl p-4 shadow-soft">
         <div className="flex flex-wrap gap-2">
           <div className="relative flex-1 min-w-[220px]">
