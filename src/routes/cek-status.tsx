@@ -35,6 +35,8 @@ type StatusData = {
   essay_announcement_published?: boolean;
   essay_announcement_message?: string | null;
   education_level?: string | null;
+  admin_announcement_published?: boolean;
+  admin_announcement_message?: string | null;
   docs: { total: number; pending: number; approved: number; rejected: number };
 };
 
