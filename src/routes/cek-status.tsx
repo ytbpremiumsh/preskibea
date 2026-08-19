@@ -291,7 +291,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : adminPublished && adminStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
               : hasDocs
-              ? { text: "Proses", tone: "wait" }
+              ? { text: "Menunggu", tone: "wait" }
               : { text: "Kirim berkas dahulu", tone: "wait" }
           }
         />
