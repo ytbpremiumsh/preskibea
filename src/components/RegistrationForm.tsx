@@ -45,6 +45,16 @@ const BASE_FIELDS: FormField[] = [
   }),
   f("school_name", "Nama Sekolah / Kampus", "text", { required: true }),
   f("grade", "Kelas / Semester", "select", { required: true }),
+  f("parent_income", "Penghasilan Orang Tua per Bulan", "select", {
+    required: true,
+    options: [
+      "Rp 0 - Rp 1.000.000",
+      "Rp 1.000.001 - Rp 2.500.000",
+      "Rp 2.500.001 - Rp 5.000.000",
+      "Rp 5.000.001 - Rp 10.000.000",
+      "> Rp 10.000.000",
+    ],
+  }),
 ];
 
 
