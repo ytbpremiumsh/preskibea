@@ -275,7 +275,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : essayPublished && essayStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
               : essayDone
-              ? { text: "Proses", tone: "wait" }
+              ? { text: "Menunggu", tone: "wait" }
               : { text: "Selesaikan esai", tone: "wait" }
           }
         />
