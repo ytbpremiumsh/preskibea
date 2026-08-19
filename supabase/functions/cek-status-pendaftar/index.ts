@@ -106,8 +106,9 @@ Deno.serve(async (req) => {
         created_at: reg.created_at,
         token: tokenRaw,
         fast_track: fastTrack,
-        payment_status: (reg as { payment_status?: string | null }).payment_status ?? null,
-        essay_submitted: fastTrack || !!essaySubmittedAt,
+        payment_status: paymentStatus,
+        essay_submitted: fastPaid || !!essaySubmittedAt,
+
         essay_submitted_at: essaySubmittedAt,
         essay_status: essayStatus,
         essay_announcement_published: !!ann.published,
