@@ -315,6 +315,11 @@ function StatusResult({ data }: { data: StatusData }) {
               : tpaPublished && tpaStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
               : { text: "Menunggu", tone: "wait" }
+          }
+        />
+        <Step
+          n={5}
+          label="Interview"
           done={itwPublished && itwStatus === "approved"}
           rejected={itwPublished && itwStatus === "rejected"}
           desc={
