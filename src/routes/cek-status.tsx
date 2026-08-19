@@ -148,6 +148,17 @@ function StatusResult({ data }: { data: StatusData }) {
   const essayDone = isFast || !!data.essay_submitted;
   const essayStatus = isFast ? "approved" : (data.essay_status ?? "pending");
   const essayPublished = !!data.essay_announcement_published;
+  const adminPublished = !!data.admin_announcement_published;
+  const adminStatus = (data.candidate_status ?? "pending") as "pending" | "approved" | "rejected";
+  const adminResultLabel = !hasDocs
+    ? "Menunggu pengiriman berkas"
+    : !adminPublished
+    ? "Menunggu validasi admin"
+    : adminStatus === "approved"
+    ? "Lolos seleksi administrasi"
+    : adminStatus === "rejected"
+    ? "Belum lolos seleksi administrasi"
+    : "Sedang diverifikasi";
   const essayResultLabel = isFast
     ? "Lolos otomatis (Fast Track)"
     : !essayPublished
