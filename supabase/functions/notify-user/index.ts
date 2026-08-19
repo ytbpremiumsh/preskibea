@@ -21,7 +21,8 @@ serve(async (req) => {
     // Unified email sending logic that prioritizes custom templates from site_settings
     const typeMap: Record<string, string> = {
       "registration": "registration-confirmation",
-      "berkas": "berkas-confirmation"
+      "berkas": "berkas-confirmation",
+      "esai": "esai-confirmation"
     };
 
     const templateName = typeMap[type] || type;
