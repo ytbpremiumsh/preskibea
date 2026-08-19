@@ -30,6 +30,7 @@ import { Route as AdminBagikanPosterRouteImport } from './routes/admin.bagikan-p
 import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
 import { Route as AdminBrandingRouteImport } from './routes/admin.branding'
 import { Route as AdminEmailTemplateRouteImport } from './routes/admin.email-template'
+import { Route as AdminEsaiRouteImport } from './routes/admin.esai'
 import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
 import { Route as AdminIklanKustomRouteImport } from './routes/admin.iklan-kustom'
 import { Route as AdminIntegrasiRouteImport } from './routes/admin.integrasi'
@@ -169,6 +170,11 @@ const AdminBrandingRoute = AdminBrandingRouteImport.update({
 const AdminEmailTemplateRoute = AdminEmailTemplateRouteImport.update({
   id: '/email-template',
   path: '/email-template',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEsaiRoute = AdminEsaiRouteImport.update({
+  id: '/esai',
+  path: '/esai',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminFormulirRoute = AdminFormulirRouteImport.update({
@@ -368,6 +374,7 @@ export interface FileRoutesByFullPath {
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
+  '/admin/esai': typeof AdminEsaiRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
   '/admin/integrasi': typeof AdminIntegrasiRoute
@@ -425,6 +432,7 @@ export interface FileRoutesByTo {
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
+  '/admin/esai': typeof AdminEsaiRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
   '/admin/integrasi': typeof AdminIntegrasiRoute
@@ -480,6 +488,7 @@ export interface FileRoutesById {
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
+  '/admin/esai': typeof AdminEsaiRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
   '/admin/integrasi': typeof AdminIntegrasiRoute
@@ -540,6 +549,7 @@ export interface FileRouteTypes {
     | '/admin/berkas'
     | '/admin/branding'
     | '/admin/email-template'
+    | '/admin/esai'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
     | '/admin/integrasi'
@@ -597,6 +607,7 @@ export interface FileRouteTypes {
     | '/admin/berkas'
     | '/admin/branding'
     | '/admin/email-template'
+    | '/admin/esai'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
     | '/admin/integrasi'
@@ -651,6 +662,7 @@ export interface FileRouteTypes {
     | '/admin/berkas'
     | '/admin/branding'
     | '/admin/email-template'
+    | '/admin/esai'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
     | '/admin/integrasi'
@@ -865,6 +877,13 @@ declare module '@tanstack/react-router' {
       path: '/email-template'
       fullPath: '/admin/email-template'
       preLoaderRoute: typeof AdminEmailTemplateRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/esai': {
+      id: '/admin/esai'
+      path: '/esai'
+      fullPath: '/admin/esai'
+      preLoaderRoute: typeof AdminEsaiRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/formulir': {
@@ -1124,6 +1143,7 @@ interface AdminRouteChildren {
   AdminBerkasRoute: typeof AdminBerkasRoute
   AdminBrandingRoute: typeof AdminBrandingRoute
   AdminEmailTemplateRoute: typeof AdminEmailTemplateRoute
+  AdminEsaiRoute: typeof AdminEsaiRoute
   AdminFormulirRoute: typeof AdminFormulirRoute
   AdminIklanKustomRoute: typeof AdminIklanKustomRoute
   AdminIntegrasiRoute: typeof AdminIntegrasiRoute
@@ -1149,6 +1169,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBerkasRoute: AdminBerkasRoute,
   AdminBrandingRoute: AdminBrandingRoute,
   AdminEmailTemplateRoute: AdminEmailTemplateRoute,
+  AdminEsaiRoute: AdminEsaiRoute,
   AdminFormulirRoute: AdminFormulirRoute,
   AdminIklanKustomRoute: AdminIklanKustomRoute,
   AdminIntegrasiRoute: AdminIntegrasiRoute,

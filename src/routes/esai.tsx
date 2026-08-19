@@ -79,6 +79,19 @@ function EsaiRoute() {
   const [essays, setEssays] = useState<string[]>(["", "", ""]);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [ann, setAnn] = useState<{ published: boolean; message?: string }>({ published: false });
+
+  useEffect(() => {
+    supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "esai_announcement")
+      .maybeSingle()
+      .then(({ data }) => {
+        const v = (data?.value ?? {}) as { published?: boolean; message?: string };
+        setAnn({ published: !!v.published, message: v.message });
+      });
+  }, []);
 
   const isFastTrack = !!registrant?.fast_track;
 
@@ -251,6 +264,24 @@ function EsaiRoute() {
               <div className="flex items-center gap-2 text-xs font-semibold text-primary">
                 <UserCheck size={14} /> Terverifikasi: {registrant.full_name}
               </div>
+            </div>
+          )}
+
+          {registrant && ann.published && (
+            <div className="rounded-2xl border-2 border-emerald-500 bg-emerald-50 p-4 dark:bg-emerald-950/30">
+              <div className="flex items-center gap-2 text-sm font-extrabold text-emerald-900 dark:text-emerald-200">
+                <CheckCircle2 size={16} /> Pengumuman Hasil Esai
+              </div>
+              <p className="mt-1 text-xs text-emerald-900/80 dark:text-emerald-200/80">
+                {ann.message ||
+                  "Hasil penilaian esai telah dipublikasikan. Silakan cek status pendaftaran kamu untuk melihat hasilnya."}
+              </p>
+              <Link
+                to="/cek-status"
+                className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+              >
+                Lihat hasil di Cek Status <ArrowRight size={12} />
+              </Link>
             </div>
           )}
 
