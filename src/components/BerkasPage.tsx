@@ -486,7 +486,35 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
               <div className="mt-5 space-y-6">
                 {docs.map((d) => {
                   const v = values[d.key] ?? "";
-                  const showError = v.trim().length > 0 && !isValidUrl(v);
+                  const showError = d.type !== "select" && v.trim().length > 0 && !isValidUrl(v);
+                  
+                  if (d.type === "select") {
+                    return (
+                      <label key={d.id} className="block">
+                        <span className="flex items-center gap-2 flex-wrap text-xs font-medium text-foreground/80">
+                          <span>
+                            {d.label}
+                            {d.required && <span className="text-destructive"> *</span>}
+                          </span>
+                        </span>
+                        <div className="mt-1.5">
+                          <select
+                            value={v}
+                            onChange={(e) => setVal(d.key, e.target.value)}
+                            disabled={!registrant || !essayDone}
+                            required={d.required}
+                            className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                          >
+                            <option value="">Pilih Range Penghasilan</option>
+                            {(d.options || []).map(opt => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </label>
+                    );
+                  }
+
                   return (
                     <label key={d.id} className="block">
                       <span className="flex items-center gap-2 flex-wrap text-xs font-medium text-foreground/80">
