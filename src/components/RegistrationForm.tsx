@@ -45,32 +45,67 @@ const BASE_FIELDS: FormField[] = [
   }),
   f("school_name", "Nama Sekolah / Kampus", "text", { required: true }),
   f("grade", "Kelas / Semester", "select", { required: true }),
-  f("parent_income", "Penghasilan Orang Tua per Bulan", "select", {
-    required: true,
-    options: [
-      "Rp 0 - Rp 1.000.000",
-      "Rp 1.000.001 - Rp 2.500.000",
-      "Rp 2.500.001 - Rp 5.000.000",
-      "Rp 5.000.001 - Rp 10.000.000",
-      "> Rp 10.000.000",
-    ],
-  }),
-  f("dependents", "Jumlah Tanggungan Keluarga", "select", {
-    required: true,
-    options: ["1 Orang", "2 Orang", "3 Orang", "4 Orang", "5 Orang", "> 5 Orang"],
-  }),
 ];
 
 
 const FALLBACK: Record<"prestasi" | "ekonomi" | "umum" | "yatim", FormSchema> = {
-  prestasi: { fields: [...BASE_FIELDS] },
+  prestasi: { 
+    fields: [
+      ...BASE_FIELDS,
+      f("parent_income", "Penghasilan Orang Tua per Bulan", "select", {
+        required: true,
+        options: [
+          "Rp 0 - Rp 1.000.000",
+          "Rp 1.000.001 - Rp 2.500.000",
+          "Rp 2.500.001 - Rp 5.000.000",
+          "Rp 5.000.001 - Rp 10.000.000",
+          "> Rp 10.000.000",
+        ],
+      }),
+      f("dependents", "Jumlah Tanggungan Keluarga", "select", {
+        required: true,
+        options: ["1 Orang", "2 Orang", "3 Orang", "4 Orang", "5 Orang", "> 5 Orang"],
+      }),
+    ] 
+  },
   ekonomi: {
     fields: [
       ...BASE_FIELDS,
+      f("income_statement", "Surat Keterangan Penghasilan Orang Tua / Slip Gaji", "file", { required: true }),
+      f("parent_income", "Penghasilan Orang Tua per Bulan", "select", {
+        required: true,
+        options: [
+          "Rp 0 - Rp 1.000.000",
+          "Rp 1.000.001 - Rp 2.500.000",
+          "Rp 2.500.001 - Rp 5.000.000",
+          "Rp 5.000.001 - Rp 10.000.000",
+          "> Rp 10.000.000",
+        ],
+      }),
+      f("dependents", "Jumlah Tanggungan Keluarga", "select", {
+        required: true,
+        options: ["1 Orang", "2 Orang", "3 Orang", "4 Orang", "5 Orang", "> 5 Orang"],
+      }),
     ],
   },
   umum: {
-    fields: [...BASE_FIELDS],
+    fields: [
+      ...BASE_FIELDS,
+      f("parent_income", "Penghasilan Orang Tua per Bulan", "select", {
+        required: true,
+        options: [
+          "Rp 0 - Rp 1.000.000",
+          "Rp 1.000.001 - Rp 2.500.000",
+          "Rp 2.500.001 - Rp 5.000.000",
+          "Rp 5.000.001 - Rp 10.000.000",
+          "> Rp 10.000.000",
+        ],
+      }),
+      f("dependents", "Jumlah Tanggungan Keluarga", "select", {
+        required: true,
+        options: ["1 Orang", "2 Orang", "3 Orang", "4 Orang", "5 Orang", "> 5 Orang"],
+      }),
+    ],
   },
   yatim: {
     fields: [
@@ -81,6 +116,20 @@ const FALLBACK: Record<"prestasi" | "ekonomi" | "umum" | "yatim", FormSchema> = 
       }),
       f("guardian_name", "Nama Wali / Pengasuh", "text", { required: true }),
       f("guardian_relation", "Hubungan dengan Wali", "text", { required: true }),
+      f("parent_income", "Penghasilan Orang Tua per Bulan", "select", {
+        required: true,
+        options: [
+          "Rp 0 - Rp 1.000.000",
+          "Rp 1.000.001 - Rp 2.500.000",
+          "Rp 2.500.001 - Rp 5.000.000",
+          "Rp 5.000.001 - Rp 10.000.000",
+          "> Rp 10.000.000",
+        ],
+      }),
+      f("dependents", "Jumlah Tanggungan Keluarga", "select", {
+        required: true,
+        options: ["1 Orang", "2 Orang", "3 Orang", "4 Orang", "5 Orang", "> 5 Orang"],
+      }),
     ],
   },
 };
