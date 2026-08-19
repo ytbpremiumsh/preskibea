@@ -51,15 +51,20 @@ export function BerkasInfoPage({ kind, educationLevel }: { kind: "prestasi" | "e
                      educationLevel?.toLowerCase().includes("s1") || 
                      educationLevel?.toLowerCase().includes("diploma");
 
-  const docs = docsByKind[kind].map(d => {
-    if (d.includes("Rapor / KHS")) {
-      return isMahasiswa ? "KHS / Transkrip Nilai Terakhir" : "Rapor Terakhir";
-    }
-    if (d.includes("Kartu Pelajar / Kartu Mahasiswa")) {
-      return isMahasiswa ? "Kartu Tanda Mahasiswa (KTM)" : "Kartu Pelajar / Kartu Identitas";
-    }
-    return d;
-  });
+  const docs = (docsByKind[kind] as readonly string[])
+    .filter((d) => {
+      if ((kind === "prestasi" || kind === "umum") && educationLevel) {
+        if (d.startsWith("Kartu Hasil Studi") && !isMahasiswa) return false;
+        if (d.startsWith("Transkrip Nilai") && isMahasiswa) return false;
+      }
+      return true;
+    })
+    .map((d) => {
+      if (d.includes("Kartu Pelajar / Kartu Mahasiswa")) {
+        return isMahasiswa ? "Kartu Tanda Mahasiswa (KTM)" : "Kartu Pelajar / Kartu Identitas";
+      }
+      return d;
+    });
   const uploadTo = kind === "prestasi" ? "/berkas/prestasi/upload" : kind === "ekonomi" ? "/berkas/ekonomi/upload" : kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/umum/upload";
 
   return (
