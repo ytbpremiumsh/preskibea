@@ -142,25 +142,19 @@ export function InfoBeasiswaInteraktif() {
             </span>
 
             <div className="mt-4 grid sm:grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-border p-4 bg-background">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Kategori Ekonomi
-                </p>
-                <p className="mt-2 text-2xl md:text-3xl font-extrabold text-foreground break-words">
-                  {current.nominalEkonomi}
-                </p>
-                <p className="text-xs text-muted-foreground">{current.periode}</p>
-              </div>
-              <div className="rounded-2xl border border-primary/30 p-4 bg-primary-soft/40">
-                <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-                  Kategori Prestasi
-                </p>
-                <p className="mt-2 text-2xl md:text-3xl font-extrabold text-foreground break-words">
-                  {current.nominalPrestasi}
-                </p>
-                <p className="text-xs text-muted-foreground">{current.periode}</p>
-              </div>
+              {kategoriBeasiswa.map((k) => (
+                <div key={k} className="rounded-2xl border border-primary/30 p-4 bg-primary-soft/40">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+                    {k}
+                  </p>
+                  <p className="mt-2 text-2xl md:text-3xl font-extrabold text-foreground break-words">
+                    {current.nominal}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{current.periode}</p>
+                </div>
+              ))}
             </div>
+
 
             <p className="mt-4 text-muted-foreground">{current.highlight}</p>
           </div>
