@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AlertCircle, ArrowRight, CheckCircle2, KeyRound, Loader2, PenLine, UserCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { submitEsai } from "@/lib/api";
+import { PaymentIframeModal } from "@/components/PaymentIframeModal";
 import { toast } from "sonner";
 
 type Search = { token?: string };
@@ -82,6 +83,7 @@ function EsaiRoute() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [ann, setAnn] = useState<{ published: boolean; message?: string }>({ published: false });
+  const [payOpen, setPayOpen] = useState(false);
 
   useEffect(() => {
     supabase
@@ -326,6 +328,7 @@ function EsaiRoute() {
           )}
 
           {paymentBlock}
+          {paymentModal}
 
           {registrant && !paymentDue && (isFastTrack || done) && (
             <div className="card-block p-8 md:p-10 flex flex-col items-center text-center">
