@@ -12,11 +12,12 @@ import {
   Briefcase,
 } from "lucide-react";
 
-type Kategori = {
+type KategoriInfo = {
   key: string;
   label: string;
   icon: React.ReactNode;
-  nominal: string;
+  // nominal per jenjang; jika sama untuk semua jenjang, isi sama
+  nominal: { pelajar: string; mahasiswa: string };
   periode: string;
   highlight: string;
   fakta: string[];
@@ -29,12 +30,22 @@ const kategoriBeasiswa = [
   "Kategori Yatim",
 ];
 
-const data: Kategori[] = [
+// Nominal per kategori (dalam ribuan Rupiah) per jenjang
+// Prestasi & Ekonomi: Pelajar 800rb, Mahasiswa 1jt
+// Umum & Yatim: 500rb (sama untuk semua jenjang)
+const nominalByKategori: Record<string, { pelajar: string; mahasiswa: string }> = {
+  prestasi: { pelajar: "Rp800.000", mahasiswa: "Rp1.000.000" },
+  ekonomi: { pelajar: "Rp800.000", mahasiswa: "Rp1.000.000" },
+  umum: { pelajar: "Rp500.000", mahasiswa: "Rp500.000" },
+  yatim: { pelajar: "Rp500.000", mahasiswa: "Rp500.000" },
+};
+
+const data: KategoriInfo[] = [
   {
     key: "pelajar",
     label: "Pelajar",
     icon: <Backpack size={20} />,
-    nominal: "Rp800.000",
+    nominal: { pelajar: "Rp800.000", mahasiswa: "Rp1.000.000" },
     periode: "per semester",
     highlight: "Untuk jenjang SMP/MTs, SMA/SMK/MA sederajat & Gap Year",
     fakta: [
@@ -48,7 +59,7 @@ const data: Kategori[] = [
     key: "mahasiswa",
     label: "Mahasiswa",
     icon: <GraduationCap size={20} />,
-    nominal: "Rp1.000.000",
+    nominal: { pelajar: "Rp800.000", mahasiswa: "Rp1.000.000" },
     periode: "per semester",
     highlight: "Untuk Mahasiswa aktif maupun calon mahasiswa D3–S2 PTN/PTS",
     fakta: [
@@ -142,17 +153,21 @@ export function InfoBeasiswaInteraktif() {
             </span>
 
             <div className="mt-4 grid sm:grid-cols-2 gap-3">
-              {kategoriBeasiswa.map((k) => (
-                <div key={k} className="rounded-2xl border border-primary/30 p-4 bg-primary-soft/40">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-                    {k}
-                  </p>
-                  <p className="mt-2 text-2xl md:text-3xl font-extrabold text-foreground break-words">
-                    {current.nominal}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{current.periode}</p>
-                </div>
-              ))}
+              {kategoriBeasiswa.map((k, idx) => {
+                const kKey = ["prestasi", "ekonomi", "umum", "yatim"][idx];
+                const nominal = nominalByKategori[kKey][active as "pelajar" | "mahasiswa"];
+                return (
+                  <div key={k} className="rounded-2xl border border-primary/30 p-4 bg-primary-soft/40">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+                      {k}
+                    </p>
+                    <p className="mt-2 text-2xl md:text-3xl font-extrabold text-foreground break-words">
+                      {nominal}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{current.periode}</p>
+                  </div>
+                );
+              })}
             </div>
 
 
