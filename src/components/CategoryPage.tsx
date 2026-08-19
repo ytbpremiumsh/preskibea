@@ -15,6 +15,38 @@ const persyaratan = [
   "Mengikuti seluruh persyaratan yang ditetapkan",
 ];
 
+const docsByKind = {
+  prestasi: [
+    "Kartu Pelajar / Kartu Mahasiswa",
+    "Kartu Hasil Studi (KHS) (Wajib untuk Mahasiswa)",
+    "Transkrip Nilai (Wajib untuk Pelajar & Gapyear)",
+    "Sertifikat Prestasi (Akademik maupun Non-Akademik)",
+    "Curriculum Vitae (CV) Kreatif",
+    "Berkas Pendukung Lainnya (Opsional)",
+  ],
+  ekonomi: [
+    "Kartu Pelajar / Kartu Mahasiswa",
+    "Surat Keterangan Penghasilan Orang Tua / Slip Gaji",
+    "Surat Keterangan Tidak Mampu (SKTM)",
+    "Foto Rumah (Tampak Depan & Ruang Tamu)",
+    "Foto Pembayaran Listrik Terakhir ( Wajib )",
+  ],
+  umum: [
+    "Kartu Pelajar / Kartu Mahasiswa",
+    "Kartu Hasil Studi (KHS) (Wajib untuk Mahasiswa)",
+    "Transkrip Nilai (Wajib untuk Pelajar & Gapyear)",
+    "Video Tiktok 1 Menit ( Menjelaskan Beasiswa Prestasi Kita) — Wajib",
+    "Berkas Pendukung Lainnya (Opsional)",
+  ],
+  yatim: [
+    "Kartu Pelajar / Kartu Mahasiswa",
+    "Surat Keterangan Yatim / Piatu / Yatim Piatu",
+    "Akta Kematian Orang Tua",
+    "Kartu Keluarga (KK)",
+    "Foto Pembayaran Listrik Terakhir ( Wajib )",
+  ],
+} as const;
+
 
 
 const FALLBACK_BENEFIT_IMAGE = "/benefit-lokal.png";
