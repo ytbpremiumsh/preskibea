@@ -121,16 +121,20 @@ function AdminBerkas() {
 
   const load = async () => {
     setLoading(true);
-    const [d, r] = await Promise.all([
+    const [d, r, s] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
       supabase
         .from("registrations")
         .select(
           "id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status",
         ),
+      supabase.from("site_settings").select("value").eq("key", "administrasi_announcement").maybeSingle(),
     ]);
     if (d.error) toast.error(d.error.message);
     if (r.error) toast.error(r.error.message);
+    const admCfg = (s.data?.value ?? {}) as { published?: boolean; message?: string };
+    setAdmPublished(!!admCfg.published);
+    setAdmMessage(admCfg.message ?? "");
     setDocs((d.data ?? []) as Document[]);
     setRegs((r.data ?? []) as Registration[]);
     setLoading(false);
