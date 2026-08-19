@@ -275,7 +275,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : essayPublished && essayStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
               : essayDone
-              ? { text: "Proses", tone: "wait" }
+              ? { text: "Menunggu", tone: "wait" }
               : { text: "Selesaikan esai", tone: "wait" }
           }
         />
@@ -291,7 +291,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : adminPublished && adminStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
               : hasDocs
-              ? { text: "Proses", tone: "wait" }
+              ? { text: "Menunggu", tone: "wait" }
               : { text: "Kirim berkas dahulu", tone: "wait" }
           }
         />
@@ -314,7 +314,7 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : tpaPublished && tpaStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Proses", tone: "wait" }
+              : { text: "Menunggu", tone: "wait" }
           }
         />
         <Step
@@ -336,7 +336,7 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "Lolos — tahap final", tone: "pass" }
               : itwPublished && itwStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Proses", tone: "wait" }
+              : { text: "Menunggu", tone: "wait" }
           }
         />
       </div>
