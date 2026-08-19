@@ -273,52 +273,40 @@ function StatusResult({ data }: { data: StatusData }) {
       )}
 
       {/* Timeline */}
-      <div className="mt-6 grid gap-3 items-stretch sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mt-6 grid gap-3 items-stretch sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <Step
           n={1}
           label="Pendaftaran"
           done
-          desc="Data diterima"
+          desc="Data pendaftaran diterima"
           status={{ text: "Lolos ke tahap berikutnya", tone: "pass" }}
         />
         <Step
           n={2}
           label="Pengiriman Essai"
-          done={essayDone}
-          desc={isFast ? "Otomatis lolos (Fast Track)" : essayDone ? "Esai sudah dikirim" : "Belum dikirim"}
-          status={
-            essayDone
-              ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
-              : { text: "Belum lolos — selesaikan esai", tone: "wait" }
-          }
-        />
-        <Step
-          n={3}
-          label="Hasil Esai"
           done={isFast || (essayPublished && essayStatus === "approved")}
           rejected={!isFast && essayPublished && essayStatus === "rejected"}
-          desc={essayResultLabel}
+          desc={
+            isFast
+              ? "Otomatis lolos (Fast Track)"
+              : !essayDone
+              ? "Esai belum dikirim"
+              : essayPublished
+              ? essayResultLabel
+              : "Esai terkirim, menunggu validasi admin"
+          }
           status={
             isFast || (essayPublished && essayStatus === "approved")
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : essayPublished && essayStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Menunggu pengumuman", tone: "wait" }
+              : essayDone
+              ? { text: "Menunggu validasi admin", tone: "wait" }
+              : { text: "Selesaikan esai", tone: "wait" }
           }
         />
         <Step
-          n={4}
-          label="Berkas Administrasi"
-          done={hasDocs}
-          desc={hasDocs ? "Berkas sudah dikirim" : "Belum dikirim"}
-          status={
-            hasDocs
-              ? { text: "Berkas lengkap terkirim", tone: "pass" }
-              : { text: "Belum lolos — kirim berkas", tone: "wait" }
-          }
-        />
-        <Step
-          n={5}
+          n={3}
           label="Seleksi Administrasi"
           done={adminPublished && adminStatus === "approved"}
           rejected={adminPublished && adminStatus === "rejected"}
@@ -328,7 +316,53 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : adminPublished && adminStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Belum lolos — menunggu validasi admin", tone: "wait" }
+              : hasDocs
+              ? { text: "Menunggu validasi admin", tone: "wait" }
+              : { text: "Kirim berkas dahulu", tone: "wait" }
+          }
+        />
+        <Step
+          n={4}
+          label="Tes Potensi Akademik"
+          done={tpaPublished && tpaStatus === "approved"}
+          rejected={tpaPublished && tpaStatus === "rejected"}
+          desc={
+            !tpaPublished
+              ? "Hasil belum diumumkan"
+              : tpaStatus === "approved"
+              ? "Lolos tes potensi akademik"
+              : tpaStatus === "rejected"
+              ? "Belum lolos tes potensi akademik"
+              : "Sedang dinilai"
+          }
+          status={
+            tpaPublished && tpaStatus === "approved"
+              ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
+              : tpaPublished && tpaStatus === "rejected"
+              ? { text: "Tidak lolos", tone: "fail" }
+              : { text: "Menunggu validasi admin", tone: "wait" }
+          }
+        />
+        <Step
+          n={5}
+          label="Interview"
+          done={itwPublished && itwStatus === "approved"}
+          rejected={itwPublished && itwStatus === "rejected"}
+          desc={
+            !itwPublished
+              ? "Hasil belum diumumkan"
+              : itwStatus === "approved"
+              ? "Lolos tahap interview"
+              : itwStatus === "rejected"
+              ? "Belum lolos tahap interview"
+              : "Sedang dinilai"
+          }
+          status={
+            itwPublished && itwStatus === "approved"
+              ? { text: "Lolos — tahap final", tone: "pass" }
+              : itwPublished && itwStatus === "rejected"
+              ? { text: "Tidak lolos", tone: "fail" }
+              : { text: "Menunggu validasi admin", tone: "wait" }
           }
         />
       </div>
