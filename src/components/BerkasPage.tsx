@@ -73,6 +73,34 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "orphan_letter", key: "orphan_letter", label: "Surat Keterangan Yatim / Piatu / Yatim Piatu", required: true },
     { id: "death_cert", key: "death_cert", label: "Akta Kematian Orang Tua", required: true },
     { id: "family_card", key: "family_card", label: "Kartu Keluarga (KK)", required: true },
+    {
+      id: "income_source",
+      key: "income_source",
+      label: "Penghasilan dari Siapa (Ibu / Kakak / Saudara)",
+      required: true,
+      type: "select",
+      placeholder: "Pilih Sumber Penghasilan",
+      options: [
+        { label: "Ibu", value: "ibu" },
+        { label: "Kakak", value: "kakak" },
+        { label: "Saudara", value: "saudara" },
+      ],
+    },
+    {
+      id: "income_per_month",
+      key: "income_per_month",
+      label: "Penghasilan Per Bulan",
+      required: true,
+      type: "select",
+      placeholder: "Pilih Range Penghasilan",
+      options: [
+        { label: "Rp 0 - Rp 1.000.000", value: "0-1jt" },
+        { label: "Rp 1.000.001 - Rp 2.500.000", value: "1jt-2.5jt" },
+        { label: "Rp 2.500.001 - Rp 5.000.000", value: "2.5jt-5jt" },
+        { label: "Rp 5.000.001 - Rp 10.000.000", value: "5jt-10jt" },
+        { label: "> Rp 10.000.000", value: ">10jt" },
+      ],
+    },
     { id: "utility_bill", key: "utility_bill", label: "Foto Pembayaran Listrik Terakhir ( Wajib )", required: true },
   ],
 };
@@ -544,7 +572,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                             required={d.required}
                             className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                           >
-                            <option value="">Pilih Range Penghasilan</option>
+                            <option value="">{d.placeholder || "Pilih salah satu"}</option>
                             {(d.options || []).map(opt => (
                               <option key={opt.value} value={opt.value}>{opt.label}</option>
                             ))}
