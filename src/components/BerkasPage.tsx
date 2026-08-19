@@ -22,6 +22,30 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "khs", key: "khs", label: "Kartu Hasil Studi (KHS)", required: true },
     { id: "transcript_custom", key: "transcript_custom", label: "Transkrip Nilai", required: true },
     { id: "achievement_certs", key: "achievement_certs", label: "Sertifikat Prestasi (Akademik maupun Non-Akademik)", required: true },
+    {
+      id: "achievement_academic_text",
+      key: "achievement_academic_text",
+      label: "Prestasi Akademik (Tuliskan prestasi akademik kamu)",
+      required: true,
+      type: "textarea",
+      placeholder: "Contoh: Juara 1 Olimpiade Matematika tingkat Kabupaten 2025, ...",
+    },
+    {
+      id: "achievement_nonacademic_text",
+      key: "achievement_nonacademic_text",
+      label: "Prestasi Non Akademik (Tuliskan prestasi non akademik kamu)",
+      required: true,
+      type: "textarea",
+      placeholder: "Contoh: Juara 2 Lomba Futsal tingkat Provinsi 2025, ...",
+    },
+    {
+      id: "organization_text",
+      key: "organization_text",
+      label: "Organisasi (Tuliskan pengalaman organisasi kamu)",
+      required: true,
+      type: "textarea",
+      placeholder: "Contoh: Ketua OSIS 2024-2025, Anggota Pramuka, ...",
+    },
     { id: "cv", key: "cv", label: "Curriculum Vitae (CV) Kreatif", required: true },
     { id: "additional_docs", key: "additional_docs", label: "Berkas Pendukung Lainnya (Optional)", required: false },
   ],
@@ -319,6 +343,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
       return;
     }
     const invalid = docs.filter((d) => {
+      if (d.type === "select" || d.type === "textarea") return false;
       const v = (values[d.key] ?? "").trim();
       if (!v) return false;
       return !isValidUrl(v);
@@ -584,8 +609,37 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
               <div className="mt-5 space-y-6">
                 {docs.map((d) => {
                   const v = values[d.key] ?? "";
-                  const showError = d.type !== "select" && v.trim().length > 0 && !isValidUrl(v);
+                  const showError = d.type !== "select" && d.type !== "textarea" && v.trim().length > 0 && !isValidUrl(v);
                   
+                  if (d.type === "textarea") {
+                    return (
+                      <label key={d.id} className="block">
+                        <span className="flex items-center gap-2 flex-wrap text-xs font-medium text-foreground/80">
+                          <span>
+                            {d.label}
+                            {d.required && <span className="text-destructive"> *</span>}
+                          </span>
+                          {!d.required && (
+                            <span className="text-[10px] font-semibold uppercase rounded-full bg-secondary text-muted-foreground px-2 py-0.5">
+                              Opsional
+                            </span>
+                          )}
+                        </span>
+                        <textarea
+                          value={v}
+                          onChange={(e) => setVal(d.key, e.target.value)}
+                          placeholder={d.placeholder || "Tuliskan di sini..."}
+                          rows={4}
+                          maxLength={1500}
+                          disabled={!registrant || !essayDone}
+                          required={d.required}
+                          className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                        />
+                        <div className="mt-1 text-right text-[10px] text-muted-foreground">{v.length}/1500</div>
+                      </label>
+                    );
+                  }
+
                   if (d.type === "select") {
                     return (
                       <label key={d.id} className="block">
