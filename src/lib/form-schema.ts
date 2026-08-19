@@ -22,7 +22,7 @@ export type DocSlot = {
   required?: boolean;
   accept?: string;
   maxSize?: number; // MB
-  type?: "url" | "select";
+  type?: "url" | "select" | "textarea";
   options?: { label: string; value: string }[];
   placeholder?: string;
 };
