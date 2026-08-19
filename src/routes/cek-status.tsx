@@ -385,7 +385,21 @@ function StatusResult({ data }: { data: StatusData }) {
   );
 }
 
-function Step({ n, label, desc, done, rejected }: { n: number; label: string; desc: string; done?: boolean; rejected?: boolean }) {
+function Step({
+  n,
+  label,
+  desc,
+  done,
+  rejected,
+  status,
+}: {
+  n: number;
+  label: string;
+  desc: string;
+  done?: boolean;
+  rejected?: boolean;
+  status?: { text: string; tone: "pass" | "fail" | "wait" };
+}) {
   const cls = rejected
     ? "border-destructive/40 bg-destructive/5"
     : done
@@ -396,15 +410,30 @@ function Step({ n, label, desc, done, rejected }: { n: number; label: string; de
     : done
     ? "bg-primary text-primary-foreground"
     : "bg-muted text-muted-foreground";
+  const badgeCls =
+    status?.tone === "pass"
+      ? "border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200"
+      : status?.tone === "fail"
+      ? "border-destructive/50 bg-destructive/5 text-destructive"
+      : "border-border bg-muted text-muted-foreground";
   return (
-    <div className={`rounded-2xl border-2 ${cls} p-4`}>
+    <div className={`flex h-full flex-col rounded-2xl border-2 ${cls} p-4`}>
       <div className="flex items-center gap-2">
-        <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${numCls}`}>
+        <div
+          className={`flex h-7 w-7 shrink-0 basis-7 aspect-square items-center justify-center rounded-full text-xs font-bold leading-none ${numCls}`}
+        >
           {rejected ? "✕" : done ? "✓" : n}
         </div>
         <div className="text-sm font-bold text-foreground">{label}</div>
       </div>
       <div className="mt-2 text-xs text-muted-foreground">{desc}</div>
+      {status && (
+        <div
+          className={`mt-3 inline-flex w-fit rounded-full border-2 px-2.5 py-1 text-[11px] font-bold ${badgeCls}`}
+        >
+          {status.text}
+        </div>
+      )}
     </div>
   );
 }
