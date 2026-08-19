@@ -172,8 +172,11 @@ function StatusResult({ data }: { data: StatusData }) {
     : adminStatus === "rejected"
     ? "Belum lolos seleksi administrasi"
     : "Sedang diverifikasi";
-  const essayResultLabel = isFast
+  const essayResultLabel = fastUnpaid
+    ? "Menunggu pembayaran Fast Track"
+    : fastPaid
     ? "Lolos otomatis (Fast Track)"
+
     : !essayPublished
     ? "Pengumuman belum dirilis"
     : essayStatus === "approved"
