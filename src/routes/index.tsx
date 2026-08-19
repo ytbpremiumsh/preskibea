@@ -64,7 +64,7 @@ function Index() {
                   <path d="M3 8 Q 75 2, 150 6 T 297 5" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
                 </svg>
               </span>
-              <span className="text-muted-foreground/80"> Batch #8</span>
+              <span className="text-[var(--gold)]"> Batch #8</span>
             </h1>
 
             <p className="max-w-xl text-base md:text-lg text-muted-foreground mx-auto lg:mx-0">
