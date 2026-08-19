@@ -859,7 +859,7 @@ export function RegistrationForm({
               <h3 className="font-bold text-foreground">Konfirmasi Pembayaran</h3>
               {dokuPaymentUrl && (
                 <p className="text-[10px] text-primary font-bold uppercase tracking-wider">
-                  Gunakan QRIS , jangan gunakan VA
+                  BEASISWA PENDIDIKAN PRESTASI KITA #8 - PEMBAYARAN QRIS
                 </p>
               )}
             </div>
