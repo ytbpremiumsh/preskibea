@@ -24,6 +24,7 @@ import {
   Rocket,
   Wrench,
   CreditCard,
+  PenLine,
 } from "lucide-react";
 import {
   Sidebar,
@@ -53,6 +54,7 @@ const groups: { label: string; items: Item[] }[] = [
     label: "Pendaftaran",
     items: [
       { title: "Pendaftar", url: "/admin/pendaftar", icon: Users },
+      { title: "Pengiriman Esai", url: "/admin/esai", icon: PenLine },
       { title: "Pengiriman Berkas", url: "/admin/berkas", icon: FolderArchive },
       { title: "Kandidat Lolos", url: "/admin/kandidat", icon: Trophy },
     ],
