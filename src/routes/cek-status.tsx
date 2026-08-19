@@ -254,25 +254,49 @@ function StatusResult({ data }: { data: StatusData }) {
       )}
 
       {/* Timeline */}
-      <div className="mt-6 grid sm:grid-cols-4 gap-3">
-        <Step n={1} label="Pendaftaran" done desc="Data diterima" />
+      <div className="mt-6 grid sm:grid-cols-4 gap-3 items-stretch">
+        <Step
+          n={1}
+          label="Pendaftaran"
+          done
+          desc="Data diterima"
+          status={{ text: "Lolos ke tahap berikutnya", tone: "pass" }}
+        />
         <Step
           n={2}
           label="Pengiriman Essai"
           done={essayDone}
           desc={isFast ? "Otomatis lolos (Fast Track)" : essayDone ? "Esai sudah dikirim" : "Belum dikirim"}
+          status={
+            essayDone
+              ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
+              : { text: "Belum lolos — selesaikan esai", tone: "wait" }
+          }
         />
         <Step
           n={3}
           label="Hasil Esai"
-          done={essayPublished && essayStatus === "approved"}
+          done={isFast || (essayPublished && essayStatus === "approved")}
+          rejected={!isFast && essayPublished && essayStatus === "rejected"}
           desc={essayResultLabel}
+          status={
+            isFast || (essayPublished && essayStatus === "approved")
+              ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
+              : essayPublished && essayStatus === "rejected"
+              ? { text: "Tidak lolos", tone: "fail" }
+              : { text: "Menunggu pengumuman", tone: "wait" }
+          }
         />
         <Step
           n={4}
           label="Berkas Pendukung"
           done={hasDocs}
-          desc={hasDocs ? `${data.docs.total} berkas masuk` : "Belum dikirim"}
+          desc={hasDocs ? "Berkas sudah dikirim" : "Belum dikirim"}
+          status={
+            hasDocs
+              ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
+              : { text: "Belum lolos — kirim berkas", tone: "wait" }
+          }
         />
       </div>
 
