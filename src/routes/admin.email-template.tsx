@@ -30,6 +30,12 @@ const TABS: { key: string; settingKey: string; label: string; templateName: "reg
     label: "Email Pengiriman Berkas",
     templateName: "berkas-confirmation",
   },
+  {
+    key: "esai",
+    settingKey: "email_template_esai",
+    label: "Email Pengiriman Esai",
+    templateName: "esai-confirmation",
+  },
 ];
 
 const PLACEHOLDERS = [
