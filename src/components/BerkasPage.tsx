@@ -45,7 +45,21 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
         { label: "> Rp 10.000.000", value: ">10jt" },
       ]
     },
-    { id: "dependents", key: "dependents", label: "Jumlah Tanggungan Keluarga", required: true },
+    {
+      id: "dependents",
+      key: "dependents",
+      label: "Jumlah Tanggungan Keluarga",
+      required: true,
+      type: "select",
+      options: [
+        { label: "1 Orang", value: "1" },
+        { label: "2 Orang", value: "2" },
+        { label: "3 Orang", value: "3" },
+        { label: "4 Orang", value: "4" },
+        { label: "5 Orang", value: "5" },
+        { label: "> 5 Orang", value: ">5" },
+      ]
+    },
   ],
   umum: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },

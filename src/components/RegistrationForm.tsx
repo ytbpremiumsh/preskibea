@@ -55,6 +55,10 @@ const BASE_FIELDS: FormField[] = [
       "> Rp 10.000.000",
     ],
   }),
+  f("dependents", "Jumlah Tanggungan Keluarga", "select", {
+    required: true,
+    options: ["1 Orang", "2 Orang", "3 Orang", "4 Orang", "5 Orang", "> 5 Orang"],
+  }),
 ];
 
 
