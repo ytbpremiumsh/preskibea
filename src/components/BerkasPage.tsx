@@ -28,9 +28,6 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
   ekonomi: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
     { id: "income_statement", key: "income_statement", label: "Surat Keterangan Penghasilan Orang Tua / Slip Gaji", required: true },
-    { id: "sktm", key: "sktm", label: "Surat Keterangan Tidak Mampu (SKTM)", required: true },
-    { id: "house_photos", key: "house_photos", label: "Foto Rumah (Tampak Depan & Ruang Tamu)", required: true },
-    { id: "utility_bill", key: "utility_bill", label: "Foto Pembayaran Listrik Terakhir ( Wajib )", required: true },
     {
       id: "parent_income",
       key: "parent_income",
@@ -60,6 +57,9 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
         { label: "> 5 Orang", value: ">5" },
       ]
     },
+    { id: "sktm", key: "sktm", label: "Surat Keterangan Tidak Mampu (SKTM)", required: true },
+    { id: "house_photos", key: "house_photos", label: "Foto Rumah (Tampak Depan & Ruang Tamu)", required: true },
+    { id: "utility_bill", key: "utility_bill", label: "Foto Pembayaran Listrik Terakhir ( Wajib )", required: true },
   ],
   umum: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
