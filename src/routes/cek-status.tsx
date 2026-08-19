@@ -31,6 +31,9 @@ type StatusData = {
   payment_status?: string | null;
   essay_submitted?: boolean;
   essay_submitted_at?: string | null;
+  essay_status?: "pending" | "approved" | "rejected";
+  essay_announcement_published?: boolean;
+  essay_announcement_message?: string | null;
   education_level?: string | null;
   docs: { total: number; pending: number; approved: number; rejected: number };
 };
@@ -141,6 +144,17 @@ function StatusResult({ data }: { data: StatusData }) {
   const hasDocs = data.docs.total > 0;
   const isFast = !!data.fast_track;
   const essayDone = isFast || !!data.essay_submitted;
+  const essayStatus = isFast ? "approved" : (data.essay_status ?? "pending");
+  const essayPublished = !!data.essay_announcement_published;
+  const essayResultLabel = isFast
+    ? "Lolos otomatis (Fast Track)"
+    : !essayPublished
+    ? "Pengumuman belum dirilis"
+    : essayStatus === "approved"
+    ? "Lolos tahap esai"
+    : essayStatus === "rejected"
+    ? "Belum lolos tahap esai"
+    : "Sedang dinilai";
   const [certConfig, setCertConfig] = useState<{ enabled: boolean; releaseDate?: string }>({ enabled: false });
   const [downloading, setDownloading] = useState(false);
 
@@ -218,8 +232,29 @@ function StatusResult({ data }: { data: StatusData }) {
         </div>
       )}
 
+      {/* Pengumuman Esai */}
+      {(isFast || essayPublished) && (
+        <div
+          className={`mt-5 rounded-2xl border-2 p-4 ${
+            essayStatus === "approved"
+              ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30"
+              : essayStatus === "rejected"
+              ? "border-destructive/50 bg-destructive/5"
+              : "border-border bg-muted/40"
+          }`}
+        >
+          <div className="flex items-center gap-2 text-sm font-extrabold text-foreground">
+            <PenLine size={16} /> Hasil Tahap Esai
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">{essayResultLabel}</p>
+          {data.essay_announcement_message && (
+            <p className="mt-2 text-xs text-foreground/80">{data.essay_announcement_message}</p>
+          )}
+        </div>
+      )}
+
       {/* Timeline */}
-      <div className="mt-6 grid sm:grid-cols-3 gap-3">
+      <div className="mt-6 grid sm:grid-cols-4 gap-3">
         <Step n={1} label="Pendaftaran" done desc="Data diterima" />
         <Step
           n={2}
@@ -229,6 +264,12 @@ function StatusResult({ data }: { data: StatusData }) {
         />
         <Step
           n={3}
+          label="Hasil Esai"
+          done={essayPublished && essayStatus === "approved"}
+          desc={essayResultLabel}
+        />
+        <Step
+          n={4}
           label="Berkas Pendukung"
           done={hasDocs}
           desc={hasDocs ? `${data.docs.total} berkas masuk` : "Belum dikirim"}

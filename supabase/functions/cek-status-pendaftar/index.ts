@@ -52,6 +52,19 @@ Deno.serve(async (req) => {
     const extra = ((reg as { extra?: Record<string, unknown> }).extra ?? {}) as Record<string, unknown>;
     const fastTrack = !!(reg as { fast_track?: boolean }).fast_track;
     const essaySubmittedAt = typeof extra.essay_submitted_at === "string" ? extra.essay_submitted_at : null;
+    const rawEssayStatus = typeof extra.essay_status === "string" ? extra.essay_status : null;
+    const essayStatus = rawEssayStatus === "approved" || rawEssayStatus === "rejected"
+      ? rawEssayStatus
+      : fastTrack
+      ? "approved"
+      : "pending";
+
+    const { data: annRow } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "esai_announcement")
+      .maybeSingle();
+    const ann = (annRow?.value ?? {}) as { published?: boolean; message?: string };
 
     return new Response(JSON.stringify({
       ok: true,
@@ -66,6 +79,9 @@ Deno.serve(async (req) => {
         payment_status: (reg as { payment_status?: string | null }).payment_status ?? null,
         essay_submitted: fastTrack || !!essaySubmittedAt,
         essay_submitted_at: essaySubmittedAt,
+        essay_status: essayStatus,
+        essay_announcement_published: !!ann.published,
+        essay_announcement_message: ann.published ? (ann.message ?? null) : null,
         education_level: reg.education_level,
         docs: { total: docCount, pending, approved, rejected },
       },
