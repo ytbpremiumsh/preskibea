@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
   TableBody,
@@ -91,6 +93,22 @@ function AdminBerkas() {
   const [filterStatus, setFilterStatus] = useState<"all" | CandidateStatus>("all");
   const [detail, setDetail] = useState<Group | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [admPublished, setAdmPublished] = useState(false);
+  const [admMessage, setAdmMessage] = useState("");
+  const [savingAdm, setSavingAdm] = useState(false);
+
+  const saveAdmAnnouncement = async (nextPublished = admPublished, nextMessage = admMessage) => {
+    setSavingAdm(true);
+    const { error } = await supabase
+      .from("site_settings")
+      .upsert(
+        { key: "administrasi_announcement", value: { published: nextPublished, message: nextMessage } },
+        { onConflict: "key" },
+      );
+    setSavingAdm(false);
+    if (error) return toast.error(error.message);
+    toast.success(nextPublished ? "Hasil administrasi dipublikasikan" : "Hasil administrasi ditahan");
+  };
 
   // Handle URL params for filtering from Dashboard
   useEffect(() => {
@@ -103,16 +121,20 @@ function AdminBerkas() {
 
   const load = async () => {
     setLoading(true);
-    const [d, r] = await Promise.all([
+    const [d, r, s] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
       supabase
         .from("registrations")
         .select(
           "id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status",
         ),
+      supabase.from("site_settings").select("value").eq("key", "administrasi_announcement").maybeSingle(),
     ]);
     if (d.error) toast.error(d.error.message);
     if (r.error) toast.error(r.error.message);
+    const admCfg = (s.data?.value ?? {}) as { published?: boolean; message?: string };
+    setAdmPublished(!!admCfg.published);
+    setAdmMessage(admCfg.message ?? "");
     setDocs((d.data ?? []) as Document[]);
     setRegs((r.data ?? []) as Registration[]);
     setLoading(false);
@@ -361,6 +383,43 @@ function AdminBerkas() {
           onClick={setFilterKind}
         />
       </div>
+
+      <Card className="rounded-2xl p-5 shadow-soft">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 className="font-bold text-foreground">Publikasi Hasil Seleksi Administrasi</h2>
+            <p className="mt-1 max-w-lg text-xs text-muted-foreground">
+              Selama toggle nonaktif, peserta melihat status “Menunggu validasi admin” pada Cek Status.
+              Setelah dipublikasikan, hasil validasi (lolos / tidak lolos) tampil ke peserta.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold text-muted-foreground">
+              {admPublished ? "Dipublikasikan" : "Ditahan"}
+            </span>
+            <Switch
+              checked={admPublished}
+              onCheckedChange={(v) => {
+                setAdmPublished(v);
+                saveAdmAnnouncement(v, admMessage);
+              }}
+            />
+          </div>
+        </div>
+        <div className="mt-4">
+          <label className="text-xs font-medium text-foreground/80">Pesan Pengumuman (opsional)</label>
+          <Textarea
+            value={admMessage}
+            onChange={(e) => setAdmMessage(e.target.value)}
+            rows={3}
+            placeholder="Contoh: Hasil seleksi administrasi telah diumumkan. Peserta yang lolos berhak mengikuti tahap verifikasi."
+            className="mt-1.5"
+          />
+          <Button size="sm" className="mt-3" disabled={savingAdm} onClick={() => saveAdmAnnouncement()}>
+            {savingAdm ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Simpan Pengumuman
+          </Button>
+        </div>
+      </Card>
 
       <Card className="rounded-2xl p-4 shadow-soft">
         <div className="flex flex-wrap gap-2">

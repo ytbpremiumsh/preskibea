@@ -35,6 +35,8 @@ type StatusData = {
   essay_announcement_published?: boolean;
   essay_announcement_message?: string | null;
   education_level?: string | null;
+  admin_announcement_published?: boolean;
+  admin_announcement_message?: string | null;
   docs: { total: number; pending: number; approved: number; rejected: number };
 };
 
@@ -146,6 +148,17 @@ function StatusResult({ data }: { data: StatusData }) {
   const essayDone = isFast || !!data.essay_submitted;
   const essayStatus = isFast ? "approved" : (data.essay_status ?? "pending");
   const essayPublished = !!data.essay_announcement_published;
+  const adminPublished = !!data.admin_announcement_published;
+  const adminStatus = (data.candidate_status ?? "pending") as "pending" | "approved" | "rejected";
+  const adminResultLabel = !hasDocs
+    ? "Menunggu pengiriman berkas"
+    : !adminPublished
+    ? "Menunggu validasi admin"
+    : adminStatus === "approved"
+    ? "Lolos seleksi administrasi"
+    : adminStatus === "rejected"
+    ? "Belum lolos seleksi administrasi"
+    : "Sedang diverifikasi";
   const essayResultLabel = isFast
     ? "Lolos otomatis (Fast Track)"
     : !essayPublished
@@ -254,7 +267,7 @@ function StatusResult({ data }: { data: StatusData }) {
       )}
 
       {/* Timeline */}
-      <div className="mt-6 grid sm:grid-cols-4 gap-3 items-stretch">
+      <div className="mt-6 grid gap-3 items-stretch sm:grid-cols-2 lg:grid-cols-5">
         <Step
           n={1}
           label="Pendaftaran"
@@ -289,13 +302,27 @@ function StatusResult({ data }: { data: StatusData }) {
         />
         <Step
           n={4}
-          label="Berkas Pendukung"
+          label="Berkas Administrasi"
           done={hasDocs}
           desc={hasDocs ? "Berkas sudah dikirim" : "Belum dikirim"}
           status={
             hasDocs
-              ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
+              ? { text: "Berkas lengkap terkirim", tone: "pass" }
               : { text: "Belum lolos — kirim berkas", tone: "wait" }
+          }
+        />
+        <Step
+          n={5}
+          label="Seleksi Administrasi"
+          done={adminPublished && adminStatus === "approved"}
+          rejected={adminPublished && adminStatus === "rejected"}
+          desc={adminResultLabel}
+          status={
+            adminPublished && adminStatus === "approved"
+              ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
+              : adminPublished && adminStatus === "rejected"
+              ? { text: "Tidak lolos", tone: "fail" }
+              : { text: "Belum lolos — menunggu validasi admin", tone: "wait" }
           }
         />
       </div>

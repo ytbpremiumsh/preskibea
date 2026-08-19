@@ -66,6 +66,13 @@ Deno.serve(async (req) => {
       .maybeSingle();
     const ann = (annRow?.value ?? {}) as { published?: boolean; message?: string };
 
+    const { data: admAnnRow } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "administrasi_announcement")
+      .maybeSingle();
+    const admAnn = (admAnnRow?.value ?? {}) as { published?: boolean; message?: string };
+
     return new Response(JSON.stringify({
       ok: true,
       data: {
@@ -83,6 +90,8 @@ Deno.serve(async (req) => {
         essay_announcement_published: !!ann.published,
         essay_announcement_message: ann.published ? (ann.message ?? null) : null,
         education_level: reg.education_level,
+        admin_announcement_published: !!admAnn.published,
+        admin_announcement_message: admAnn.published ? (admAnn.message ?? null) : null,
         docs: { total: docCount, pending, approved, rejected },
       },
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
