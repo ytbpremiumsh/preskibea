@@ -17,7 +17,7 @@ export const Route = createFileRoute("/admin/email-template")({
 
 type TplValue = { enabled: boolean; subject: string; html: string };
 
-const TABS: { key: string; settingKey: string; label: string; templateName: "registration-confirmation" | "berkas-confirmation" }[] = [
+const TABS: { key: string; settingKey: string; label: string; templateName: "registration-confirmation" | "berkas-confirmation" | "esai-confirmation" }[] = [
   {
     key: "registration",
     settingKey: "email_template_registration",
