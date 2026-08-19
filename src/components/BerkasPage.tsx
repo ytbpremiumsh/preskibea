@@ -128,6 +128,8 @@ type RegInfo = {
   grade?: string | null;
   token?: string | null;
   fast_track?: boolean | null;
+  payment_status?: string | null;
+  payment_url?: string | null;
   essay_submitted?: boolean | null;
 };
 
@@ -148,7 +150,8 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   const [registrant, setRegistrant] = useState<RegInfo | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
   const isFastTrack = !!registrant?.fast_track;
-  const essayDone = isFastTrack || !!registrant?.essay_submitted;
+  const paymentDue = isFastTrack && registrant?.payment_status !== "paid";
+  const essayDone = !paymentDue && (isFastTrack || !!registrant?.essay_submitted);
 
   useEffect(() => {
     let mounted = true;
@@ -300,6 +303,10 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
     e.preventDefault();
     if (!registrant) {
       toast.error("Verifikasi kode pendaftar terlebih dahulu");
+      return;
+    }
+    if (paymentDue) {
+      toast.error("Selesaikan pembayaran Fast Track terlebih dahulu");
       return;
     }
     if (!essayDone) {
@@ -521,7 +528,31 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
             </div>
           )}
           
-          {registrant && !essayDone && (
+          {registrant && paymentDue && (
+            <div className="mb-6 card-block p-6 md:p-7 border-destructive/30 bg-destructive/5">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="text-sm font-bold text-destructive uppercase tracking-wider">Pembayaran Fast Track Belum Lunas</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Kamu terdaftar pada jalur <strong>Fast Track</strong> namun pembayaran belum terkonfirmasi. Selesaikan pembayaran terlebih dahulu untuk dapat melanjutkan ke tahapan berikutnya.
+                  </p>
+                  {registrant.payment_url && (
+                    <a
+                      href={registrant.payment_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-4 inline-flex items-center gap-2 rounded-full bg-destructive px-5 py-2.5 text-xs font-semibold text-white shadow-soft hover:opacity-90 transition"
+                    >
+                      Selesaikan Pembayaran <ArrowRight size={14} />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {registrant && !paymentDue && !essayDone && (
             <div className="mb-6 card-block p-6 md:p-7 border-destructive/30 bg-destructive/5">
               <div className="flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />

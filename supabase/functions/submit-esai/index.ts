@@ -57,13 +57,22 @@ serve(async (req) => {
 
     const { data: reg, error: regErr } = await supabaseAdmin
       .from("registrations")
-      .select("id, extra, fast_track, email, full_name, whatsapp")
+      .select("id, extra, fast_track, payment_status, payment_url, email, full_name, whatsapp")
       .eq("token", data.token)
       .eq("kind", data.kind)
       .maybeSingle();
 
     if (regErr) throw new Error(regErr.message);
     if (!reg) return json({ error: "Data pendaftar tidak ditemukan." }, 404);
+
+    const regPay = reg as unknown as { fast_track?: boolean; payment_status?: string | null; payment_url?: string | null };
+    if (regPay.fast_track && regPay.payment_status !== "paid") {
+      return json({
+        error: "Pembayaran Fast Track belum lunas. Selesaikan pembayaran terlebih dahulu untuk melanjutkan.",
+        code: "payment_required",
+        payment_url: regPay.payment_url ?? null,
+      }, 402);
+    }
 
     const prevExtra = (reg as { extra?: Record<string, unknown> }).extra ?? {};
     const { error } = await supabaseAdmin

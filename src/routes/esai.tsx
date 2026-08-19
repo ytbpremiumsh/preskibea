@@ -61,6 +61,8 @@ type RegInfo = {
   school_name?: string | null;
   token?: string | null;
   fast_track?: boolean | null;
+  payment_status?: string | null;
+  payment_url?: string | null;
   essay_submitted?: boolean | null;
 };
 
@@ -94,6 +96,31 @@ function EsaiRoute() {
   }, []);
 
   const isFastTrack = !!registrant?.fast_track;
+  const paymentDue = isFastTrack && registrant?.payment_status !== "paid";
+
+  const paymentBlock = registrant && paymentDue && (
+    <div className="card-block p-6 md:p-7 border-destructive/30 bg-destructive/5">
+      <div className="flex items-start gap-3">
+        <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+        <div>
+          <h3 className="text-sm font-bold text-destructive uppercase tracking-wider">Pembayaran Fast Track Belum Lunas</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Kamu terdaftar pada jalur <strong>Fast Track</strong> namun pembayaran belum terkonfirmasi. Selesaikan pembayaran terlebih dahulu untuk melanjutkan ke tahapan Esai dan Berkas.
+          </p>
+          {registrant.payment_url && (
+            <a
+              href={registrant.payment_url}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-destructive px-5 py-2.5 text-xs font-semibold text-white shadow-soft hover:opacity-90 transition"
+            >
+              Selesaikan Pembayaran <ArrowRight size={14} />
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
   const handleVerify = async (silent = false) => {
     const t = token.trim().toUpperCase();
@@ -285,7 +312,9 @@ function EsaiRoute() {
             </div>
           )}
 
-          {registrant && (isFastTrack || done) && (
+          {paymentBlock}
+
+          {registrant && !paymentDue && (isFastTrack || done) && (
             <div className="card-block p-8 md:p-10 flex flex-col items-center text-center">
               <div className="mb-6 relative">
                 <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
@@ -313,7 +342,7 @@ function EsaiRoute() {
             </div>
           )}
 
-          {registrant && !isFastTrack && !done && (
+          {registrant && !paymentDue && !isFastTrack && !done && (
             <div className="card-block p-6 md:p-7">
               <h2 className="text-base font-bold text-foreground flex items-center gap-2">
                 <PenLine size={16} className="text-primary" /> Pertanyaan Esai (Wajib)
@@ -350,7 +379,7 @@ function EsaiRoute() {
           )}
         </div>
 
-        {!isFastTrack && !done && (
+        {!paymentDue && !isFastTrack && !done && (
           <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
             <div className="card-block p-6">
               <h3 className="font-semibold text-foreground">Catatan</h3>

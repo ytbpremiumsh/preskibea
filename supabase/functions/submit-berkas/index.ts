@@ -70,7 +70,7 @@ serve(async (req) => {
 
     const { data: reg, error: regErr } = await supabaseAdmin
       .from("registrations")
-      .select("id, email, full_name, extra, fast_track")
+      .select("id, email, full_name, extra, fast_track, payment_status, payment_url")
       .eq("token", data.token)
       .eq("kind", data.kind)
       .maybeSingle();
@@ -81,6 +81,15 @@ serve(async (req) => {
         status: 404,
         headers: { ...cors, "Content-Type": "application/json" },
       });
+    }
+
+    const regPay = reg as unknown as { fast_track?: boolean; payment_status?: string | null; payment_url?: string | null };
+    if (regPay.fast_track && regPay.payment_status !== "paid") {
+      return new Response(JSON.stringify({
+        error: "Pembayaran Fast Track belum lunas. Selesaikan pembayaran terlebih dahulu untuk melanjutkan.",
+        code: "payment_required",
+        payment_url: regPay.payment_url ?? null,
+      }), { status: 402, headers: { ...cors, "Content-Type": "application/json" } });
     }
 
     const submittedAt = new Date().toISOString();
