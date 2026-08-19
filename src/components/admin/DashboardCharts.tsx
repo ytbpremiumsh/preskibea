@@ -111,12 +111,12 @@ export function PieKind({ data }: { data: { name: string; value: number }[] }) {
             data={data}
             dataKey="value"
             nameKey="name"
-            innerRadius="62%"
-            outerRadius="92%"
-            paddingAngle={3}
+            innerRadius="65%"
+            outerRadius="90%"
+            paddingAngle={4}
             cornerRadius={6}
             stroke="hsl(var(--background))"
-            strokeWidth={2}
+            strokeWidth={3}
           >
             {data.map((_, i) => (
               <Cell key={i} fill={`url(#pieGrad-${i % colors.length})`} />
@@ -124,11 +124,11 @@ export function PieKind({ data }: { data: { name: string; value: number }[] }) {
           </Pie>
         </PieChart>
       </ResponsiveContainer>
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center -mt-6">
-        <div className="text-2xl font-bold tabular-nums text-foreground">{total}</div>
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Total</div>
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center -mt-8">
+        <div className="text-3xl font-black tabular-nums text-foreground">{total}</div>
+        <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total</div>
       </div>
-      <div className="absolute inset-x-0 bottom-0">
+      <div className="absolute inset-x-0 bottom-0 px-2 pb-2">
         <LegendDots
           items={data.map((d, i) => ({
             name: d.name,
