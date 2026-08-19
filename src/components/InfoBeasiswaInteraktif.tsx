@@ -153,17 +153,21 @@ export function InfoBeasiswaInteraktif() {
             </span>
 
             <div className="mt-4 grid sm:grid-cols-2 gap-3">
-              {kategoriBeasiswa.map((k) => (
-                <div key={k} className="rounded-2xl border border-primary/30 p-4 bg-primary-soft/40">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-                    {k}
-                  </p>
-                  <p className="mt-2 text-2xl md:text-3xl font-extrabold text-foreground break-words">
-                    {current.nominal}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{current.periode}</p>
-                </div>
-              ))}
+              {kategoriBeasiswa.map((k, idx) => {
+                const kKey = ["prestasi", "ekonomi", "umum", "yatim"][idx];
+                const nominal = nominalByKategori[kKey][active as "pelajar" | "mahasiswa"];
+                return (
+                  <div key={k} className="rounded-2xl border border-primary/30 p-4 bg-primary-soft/40">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+                      {k}
+                    </p>
+                    <p className="mt-2 text-2xl md:text-3xl font-extrabold text-foreground break-words">
+                      {nominal}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{current.periode}</p>
+                  </div>
+                );
+              })}
             </div>
 
 
