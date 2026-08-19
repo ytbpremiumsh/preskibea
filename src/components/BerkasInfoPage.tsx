@@ -6,34 +6,39 @@ import { AdSlot } from "@/components/ads/AdSlot";
 const docsByKind = {
   prestasi: [
     "Kartu Pelajar / Kartu Mahasiswa",
-    "Kartu Hasil Studi (KHS) (Wajib untuk Mahasiswa)",
-    "Transkrip Nilai (Wajib untuk Pelajar & Gapyear)",
+    "Kartu Hasil Studi (KHS) — Mahasiswa",
+    "Transkrip Nilai — Pelajar & Gap Year",
     "Sertifikat Prestasi (Akademik maupun Non-Akademik)",
     "Curriculum Vitae (CV) Kreatif",
-    "Berkas Pendukung Lainnya (Opsional)",
+    "Berkas Pendukung Lainnya (Optional)",
   ],
   ekonomi: [
     "Kartu Pelajar / Kartu Mahasiswa",
     "Surat Keterangan Penghasilan Orang Tua / Slip Gaji",
+    "Penghasilan Orang Tua per Bulan (pilihan)",
+    "Jumlah Tanggungan Keluarga (pilihan)",
     "Surat Keterangan Tidak Mampu (SKTM)",
     "Foto Rumah (Tampak Depan & Ruang Tamu)",
     "Foto Pembayaran Listrik Terakhir ( Wajib )",
   ],
   umum: [
     "Kartu Pelajar / Kartu Mahasiswa",
-    "Kartu Hasil Studi (KHS) (Wajib untuk Mahasiswa)",
-    "Transkrip Nilai (Wajib untuk Pelajar & Gapyear)",
-    "Video Tiktok 1 Menit ( Menjelaskan Beasiswa Prestasi Kita) — Wajib",
-    "Berkas Pendukung Lainnya (Opsional)",
+    "Kartu Hasil Studi (KHS) — Mahasiswa",
+    "Transkrip Nilai — Pelajar & Gap Year",
+    "Video Tiktok 1 Menit (Menjelaskan Beasiswa Prestasi Kita)",
+    "Berkas Pendukung Lainnya (Optional)",
   ],
   yatim: [
     "Kartu Pelajar / Kartu Mahasiswa",
     "Surat Keterangan Yatim / Piatu / Yatim Piatu",
     "Akta Kematian Orang Tua",
     "Kartu Keluarga (KK)",
+    "Penghasilan dari Siapa (Ibu / Kakak / Saudara)",
+    "Penghasilan Per Bulan (pilihan)",
     "Foto Pembayaran Listrik Terakhir ( Wajib )",
   ],
 } as const;
+
 
 const tips = [
   "Format file: PDF, JPG",
@@ -46,15 +51,20 @@ export function BerkasInfoPage({ kind, educationLevel }: { kind: "prestasi" | "e
                      educationLevel?.toLowerCase().includes("s1") || 
                      educationLevel?.toLowerCase().includes("diploma");
 
-  const docs = docsByKind[kind].map(d => {
-    if (d.includes("Rapor / KHS")) {
-      return isMahasiswa ? "KHS / Transkrip Nilai Terakhir" : "Rapor Terakhir";
-    }
-    if (d.includes("Kartu Pelajar / Kartu Mahasiswa")) {
-      return isMahasiswa ? "Kartu Tanda Mahasiswa (KTM)" : "Kartu Pelajar / Kartu Identitas";
-    }
-    return d;
-  });
+  const docs = (docsByKind[kind] as readonly string[])
+    .filter((d) => {
+      if ((kind === "prestasi" || kind === "umum") && educationLevel) {
+        if (d.startsWith("Kartu Hasil Studi") && !isMahasiswa) return false;
+        if (d.startsWith("Transkrip Nilai") && isMahasiswa) return false;
+      }
+      return true;
+    })
+    .map((d) => {
+      if (d.includes("Kartu Pelajar / Kartu Mahasiswa")) {
+        return isMahasiswa ? "Kartu Tanda Mahasiswa (KTM)" : "Kartu Pelajar / Kartu Identitas";
+      }
+      return d;
+    });
   const uploadTo = kind === "prestasi" ? "/berkas/prestasi/upload" : kind === "ekonomi" ? "/berkas/ekonomi/upload" : kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/umum/upload";
 
   return (
