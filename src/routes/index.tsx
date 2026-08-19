@@ -1,6 +1,3 @@
-/**
- * Form Jumlah Tanggungan Keluarga pada halaman berkas ekonomi dan pendaftaran telah diubah menjadi dropdown.
- */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap, Heart } from "lucide-react";
 import heroDefault from "@/assets/students-hero.png";
