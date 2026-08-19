@@ -698,7 +698,7 @@ export function RegistrationForm({
 
           <Card title="Informasi Pendidikan">
             <div className="grid sm:grid-cols-2 gap-x-4 gap-y-3">
-              {grouped.requiredDataFields.slice(5).map((f) => (
+              {grouped.requiredDataFields.slice(5).filter(f => f.name !== "parent_income").map((f) => (
                 <FieldRenderer
                   key={f.id}
                   field={f}
