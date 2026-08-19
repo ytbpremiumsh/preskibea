@@ -161,7 +161,7 @@ function SuksesPage() {
         )}
 
         {/* Langkah Lanjutan (Hanya untuk Reguler atau yang belum bayar) */}
-        {!(!fastTrackPayUrl && token?.startsWith("PK-FT-")) && (
+        {!(isFastTrack && !fastTrackPayUrl) && (
           <>
             {/* Langkah 2: Bagikan Poster */}
             <div className="mt-6 rounded-3xl border-2 border-primary/30 bg-card p-6 md:p-7 shadow-card">
