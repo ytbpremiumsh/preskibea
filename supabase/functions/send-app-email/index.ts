@@ -120,6 +120,17 @@ function defaultBody(templateName: string, props: Record<string, unknown>) {
 </div>`,
     };
   }
+  if (templateName === "esai-confirmation") {
+    return {
+      subject: `Esai ${p.kind_label} Berhasil Dikirim`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px">
+  <h2>Esai diterima, ${escapeHtml(p.full_name)}</h2>
+  <p>Jawaban esai singkat Anda untuk <strong>${escapeHtml(p.kind_label)}</strong> dengan kode <code>${escapeHtml(p.token)}</code> telah kami terima.</p>
+  <p>Silakan lanjutkan ke tahap pengiriman berkas administrasi.</p>
+  <p>© ${p.year} ${p.site_name}</p>
+</div>`,
+    };
+  }
   // default = registration-confirmation
   return {
     subject: `Pendaftaran ${p.kind_label} Berhasil — Kode Anda`,
