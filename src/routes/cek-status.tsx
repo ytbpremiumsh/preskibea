@@ -291,13 +291,27 @@ function StatusResult({ data }: { data: StatusData }) {
         />
         <Step
           n={4}
-          label="Berkas Pendukung"
+          label="Berkas Administrasi"
           done={hasDocs}
           desc={hasDocs ? "Berkas sudah dikirim" : "Belum dikirim"}
           status={
             hasDocs
-              ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
+              ? { text: "Berkas lengkap terkirim", tone: "pass" }
               : { text: "Belum lolos — kirim berkas", tone: "wait" }
+          }
+        />
+        <Step
+          n={5}
+          label="Seleksi Administrasi"
+          done={adminPublished && adminStatus === "approved"}
+          rejected={adminPublished && adminStatus === "rejected"}
+          desc={adminResultLabel}
+          status={
+            adminPublished && adminStatus === "approved"
+              ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
+              : adminPublished && adminStatus === "rejected"
+              ? { text: "Tidak lolos", tone: "fail" }
+              : { text: "Belum lolos — menunggu validasi admin", tone: "wait" }
           }
         />
       </div>
