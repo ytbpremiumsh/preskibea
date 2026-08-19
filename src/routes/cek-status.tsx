@@ -37,6 +37,12 @@ type StatusData = {
   education_level?: string | null;
   admin_announcement_published?: boolean;
   admin_announcement_message?: string | null;
+  tpa_status?: "pending" | "approved" | "rejected";
+  tpa_announcement_published?: boolean;
+  tpa_announcement_message?: string | null;
+  interview_status?: "pending" | "approved" | "rejected";
+  interview_announcement_published?: boolean;
+  interview_announcement_message?: string | null;
   docs: { total: number; pending: number; approved: number; rejected: number };
 };
 
