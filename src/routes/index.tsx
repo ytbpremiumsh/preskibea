@@ -1,6 +1,3 @@
-/**
- * Selesai, saya telah menambahkan tombol "Tes Kirim Notifikasi" di pengaturan Telegram agar Anda dapat menguji bot sebelum digunakan secara resmi.
- */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HeartHandshake, Trophy, Wallet, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Users, GraduationCap, Heart } from "lucide-react";
 import heroDefault from "@/assets/students-hero.png";
