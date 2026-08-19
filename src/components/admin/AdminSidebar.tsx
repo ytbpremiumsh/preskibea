@@ -25,6 +25,7 @@ import {
   Wrench,
   CreditCard,
   PenLine,
+  ListChecks,
 } from "lucide-react";
 import {
   Sidebar,
