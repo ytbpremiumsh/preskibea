@@ -16,22 +16,27 @@ type Kategori = {
   key: string;
   label: string;
   icon: React.ReactNode;
-  nominalEkonomi: string;
-  nominalPrestasi: string;
+  nominal: string;
   periode: string;
   highlight: string;
   fakta: string[];
 };
 
+const kategoriBeasiswa = [
+  "Kategori Prestasi",
+  "Kategori Ekonomi",
+  "Kategori Umum",
+  "Kategori Yatim",
+];
+
 const data: Kategori[] = [
   {
-    key: "smp",
-    label: "SMP Sederajat",
+    key: "pelajar",
+    label: "Pelajar",
     icon: <Backpack size={20} />,
-    nominalEkonomi: "Rp600.000",
-    nominalPrestasi: "Rp600.000",
+    nominal: "Rp800.000",
     periode: "per semester",
-    highlight: "Untuk jenjang SMP/MTs sederajat",
+    highlight: "Untuk jenjang SMP/MTs, SMA/SMK/MA sederajat & Gap Year",
     fakta: [
       "Berlaku untuk seluruh sekolah di Indonesia",
       "Tanpa minimal nilai rapor",
@@ -40,21 +45,21 @@ const data: Kategori[] = [
     ],
   },
   {
-    key: "sma-mahasiswa",
-    label: "SMA/SMK & Mahasiswa",
+    key: "mahasiswa",
+    label: "Mahasiswa",
     icon: <GraduationCap size={20} />,
-    nominalEkonomi: "Rp800.000",
-    nominalPrestasi: "Rp1.000.000",
+    nominal: "Rp1.000.000",
     periode: "per semester",
-    highlight: "Untuk jenjang SMA/SMK/MA sederajat dan Mahasiswa PTN/PTS",
+    highlight: "Untuk Mahasiswa aktif maupun calon mahasiswa D3–S2 PTN/PTS",
     fakta: [
-      "Berlaku untuk seluruh sekolah & kampus di Indonesia",
-      "Tanpa minimal nilai rapor / IPK",
-      "Bonus mentoring & pembinaan penerima",
+      "Berlaku untuk seluruh kampus di Indonesia",
+      "Tanpa minimal IPK",
+      "Jalur prestasi, ekonomi, umum & yatim tersedia",
       "Pilihan Jalur Fast Track tersedia",
     ],
   },
 ];
+
 
 const benefits = [
   {
