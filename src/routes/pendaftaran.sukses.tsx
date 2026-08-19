@@ -110,8 +110,8 @@ function SuksesPage() {
           </div>
         )}
 
-        {/* Status Fast Track */}
-        {fastTrackPayUrl ? (
+        {/* Status Fast Track — hanya tampil untuk pendaftar Fast Track */}
+        {!isFastTrack ? null : fastTrackPayUrl ? (
           <div className="mt-6 rounded-3xl border-2 border-primary bg-primary-soft/30 p-6 md:p-7 shadow-card animate-in fade-in slide-in-from-bottom-2">
             <div className="flex items-start gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
