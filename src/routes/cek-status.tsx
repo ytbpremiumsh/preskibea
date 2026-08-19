@@ -37,6 +37,12 @@ type StatusData = {
   education_level?: string | null;
   admin_announcement_published?: boolean;
   admin_announcement_message?: string | null;
+  tpa_status?: "pending" | "approved" | "rejected";
+  tpa_announcement_published?: boolean;
+  tpa_announcement_message?: string | null;
+  interview_status?: "pending" | "approved" | "rejected";
+  interview_announcement_published?: boolean;
+  interview_announcement_message?: string | null;
   docs: { total: number; pending: number; approved: number; rejected: number };
 };
 
@@ -150,6 +156,10 @@ function StatusResult({ data }: { data: StatusData }) {
   const essayPublished = !!data.essay_announcement_published;
   const adminPublished = !!data.admin_announcement_published;
   const adminStatus = (data.candidate_status ?? "pending") as "pending" | "approved" | "rejected";
+  const tpaPublished = !!data.tpa_announcement_published;
+  const tpaStatus = data.tpa_status ?? "pending";
+  const itwPublished = !!data.interview_announcement_published;
+  const itwStatus = data.interview_status ?? "pending";
   const adminResultLabel = !hasDocs
     ? "Menunggu pengiriman berkas"
     : !adminPublished
@@ -267,52 +277,40 @@ function StatusResult({ data }: { data: StatusData }) {
       )}
 
       {/* Timeline */}
-      <div className="mt-6 grid gap-3 items-stretch sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mt-6 grid gap-3 items-stretch sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <Step
           n={1}
           label="Pendaftaran"
           done
-          desc="Data diterima"
+          desc="Data pendaftaran diterima"
           status={{ text: "Lolos ke tahap berikutnya", tone: "pass" }}
         />
         <Step
           n={2}
           label="Pengiriman Essai"
-          done={essayDone}
-          desc={isFast ? "Otomatis lolos (Fast Track)" : essayDone ? "Esai sudah dikirim" : "Belum dikirim"}
-          status={
-            essayDone
-              ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
-              : { text: "Belum lolos — selesaikan esai", tone: "wait" }
-          }
-        />
-        <Step
-          n={3}
-          label="Hasil Esai"
           done={isFast || (essayPublished && essayStatus === "approved")}
           rejected={!isFast && essayPublished && essayStatus === "rejected"}
-          desc={essayResultLabel}
+          desc={
+            isFast
+              ? "Otomatis lolos (Fast Track)"
+              : !essayDone
+              ? "Esai belum dikirim"
+              : essayPublished
+              ? essayResultLabel
+              : "Esai terkirim, menunggu validasi admin"
+          }
           status={
             isFast || (essayPublished && essayStatus === "approved")
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : essayPublished && essayStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Menunggu pengumuman", tone: "wait" }
+              : essayDone
+              ? { text: "Menunggu validasi admin", tone: "wait" }
+              : { text: "Selesaikan esai", tone: "wait" }
           }
         />
         <Step
-          n={4}
-          label="Berkas Administrasi"
-          done={hasDocs}
-          desc={hasDocs ? "Berkas sudah dikirim" : "Belum dikirim"}
-          status={
-            hasDocs
-              ? { text: "Berkas lengkap terkirim", tone: "pass" }
-              : { text: "Belum lolos — kirim berkas", tone: "wait" }
-          }
-        />
-        <Step
-          n={5}
+          n={3}
           label="Seleksi Administrasi"
           done={adminPublished && adminStatus === "approved"}
           rejected={adminPublished && adminStatus === "rejected"}
@@ -322,7 +320,53 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : adminPublished && adminStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Belum lolos — menunggu validasi admin", tone: "wait" }
+              : hasDocs
+              ? { text: "Menunggu validasi admin", tone: "wait" }
+              : { text: "Kirim berkas dahulu", tone: "wait" }
+          }
+        />
+        <Step
+          n={4}
+          label="Tes Potensi Akademik"
+          done={tpaPublished && tpaStatus === "approved"}
+          rejected={tpaPublished && tpaStatus === "rejected"}
+          desc={
+            !tpaPublished
+              ? "Hasil belum diumumkan"
+              : tpaStatus === "approved"
+              ? "Lolos tes potensi akademik"
+              : tpaStatus === "rejected"
+              ? "Belum lolos tes potensi akademik"
+              : "Sedang dinilai"
+          }
+          status={
+            tpaPublished && tpaStatus === "approved"
+              ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
+              : tpaPublished && tpaStatus === "rejected"
+              ? { text: "Tidak lolos", tone: "fail" }
+              : { text: "Menunggu validasi admin", tone: "wait" }
+          }
+        />
+        <Step
+          n={5}
+          label="Interview"
+          done={itwPublished && itwStatus === "approved"}
+          rejected={itwPublished && itwStatus === "rejected"}
+          desc={
+            !itwPublished
+              ? "Hasil belum diumumkan"
+              : itwStatus === "approved"
+              ? "Lolos tahap interview"
+              : itwStatus === "rejected"
+              ? "Belum lolos tahap interview"
+              : "Sedang dinilai"
+          }
+          status={
+            itwPublished && itwStatus === "approved"
+              ? { text: "Lolos — tahap final", tone: "pass" }
+              : itwPublished && itwStatus === "rejected"
+              ? { text: "Tidak lolos", tone: "fail" }
+              : { text: "Menunggu validasi admin", tone: "wait" }
           }
         />
       </div>
@@ -468,21 +512,33 @@ function Step({
       ? "border-destructive/50 bg-destructive/5 text-destructive"
       : "border-border bg-muted text-muted-foreground";
   return (
-    <div className={`flex h-full flex-col rounded-2xl border-2 ${cls} p-4`}>
-      <div className="flex items-center gap-2">
+    <div className={`flex h-full min-w-0 flex-col rounded-2xl border-2 ${cls} p-3.5`}>
+      <div className="flex min-w-0 items-start gap-2">
         <div
-          className={`flex h-7 w-7 shrink-0 basis-7 aspect-square items-center justify-center rounded-full text-xs font-bold leading-none ${numCls}`}
+          className={`flex h-6 w-6 shrink-0 basis-6 aspect-square items-center justify-center rounded-full text-[11px] font-bold leading-none ${numCls}`}
         >
           {rejected ? "✕" : done ? "✓" : n}
         </div>
-        <div className="text-sm font-bold text-foreground">{label}</div>
+        <div className="min-w-0 flex-1 text-[13px] font-bold leading-snug text-foreground break-words hyphens-auto">
+          {label}
+        </div>
       </div>
-      <div className="mt-2 text-xs text-muted-foreground">{desc}</div>
+      <div className="mt-2 text-[11px] leading-snug text-muted-foreground break-words">{desc}</div>
       {status && (
         <div
-          className={`mt-3 inline-flex w-fit rounded-full border-2 px-2.5 py-1 text-[11px] font-bold ${badgeCls}`}
+          className={`mt-auto pt-3 text-[10px] font-bold leading-snug ${
+            status.tone === "pass"
+              ? "text-emerald-700 dark:text-emerald-300"
+              : status.tone === "fail"
+              ? "text-destructive"
+              : "text-muted-foreground"
+          }`}
         >
-          {status.text}
+          <span
+            className={`inline-block max-w-full rounded-lg border px-2 py-1 break-words ${badgeCls}`}
+          >
+            {status.text}
+          </span>
         </div>
       )}
     </div>

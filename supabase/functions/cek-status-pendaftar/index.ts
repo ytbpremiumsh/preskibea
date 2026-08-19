@@ -73,6 +73,26 @@ Deno.serve(async (req) => {
       .maybeSingle();
     const admAnn = (admAnnRow?.value ?? {}) as { published?: boolean; message?: string };
 
+    const { data: tpaAnnRow } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "tpa_announcement")
+      .maybeSingle();
+    const tpaAnn = (tpaAnnRow?.value ?? {}) as { published?: boolean; message?: string };
+
+    const { data: itwAnnRow } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "interview_announcement")
+      .maybeSingle();
+    const itwAnn = (itwAnnRow?.value ?? {}) as { published?: boolean; message?: string };
+
+    const norm = (v: unknown) =>
+      v === "approved" || v === "rejected" ? (v as string) : "pending";
+    const tpaStatus = norm(extra.tpa_status);
+    const interviewStatus = norm(extra.interview_status);
+
+
     return new Response(JSON.stringify({
       ok: true,
       data: {
@@ -92,6 +112,12 @@ Deno.serve(async (req) => {
         education_level: reg.education_level,
         admin_announcement_published: !!admAnn.published,
         admin_announcement_message: admAnn.published ? (admAnn.message ?? null) : null,
+        tpa_status: tpaStatus,
+        tpa_announcement_published: !!tpaAnn.published,
+        tpa_announcement_message: tpaAnn.published ? (tpaAnn.message ?? null) : null,
+        interview_status: interviewStatus,
+        interview_announcement_published: !!itwAnn.published,
+        interview_announcement_message: itwAnn.published ? (itwAnn.message ?? null) : null,
         docs: { total: docCount, pending, approved, rejected },
       },
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
