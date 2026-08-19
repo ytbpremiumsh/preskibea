@@ -12,11 +12,12 @@ import {
   Briefcase,
 } from "lucide-react";
 
-type Kategori = {
+type KategoriInfo = {
   key: string;
   label: string;
   icon: React.ReactNode;
-  nominal: string;
+  // nominal per jenjang; jika sama untuk semua jenjang, isi sama
+  nominal: { pelajar: string; mahasiswa: string };
   periode: string;
   highlight: string;
   fakta: string[];
@@ -29,12 +30,22 @@ const kategoriBeasiswa = [
   "Kategori Yatim",
 ];
 
-const data: Kategori[] = [
+// Nominal per kategori (dalam ribuan Rupiah) per jenjang
+// Prestasi & Ekonomi: Pelajar 800rb, Mahasiswa 1jt
+// Umum & Yatim: 500rb (sama untuk semua jenjang)
+const nominalByKategori: Record<string, { pelajar: string; mahasiswa: string }> = {
+  prestasi: { pelajar: "Rp800.000", mahasiswa: "Rp1.000.000" },
+  ekonomi: { pelajar: "Rp800.000", mahasiswa: "Rp1.000.000" },
+  umum: { pelajar: "Rp500.000", mahasiswa: "Rp500.000" },
+  yatim: { pelajar: "Rp500.000", mahasiswa: "Rp500.000" },
+};
+
+const data: KategoriInfo[] = [
   {
     key: "pelajar",
     label: "Pelajar",
     icon: <Backpack size={20} />,
-    nominal: "Rp800.000",
+    nominal: { pelajar: "Rp800.000", mahasiswa: "Rp1.000.000" },
     periode: "per semester",
     highlight: "Untuk jenjang SMP/MTs, SMA/SMK/MA sederajat & Gap Year",
     fakta: [
@@ -48,7 +59,7 @@ const data: Kategori[] = [
     key: "mahasiswa",
     label: "Mahasiswa",
     icon: <GraduationCap size={20} />,
-    nominal: "Rp1.000.000",
+    nominal: { pelajar: "Rp800.000", mahasiswa: "Rp1.000.000" },
     periode: "per semester",
     highlight: "Untuk Mahasiswa aktif maupun calon mahasiswa D3–S2 PTN/PTS",
     fakta: [
