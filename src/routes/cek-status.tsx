@@ -156,6 +156,10 @@ function StatusResult({ data }: { data: StatusData }) {
   const essayPublished = !!data.essay_announcement_published;
   const adminPublished = !!data.admin_announcement_published;
   const adminStatus = (data.candidate_status ?? "pending") as "pending" | "approved" | "rejected";
+  const tpaPublished = !!data.tpa_announcement_published;
+  const tpaStatus = data.tpa_status ?? "pending";
+  const itwPublished = !!data.interview_announcement_published;
+  const itwStatus = data.interview_status ?? "pending";
   const adminResultLabel = !hasDocs
     ? "Menunggu pengiriman berkas"
     : !adminPublished
