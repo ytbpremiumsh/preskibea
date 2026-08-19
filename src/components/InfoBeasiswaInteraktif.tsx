@@ -16,22 +16,27 @@ type Kategori = {
   key: string;
   label: string;
   icon: React.ReactNode;
-  nominalEkonomi: string;
-  nominalPrestasi: string;
+  nominal: string;
   periode: string;
   highlight: string;
   fakta: string[];
 };
 
+const kategoriBeasiswa = [
+  "Kategori Prestasi",
+  "Kategori Ekonomi",
+  "Kategori Umum",
+  "Kategori Yatim",
+];
+
 const data: Kategori[] = [
   {
-    key: "smp",
-    label: "SMP Sederajat",
+    key: "pelajar",
+    label: "Pelajar",
     icon: <Backpack size={20} />,
-    nominalEkonomi: "Rp600.000",
-    nominalPrestasi: "Rp600.000",
+    nominal: "Rp800.000",
     periode: "per semester",
-    highlight: "Untuk jenjang SMP/MTs sederajat",
+    highlight: "Untuk jenjang SMP/MTs, SMA/SMK/MA sederajat & Gap Year",
     fakta: [
       "Berlaku untuk seluruh sekolah di Indonesia",
       "Tanpa minimal nilai rapor",
@@ -40,21 +45,21 @@ const data: Kategori[] = [
     ],
   },
   {
-    key: "sma-mahasiswa",
-    label: "SMA/SMK & Mahasiswa",
+    key: "mahasiswa",
+    label: "Mahasiswa",
     icon: <GraduationCap size={20} />,
-    nominalEkonomi: "Rp800.000",
-    nominalPrestasi: "Rp1.000.000",
+    nominal: "Rp1.000.000",
     periode: "per semester",
-    highlight: "Untuk jenjang SMA/SMK/MA sederajat dan Mahasiswa PTN/PTS",
+    highlight: "Untuk Mahasiswa aktif maupun calon mahasiswa D3–S2 PTN/PTS",
     fakta: [
-      "Berlaku untuk seluruh sekolah & kampus di Indonesia",
-      "Tanpa minimal nilai rapor / IPK",
-      "Bonus mentoring & pembinaan penerima",
+      "Berlaku untuk seluruh kampus di Indonesia",
+      "Tanpa minimal IPK",
+      "Jalur prestasi, ekonomi, umum & yatim tersedia",
       "Pilihan Jalur Fast Track tersedia",
     ],
   },
 ];
+
 
 const benefits = [
   {
@@ -85,7 +90,7 @@ const benefits = [
 ];
 
 export function InfoBeasiswaInteraktif() {
-  const [active, setActive] = useState<string>("smp");
+  const [active, setActive] = useState<string>("pelajar");
   const current = data.find((d) => d.key === active)!;
 
   return (
@@ -137,25 +142,19 @@ export function InfoBeasiswaInteraktif() {
             </span>
 
             <div className="mt-4 grid sm:grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-border p-4 bg-background">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Kategori Ekonomi
-                </p>
-                <p className="mt-2 text-2xl md:text-3xl font-extrabold text-foreground break-words">
-                  {current.nominalEkonomi}
-                </p>
-                <p className="text-xs text-muted-foreground">{current.periode}</p>
-              </div>
-              <div className="rounded-2xl border border-primary/30 p-4 bg-primary-soft/40">
-                <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-                  Kategori Prestasi
-                </p>
-                <p className="mt-2 text-2xl md:text-3xl font-extrabold text-foreground break-words">
-                  {current.nominalPrestasi}
-                </p>
-                <p className="text-xs text-muted-foreground">{current.periode}</p>
-              </div>
+              {kategoriBeasiswa.map((k) => (
+                <div key={k} className="rounded-2xl border border-primary/30 p-4 bg-primary-soft/40">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+                    {k}
+                  </p>
+                  <p className="mt-2 text-2xl md:text-3xl font-extrabold text-foreground break-words">
+                    {current.nominal}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{current.periode}</p>
+                </div>
+              ))}
             </div>
+
 
             <p className="mt-4 text-muted-foreground">{current.highlight}</p>
           </div>
