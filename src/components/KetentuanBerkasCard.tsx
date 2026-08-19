@@ -29,7 +29,6 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
       "Keterangan penghasilan orang tua / wali",
       "Foto Rumah (Tampak Depan & Ruang Tamu)",
       "Foto Pembayaran Listrik Terakhir ( Wajib )",
-      
     ],
   },
   umum: {
