@@ -160,10 +160,57 @@ function SuksesPage() {
           </div>
         )}
 
-        {/* Langkah Lanjutan (Hanya untuk Reguler atau yang belum bayar) */}
-        {!(isFastTrack && !fastTrackPayUrl) && (
+        {/* Langkah Lanjutan */}
+        {/* Fast Track (sudah bayar): poster otomatis Lolos (hijau), lanjut langsung ke kirim berkas */}
+        {isFastTrack && !fastTrackPayUrl ? (
           <>
-            {/* Langkah 2: Bagikan Poster */}
+            {/* Langkah 2: Bagikan Poster — LOLOS untuk Fast Track */}
+            <div className="mt-6 rounded-3xl border-2 border-emerald-500/40 bg-emerald-50/60 dark:bg-emerald-950/20 p-6 md:p-7 shadow-card animate-in fade-in slide-in-from-bottom-2">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+                  <CheckCircle2 size={20} />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Langkah 2 dari 3</span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                      <Check size={10} /> LOLOS OTOMATIS
+                    </span>
+                  </div>
+                  <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Bagikan Poster Beasiswa</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Karena jalur <strong>Fast Track</strong>, kamu <strong>bebas</strong> dari tahapan bagikan poster. Langsung lanjut ke pengiriman berkas.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Langkah 3: Kirim Berkas */}
+            <div className="mt-6 rounded-3xl border-2 border-primary/30 bg-card p-6 md:p-7 shadow-card">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <FileUp size={20} />
+                </div>
+                <div className="flex-1">
+                  <div className="text-xs font-bold uppercase tracking-wide text-primary">Langkah 3 dari 3</div>
+                  <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Kirim Berkas Pendukung</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Siapkan dokumen sesuai persyaratan, lalu masukkan kode pendaftar untuk melengkapi pendaftaran.
+                  </p>
+                </div>
+              </div>
+              <Link
+                to={berkasTo as any}
+                search={{ token } as any}
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+              >
+                Kirim Berkas <ArrowRight size={16} />
+              </Link>
+            </div>
+          </>
+        ) : !isFastTrack ? (
+          <>
+            {/* Langkah 2: Bagikan Poster — Reguler */}
             <div className="mt-6 rounded-3xl border-2 border-primary/30 bg-card p-6 md:p-7 shadow-card">
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
@@ -208,7 +255,7 @@ function SuksesPage() {
               </Link>
             </div>
           </>
-        )}
+        ) : null}
 
         <div className="mt-6 flex flex-col gap-2">
           <Link
