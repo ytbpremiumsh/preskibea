@@ -336,7 +336,7 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "Lolos — tahap final", tone: "pass" }
               : itwPublished && itwStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Proses", tone: "wait" }
+              : { text: "Menunggu", tone: "wait" }
           }
         />
       </div>
