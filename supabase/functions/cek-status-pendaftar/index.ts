@@ -51,13 +51,16 @@ Deno.serve(async (req) => {
 
     const extra = ((reg as { extra?: Record<string, unknown> }).extra ?? {}) as Record<string, unknown>;
     const fastTrack = !!(reg as { fast_track?: boolean }).fast_track;
+    const paymentStatus = (reg as { payment_status?: string | null }).payment_status ?? null;
+    const fastPaid = fastTrack && paymentStatus === "paid";
     const essaySubmittedAt = typeof extra.essay_submitted_at === "string" ? extra.essay_submitted_at : null;
     const rawEssayStatus = typeof extra.essay_status === "string" ? extra.essay_status : null;
     const essayStatus = rawEssayStatus === "approved" || rawEssayStatus === "rejected"
       ? rawEssayStatus
-      : fastTrack
+      : fastPaid
       ? "approved"
       : "pending";
+
 
     const { data: annRow } = await supabase
       .from("site_settings")
