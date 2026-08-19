@@ -265,10 +265,12 @@ function StatusResult({ data }: { data: StatusData }) {
               ? "Esai belum dikirim"
               : essayPublished
               ? essayResultLabel
-              : "Esai terkirim, menunggu validasi admin"
+              : "Esai terkirim, sedang diproses"
           }
           status={
-            isFast || (essayPublished && essayStatus === "approved")
+            isFast
+              ? { text: "⚡ Auto Lolos (Fast Track)", tone: "pass" }
+              : essayPublished && essayStatus === "approved"
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : essayPublished && essayStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
