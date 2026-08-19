@@ -711,6 +711,20 @@ export function RegistrationForm({
             </div>
           </Card>
 
+          {grouped.requiredDataFields.find(f => f.name === "parent_income") && (
+            <Card title="Informasi Ekonomi">
+              <div className="grid sm:grid-cols-1 gap-4">
+                <FieldRenderer
+                  field={grouped.requiredDataFields.find(f => f.name === "parent_income")!}
+                  value={values["parent_income"] ?? ""}
+                  error={errors["parent_income"]}
+                  onChange={(v) => setVal("parent_income", v)}
+                  fullWidth={true}
+                />
+              </div>
+            </Card>
+          )}
+
 
           {grouped.optionalDataFields.length > 0 && (
             <Card title="Informasi Tambahan (Opsional)">
