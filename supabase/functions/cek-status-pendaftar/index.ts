@@ -66,6 +66,13 @@ Deno.serve(async (req) => {
       .maybeSingle();
     const ann = (annRow?.value ?? {}) as { published?: boolean; message?: string };
 
+    const { data: admAnnRow } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "administrasi_announcement")
+      .maybeSingle();
+    const admAnn = (admAnnRow?.value ?? {}) as { published?: boolean; message?: string };
+
     return new Response(JSON.stringify({
       ok: true,
       data: {
