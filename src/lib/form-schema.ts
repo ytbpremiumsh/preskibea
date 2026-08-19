@@ -22,6 +22,8 @@ export type DocSlot = {
   required?: boolean;
   accept?: string;
   maxSize?: number; // MB
+  type?: "url" | "select";
+  options?: { label: string; value: string }[];
 };
 
 export type BerkasSchema = { fields: DocSlot[] };

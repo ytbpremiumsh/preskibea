@@ -31,7 +31,20 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "sktm", key: "sktm", label: "Surat Keterangan Tidak Mampu (SKTM)", required: true },
     { id: "house_photos", key: "house_photos", label: "Foto Rumah (Tampak Depan & Ruang Tamu)", required: true },
     { id: "utility_bill", key: "utility_bill", label: "Foto Pembayaran Listrik Terakhir ( Wajib )", required: true },
-    { id: "parent_income", key: "parent_income", label: "Penghasilan Orang Tua per Bulan", required: true },
+    {
+      id: "parent_income",
+      key: "parent_income",
+      label: "Penghasilan Orang Tua per Bulan",
+      required: true,
+      type: "select",
+      options: [
+        { label: "Rp 0 - Rp 1.000.000", value: "0-1jt" },
+        { label: "Rp 1.000.001 - Rp 2.500.000", value: "1jt-2.5jt" },
+        { label: "Rp 2.500.001 - Rp 5.000.000", value: "2.5jt-5jt" },
+        { label: "Rp 5.000.001 - Rp 10.000.000", value: "5jt-10jt" },
+        { label: "> Rp 10.000.000", value: ">10jt" },
+      ]
+    },
     { id: "dependents", key: "dependents", label: "Jumlah Tanggungan Keluarga", required: true },
   ],
   umum: [
@@ -486,7 +499,35 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
               <div className="mt-5 space-y-6">
                 {docs.map((d) => {
                   const v = values[d.key] ?? "";
-                  const showError = v.trim().length > 0 && !isValidUrl(v);
+                  const showError = d.type !== "select" && v.trim().length > 0 && !isValidUrl(v);
+                  
+                  if (d.type === "select") {
+                    return (
+                      <label key={d.id} className="block">
+                        <span className="flex items-center gap-2 flex-wrap text-xs font-medium text-foreground/80">
+                          <span>
+                            {d.label}
+                            {d.required && <span className="text-destructive"> *</span>}
+                          </span>
+                        </span>
+                        <div className="mt-1.5">
+                          <select
+                            value={v}
+                            onChange={(e) => setVal(d.key, e.target.value)}
+                            disabled={!registrant || !essayDone}
+                            required={d.required}
+                            className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                          >
+                            <option value="">Pilih Range Penghasilan</option>
+                            {(d.options || []).map(opt => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </label>
+                    );
+                  }
+
                   return (
                     <label key={d.id} className="block">
                       <span className="flex items-center gap-2 flex-wrap text-xs font-medium text-foreground/80">

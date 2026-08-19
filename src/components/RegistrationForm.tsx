@@ -45,6 +45,16 @@ const BASE_FIELDS: FormField[] = [
   }),
   f("school_name", "Nama Sekolah / Kampus", "text", { required: true }),
   f("grade", "Kelas / Semester", "select", { required: true }),
+  f("parent_income", "Penghasilan Orang Tua per Bulan", "select", {
+    required: true,
+    options: [
+      "Rp 0 - Rp 1.000.000",
+      "Rp 1.000.001 - Rp 2.500.000",
+      "Rp 2.500.001 - Rp 5.000.000",
+      "Rp 5.000.001 - Rp 10.000.000",
+      "> Rp 10.000.000",
+    ],
+  }),
 ];
 
 
@@ -238,7 +248,7 @@ export function RegistrationForm({
             const n = (f.name || "").toLowerCase();
             const l = (f.label || "").toLowerCase();
             if (n.includes("prestasi") || l.includes("prestasi utama")) return false;
-            if (kind === "ekonomi" && (n === "parent_income" || n === "dependents")) return false;
+            if (kind === "ekonomi" && (n === "dependents")) return false;
             return true;
           });
           if (fields.length > 0) setSchema({ ...raw, fields });
@@ -688,7 +698,7 @@ export function RegistrationForm({
 
           <Card title="Informasi Pendidikan">
             <div className="grid sm:grid-cols-2 gap-x-4 gap-y-3">
-              {grouped.requiredDataFields.slice(5).map((f) => (
+              {grouped.requiredDataFields.slice(5).filter(f => f.name !== "parent_income").map((f) => (
                 <FieldRenderer
                   key={f.id}
                   field={f}
@@ -700,6 +710,21 @@ export function RegistrationForm({
               ))}
             </div>
           </Card>
+
+          {grouped.requiredDataFields.find(f => f.name === "parent_income") && (
+            <Card title="Informasi Ekonomi">
+              <div className="grid sm:grid-cols-1 gap-4">
+                <FieldRenderer
+                  field={grouped.requiredDataFields.find(f => f.name === "parent_income")!}
+                  value={values["parent_income"] ?? ""}
+                  error={errors["parent_income"]}
+                  onChange={(v) => setVal("parent_income", v)}
+                  fullWidth={true}
+                />
+              </div>
+            </Card>
+          )}
+
 
           {grouped.optionalDataFields.length > 0 && (
             <Card title="Informasi Tambahan (Opsional)">
