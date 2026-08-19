@@ -711,6 +711,7 @@ export function RegistrationForm({
             </div>
           </Card>
 
+
           {grouped.optionalDataFields.length > 0 && (
             <Card title="Informasi Tambahan (Opsional)">
               <div className="grid sm:grid-cols-2 gap-4">
