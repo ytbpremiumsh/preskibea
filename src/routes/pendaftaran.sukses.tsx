@@ -2,6 +2,7 @@ import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { CheckCircle2, ArrowRight, Heart, FileUp, KeyRound, Copy, Check, Share2, CreditCard } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { PaymentIframeModal } from "@/components/PaymentIframeModal";
 
 
 type Search = {
@@ -33,6 +34,7 @@ function SuksesPage() {
   const { name, email, whatsapp, kind, token } = useSearch({ from: "/pendaftaran/sukses" });
   const [fastTrackPayUrl, setFastTrackPayUrl] = useState<string | null>(null);
   const [isFastTrack, setIsFastTrack] = useState(false);
+  const [payOpen, setPayOpen] = useState(false);
 
   useEffect(() => {
     if (token && token.includes("-") && (token.startsWith("PK-") || token.startsWith("KP-"))) {
@@ -125,12 +127,26 @@ function SuksesPage() {
                 </p>
               </div>
             </div>
-            <a
-              href={fastTrackPayUrl}
+            <button
+              type="button"
+              onClick={() => setPayOpen(true)}
               className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
             >
               Bayar Sekarang <ArrowRight size={16} />
-            </a>
+            </button>
+            {token && (
+              <PaymentIframeModal
+                open={payOpen}
+                token={token}
+                paymentUrl={fastTrackPayUrl}
+                onClose={() => setPayOpen(false)}
+                onSuccess={() => {
+                  setPayOpen(false);
+                  setFastTrackPayUrl(null);
+                  toast.success("Pembayaran Fast Track berhasil diverifikasi!");
+                }}
+              />
+            )}
           </div>
         ) : (
           <div className="mt-6 rounded-3xl border-2 border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20 p-6 md:p-7 shadow-card animate-in fade-in slide-in-from-bottom-2">
