@@ -163,7 +163,7 @@ function StatusResult({ data }: { data: StatusData }) {
   const adminResultLabel = !hasDocs
     ? "Menunggu pengiriman berkas"
     : !adminPublished
-    ? "Menunggu validasi admin"
+    ? "Sedang diproses"
     : adminStatus === "approved"
     ? "Lolos seleksi administrasi"
     : adminStatus === "rejected"
@@ -244,40 +244,8 @@ function StatusResult({ data }: { data: StatusData }) {
         </span>
       </div>
 
-      {isFast && (
-        <div className="mt-5 rounded-2xl border-2 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/30">
-          <div className="flex items-center gap-2 text-sm font-extrabold text-amber-900 dark:text-amber-200">
-            <Zap size={16} /> Fast Track — Esai Otomatis Lolos
-          </div>
-          <p className="mt-1 text-xs text-amber-900/80 dark:text-amber-200/80">
-            Anda tidak perlu mengisi esai singkat. Silakan langsung lanjut ke tahap Berkas Administrasi.
-          </p>
-        </div>
-      )}
-
-      {/* Pengumuman Esai */}
-      {(isFast || essayPublished) && (
-        <div
-          className={`mt-5 rounded-2xl border-2 p-4 ${
-            essayStatus === "approved"
-              ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30"
-              : essayStatus === "rejected"
-              ? "border-destructive/50 bg-destructive/5"
-              : "border-border bg-muted/40"
-          }`}
-        >
-          <div className="flex items-center gap-2 text-sm font-extrabold text-foreground">
-            <PenLine size={16} /> Hasil Tahap Esai
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">{essayResultLabel}</p>
-          {data.essay_announcement_message && (
-            <p className="mt-2 text-xs text-foreground/80">{data.essay_announcement_message}</p>
-          )}
-        </div>
-      )}
-
       {/* Timeline */}
-      <div className="mt-6 grid gap-3 items-stretch sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="mt-6 flex flex-col gap-3">
         <Step
           n={1}
           label="Pendaftaran"
@@ -297,15 +265,17 @@ function StatusResult({ data }: { data: StatusData }) {
               ? "Esai belum dikirim"
               : essayPublished
               ? essayResultLabel
-              : "Esai terkirim, menunggu validasi admin"
+              : "Esai terkirim, sedang diproses"
           }
           status={
-            isFast || (essayPublished && essayStatus === "approved")
+            isFast
+              ? { text: "⚡ Auto Lolos (Fast Track)", tone: "pass" }
+              : essayPublished && essayStatus === "approved"
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : essayPublished && essayStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
               : essayDone
-              ? { text: "Menunggu validasi admin", tone: "wait" }
+              ? { text: "Proses", tone: "wait" }
               : { text: "Selesaikan esai", tone: "wait" }
           }
         />
@@ -321,7 +291,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : adminPublished && adminStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
               : hasDocs
-              ? { text: "Menunggu validasi admin", tone: "wait" }
+              ? { text: "Proses", tone: "wait" }
               : { text: "Kirim berkas dahulu", tone: "wait" }
           }
         />
@@ -344,7 +314,7 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : tpaPublished && tpaStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Menunggu validasi admin", tone: "wait" }
+              : { text: "Proses", tone: "wait" }
           }
         />
         <Step
@@ -366,7 +336,7 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "Lolos — tahap final", tone: "pass" }
               : itwPublished && itwStatus === "rejected"
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Menunggu validasi admin", tone: "wait" }
+              : { text: "Proses", tone: "wait" }
           }
         />
       </div>
