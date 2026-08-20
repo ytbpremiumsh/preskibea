@@ -229,6 +229,27 @@ function AdminEsai() {
       </Card>
 
       <Card className="p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 className="font-bold text-foreground flex items-center gap-2">
+              <PenLine className="h-4 w-4 text-primary" /> Auto Lolos Esai — Jalur Reguler
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground max-w-lg">
+              Jika aktif, peserta jalur Reguler yang sudah mengirim esai otomatis dinyatakan lolos
+              tahap esai tanpa menunggu penilaian manual. Peserta yang sudah ditandai "Tidak Lolos"
+              tetap tidak terpengaruh. Fast Track tetap auto lolos seperti biasa.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold text-muted-foreground">
+              {autoReguler ? "Aktif" : "Nonaktif"}
+            </span>
+            <Switch checked={autoReguler} onCheckedChange={saveAutoReguler} />
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-5">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
