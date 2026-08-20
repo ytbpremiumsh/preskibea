@@ -200,6 +200,45 @@ function AdminAdsense() {
       </Card>
 
       <Card className="p-6 space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Kode Header &amp; Footer (semua halaman)</h2>
+          <p className="text-xs text-muted-foreground">
+            Kode di sini otomatis muncul di seluruh halaman publik. Cocok untuk kode verifikasi AdSense,
+            Auto Ads, atau script pihak ketiga.
+          </p>
+        </div>
+        <div className="space-y-2">
+          <Label>Kode Header (&lt;head&gt;)</Label>
+          <Textarea
+            rows={5}
+            className="font-mono text-xs"
+            placeholder={`<meta name="google-adsense-account" content="ca-pub-XXXXXXXXXXXXXXXX">\n<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>`}
+            value={adsense.header_code || ""}
+            onChange={(e) => setAdsense({ ...adsense, header_code: e.target.value })}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Kode Footer (sebelum &lt;/body&gt;)</Label>
+          <Textarea
+            rows={5}
+            className="font-mono text-xs"
+            placeholder={`<!-- Script apapun yang ingin muncul di semua halaman -->`}
+            value={adsense.footer_code || ""}
+            onChange={(e) => setAdsense({ ...adsense, footer_code: e.target.value })}
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Tag <code>&lt;script&gt;</code> akan dieksekusi otomatis. Kode tidak dimuat di halaman admin/login.
+          </p>
+        </div>
+      </Card>
+
+      <Card className="p-6 space-y-4">
+        <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+          <strong className="text-foreground">Tips CPC tinggi:</strong> gunakan posisi
+          &ldquo;Anchor melayang bawah layar&rdquo;, &ldquo;Setelah section pertama&rdquo;, dan
+          &ldquo;Sesudah setiap card&rdquo;. Iklan selalu diletakkan di <em>luar</em> card sehingga
+          layout halaman tidak berantakan.
+        </div>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h2 className="text-lg font-semibold text-foreground">Slot Iklan Otomatis</h2>
