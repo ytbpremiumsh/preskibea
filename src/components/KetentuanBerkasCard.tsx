@@ -27,8 +27,10 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
       "Kartu Tanda Mahasiswa (KTM) / Surat Keterangan Aktif Kuliah",
     ],
     umum: [
+      "Surat Keterangan Penghasilan Orang Tua / Slip Gaji",
+      "Penghasilan orang tua per bulan (pilihan)",
+      "Jumlah tanggungan keluarga (pilihan)",
       "Surat Keterangan Tidak Mampu (SKTM) dari kelurahan",
-      "Keterangan penghasilan orang tua / wali",
       "Foto Rumah (Tampak Depan & Ruang Tamu)",
       "Foto Pembayaran Listrik Terakhir ( Wajib )",
     ],
