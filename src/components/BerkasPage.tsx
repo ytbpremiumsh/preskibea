@@ -113,7 +113,7 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
     { id: "orphan_letter", key: "orphan_letter", label: "Surat Keterangan Yatim / Piatu / Yatim Piatu", required: true },
     { id: "death_cert", key: "death_cert", label: "Akta Kematian Orang Tua", required: true },
-    { id: "family_card", key: "family_card", label: "Kartu Keluarga (KK)", required: true },
+    
     {
       id: "income_source",
       key: "income_source",
