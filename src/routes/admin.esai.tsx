@@ -235,9 +235,10 @@ function AdminEsai() {
               <PenLine className="h-4 w-4 text-primary" /> Auto Lolos Esai — Jalur Reguler
             </h2>
             <p className="mt-1 text-xs text-muted-foreground max-w-lg">
-              Jika aktif, peserta jalur Reguler yang sudah mengirim esai otomatis dinyatakan lolos
-              tahap esai tanpa menunggu penilaian manual. Peserta yang sudah ditandai "Tidak Lolos"
-              tetap tidak terpengaruh. Fast Track tetap auto lolos seperti biasa.
+              Syarat: peserta wajib sudah mengirim esai hingga terkirim. Jika aktif, peserta jalur
+              Reguler yang esainya sudah terkirim otomatis dinyatakan lolos tahap esai tanpa
+              penilaian manual. Yang belum mengirim esai tetap berstatus "Menunggu", dan yang sudah
+              ditandai "Tidak Lolos" tidak terpengaruh. Fast Track tetap auto lolos seperti biasa.
             </p>
           </div>
           <div className="flex items-center gap-3">
