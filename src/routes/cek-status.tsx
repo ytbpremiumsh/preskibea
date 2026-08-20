@@ -266,8 +266,8 @@ function StatusResult({ data }: { data: StatusData }) {
         <Step
           n={2}
           label="Pengiriman Essai"
-          done={fastPaid || (!isFast && essayPublished && essayStatus === "approved")}
-          rejected={!isFast && essayPublished && essayStatus === "rejected"}
+          done={fastPaid || essayAutoReguler || (!isFast && essayPublished && essayStatus === "approved")}
+          rejected={!isFast && !essayAutoReguler && essayPublished && essayStatus === "rejected"}
           desc={
             fastUnpaid
               ? "Menunggu pembayaran Fast Track diverifikasi"
@@ -275,6 +275,8 @@ function StatusResult({ data }: { data: StatusData }) {
               ? "Otomatis lolos (Fast Track)"
               : !essayDone
               ? "Esai belum dikirim"
+              : essayAutoReguler
+              ? "Otomatis lolos (Reguler)"
               : essayPublished
               ? essayResultLabel
               : "Esai terkirim, sedang diproses"
@@ -284,6 +286,8 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "Menunggu", tone: "wait" }
               : fastPaid
               ? { text: "⚡ Auto Lolos (Fast Track)", tone: "pass" }
+              : essayAutoReguler
+              ? { text: "✅ Auto Lolos (Reguler)", tone: "pass" }
               : essayPublished && essayStatus === "approved"
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : essayPublished && essayStatus === "rejected"
