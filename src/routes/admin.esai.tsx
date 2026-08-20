@@ -55,10 +55,12 @@ function submittedAt(r: Row): string | null {
   const v = r.extra?.essay_submitted_at;
   return typeof v === "string" ? v : null;
 }
-function statusOf(r: Row): EssayStatus {
+function statusOf(r: Row, autoReguler = false): EssayStatus {
   const v = r.extra?.essay_status;
   if (v === "approved" || v === "rejected") return v;
-  return r.fast_track ? "approved" : "pending";
+  if (r.fast_track) return "approved";
+  if (autoReguler && submittedAt(r)) return "approved";
+  return "pending";
 }
 
 function AdminEsai() {
@@ -73,9 +75,12 @@ function AdminEsai() {
   const [message, setMessage] = useState("");
   const [savingAnn, setSavingAnn] = useState(false);
 
+  // Auto lolos khusus jalur Reguler
+  const [autoReguler, setAutoReguler] = useState(false);
+
   const load = async () => {
     setLoading(true);
-    const [r, s] = await Promise.all([
+    const [r, s, a] = await Promise.all([
       supabase
         .from("registrations")
         .select(
@@ -83,13 +88,27 @@ function AdminEsai() {
         )
         .order("created_at", { ascending: false }),
       supabase.from("site_settings").select("value").eq("key", "esai_announcement").maybeSingle(),
+      supabase.from("site_settings").select("value").eq("key", "esai_auto_lolos_reguler").maybeSingle(),
     ]);
     if (r.error) toast.error(r.error.message);
     setRows((r.data ?? []) as Row[]);
     const cfg = (s.data?.value ?? {}) as { published?: boolean; message?: string };
     setPublished(!!cfg.published);
     setMessage(cfg.message ?? "");
+    setAutoReguler(!!((a.data?.value ?? {}) as { enabled?: boolean }).enabled);
     setLoading(false);
+  };
+
+  const saveAutoReguler = async (enabled: boolean) => {
+    setAutoReguler(enabled);
+    const { error } = await supabase
+      .from("site_settings")
+      .upsert({ key: "esai_auto_lolos_reguler", value: { enabled } }, { onConflict: "key" });
+    if (error) {
+      setAutoReguler(!enabled);
+      return toast.error(error.message);
+    }
+    toast.success(enabled ? "Auto lolos esai (Reguler) diaktifkan" : "Auto lolos esai (Reguler) dimatikan");
   };
 
   useEffect(() => {
@@ -142,10 +161,10 @@ function AdminEsai() {
   const stats = useMemo(() => {
     const fast = submitted.filter((r) => r.fast_track).length;
     const manual = submitted.length - fast;
-    const approved = submitted.filter((r) => statusOf(r) === "approved").length;
-    const pending = submitted.filter((r) => statusOf(r) === "pending").length;
+    const approved = submitted.filter((r) => statusOf(r, autoReguler) === "approved").length;
+    const pending = submitted.filter((r) => statusOf(r, autoReguler) === "pending").length;
     return { total: submitted.length, fast, manual, approved, pending };
-  }, [submitted]);
+  }, [submitted, autoReguler]);
 
   return (
     <div className="space-y-6">
@@ -210,6 +229,27 @@ function AdminEsai() {
       </Card>
 
       <Card className="p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 className="font-bold text-foreground flex items-center gap-2">
+              <PenLine className="h-4 w-4 text-primary" /> Auto Lolos Esai — Jalur Reguler
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground max-w-lg">
+              Jika aktif, peserta jalur Reguler yang sudah mengirim esai otomatis dinyatakan lolos
+              tahap esai tanpa menunggu penilaian manual. Peserta yang sudah ditandai "Tidak Lolos"
+              tetap tidak terpengaruh. Fast Track tetap auto lolos seperti biasa.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold text-muted-foreground">
+              {autoReguler ? "Aktif" : "Nonaktif"}
+            </span>
+            <Switch checked={autoReguler} onCheckedChange={saveAutoReguler} />
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-5">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -258,7 +298,7 @@ function AdminEsai() {
               </TableHeader>
               <TableBody>
                 {filtered.map((r) => {
-                  const st = statusOf(r);
+                  const st = statusOf(r, autoReguler);
                   const at = submittedAt(r);
                   return (
                     <TableRow key={r.id}>
