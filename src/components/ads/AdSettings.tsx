@@ -5,11 +5,17 @@ export type AdSenseConfig = {
   enabled: boolean;
   publisher_id: string;
   ads_txt: string;
+  /** Kode custom yang disuntikkan ke <head> di semua halaman publik */
+  header_code?: string;
+  /** Kode custom yang disuntikkan sebelum </body> di semua halaman publik */
+  footer_code?: string;
 };
 
 export type AdPosition =
   | "top_of_page"
   | "bottom_of_page"
+  | "after_first_section"
+  | "sticky_bottom"
   | "before_each_image"
   | "after_each_image"
   | "before_each_heading"
