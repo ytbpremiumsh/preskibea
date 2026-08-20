@@ -44,7 +44,8 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
     ],
     umum: [
       "Video Tiktok 1 Menit (Menjelaskan Beasiswa Prestasi Kita)",
-      "Isian teks: Organisasi / Pelatihan yang pernah diikuti (opsional)",
+      "Siapa Kamu? (isian teks: tentang dirimu sendiri)",
+      "Organisasi / Pelatihan yang pernah diikuti (opsional)",
       "Berkas Pendukung Lainnya (opsional)",
     ],
   },
