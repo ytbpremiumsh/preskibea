@@ -34,6 +34,7 @@ type StatusData = {
   essay_status?: "pending" | "approved" | "rejected";
   essay_announcement_published?: boolean;
   essay_announcement_message?: string | null;
+  essay_auto_reguler?: boolean;
   education_level?: string | null;
   admin_announcement_published?: boolean;
   admin_announcement_message?: string | null;
@@ -156,6 +157,8 @@ function StatusResult({ data }: { data: StatusData }) {
   const essayDone = fastPaid || !!data.essay_submitted;
   const essayStatus = fastPaid ? "approved" : (data.essay_status ?? "pending");
   const essayPublished = !!data.essay_announcement_published;
+  // Auto lolos khusus jalur reguler (diatur admin)
+  const essayAutoReguler = !isFast && !!data.essay_auto_reguler && !!data.essay_submitted;
 
   const adminPublished = !!data.admin_announcement_published;
   const adminStatus = (data.candidate_status ?? "pending") as "pending" | "approved" | "rejected";
