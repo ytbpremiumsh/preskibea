@@ -131,10 +131,31 @@ function selectorFor(position: AdPosition): string | null {
       return "a[href]:not([href^='#']):not([href^='mailto']):not([href^='tel']):not([href^='http']):not([href^='javascript'])";
     case "before_each_card":
     case "after_each_card":
-      return "div.rounded-3xl.bg-card, div.rounded-2xl.bg-card, div[class*='shadow-card']";
+      return CARD_SELECTOR;
     default:
       return null;
   }
+}
+
+function buildStickyAnchor(slot: AdSlotConfig): HTMLElement | null {
+  const inner = buildAdNode(slot);
+  if (!inner) return null;
+  const bar = document.createElement("div");
+  bar.setAttribute(MARK_ATTR, "1");
+  bar.setAttribute(SLOT_ATTR, slot.id);
+  bar.className =
+    "fixed bottom-0 left-0 right-0 z-40 flex justify-center bg-background/95 backdrop-blur border-t border-border p-1";
+  const close = document.createElement("button");
+  close.type = "button";
+  close.textContent = "×";
+  close.setAttribute("aria-label", "Tutup iklan");
+  close.className =
+    "absolute -top-6 right-2 h-6 w-6 rounded-t-md border border-b-0 border-border bg-background text-sm leading-none text-muted-foreground";
+  close.onclick = () => bar.remove();
+  inner.classList.remove("my-8");
+  bar.appendChild(close);
+  bar.appendChild(inner);
+  return bar;
 }
 
 function injectSlot(root: HTMLElement, slot: AdSlotConfig) {
@@ -152,23 +173,57 @@ function injectSlot(root: HTMLElement, slot: AdSlotConfig) {
     if (node) root.append(node);
     return node ? 1 : 0;
   }
+  if (slot.position === "sticky_bottom") {
+    if (document.querySelector(`[${SLOT_ATTR}="${slot.id}"]`)) return 0;
+    const bar = buildStickyAnchor(slot);
+    if (!bar) return 0;
+    document.body.appendChild(bar);
+    return 1;
+  }
+  if (slot.position === "after_first_section") {
+    const first = root.querySelector<HTMLElement>("section");
+    const node = first ? buildAdNode(slot) : null;
+    if (first && node) {
+      first.parentNode?.insertBefore(node, first.nextSibling);
+      return 1;
+    }
+    return 0;
+  }
 
   const sel = selectorFor(slot.position);
   if (!sel) return 0;
   const isCardPos = slot.position === "before_each_card" || slot.position === "after_each_card";
+
+  if (isCardPos) {
+    const anchors: HTMLElement[] = [];
+    root.querySelectorAll<HTMLElement>(sel).forEach((card) => {
+      if (card.closest(`[${MARK_ATTR}]`) || card.closest("[data-no-ads]")) return;
+      const anchor = cardAnchorFor(card, root);
+      if (anchor && !anchors.includes(anchor)) anchors.push(anchor);
+    });
+    let injected = 0;
+    anchors.forEach((anchor, idx) => {
+      if (injected >= maxPer) return;
+      if (idx % everyNth !== 0) return;
+      const node = buildAdNode(slot);
+      if (!node) return;
+      // Selalu di LUAR card: sebelum/sesudah blok card, bukan di dalamnya.
+      if (slot.position === "before_each_card") anchor.parentNode?.insertBefore(node, anchor);
+      else anchor.parentNode?.insertBefore(node, anchor.nextSibling);
+      injected++;
+    });
+    return injected;
+  }
+
   const candidates = Array.from(root.querySelectorAll<HTMLElement>(sel)).filter((el) => {
     if (el.closest(`[${MARK_ATTR}]`)) return false;
-    if (isCardPos) {
-      if (el.closest("form, aside")) return false;
-      const parentCard = el.parentElement?.closest(
-        "div.rounded-3xl.bg-card, div.rounded-2xl.bg-card, div[class*='shadow-card']",
-      );
-      if (parentCard && parentCard !== el) return false;
-      const parent = el.parentElement;
-      if (parent) {
-        const cs = window.getComputedStyle(parent);
-        if (cs.display.includes("grid") || cs.display.includes("flex")) return false;
-      }
+    if (el.closest("[data-no-ads]")) return false;
+    // Jangan pernah menyisipkan iklan di dalam card / form supaya tidak merusak layout.
+    if (el.closest(CARD_SELECTOR) || el.closest("form")) return false;
+    const parent = el.parentElement;
+    if (parent) {
+      const cs = window.getComputedStyle(parent);
+      if (cs.display.includes("grid") || cs.display.includes("flex")) return false;
     }
     return true;
   });
