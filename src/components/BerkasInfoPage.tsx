@@ -8,9 +8,12 @@ const docsByKind = {
     "Kartu Pelajar / Kartu Mahasiswa",
     "Kartu Hasil Studi (KHS) — Mahasiswa",
     "Transkrip Nilai — Pelajar & Gap Year",
+    "Prestasi Akademik (isian teks)",
+    "Prestasi Non Akademik (isian teks)",
+    "Organisasi (isian teks)",
     "Sertifikat Prestasi (Akademik maupun Non-Akademik)",
-    "Curriculum Vitae (CV) Kreatif",
     "Berkas Pendukung Lainnya (Optional)",
+
   ],
   ekonomi: [
     "Kartu Pelajar / Kartu Mahasiswa",

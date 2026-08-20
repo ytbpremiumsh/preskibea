@@ -13,9 +13,11 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
       "Transkrip Nilai atau Kartu Hasil Studi (KHS)",
     ],
     umum: [
-      "Sertifikat / Medali prestasi",
-      "Curriculum Vitae (CV) Kreatif",
+      "Isian teks: Prestasi Akademik, Prestasi Non Akademik, dan Organisasi",
+      "Sertifikat / Medali prestasi (Akademik maupun Non-Akademik)",
+      "Berkas pendukung lainnya (opsional)",
     ],
+
   },
   ekonomi: {
     pelajar: [
