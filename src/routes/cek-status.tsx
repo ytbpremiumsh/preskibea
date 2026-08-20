@@ -179,7 +179,8 @@ function StatusResult({ data }: { data: StatusData }) {
     ? "Menunggu pembayaran Fast Track"
     : fastPaid
     ? "Lolos otomatis (Fast Track)"
-
+    : essayAutoReguler
+    ? "Lolos otomatis (Reguler)"
     : !essayPublished
     ? "Pengumuman belum dirilis"
     : essayStatus === "approved"
