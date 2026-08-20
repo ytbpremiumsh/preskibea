@@ -22,11 +22,19 @@ export const Route = createFileRoute("/admin/adsense")({
   component: AdminAdsense,
 });
 
-type AdSenseConfig = { enabled: boolean; publisher_id: string; ads_txt: string };
+type AdSenseConfig = {
+  enabled: boolean;
+  publisher_id: string;
+  ads_txt: string;
+  header_code?: string;
+  footer_code?: string;
+};
 
 const POSITIONS: { value: AdPosition; label: string }[] = [
   { value: "top_of_page", label: "Atas halaman (semua halaman)" },
   { value: "bottom_of_page", label: "Bawah halaman (semua halaman)" },
+  { value: "after_first_section", label: "Setelah section pertama (CPC tinggi)" },
+  { value: "sticky_bottom", label: "Anchor melayang bawah layar (CPC tertinggi)" },
   { value: "before_each_image", label: "Sebelum setiap gambar" },
   { value: "after_each_image", label: "Sesudah setiap gambar" },
   { value: "before_each_heading", label: "Sebelum setiap judul (H2/H3)" },
