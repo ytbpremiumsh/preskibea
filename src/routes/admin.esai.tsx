@@ -55,10 +55,12 @@ function submittedAt(r: Row): string | null {
   const v = r.extra?.essay_submitted_at;
   return typeof v === "string" ? v : null;
 }
-function statusOf(r: Row): EssayStatus {
+function statusOf(r: Row, autoReguler = false): EssayStatus {
   const v = r.extra?.essay_status;
   if (v === "approved" || v === "rejected") return v;
-  return r.fast_track ? "approved" : "pending";
+  if (r.fast_track) return "approved";
+  if (autoReguler && submittedAt(r)) return "approved";
+  return "pending";
 }
 
 function AdminEsai() {
