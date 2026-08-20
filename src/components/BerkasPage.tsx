@@ -22,7 +22,6 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
     { id: "khs", key: "khs", label: "Kartu Hasil Studi (KHS)", required: true },
     { id: "transcript_custom", key: "transcript_custom", label: "Transkrip Nilai", required: true },
-    { id: "achievement_certs", key: "achievement_certs", label: "Sertifikat Prestasi (Akademik maupun Non-Akademik)", required: true },
     {
       id: "achievement_academic_text",
       key: "achievement_academic_text",
@@ -47,8 +46,9 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
       type: "textarea",
       placeholder: "Contoh: Ketua OSIS 2024-2025, Anggota Pramuka, ...",
     },
-    { id: "cv", key: "cv", label: "Curriculum Vitae (CV) Kreatif", required: true },
+    { id: "achievement_certs", key: "achievement_certs", label: "Sertifikat Prestasi (Akademik maupun Non-Akademik)", required: true },
     { id: "additional_docs", key: "additional_docs", label: "Berkas Pendukung Lainnya (Optional)", required: false },
+
   ],
   ekonomi: [
     { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
