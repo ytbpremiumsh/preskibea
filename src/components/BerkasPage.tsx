@@ -97,7 +97,7 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
       label: "Siapa Kamu? (Tuliskan tentang dirimu sendiri)",
       required: true,
       type: "textarea",
-      placeholder: "Halo, nama saya Rizki. Saat ini saya bersekolah di SMA Negeri 1 dan memiliki ketertarikan di bidang teknologi serta menulis. Saya aktif dalam kegiatan organisasi sekolah...",
+      placeholder: "Halo, nama saya Andi. Saat ini saya bersekolah di SMA Negeri 1 dan memiliki ketertarikan di bidang teknologi serta menulis. Saya aktif dalam kegiatan organisasi sekolah...",
     },
     {
       id: "organization_training_text",
