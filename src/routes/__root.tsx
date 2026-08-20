@@ -14,6 +14,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AdSettingsProvider, AdsenseLoader } from "@/components/ads/AdSettings";
 import { AutoAdInjector } from "@/components/ads/AutoAdInjector";
 import { CustomAdInjector } from "@/components/ads/CustomAdInjector";
+import { GlobalCodeInjector } from "@/components/ads/GlobalCodeInjector";
 import { CustomCodeInjector } from "@/components/CustomCodeInjector";
 import { AnalyticsInjector } from "@/components/AnalyticsInjector";
 import { ForceReloadNavigation } from "@/components/ForceReloadNavigation";
@@ -116,6 +117,7 @@ function RootComponent() {
             <AdsenseLoader />
             <AutoAdInjector />
             <CustomAdInjector />
+            <GlobalCodeInjector />
           </>
         )}
         <CustomCodeInjector />
