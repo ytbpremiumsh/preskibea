@@ -92,6 +92,14 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "transcript_custom", key: "transcript_custom", label: "Transkrip Nilai", required: true },
     { id: "tiktok_video", key: "tiktok_video", label: "Video Tiktok 1 Menit (Menjelaskan Beasiswa Prestasi Kita)", required: true },
     {
+      id: "who_are_you_text",
+      key: "who_are_you_text",
+      label: "Siapa Kamu? (Tuliskan tentang dirimu sendiri)",
+      required: true,
+      type: "textarea",
+      placeholder: "1. Nama saya Rizki, saat ini saya bersekolah di SMA Negeri 1\n2. Saya memiliki ketertarikan di bidang teknologi dan menulis\n3. Saya aktif dalam kegiatan organisasi sekolah",
+    },
+    {
       id: "organization_training_text",
       key: "organization_training_text",
       label: "Organisasi / Pelatihan yang pernah diikuti (Optional)",
