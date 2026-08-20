@@ -77,6 +77,39 @@ function buildAdNode(slot: AdSlotConfig): HTMLElement | null {
   return wrapper;
 }
 
+const CARD_SELECTOR =
+  "div.rounded-3xl.bg-card, div.rounded-2xl.bg-card, div[class*='shadow-card']";
+
+/**
+ * Untuk posisi "card": iklan TIDAK pernah dimasukkan ke dalam card.
+ * Jika card berada di dalam grid/flex, iklan diletakkan setelah container grid-nya
+ * supaya layout tidak berantakan.
+ */
+function cardAnchorFor(card: HTMLElement, root: HTMLElement): HTMLElement | null {
+  // Naik ke card terluar
+  let outer: HTMLElement = card;
+  let p = card.parentElement?.closest<HTMLElement>(CARD_SELECTOR) || null;
+  while (p && root.contains(p)) {
+    outer = p;
+    p = p.parentElement?.closest<HTMLElement>(CARD_SELECTOR) || null;
+  }
+  // Jika berada di grid/flex, pakai container-nya sebagai anchor
+  let anchor: HTMLElement = outer;
+  let parent = anchor.parentElement;
+  while (parent && parent !== root) {
+    const cs = window.getComputedStyle(parent);
+    if (cs.display.includes("grid") || cs.display.includes("flex")) {
+      anchor = parent;
+      parent = anchor.parentElement;
+      continue;
+    }
+    break;
+  }
+  if (!anchor.parentNode || anchor === root) return null;
+  if (anchor.closest("form, aside, header, footer, nav")) return null;
+  return anchor;
+}
+
 function selectorFor(position: AdPosition): string | null {
   switch (position) {
     case "before_each_image":
