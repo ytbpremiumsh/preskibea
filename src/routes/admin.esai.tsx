@@ -161,10 +161,10 @@ function AdminEsai() {
   const stats = useMemo(() => {
     const fast = submitted.filter((r) => r.fast_track).length;
     const manual = submitted.length - fast;
-    const approved = submitted.filter((r) => statusOf(r) === "approved").length;
-    const pending = submitted.filter((r) => statusOf(r) === "pending").length;
+    const approved = submitted.filter((r) => statusOf(r, autoReguler) === "approved").length;
+    const pending = submitted.filter((r) => statusOf(r, autoReguler) === "pending").length;
     return { total: submitted.length, fast, manual, approved, pending };
-  }, [submitted]);
+  }, [submitted, autoReguler]);
 
   return (
     <div className="space-y-6">
@@ -277,7 +277,7 @@ function AdminEsai() {
               </TableHeader>
               <TableBody>
                 {filtered.map((r) => {
-                  const st = statusOf(r);
+                  const st = statusOf(r, autoReguler);
                   const at = submittedAt(r);
                   return (
                     <TableRow key={r.id}>
