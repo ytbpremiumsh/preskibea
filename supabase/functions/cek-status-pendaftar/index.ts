@@ -122,6 +122,7 @@ Deno.serve(async (req) => {
 
         essay_submitted_at: essaySubmittedAt,
         essay_status: essayStatus,
+        essay_auto_reguler: essayAutoReguler,
         essay_announcement_published: !!ann.published,
         essay_announcement_message: ann.published ? (ann.message ?? null) : null,
         education_level: reg.education_level,
