@@ -43,9 +43,9 @@ const content: Record<Kind, { pelajar: string[]; mahasiswa: string[]; umum: stri
       "Transkrip Nilai atau Kartu Hasil Studi (KHS)",
     ],
     umum: [
-      "Curriculum Vitae (CV) / Portofolio Singkat",
-      "Video Motivasi Diri (Link)",
-      "Sertifikat / Berkas Pendukung Lainnya",
+      "Video Tiktok 1 Menit (Menjelaskan Beasiswa Prestasi Kita)",
+      "Isian teks: Organisasi / Pelatihan yang pernah diikuti (opsional)",
+      "Berkas Pendukung Lainnya (opsional)",
     ],
   },
   yatim: {
@@ -75,7 +75,7 @@ export function KetentuanBerkasCard({ kind }: { kind: Kind }) {
         <h2 className="text-base font-bold text-foreground">Ketentuan Berkas</h2>
       </div>
       <p className="mt-1 text-xs text-muted-foreground">
-        Persyaratan berkeda untuk Pelajar dan Mahasiswa. Siapkan berkas berikut sebelum mengisi tautan di bawah.
+        Persyaratan berkas untuk Pelajar dan Mahasiswa. Siapkan berkas berikut sebelum mengisi tautan di bawah.
       </p>
 
       <div className="mt-5 grid sm:grid-cols-2 gap-4">
