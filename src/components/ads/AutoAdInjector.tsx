@@ -325,9 +325,9 @@ export function AutoAdInjector() {
       });
 
       if (injectedThisPass > 0) {
-        prepareAdSenseIns(root, adsense.publisher_id);
-        window.setTimeout(() => pushAds(root), 100);
-        window.setTimeout(() => pushAds(root), 1000);
+        prepareAdSenseIns(document.body, adsense.publisher_id);
+        window.setTimeout(() => pushAds(document.body), 100);
+        window.setTimeout(() => pushAds(document.body), 1000);
       }
     };
 
@@ -371,6 +371,9 @@ export function AutoAdInjector() {
       cancelled = true;
       window.clearTimeout(t);
       observer?.disconnect();
+      document
+        .querySelectorAll(`body > [${MARK_ATTR}]`)
+        .forEach((n) => n.remove());
     };
   }, [pathname, loaded, adsense.enabled, slots]);
 
