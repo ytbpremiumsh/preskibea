@@ -55,9 +55,20 @@ Deno.serve(async (req) => {
     const fastPaid = fastTrack && paymentStatus === "paid";
     const essaySubmittedAt = typeof extra.essay_submitted_at === "string" ? extra.essay_submitted_at : null;
     const rawEssayStatus = typeof extra.essay_status === "string" ? extra.essay_status : null;
+
+    // Auto lolos khusus jalur Reguler (toggle admin)
+    const { data: autoRow } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "esai_auto_lolos_reguler")
+      .maybeSingle();
+    const autoCfg = (autoRow?.value ?? {}) as { enabled?: boolean };
+    const essayAutoReguler = !!autoCfg.enabled && !fastTrack && !!essaySubmittedAt &&
+      rawEssayStatus !== "rejected";
+
     const essayStatus = rawEssayStatus === "approved" || rawEssayStatus === "rejected"
       ? rawEssayStatus
-      : fastPaid
+      : fastPaid || essayAutoReguler
       ? "approved"
       : "pending";
 
