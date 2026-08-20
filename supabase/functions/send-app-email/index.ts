@@ -1,9 +1,9 @@
 // supabase/functions/send-app-email/index.ts
-// Enqueue email transactional ke pgmq. Worker pengirim sudah ada di
-// Lovable Cloud infrastructure — fungsi ini hanya menumpuk pesan.
+// Mengirim email transaksional langsung melalui Lovable managed email API.
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { z } from "https://esm.sh/zod@3.23.8";
+import { EmailAPIError, sendLovableEmail } from "npm:@lovable.dev/email-js@0.1.0";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -16,8 +16,9 @@ const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
+const SITE_NAME = "Prestasi Kita";
 const SENDER_DOMAIN = "notify.prestasikita.com";
-const FROM_EMAIL = "Prestasi Kita <noreply@notify.prestasikita.com>";
+const FROM_DOMAIN = "prestasikita.com";
 
 const CUSTOMIZABLE: Record<string, string> = {
   "registration-confirmation": "email_template_registration",
@@ -144,33 +145,7 @@ function defaultBody(templateName: string, props: Record<string, unknown>) {
   };
 }
 
-function generateUnsubscribeToken() {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-async function getOrCreateUnsubscribeToken(email: string) {
-  const normalized = email.toLowerCase();
-  const { data: existing } = await supabaseAdmin
-    .from("email_unsubscribe_tokens")
-    .select("token, used_at")
-    .eq("email", normalized)
-    .maybeSingle();
-  if (existing?.token && !existing.used_at) return existing.token as string;
-  const token = generateUnsubscribeToken();
-  await supabaseAdmin
-    .from("email_unsubscribe_tokens")
-    .upsert({ token, email: normalized }, { onConflict: "email", ignoreDuplicates: true });
-  const { data: stored } = await supabaseAdmin
-    .from("email_unsubscribe_tokens")
-    .select("token")
-    .eq("email", normalized)
-    .maybeSingle();
-  return (stored?.token ?? token) as string;
-}
-
-async function enqueue(args: {
+async function deliver(args: {
   recipient: string;
   templateName: string;
   idempotencyKey: string;
@@ -178,27 +153,31 @@ async function enqueue(args: {
   html: string;
   text: string;
 }) {
-  const messageId = crypto.randomUUID();
-  const unsubscribeToken = await getOrCreateUnsubscribeToken(args.recipient);
-  const { error } = await supabaseAdmin.rpc("enqueue_email", {
-    queue_name: "transactional_emails",
-    payload: {
-      to: args.recipient,
-      from: FROM_EMAIL,
-      sender_domain: SENDER_DOMAIN,
-      subject: args.subject,
-      html: args.html,
-      text: args.text,
-      purpose: "transactional",
-      label: args.templateName,
-      idempotency_key: args.idempotencyKey,
-      unsubscribe_token: unsubscribeToken,
-      message_id: messageId,
-      queued_at: new Date().toISOString(),
-    },
-  });
-  if (error) throw new Error(error.message);
-  return messageId;
+  const apiKey = Deno.env.get("LOVABLE_API_KEY");
+  if (!apiKey) throw new Error("LOVABLE_API_KEY is not configured");
+
+  try {
+    await sendLovableEmail(
+      {
+        to: args.recipient,
+        from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+        sender_domain: SENDER_DOMAIN,
+        subject: args.subject,
+        html: args.html,
+        text: args.text,
+        purpose: "transactional",
+        label: args.templateName,
+        idempotency_key: args.idempotencyKey,
+      },
+      { apiKey, sendUrl: Deno.env.get("LOVABLE_SEND_URL") },
+    );
+  } catch (error) {
+    if (error instanceof EmailAPIError && error.code === "recipient_suppressed") {
+      return { sent: false, reason: "recipient_suppressed" as const };
+    }
+    throw error;
+  }
+  return { sent: true as const };
 }
 
 serve(async (req) => {
@@ -219,26 +198,13 @@ serve(async (req) => {
     const recipient = data.recipientEmail.toLowerCase();
     const props = data.templateData ?? {};
 
-    // Cek suppression list
-    const { data: suppressed } = await supabaseAdmin
-      .from("suppressed_emails")
-      .select("email")
-      .eq("email", recipient)
-      .maybeSingle();
-    if (suppressed) {
-      return new Response(JSON.stringify({ ok: true, skipped: "suppressed" }), {
-        status: 200,
-        headers: { ...cors, "Content-Type": "application/json" },
-      });
-    }
-
     // Test mode: pakai subject & html dari body
     let subject: string;
     let html: string;
     if (data._isTest && data.subject && data.html) {
       const sampleProps = {
         fullName: "Andi Pratama",
-        token: "KP-PRE-A1B2C3",
+        token: "PK-PRE-A1B2C3",
         kind: "prestasi",
         whatsapp: "08123456789",
         count: 5,
@@ -259,21 +225,32 @@ serve(async (req) => {
     }
     const text = htmlToText(html);
 
-    const messageId = await enqueue({
+    const result = await deliver({
       recipient,
       templateName: data.templateName,
-      idempotencyKey: data.idempotencyKey ?? `test-${data.templateName}-${crypto.randomUUID()}`,
+      idempotencyKey: data.idempotencyKey ?? `${data.templateName}-${crypto.randomUUID()}`,
       subject,
       html,
       text,
     });
 
-    return new Response(JSON.stringify({ ok: true, messageId }), {
+    if (!result.sent) {
+      console.log(`Email skipped for label=${data.templateName}: ${result.reason}`);
+      return new Response(JSON.stringify({ ok: true, skipped: result.reason }), {
+        status: 200,
+        headers: { ...cors, "Content-Type": "application/json" },
+      });
+    }
+
+    console.log(`Email sent: label=${data.templateName}`);
+    return new Response(JSON.stringify({ ok: true, sent: true }), {
       status: 200,
       headers: { ...cors, "Content-Type": "application/json" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
+    const err = e as Error & { code?: string; status?: number };
+    console.error(`send-app-email failed [${err.code ?? "unknown"}]: ${err.message}`);
+    return new Response(JSON.stringify({ error: err.message, code: err.code ?? null }), {
       status: 500,
       headers: { ...cors, "Content-Type": "application/json" },
     });
