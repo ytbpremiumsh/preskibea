@@ -49,7 +49,7 @@ const docsByKind = {
     "Kartu Pelajar / Kartu Mahasiswa",
     "Surat Keterangan Yatim / Piatu / Yatim Piatu",
     "Akta Kematian Orang Tua",
-    "Kartu Keluarga (KK)",
+    
     "Penghasilan dari Siapa (Ibu / Kakak / Saudara)",
     "Penghasilan Per Bulan (pilihan)",
     "Foto Pembayaran Listrik Terakhir ( Wajib )",
