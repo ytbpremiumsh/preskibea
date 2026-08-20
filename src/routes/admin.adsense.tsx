@@ -68,6 +68,8 @@ function AdminAdsense() {
     enabled: false,
     publisher_id: "",
     ads_txt: "",
+    header_code: "",
+    footer_code: "",
   });
   const [slots, setSlots] = useState<AdSlotConfig[]>([]);
 
