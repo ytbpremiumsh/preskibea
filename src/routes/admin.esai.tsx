@@ -78,7 +78,7 @@ function AdminEsai() {
 
   const load = async () => {
     setLoading(true);
-    const [r, s] = await Promise.all([
+    const [r, s, a] = await Promise.all([
       supabase
         .from("registrations")
         .select(
@@ -86,13 +86,27 @@ function AdminEsai() {
         )
         .order("created_at", { ascending: false }),
       supabase.from("site_settings").select("value").eq("key", "esai_announcement").maybeSingle(),
+      supabase.from("site_settings").select("value").eq("key", "esai_auto_lolos_reguler").maybeSingle(),
     ]);
     if (r.error) toast.error(r.error.message);
     setRows((r.data ?? []) as Row[]);
     const cfg = (s.data?.value ?? {}) as { published?: boolean; message?: string };
     setPublished(!!cfg.published);
     setMessage(cfg.message ?? "");
+    setAutoReguler(!!((a.data?.value ?? {}) as { enabled?: boolean }).enabled);
     setLoading(false);
+  };
+
+  const saveAutoReguler = async (enabled: boolean) => {
+    setAutoReguler(enabled);
+    const { error } = await supabase
+      .from("site_settings")
+      .upsert({ key: "esai_auto_lolos_reguler", value: { enabled } }, { onConflict: "key" });
+    if (error) {
+      setAutoReguler(!enabled);
+      return toast.error(error.message);
+    }
+    toast.success(enabled ? "Auto lolos esai (Reguler) diaktifkan" : "Auto lolos esai (Reguler) dimatikan");
   };
 
   useEffect(() => {
