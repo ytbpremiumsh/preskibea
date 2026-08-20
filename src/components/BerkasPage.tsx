@@ -28,7 +28,7 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
       label: "Prestasi Akademik (Tuliskan prestasi akademik kamu)",
       required: true,
       type: "textarea",
-      placeholder: "Contoh: Juara 1 Olimpiade Matematika tingkat Kabupaten 2025, ...",
+      placeholder: "1. Juara 1 Olimpiade Matematika tingkat Kabupaten 2025\n2. Juara 2 Lomba Sains Nasional 2024",
     },
     {
       id: "achievement_nonacademic_text",
@@ -36,7 +36,7 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
       label: "Prestasi Non Akademik (Tuliskan prestasi non akademik kamu)",
       required: true,
       type: "textarea",
-      placeholder: "Contoh: Juara 2 Lomba Futsal tingkat Provinsi 2025, ...",
+      placeholder: "1. Juara 1 Lomba Futsal tingkat Provinsi 2025\n2. Juara 2 Lomba Cerdas Cermat 2024",
     },
     {
       id: "organization_text",
@@ -44,7 +44,7 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
       label: "Organisasi (Tuliskan pengalaman organisasi kamu)",
       required: true,
       type: "textarea",
-      placeholder: "Contoh: Ketua OSIS 2024-2025, Anggota Pramuka, ...",
+      placeholder: "1. Ketua OSIS 2024-2025\n2. Anggota Pramuka 2023-2024",
     },
     { id: "achievement_certs", key: "achievement_certs", label: "Sertifikat Prestasi (Akademik maupun Non-Akademik)", required: true },
     { id: "additional_docs", key: "additional_docs", label: "Berkas Pendukung Lainnya (Optional)", required: false },
