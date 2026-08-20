@@ -73,6 +73,9 @@ function AdminEsai() {
   const [message, setMessage] = useState("");
   const [savingAnn, setSavingAnn] = useState(false);
 
+  // Auto lolos khusus jalur Reguler
+  const [autoReguler, setAutoReguler] = useState(false);
+
   const load = async () => {
     setLoading(true);
     const [r, s] = await Promise.all([
