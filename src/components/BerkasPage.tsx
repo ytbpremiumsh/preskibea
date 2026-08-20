@@ -91,6 +91,14 @@ const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> 
     { id: "khs", key: "khs", label: "Kartu Hasil Studi (KHS)", required: true },
     { id: "transcript_custom", key: "transcript_custom", label: "Transkrip Nilai", required: true },
     { id: "tiktok_video", key: "tiktok_video", label: "Video Tiktok 1 Menit (Menjelaskan Beasiswa Prestasi Kita)", required: true },
+    {
+      id: "organization_training_text",
+      key: "organization_training_text",
+      label: "Organisasi / Pelatihan yang pernah diikuti (Optional)",
+      required: false,
+      type: "textarea",
+      placeholder: "1. Ketua OSIS 2024-2025\n2. Pelatihan Kepemimpinan Nasional 2024",
+    },
     { id: "additional_docs", key: "additional_docs", label: "Berkas Pendukung Lainnya (Optional)", required: false },
   ],
   yatim: [

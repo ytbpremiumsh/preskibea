@@ -41,6 +41,7 @@ const docsByKind = {
     "Kartu Hasil Studi (KHS) — Mahasiswa",
     "Transkrip Nilai — Pelajar & Gap Year",
     "Video Tiktok 1 Menit (Menjelaskan Beasiswa Prestasi Kita)",
+    "Organisasi / Pelatihan yang pernah diikuti (Optional)",
     "Berkas Pendukung Lainnya (Optional)",
   ],
   yatim: [
