@@ -1,9 +1,9 @@
 // supabase/functions/send-app-email/index.ts
-// Enqueue email transactional ke pgmq. Worker pengirim sudah ada di
-// Lovable Cloud infrastructure — fungsi ini hanya menumpuk pesan.
+// Mengirim email transaksional langsung melalui Lovable managed email API.
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { z } from "https://esm.sh/zod@3.23.8";
+import { EmailAPIError, sendLovableEmail } from "npm:@lovable.dev/email-js@0.1.0";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -16,8 +16,9 @@ const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
+const SITE_NAME = "Prestasi Kita";
 const SENDER_DOMAIN = "notify.prestasikita.com";
-const FROM_EMAIL = "Prestasi Kita <noreply@notify.prestasikita.com>";
+const FROM_DOMAIN = "prestasikita.com";
 
 const CUSTOMIZABLE: Record<string, string> = {
   "registration-confirmation": "email_template_registration",
