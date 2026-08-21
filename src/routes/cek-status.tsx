@@ -370,7 +370,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : tpaFail
               ? "Belum lolos tes potensi akademik"
               : act(3)
-              ? "Sedang dalam tahap ini — menunggu hasil"
+              ? "Menunggu"
               : "Hasil belum diumumkan"
           }
           status={
