@@ -52,6 +52,7 @@ const Input = z.object({
   photo_url: urlOrNull,
   student_card_url: urlOrNull,
   fast_track: z.boolean().optional().default(false),
+  fast_track_type: z.enum(["standard", "premium"]).optional().default("standard"),
   extra: z.record(z.string(), z.unknown()).optional().default({}),
   payment_url: z.string().url().nullable().optional(),
 });
@@ -119,7 +120,7 @@ serve(async (req) => {
           dependents: data.dependents ?? null,
           photo_url: data.photo_url ?? null,
           student_card_url: data.student_card_url ?? null,
-          extra: data.extra,
+          extra: { ...data.extra, fast_track_type: data.fast_track_type },
         })
         .select("id, token")
         .single();
@@ -155,7 +156,7 @@ serve(async (req) => {
         const { data: settings } = await supabaseAdmin
           .from("site_settings")
           .select("key, value")
-          .in("key", ["payment_provider", "mayar_config", "aulaa_config", "doku_config", "fast_track_fee"]);
+          .in("key", ["payment_provider", "mayar_config", "aulaa_config", "doku_config", "fast_track_fee", "fast_track_premium_fee"]);
         
         // Nilai bisa tersimpan sebagai string JSON ("\"doku\"") atau objek { provider: "doku" }
         const rawProvider = settings?.find(s => s.key === "payment_provider")?.value as unknown;
@@ -165,8 +166,9 @@ serve(async (req) => {
             : (rawProvider as any)?.provider ?? ""
         ).toString().replace(/["\s]/g, "").toLowerCase() || "doku";
         activeProvider = provider;
-        const feeSetting = settings?.find(s => s.key === "fast_track_fee")?.value;
-        const amount = feeSetting ? Number(feeSetting) : 15000;
+        const feeKey = data.fast_track_type === "premium" ? "fast_track_premium_fee" : "fast_track_fee";
+        const feeSetting = settings?.find(s => s.key === feeKey)?.value;
+        const amount = feeSetting ? Number(feeSetting) : (data.fast_track_type === "premium" ? 35000 : 15000);
         const originHeader = req.headers.get("origin") || req.headers.get("referer") || "";
         let cleanOrigin = "";
         try {

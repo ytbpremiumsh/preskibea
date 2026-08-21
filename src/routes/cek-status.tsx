@@ -28,6 +28,7 @@ type StatusData = {
   created_at: string;
   token: string;
   fast_track?: boolean;
+  extra?: any;
   payment_status?: string | null;
   essay_submitted?: boolean;
   essay_submitted_at?: string | null;
@@ -152,6 +153,7 @@ function StatusResult({ data }: { data: StatusData }) {
   const berkasTo = data.kind === "prestasi" ? "/berkas/prestasi/upload" : data.kind === "ekonomi" ? "/berkas/ekonomi/upload" : data.kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/umum/upload";
   const hasDocs = data.docs.total > 0;
   const isFast = !!data.fast_track;
+  const isFTPremium = isFast && (data.extra as any)?.fast_track_type === "premium";
   const fastPaid = isFast && data.payment_status === "paid";
   const fastUnpaid = isFast && !fastPaid;
   const essayDone = fastPaid || !!data.essay_submitted;
@@ -170,7 +172,9 @@ function StatusResult({ data }: { data: StatusData }) {
   const tpaShown = tpaPublished || tpaStatus !== "pending";
   const itwShown = itwPublished || itwStatus !== "pending";
 
-  const adminResultLabel = !hasDocs
+  const adminResultLabel = isFTPremium
+    ? "Otomatis lolos (Fast Track Premium)"
+    : !hasDocs
     ? "Menunggu pengiriman berkas"
     : !adminPublished
     ? "Sedang diproses"
@@ -265,8 +269,8 @@ function StatusResult({ data }: { data: StatusData }) {
       {(() => {
         const essayPass = fastPaid || essayAutoReguler || (!isFast && essayPublished && essayStatus === "approved");
         const essayFail = !isFast && !essayAutoReguler && essayPublished && essayStatus === "rejected";
-        const admPass = adminPublished && adminStatus === "approved";
-        const admFail = adminPublished && adminStatus === "rejected";
+        const admPass = isFTPremium || (adminPublished && adminStatus === "approved");
+        const admFail = !isFTPremium && adminPublished && adminStatus === "rejected";
         const tpaPass = tpaShown && tpaStatus === "approved";
         const tpaFail = tpaShown && tpaStatus === "rejected";
         const itwPass = itwShown && itwStatus === "approved";
@@ -343,7 +347,9 @@ function StatusResult({ data }: { data: StatusData }) {
           active={act(2)}
           desc={adminResultLabel}
           status={
-            admPass
+            isFTPremium
+              ? { text: "⚡ Auto Lolos (Premium)", tone: "pass" }
+              : admPass
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : admFail
               ? { text: "Tidak lolos", tone: "fail" }

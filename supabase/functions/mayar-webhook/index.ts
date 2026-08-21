@@ -225,7 +225,7 @@ serve(async (req) => {
 
        let q = supabaseAdmin
          .from("registrations")
-         .select("id, token, full_name, email, whatsapp, kind")
+         .select("id, token, full_name, email, whatsapp, kind, extra")
          .eq("fast_track", true)
          .eq("payment_status", "pending")
          .order("created_at", { ascending: false });
@@ -238,14 +238,20 @@ serve(async (req) => {
 
        const { data: reg } = await q.limit(1).maybeSingle();
 
-       if (reg) {
-         await supabaseAdmin
-           .from("registrations")
-           .update({ 
-             payment_status: "paid", 
-             status: "approved" 
-           })
-           .eq("id", reg.id);
+        if (reg) {
+          const isPremium = (reg.extra as any)?.fast_track_type === "premium";
+          const updates: Record<string, any> = { 
+            payment_status: "paid", 
+            status: "approved" 
+          };
+          if (isPremium) {
+            updates.candidate_status = "approved";
+          }
+
+          await supabaseAdmin
+            .from("registrations")
+            .update(updates)
+            .eq("id", reg.id);
          
          console.log(`Registration ${reg.token} marked as paid.`);
 

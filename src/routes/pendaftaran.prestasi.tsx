@@ -4,6 +4,7 @@ import { z } from "zod";
 
 const searchSchema = z.object({
   type: z.enum(["reguler", "fast_track"]).optional().default("reguler"),
+  ft_type: z.enum(["standard", "premium"]).optional().default("standard"),
 });
 
 export const Route = createFileRoute("/pendaftaran/prestasi")({
@@ -15,7 +16,7 @@ export const Route = createFileRoute("/pendaftaran/prestasi")({
     ],
   }),
   component: () => {
-    const { type } = Route.useSearch();
-    return <RegistrationForm kind="prestasi" initialType={type} />;
+    const { type, ft_type } = Route.useSearch();
+    return <RegistrationForm kind="prestasi" initialType={type} initialFastTrackType={ft_type} />;
   },
 });

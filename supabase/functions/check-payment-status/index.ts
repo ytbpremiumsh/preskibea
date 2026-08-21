@@ -157,9 +157,15 @@ serve(async (req) => {
       return json({ status: "pending", doku_status: txStatus });
     }
 
+    const isPremium = (reg.extra as any)?.fast_track_type === "premium";
+    const updates: Record<string, any> = { payment_status: "paid", status: "approved" };
+    if (isPremium) {
+      updates.candidate_status = "approved";
+    }
+
     const { data: paidRegistration, error: updateError } = await supabaseAdmin
       .from("registrations")
-      .update({ payment_status: "paid", status: "approved" })
+      .update(updates)
       .eq("id", reg.id)
       .eq("payment_status", "pending")
       .select("id")
