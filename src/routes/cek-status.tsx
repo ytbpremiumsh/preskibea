@@ -166,6 +166,10 @@ function StatusResult({ data }: { data: StatusData }) {
   const tpaStatus = data.tpa_status ?? "pending";
   const itwPublished = !!data.interview_announcement_published;
   const itwStatus = data.interview_status ?? "pending";
+  // Hasil per-peserta yang sudah dinilai admin tetap ditampilkan walau pengumuman global belum dirilis
+  const tpaShown = tpaPublished || tpaStatus !== "pending";
+  const itwShown = itwPublished || itwStatus !== "pending";
+
   const adminResultLabel = !hasDocs
     ? "Menunggu pengiriman berkas"
     : !adminPublished
@@ -255,6 +259,35 @@ function StatusResult({ data }: { data: StatusData }) {
       </div>
 
       {/* Timeline */}
+      {(() => {
+        const essayPass = fastPaid || essayAutoReguler || (!isFast && essayPublished && essayStatus === "approved");
+        const essayFail = !isFast && !essayAutoReguler && essayPublished && essayStatus === "rejected";
+        const admPass = adminPublished && adminStatus === "approved";
+        const admFail = adminPublished && adminStatus === "rejected";
+        const tpaPass = tpaShown && tpaStatus === "approved";
+        const tpaFail = tpaShown && tpaStatus === "rejected";
+        const itwPass = itwShown && itwStatus === "approved";
+        const itwFail = itwShown && itwStatus === "rejected";
+
+        const outcomes: ("pass" | "fail" | "wait")[] = [
+          "pass",
+          essayPass ? "pass" : essayFail ? "fail" : "wait",
+          admPass ? "pass" : admFail ? "fail" : "wait",
+          tpaPass ? "pass" : tpaFail ? "fail" : "wait",
+          itwPass ? "pass" : itwFail ? "fail" : "wait",
+        ];
+        // Tahap aktif = tahap "wait" pertama setelah semua tahap sebelumnya lolos
+        let activeIdx = -1;
+        for (let i = 0; i < outcomes.length; i++) {
+          if (outcomes[i] === "pass") continue;
+          if (outcomes[i] === "wait") activeIdx = i;
+          break;
+        }
+        const act = (i: number) => activeIdx === i;
+        const waitText = (i: number, fallback: string) =>
+          act(i) ? "Sedang berlangsung — menunggu hasil" : fallback;
+
+        return (
       <div className="mt-6 flex flex-col gap-3">
         <Step
           n={1}
@@ -266,8 +299,9 @@ function StatusResult({ data }: { data: StatusData }) {
         <Step
           n={2}
           label="Pengiriman Essai"
-          done={fastPaid || essayAutoReguler || (!isFast && essayPublished && essayStatus === "approved")}
-          rejected={!isFast && !essayAutoReguler && essayPublished && essayStatus === "rejected"}
+          done={essayPass}
+          rejected={essayFail}
+          active={act(1)}
           desc={
             fastUnpaid
               ? "Menunggu pembayaran Fast Track diverifikasi"
@@ -288,12 +322,12 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "⚡ Auto Lolos (Fast Track)", tone: "pass" }
               : essayAutoReguler
               ? { text: "✅ Auto Lolos (Reguler)", tone: "pass" }
-              : essayPublished && essayStatus === "approved"
+              : essayPass
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
-              : essayPublished && essayStatus === "rejected"
+              : essayFail
               ? { text: "Tidak lolos", tone: "fail" }
               : essayDone
-              ? { text: "Menunggu", tone: "wait" }
+              ? { text: waitText(1, "Menunggu"), tone: act(1) ? "active" : "wait" }
               : { text: "Selesaikan esai", tone: "wait" }
           }
 
@@ -301,64 +335,70 @@ function StatusResult({ data }: { data: StatusData }) {
         <Step
           n={3}
           label="Seleksi Administrasi"
-          done={adminPublished && adminStatus === "approved"}
-          rejected={adminPublished && adminStatus === "rejected"}
+          done={admPass}
+          rejected={admFail}
+          active={act(2)}
           desc={adminResultLabel}
           status={
-            adminPublished && adminStatus === "approved"
+            admPass
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
-              : adminPublished && adminStatus === "rejected"
+              : admFail
               ? { text: "Tidak lolos", tone: "fail" }
               : hasDocs
-              ? { text: "Menunggu", tone: "wait" }
+              ? { text: waitText(2, "Menunggu"), tone: act(2) ? "active" : "wait" }
               : { text: "Kirim berkas dahulu", tone: "wait" }
           }
         />
         <Step
           n={4}
           label="Tes Potensi Akademik"
-          done={tpaPublished && tpaStatus === "approved"}
-          rejected={tpaPublished && tpaStatus === "rejected"}
+          done={tpaPass}
+          rejected={tpaFail}
+          active={act(3)}
           desc={
-            !tpaPublished
-              ? "Hasil belum diumumkan"
-              : tpaStatus === "approved"
+            tpaPass
               ? "Lolos tes potensi akademik"
-              : tpaStatus === "rejected"
+              : tpaFail
               ? "Belum lolos tes potensi akademik"
-              : "Sedang dinilai"
+              : act(3)
+              ? "Sedang dalam tahap ini — menunggu hasil"
+              : "Hasil belum diumumkan"
           }
           status={
-            tpaPublished && tpaStatus === "approved"
+            tpaPass
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
-              : tpaPublished && tpaStatus === "rejected"
+              : tpaFail
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Menunggu", tone: "wait" }
+              : { text: waitText(3, "Menunggu"), tone: act(3) ? "active" : "wait" }
           }
         />
         <Step
           n={5}
           label="Interview"
-          done={itwPublished && itwStatus === "approved"}
-          rejected={itwPublished && itwStatus === "rejected"}
+          done={itwPass}
+          rejected={itwFail}
+          active={act(4)}
           desc={
-            !itwPublished
-              ? "Hasil belum diumumkan"
-              : itwStatus === "approved"
+            itwPass
               ? "Lolos tahap interview"
-              : itwStatus === "rejected"
+              : itwFail
               ? "Belum lolos tahap interview"
-              : "Sedang dinilai"
+              : act(4)
+              ? "Sedang dalam tahap ini — menunggu hasil"
+              : "Hasil belum diumumkan"
           }
           status={
-            itwPublished && itwStatus === "approved"
+            itwPass
               ? { text: "Lolos — tahap final", tone: "pass" }
-              : itwPublished && itwStatus === "rejected"
+              : itwFail
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Menunggu", tone: "wait" }
+              : { text: waitText(4, "Menunggu"), tone: act(4) ? "active" : "wait" }
           }
         />
       </div>
+        );
+      })()}
+
 
 
 
@@ -475,6 +515,7 @@ function Step({
   desc,
   done,
   rejected,
+  active,
   status,
 }: {
   n: number;
@@ -482,24 +523,32 @@ function Step({
   desc: string;
   done?: boolean;
   rejected?: boolean;
-  status?: { text: string; tone: "pass" | "fail" | "wait" };
+  active?: boolean;
+  status?: { text: string; tone: "pass" | "fail" | "wait" | "active" };
 }) {
   const cls = rejected
     ? "border-destructive/40 bg-destructive/5"
     : done
     ? "border-primary/40 bg-primary-soft/40"
+    : active
+    ? "border-amber-500 bg-amber-50 dark:bg-amber-950/20 shadow-[0_0_0_3px_rgba(245,158,11,0.15)]"
     : "border-border bg-background";
   const numCls = rejected
     ? "bg-destructive text-destructive-foreground"
     : done
     ? "bg-primary text-primary-foreground"
+    : active
+    ? "bg-amber-500 text-amber-950 animate-pulse"
     : "bg-muted text-muted-foreground";
   const badgeCls =
     status?.tone === "pass"
       ? "border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200"
       : status?.tone === "fail"
       ? "border-destructive/50 bg-destructive/5 text-destructive"
+      : status?.tone === "active"
+      ? "border-amber-500 bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-200"
       : "border-border bg-muted text-muted-foreground";
+
   return (
     <div className={`flex h-full min-w-0 flex-col rounded-2xl border-2 ${cls} p-3.5`}>
       <div className="flex min-w-0 items-start gap-2">
