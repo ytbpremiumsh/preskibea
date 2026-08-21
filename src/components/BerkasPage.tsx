@@ -705,7 +705,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                           rows={4}
                           maxLength={1500}
                           disabled={!registrant || !essayDone}
-                          required={d.required}
+                          required={d.required && !isFTPremium}
                           className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                         />
                         <div className="mt-1 text-right text-[10px] text-muted-foreground">{v.length}/1500</div>
@@ -727,7 +727,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                             value={v}
                             onChange={(e) => setVal(d.key, e.target.value)}
                             disabled={!registrant || !essayDone}
-                            required={d.required}
+                            required={d.required && !isFTPremium}
                             className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                           >
                             <option value="">{d.placeholder || "Pilih salah satu"}</option>
@@ -765,7 +765,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                           placeholder="https://drive.google.com/..."
                           disabled={!registrant || !essayDone}
                           className={`w-full rounded-xl border bg-background pl-9 pr-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${showError ? "border-destructive" : "border-border focus:border-primary"}`}
-                          required={d.required}
+                          required={d.required && !isFTPremium}
                         />
                       </div>
                       {showError && (
