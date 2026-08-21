@@ -28,6 +28,7 @@ type StatusData = {
   created_at: string;
   token: string;
   fast_track?: boolean;
+  extra?: any;
   payment_status?: string | null;
   essay_submitted?: boolean;
   essay_submitted_at?: string | null;
