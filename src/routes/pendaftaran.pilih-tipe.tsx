@@ -65,7 +65,7 @@ function PilihTipePage() {
               <Clock size={32} />
             </div>
             <h2 className="text-2xl font-bold text-foreground mb-3">Pendaftaran Reguler</h2>
-            <p className="text-muted-foreground text-sm mb-6 flex-1">
+            <p className="text-muted-foreground text-sm mb-6">
               Jalur pendaftaran standar tanpa biaya. Peserta wajib mengikuti seluruh tahapan seleksi dan syarat media sosial.
             </p>
             
