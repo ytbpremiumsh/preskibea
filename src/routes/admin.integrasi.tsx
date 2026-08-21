@@ -72,7 +72,6 @@ function AdminIntegrasi() {
   const [testingTelegram, setTestingTelegram] = useState(false);
   const [fastTrackFee, setFastTrackFee] = useState<string>("15000");
   const [fastTrackPremiumFee, setFastTrackPremiumFee] = useState<string>("35000");
-  const [fastTrackPremiumFee, setFastTrackPremiumFee] = useState<string>("35000");
   const [webhookUrl, setWebhookUrl] = useState("");
 
   const load = async () => {
