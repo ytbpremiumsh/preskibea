@@ -71,6 +71,7 @@ function AdminIntegrasi() {
   });
   const [testingTelegram, setTestingTelegram] = useState(false);
   const [fastTrackFee, setFastTrackFee] = useState<string>("15000");
+  const [fastTrackPremiumFee, setFastTrackPremiumFee] = useState<string>("35000");
   const [webhookUrl, setWebhookUrl] = useState("");
 
   const load = async () => {
@@ -92,7 +93,7 @@ function AdminIntegrasi() {
     const { data: settings } = await supabase
       .from("site_settings")
       .select("key, value")
-      .in("key", ["mayar_config", "payment_provider", "aulaa_config", "doku_config", "fast_track_fee", "telegram_config"]);
+      .in("key", ["mayar_config", "payment_provider", "aulaa_config", "doku_config", "fast_track_fee", "fast_track_premium_fee", "telegram_config"]);
     
     if (settings) {
       const provider = settings.find(s => s.key === "payment_provider")?.value as string;
@@ -106,6 +107,9 @@ function AdminIntegrasi() {
 
       const fee = settings.find(s => s.key === "fast_track_fee")?.value as string;
       if (fee) setFastTrackFee(fee);
+
+      const premiumFee = settings.find(s => s.key === "fast_track_premium_fee")?.value as string;
+      if (premiumFee) setFastTrackPremiumFee(premiumFee);
 
       const doku = settings.find(s => s.key === "doku_config")?.value as any;
       if (doku) setDokuConfig(doku);
@@ -170,6 +174,7 @@ function AdminIntegrasi() {
         supabase.from("site_settings").upsert({ key: "aulaa_config", value: aulaaConfig }, { onConflict: "key" }),
         supabase.from("site_settings").upsert({ key: "doku_config", value: dokuConfig }, { onConflict: "key" }),
         supabase.from("site_settings").upsert({ key: "fast_track_fee", value: fastTrackFee }, { onConflict: "key" }),
+        supabase.from("site_settings").upsert({ key: "fast_track_premium_fee", value: fastTrackPremiumFee }, { onConflict: "key" }),
         supabase.from("site_settings").upsert({ key: "telegram_config", value: telegramConfig }, { onConflict: "key" })
       ]);
       toast.success("Konfigurasi integrasi berhasil disimpan");
@@ -349,6 +354,22 @@ function AdminIntegrasi() {
                   />
                   <p className="text-[10px] text-muted-foreground italic">
                     * Nominal ini akan digunakan untuk pembuatan invoice pendaftar Fast Track.
+                  </p>
+                </div>
+
+                <div className="space-y-2 pb-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <CreditCard size={12} /> Biaya Fast Track Premium (IDR)
+                  </Label>
+                  <Input 
+                    type="number"
+                    value={fastTrackPremiumFee}
+                    onChange={(e) => setFastTrackPremiumFee(e.target.value)}
+                    placeholder="35000"
+                    className="bg-background font-bold"
+                  />
+                  <p className="text-[10px] text-muted-foreground italic">
+                    * Jalur ini otomatis lolos Administrasi Berkas.
                   </p>
                 </div>
                 
