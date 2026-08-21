@@ -34,6 +34,7 @@ function SuksesPage() {
   const { name, email, whatsapp, kind, token } = useSearch({ from: "/pendaftaran/sukses" });
   const [fastTrackPayUrl, setFastTrackPayUrl] = useState<string | null>(null);
   const [isFastTrack, setIsFastTrack] = useState(false);
+  const [ftType, setFtType] = useState<string | null>(null);
   const [payOpen, setPayOpen] = useState(false);
 
   useEffect(() => {
@@ -42,13 +43,17 @@ function SuksesPage() {
       import("@/integrations/supabase/client").then(({ supabase }) => {
         supabase
           .from("registrations")
-          .select("fast_track, payment_status, payment_url")
+          .select("fast_track, payment_status, payment_url, extra")
           .eq("token", token)
           .maybeSingle()
           .then(({ data }) => {
             setIsFastTrack(Boolean(data?.fast_track));
-            if (data?.fast_track && data?.payment_status === "pending" && data?.payment_url) {
-              setFastTrackPayUrl(data.payment_url);
+            if (data?.fast_track) {
+              const type = (data.extra as any)?.fast_track_type || "standard";
+              setFtType(type);
+              if (data?.payment_status === "pending" && data?.payment_url) {
+                setFastTrackPayUrl(data.payment_url);
+              }
             }
           });
       });
@@ -120,10 +125,12 @@ function SuksesPage() {
                 <CreditCard size={20} />
               </div>
               <div className="flex-1">
-                <div className="text-xs font-bold uppercase tracking-wide text-primary">Pembayaran Fast Track</div>
+                <div className="text-xs font-bold uppercase tracking-wide text-primary">
+                  Pembayaran {ftType === "premium" ? "Fast Track Premium" : "Fast Track"}
+                </div>
                 <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Selesaikan Pembayaran</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Kamu memilih jalur <strong>Fast Track</strong>. Silakan selesaikan pembayaran agar status pendaftaran otomatis valid (Lolos Kirim Poster & Bebas Follow Sosmed).
+                  Kamu memilih jalur <strong>{ftType === "premium" ? "Fast Track Premium" : "Fast Track"}</strong>. Silakan selesaikan pembayaran agar status pendaftaran otomatis valid (Lolos Kirim Poster & Bebas Follow Sosmed).
                 </p>
               </div>
             </div>
@@ -155,10 +162,12 @@ function SuksesPage() {
                 <CheckCircle2 size={20} />
               </div>
               <div className="flex-1">
-                <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Jalur Fast Track Aktif</div>
+                <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+                  Jalur {ftType === "premium" ? "Fast Track Premium" : "Fast Track"} Aktif
+                </div>
                 <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Otomatis Lolos Tahapan</h2>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  Selamat! Karena kamu menggunakan jalur <strong>Fast Track</strong>, kamu <strong>otomatis lolos</strong> tanpa perlu membagikan poster, follow sosial media, atau mengirim esai.
+                  Selamat! Karena kamu menggunakan jalur <strong>{ftType === "premium" ? "Fast Track Premium" : "Fast Track"}</strong>, kamu <strong>otomatis lolos</strong> tanpa perlu membagikan poster, follow sosial media, atau mengirim esai.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">

@@ -261,7 +261,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : "border-border bg-muted text-muted-foreground"
           }`}
         >
-          {isFast ? "⚡ Fast Track" : "Jalur Reguler"}
+          {isFast ? (isFTPremium ? "⚡ Fast Track Premium" : "⚡ Fast Track") : "Jalur Reguler"}
         </span>
       </div>
 

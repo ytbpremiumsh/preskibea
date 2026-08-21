@@ -725,7 +725,9 @@ export function RegistrationForm({
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tipe Pendaftaran</div>
                 <div className="text-lg font-black text-foreground uppercase tracking-tight">
-                  {registrationType === "fast_track" ? "Fast Track" : "Reguler"}
+                  {registrationType === "fast_track" 
+                    ? (fastTrackType === "premium" ? "Fast Track Premium" : "Fast Track") 
+                    : "Reguler"}
                 </div>
               </div>
             </div>
