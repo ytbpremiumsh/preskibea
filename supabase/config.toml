@@ -13,4 +13,8 @@ project_id = "ltmfvbcazebowndigkyi"
   [functions.check-payment-status]
     verify_jwt = false
 
+  [functions.create-upload-url]
+    verify_jwt = false
+
+
 
