@@ -370,7 +370,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : tpaFail
               ? "Belum lolos tes potensi akademik (pelaksanaan 7 Maret 2027)"
               : act(3)
-              ? "Tes online serentak dijadwalkan 7 Maret 2027, hasil diumumkan 10 Maret 2027. Info tautan tes dikirim via email/WhatsApp."
+              ? "Tes online serentak dijadwalkan 7 Maret 2027, Peserta diharapkan untuk mempersiapkan diri.\u00a0"
               : "Tes online serentak 7 Maret 2027, pengumuman hasil 10 Maret 2027"
           }
 
