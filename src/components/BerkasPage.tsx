@@ -184,7 +184,6 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   const submitBerkas = submitBerkasDocuments;
   const sendEmail = sendAppEmail;
   const search = useSearch({ strict: false }) as { token?: string };
-  const isFTPremium = registrant?.fast_track && (registrant as any).extra?.fast_track_type === "premium";
   const [token, setToken] = useState((search.token ?? "").toUpperCase());
   const [docs, setDocs] = useState<DocSlot[]>([]);
   const [loading, setLoading] = useState(true);
@@ -194,6 +193,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   const [registrant, setRegistrant] = useState<RegInfo | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
   const isFastTrack = !!registrant?.fast_track;
+  const isFTPremium = isFastTrack && (registrant as any)?.extra?.fast_track_type === "premium";
   const paymentDue = isFastTrack && registrant?.payment_status !== "paid";
   const essayDone = !paymentDue && (isFastTrack || !!registrant?.essay_submitted);
 
