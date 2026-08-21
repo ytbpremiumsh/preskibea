@@ -509,6 +509,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                     className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm font-mono tracking-wider outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   />
                 </div>
+                <p className="mt-1.5 text-[10px] text-muted-foreground italic">
+                  Contoh: {tokenPrefix(kind)}YGWZKY
+                </p>
               </label>
               <button
                 type="button"
