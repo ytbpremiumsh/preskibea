@@ -134,13 +134,21 @@ const FALLBACK: Record<"prestasi" | "ekonomi" | "umum" | "yatim", FormSchema> = 
   },
 };
 
-async function uploadFile(file: File, prefix: string): Promise<string> {
-  const ext = file.name.split(".").pop() ?? "bin";
-  const path = `${prefix}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const { error } = await supabase.storage.from("kp-uploads").upload(path, file, { upsert: false });
-  if (error) throw error;
-  return supabase.storage.from("kp-uploads").getPublicUrl(path).data.publicUrl;
+async function uploadFile(file: File, kind: string, field: string): Promise<string> {
+  const ext = (file.name.split(".").pop() ?? "bin").toLowerCase();
+  // Path unggahan ditentukan server (edge function) agar tidak bisa menimpa berkas pendaftar lain.
+  const { data, error } = await supabase.functions.invoke("create-upload-url", {
+    body: { kind, field, ext, size: file.size },
+  });
+  if (error) throw new Error("Gagal menyiapkan unggahan berkas");
+  const info = data as { path: string; token: string; url: string };
+  const { error: upErr } = await supabase.storage
+    .from("kp-uploads")
+    .uploadToSignedUrl(info.path, info.token, file);
+  if (upErr) throw upErr;
+  return info.url;
 }
+
 
 function serializeError(err: unknown): string {
   if (!err) return "Terjadi kesalahan";
@@ -385,7 +393,7 @@ export function RegistrationForm({
         if (!file) continue;
         
         toast.info(`Mengunggah ${f.label}...`, { duration: 2000 });
-        fileUrls[f.name] = await uploadFile(file, `${kind}/${f.name}`);
+        fileUrls[f.name] = await uploadFile(file, kind, f.name);
       }
 
       // Build payload mapping standard names to columns; rest into extra
