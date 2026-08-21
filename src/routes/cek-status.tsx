@@ -259,6 +259,35 @@ function StatusResult({ data }: { data: StatusData }) {
       </div>
 
       {/* Timeline */}
+      {(() => {
+        const essayPass = fastPaid || essayAutoReguler || (!isFast && essayPublished && essayStatus === "approved");
+        const essayFail = !isFast && !essayAutoReguler && essayPublished && essayStatus === "rejected";
+        const admPass = adminPublished && adminStatus === "approved";
+        const admFail = adminPublished && adminStatus === "rejected";
+        const tpaPass = tpaShown && tpaStatus === "approved";
+        const tpaFail = tpaShown && tpaStatus === "rejected";
+        const itwPass = itwShown && itwStatus === "approved";
+        const itwFail = itwShown && itwStatus === "rejected";
+
+        const outcomes: ("pass" | "fail" | "wait")[] = [
+          "pass",
+          essayPass ? "pass" : essayFail ? "fail" : "wait",
+          admPass ? "pass" : admFail ? "fail" : "wait",
+          tpaPass ? "pass" : tpaFail ? "fail" : "wait",
+          itwPass ? "pass" : itwFail ? "fail" : "wait",
+        ];
+        // Tahap aktif = tahap "wait" pertama setelah semua tahap sebelumnya lolos
+        let activeIdx = -1;
+        for (let i = 0; i < outcomes.length; i++) {
+          if (outcomes[i] === "pass") continue;
+          if (outcomes[i] === "wait") activeIdx = i;
+          break;
+        }
+        const act = (i: number) => activeIdx === i;
+        const waitText = (i: number, fallback: string) =>
+          act(i) ? "Sedang berlangsung — menunggu hasil" : fallback;
+
+        return (
       <div className="mt-6 flex flex-col gap-3">
         <Step
           n={1}
@@ -270,8 +299,9 @@ function StatusResult({ data }: { data: StatusData }) {
         <Step
           n={2}
           label="Pengiriman Essai"
-          done={fastPaid || essayAutoReguler || (!isFast && essayPublished && essayStatus === "approved")}
-          rejected={!isFast && !essayAutoReguler && essayPublished && essayStatus === "rejected"}
+          done={essayPass}
+          rejected={essayFail}
+          active={act(1)}
           desc={
             fastUnpaid
               ? "Menunggu pembayaran Fast Track diverifikasi"
@@ -292,12 +322,12 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "⚡ Auto Lolos (Fast Track)", tone: "pass" }
               : essayAutoReguler
               ? { text: "✅ Auto Lolos (Reguler)", tone: "pass" }
-              : essayPublished && essayStatus === "approved"
+              : essayPass
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
-              : essayPublished && essayStatus === "rejected"
+              : essayFail
               ? { text: "Tidak lolos", tone: "fail" }
               : essayDone
-              ? { text: "Menunggu", tone: "wait" }
+              ? { text: waitText(1, "Menunggu"), tone: act(1) ? "active" : "wait" }
               : { text: "Selesaikan esai", tone: "wait" }
           }
 
@@ -305,64 +335,70 @@ function StatusResult({ data }: { data: StatusData }) {
         <Step
           n={3}
           label="Seleksi Administrasi"
-          done={adminPublished && adminStatus === "approved"}
-          rejected={adminPublished && adminStatus === "rejected"}
+          done={admPass}
+          rejected={admFail}
+          active={act(2)}
           desc={adminResultLabel}
           status={
-            adminPublished && adminStatus === "approved"
+            admPass
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
-              : adminPublished && adminStatus === "rejected"
+              : admFail
               ? { text: "Tidak lolos", tone: "fail" }
               : hasDocs
-              ? { text: "Menunggu", tone: "wait" }
+              ? { text: waitText(2, "Menunggu"), tone: act(2) ? "active" : "wait" }
               : { text: "Kirim berkas dahulu", tone: "wait" }
           }
         />
         <Step
           n={4}
           label="Tes Potensi Akademik"
-          done={tpaPublished && tpaStatus === "approved"}
-          rejected={tpaPublished && tpaStatus === "rejected"}
+          done={tpaPass}
+          rejected={tpaFail}
+          active={act(3)}
           desc={
-            !tpaPublished
-              ? "Hasil belum diumumkan"
-              : tpaStatus === "approved"
+            tpaPass
               ? "Lolos tes potensi akademik"
-              : tpaStatus === "rejected"
+              : tpaFail
               ? "Belum lolos tes potensi akademik"
-              : "Sedang dinilai"
+              : act(3)
+              ? "Sedang dalam tahap ini — menunggu hasil"
+              : "Hasil belum diumumkan"
           }
           status={
-            tpaPublished && tpaStatus === "approved"
+            tpaPass
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
-              : tpaPublished && tpaStatus === "rejected"
+              : tpaFail
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Menunggu", tone: "wait" }
+              : { text: waitText(3, "Menunggu"), tone: act(3) ? "active" : "wait" }
           }
         />
         <Step
           n={5}
           label="Interview"
-          done={itwPublished && itwStatus === "approved"}
-          rejected={itwPublished && itwStatus === "rejected"}
+          done={itwPass}
+          rejected={itwFail}
+          active={act(4)}
           desc={
-            !itwPublished
-              ? "Hasil belum diumumkan"
-              : itwStatus === "approved"
+            itwPass
               ? "Lolos tahap interview"
-              : itwStatus === "rejected"
+              : itwFail
               ? "Belum lolos tahap interview"
-              : "Sedang dinilai"
+              : act(4)
+              ? "Sedang dalam tahap ini — menunggu hasil"
+              : "Hasil belum diumumkan"
           }
           status={
-            itwPublished && itwStatus === "approved"
+            itwPass
               ? { text: "Lolos — tahap final", tone: "pass" }
-              : itwPublished && itwStatus === "rejected"
+              : itwFail
               ? { text: "Tidak lolos", tone: "fail" }
-              : { text: "Menunggu", tone: "wait" }
+              : { text: waitText(4, "Menunggu"), tone: act(4) ? "active" : "wait" }
           }
         />
       </div>
+        );
+      })()}
+
 
 
 
