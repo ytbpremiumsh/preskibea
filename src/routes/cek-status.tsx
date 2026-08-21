@@ -292,7 +292,7 @@ function StatusResult({ data }: { data: StatusData }) {
         }
         const act = (i: number) => activeIdx === i;
         const waitText = (i: number, fallback: string) =>
-          act(i) ? "Sedang berlangsung — menunggu hasil" : fallback;
+          act(i) ? "Menunggu" : fallback;
 
         return (
       <div className="mt-6 flex flex-col gap-3">
