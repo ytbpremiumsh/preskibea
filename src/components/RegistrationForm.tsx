@@ -393,7 +393,7 @@ export function RegistrationForm({
         if (!file) continue;
         
         toast.info(`Mengunggah ${f.label}...`, { duration: 2000 });
-        fileUrls[f.name] = await uploadFile(file, `${kind}/${f.name}`);
+        fileUrls[f.name] = await uploadFile(file, kind, f.name);
       }
 
       // Build payload mapping standard names to columns; rest into extra
