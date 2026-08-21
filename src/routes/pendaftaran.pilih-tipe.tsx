@@ -118,6 +118,7 @@ function PilihTipePage() {
                 <span className="font-semibold">Bebas Syarat Media Sosial & Share Poster</span>
               </li>
               <li className="flex items-center gap-3 text-sm rounded-xl bg-[var(--gold)]/15 border border-[var(--gold)]/40 px-3 py-2 -mx-1 animate-blink-gold">
+                <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
                 <span className="inline-flex h-5 items-center rounded-full bg-[var(--gold)] px-2 text-[10px] font-extrabold uppercase tracking-wider text-white">Populer</span>
                 <span className="font-bold text-foreground">Lolos Pengiriman Administrasi Esai</span>
               </li>
