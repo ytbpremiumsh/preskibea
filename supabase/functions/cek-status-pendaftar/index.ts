@@ -119,6 +119,7 @@ Deno.serve(async (req) => {
         fast_track: fastTrack,
         payment_status: paymentStatus,
         essay_submitted: fastPaid || !!essaySubmittedAt,
+        extra: reg.extra,
 
         essay_submitted_at: essaySubmittedAt,
         essay_status: essayStatus,
