@@ -805,21 +805,23 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
               ))}
             </ul>
           </div>
-          <button
-            type="submit"
-            disabled={submitting || !registrant || !essayDone}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition disabled:opacity-60"
-          >
-            {submitting ? (
-              <>
-                <Loader2 size={16} className="animate-spin" /> Mengirim…
-              </>
-            ) : (
-              <>
-                Kirim Berkas <ArrowRight size={16} />
-              </>
-            )}
-          </button>
+          {!isFTPremium && (
+            <button
+              type="submit"
+              disabled={submitting || !registrant || !essayDone}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition disabled:opacity-60"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" /> Mengirim…
+                </>
+              ) : (
+                <>
+                  Kirim Berkas <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          )}
         </aside>
       </form>
       <AdSlot placement="berkas_bottom" />
