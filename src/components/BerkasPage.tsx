@@ -660,9 +660,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
           )}
 
 
-          <KetentuanBerkasCard kind={kind} />
+          {!isFTPremium && <KetentuanBerkasCard kind={kind} />}
 
-          {registrant && essayDone && (
+          {registrant && essayDone && !isFTPremium && (
             <div className="card-block p-6 md:p-7">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-base font-bold text-foreground">Form Pengiriman Berkas</h2>
@@ -805,21 +805,23 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
               ))}
             </ul>
           </div>
-          <button
-            type="submit"
-            disabled={submitting || !registrant || !essayDone}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition disabled:opacity-60"
-          >
-            {submitting ? (
-              <>
-                <Loader2 size={16} className="animate-spin" /> Mengirim…
-              </>
-            ) : (
-              <>
-                Kirim Berkas <ArrowRight size={16} />
-              </>
-            )}
-          </button>
+          {!isFTPremium && (
+            <button
+              type="submit"
+              disabled={submitting || !registrant || !essayDone}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition disabled:opacity-60"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" /> Mengirim…
+                </>
+              ) : (
+                <>
+                  Kirim Berkas <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          )}
         </aside>
       </form>
       <AdSlot placement="berkas_bottom" />
