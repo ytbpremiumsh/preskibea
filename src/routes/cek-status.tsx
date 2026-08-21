@@ -366,13 +366,14 @@ function StatusResult({ data }: { data: StatusData }) {
           active={act(3)}
           desc={
             tpaPass
-              ? "Lolos tes potensi akademik"
+              ? "Lolos tes potensi akademik — dijadwalkan 7 Maret 2027, pengumuman 10 Maret 2027"
               : tpaFail
-              ? "Belum lolos tes potensi akademik"
+              ? "Belum lolos tes potensi akademik (pelaksanaan 7 Maret 2027)"
               : act(3)
-              ? "Menunggu"
-              : "Hasil belum diumumkan"
+              ? "Tes online serentak dijadwalkan 7 Maret 2027, hasil diumumkan 10 Maret 2027. Info tautan tes dikirim via email/WhatsApp."
+              : "Tes online serentak 7 Maret 2027, pengumuman hasil 10 Maret 2027"
           }
+
           status={
             tpaPass
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
