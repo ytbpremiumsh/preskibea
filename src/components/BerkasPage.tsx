@@ -475,7 +475,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
             </span>
             <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Verifikasi Berkas</h1>
             <p className="mt-2 text-muted-foreground">
-              Perbaikan ketika memasukkan kode pendaftaran ( Fast track premium) pada berkas administrasi maka otomatis berikan informasi bahwa dia sudah otomatis lolos , jadi tidak perlu melakukan pengiriman berkas administrasi lagi , sudah otomatis langsung masuk tahap TPA
+              Masukkan kode pendaftar kamu untuk melanjutkan ke tahap Berkas Administrasi.
             </p>
           </div>
         </div>
@@ -509,6 +509,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                     className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm font-mono tracking-wider outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   />
                 </div>
+                <p className="mt-1.5 text-[10px] text-muted-foreground italic">
+                  Contoh: {tokenPrefix(kind)}YGWZKY
+                </p>
               </label>
               <button
                 type="button"
@@ -656,7 +659,19 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
             <div className="card-block p-6 md:p-7">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-base font-bold text-foreground">Form Pengiriman Berkas</h2>
+                {isFTPremium && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                    <Zap size={10} fill="currentColor" /> LOLOS OTOMATIS
+                  </span>
+                )}
               </div>
+              
+              {isFTPremium && (
+                <div className="mt-3 p-3 rounded-xl bg-emerald-50/50 border border-emerald-100 text-[11px] text-emerald-700 leading-relaxed">
+                  <strong>Pemberitahuan:</strong> Berkas Anda telah diverifikasi otomatis oleh sistem. Anda tidak wajib mengisi form ini, namun Anda tetap diperbolehkan jika ingin melengkapi data pendukung lainnya.
+                </div>
+              )}
+
               <div className="mt-5 space-y-6">
                 {docs.map((d) => {
                   const v = values[d.key] ?? "";
