@@ -185,6 +185,10 @@ function PilihTipePage() {
             <ul className="space-y-3 mb-8">
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
+                <span className="font-semibold">Berkesempatan Meraih Dana Pendidikan Beasiswa</span>
+              </li>
+              <li className="flex items-center gap-3 text-sm text-foreground/80">
+                <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
                 <span className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/15 border border-emerald-500/40 px-3 py-1.5 animate-pulse">
                   <span className="font-bold text-emerald-700">Lolos Administrasi Berkas</span>
                   <Badge className="bg-emerald-500 text-white text-[10px]">Auto</Badge>
@@ -208,7 +212,11 @@ function PilihTipePage() {
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
-                <span><strong className="font-bold text-foreground">E-Book</strong> Menjemput Beasiswa Impian ke Kampus Dunia</span>
+                <span><strong className="font-bold text-foreground">E-Book</strong> Menjemput Beasiswa Impian ke Kampus Dunia Senilai <strong className="font-bold text-foreground">Rp 79.000,-</strong></span>
+              </li>
+              <li className="flex items-center gap-3 text-sm text-foreground/80">
+                <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
+                <span><strong className="font-bold text-foreground">Group</strong> List Beasiswa 2026</span>
               </li>
             </ul>
 
