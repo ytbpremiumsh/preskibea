@@ -475,7 +475,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
             </span>
             <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Verifikasi Berkas</h1>
             <p className="mt-2 text-muted-foreground">
-              Perbaikan ketika memasukkan kode pendaftaran ( Fast track premium) pada berkas administrasi maka otomatis berikan informasi bahwa dia sudah otomatis lolos , jadi tidak perlu melakukan pengiriman berkas administrasi lagi , sudah otomatis langsung masuk tahap TPA
+              Masukkan kode pendaftar kamu untuk melanjutkan ke tahap Berkas Administrasi.
             </p>
           </div>
         </div>
