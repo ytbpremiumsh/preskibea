@@ -13,7 +13,7 @@ const fallback: Stage[] = [
   { title: "Seleksi Administrasi", desc: "Tim panitia memeriksa kelengkapan data dan keabsahan berkas pendaftar.", date: "2027-02-24", startDate: "2027-02-08" },
   { title: "Pengumuman Kandidat", desc: "Pengumuman peserta yang lolos sebagai kandidat dan berhak mengikuti TPA.", date: "2027-02-27", startDate: "2027-02-27", singleDay: true },
   { title: "Tes Potensi Akademik (TPA)", desc: "Peserta mengikuti tes online serentak untuk mengukur kemampuan akademik.", date: "2027-03-07", startDate: "2027-03-07", singleDay: true },
-  { title: "Interview", desc: "Wawancara mendalam dengan finalis untuk mengenal lebih jauh potensi dan motivasi.", date: "2027-03-14", startDate: "2027-03-14", singleDay: true },
+  { title: "Seleksi Interview", desc: "Wawancara mendalam dengan finalis untuk mengenal lebih jauh potensi dan motivasi.", date: "2027-03-14", startDate: "2027-03-14", singleDay: true },
   { title: "Pengumuman Awardee", desc: "Pengumuman resmi para penerima beasiswa Prestasi Kita Batch #8.", date: "2027-03-16", startDate: "2027-03-16", singleDay: true },
   { title: "Awarding", desc: "Penyerahan beasiswa dan merchandise resmi kepada para penerima.", date: "2027-03-25", startDate: "2027-03-25", singleDay: true },
 ];
