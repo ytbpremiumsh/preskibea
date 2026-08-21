@@ -660,9 +660,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
           )}
 
 
-          <KetentuanBerkasCard kind={kind} />
+          {!isFTPremium && <KetentuanBerkasCard kind={kind} />}
 
-          {registrant && essayDone && (
+          {registrant && essayDone && !isFTPremium && (
             <div className="card-block p-6 md:p-7">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-base font-bold text-foreground">Form Pengiriman Berkas</h2>
