@@ -166,6 +166,10 @@ function StatusResult({ data }: { data: StatusData }) {
   const tpaStatus = data.tpa_status ?? "pending";
   const itwPublished = !!data.interview_announcement_published;
   const itwStatus = data.interview_status ?? "pending";
+  // Hasil per-peserta yang sudah dinilai admin tetap ditampilkan walau pengumuman global belum dirilis
+  const tpaShown = tpaPublished || tpaStatus !== "pending";
+  const itwShown = itwPublished || itwStatus !== "pending";
+
   const adminResultLabel = !hasDocs
     ? "Menunggu pengiriman berkas"
     : !adminPublished
