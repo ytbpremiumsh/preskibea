@@ -345,7 +345,7 @@ function StatusResult({ data }: { data: StatusData }) {
           done={admPass}
           rejected={admFail}
           active={act(2)}
-          desc={adminResultLabel}
+          desc={isFTPremium ? "Otomatis lolos (Fast Track Premium)" : adminResultLabel}
           status={
             isFTPremium
               ? { text: "⚡ Auto Lolos (Premium)", tone: "pass" }

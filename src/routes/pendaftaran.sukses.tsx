@@ -168,6 +168,11 @@ function SuksesPage() {
                 <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Otomatis Lolos Tahapan</h2>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                   Selamat! Karena kamu menggunakan jalur <strong>{ftType === "premium" ? "Fast Track Premium" : "Fast Track"}</strong>, kamu <strong>otomatis lolos</strong> tanpa perlu membagikan poster, follow sosial media, atau mengirim esai.
+                  {ftType === "premium" && (
+                    <span className="block mt-2 font-medium text-emerald-700 dark:text-emerald-400">
+                      Khusus Fast Track Premium, kamu juga <strong>otomatis lolos seleksi administrasi berkas</strong>.
+                    </span>
+                  )}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
@@ -179,6 +184,11 @@ function SuksesPage() {
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
                     <Check size={10} /> BEBAS ESAI
                   </span>
+                  {ftType === "premium" && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                      <Check size={10} /> BEBAS ADMINISTRASI
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -204,7 +214,7 @@ function SuksesPage() {
                   </div>
                   <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Bagikan Poster Beasiswa</h2>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Karena jalur <strong>Fast Track</strong>, kamu <strong>bebas</strong> dari tahapan bagikan poster. Langsung lanjut ke pengiriman berkas.
+                    Karena jalur <strong>{ftType === "premium" ? "Fast Track Premium" : "Fast Track"}</strong>, kamu <strong>bebas</strong> dari tahapan bagikan poster. {ftType === "premium" ? "Status pendaftaran dan administrasi berkas kamu sudah otomatis valid." : "Langsung lanjut ke pengiriman berkas."}
                   </p>
                 </div>
               </div>
