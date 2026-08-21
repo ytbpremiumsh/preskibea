@@ -9,6 +9,7 @@ import {
   KeyRound,
   UserCheck,
   AlertCircle,
+  Zap,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -192,6 +193,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   const [registrant, setRegistrant] = useState<RegInfo | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
   const isFastTrack = !!registrant?.fast_track;
+  const isFTPremium = isFastTrack && (registrant as any)?.extra?.fast_track_type === "premium";
   const paymentDue = isFastTrack && registrant?.payment_status !== "paid";
   const essayDone = !paymentDue && (isFastTrack || !!registrant?.essay_submitted);
 
@@ -473,7 +475,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
             </span>
             <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Verifikasi Berkas</h1>
             <p className="mt-2 text-muted-foreground">
-              Masukkan kode pendaftar kamu untuk melanjutkan ke tahap Berkas Administrasi.
+              Perbaikan bagi peserta Fast Track Premium , jika sudah menggunakan jalur tersebut, maka sudah otomatis lolos pengiriman berkas nya dan berikan notif sudah lolos otomatis pada pengiriman berkas jika ingin mengirimkan berkas pada masing-masing kategori
+
+              coontoh kode PK-UMU-YGWZKY
             </p>
           </div>
         </div>
@@ -552,22 +556,40 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {registrant && (
-            <div className="rounded-2xl border border-primary/30 bg-primary-soft/40 p-5">
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2 text-sm font-bold text-primary">
-                  <UserCheck size={16} className="shrink-0" /> Terverifikasi: {registrant.full_name}
-                </div>
-                <div className="grid grid-cols-2 gap-4 pt-3 border-t border-primary/10">
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-primary/60 block">Jenjang Pendidikan</span>
-                    <span className="text-xs font-semibold text-foreground uppercase">{registrant.education_level || "-"}</span>
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-primary/30 bg-primary-soft/40 p-5">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-2 text-sm font-bold text-primary">
+                    <UserCheck size={16} className="shrink-0" /> Terverifikasi: {registrant.full_name}
                   </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-primary/60 block">Kode Pendaftaran</span>
-                    <span className="text-xs font-mono font-bold text-primary tracking-wider">{registrant.token || token}</span>
+                  <div className="grid grid-cols-2 gap-4 pt-3 border-t border-primary/10">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-primary/60 block">Jenjang Pendidikan</span>
+                      <span className="text-xs font-semibold text-foreground uppercase">{registrant.education_level || "-"}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-primary/60 block">Kode Pendaftaran</span>
+                      <span className="text-xs font-mono font-bold text-primary tracking-wider">{registrant.token || token}</span>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {isFTPremium && (
+                <div className="rounded-2xl border-2 border-[var(--gold)] bg-[oklch(0.98_0.02_85)] p-5 animate-in fade-in slide-in-from-top-2 duration-500">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--gold)] text-gold-foreground">
+                      <Zap size={20} fill="currentColor" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-[var(--gold)] uppercase tracking-wider">Lolos Otomatis</h3>
+                      <p className="text-xs text-muted-foreground font-medium mt-0.5">
+                        Sebagai peserta <strong>Fast Track Premium</strong>, berkas administrasi Anda telah <strong>DIVERIFIKASI OTOMATIS</strong> oleh sistem. Anda tidak wajib mengunggah berkas lagi, namun tetap diperbolehkan jika ingin melengkapi data.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           
