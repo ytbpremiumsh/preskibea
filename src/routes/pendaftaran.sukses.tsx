@@ -170,7 +170,7 @@ function SuksesPage() {
                   Selamat! Karena kamu menggunakan jalur <strong>{ftType === "premium" ? "Fast Track Premium" : "Fast Track"}</strong>, kamu <strong>otomatis lolos</strong> tanpa perlu membagikan poster, follow sosial media, atau mengirim esai.
                   {ftType === "premium" && (
                     <span className="block mt-2 font-medium text-emerald-700 dark:text-emerald-400">
-                      Khusus <strong>Fast Track Premium</strong>, kamu juga <strong>otomatis Lolos Seleksi Administrasi</strong> berkas. Status ini sudah ditetapkan otomatis oleh sistem, jadi tidak memerlukan publikasi pengumuman maupun update manual dari admin.
+                      Khusus <strong>Fast Track Premium</strong>, kamu juga <strong>otomatis Lolos Seleksi Administrasi</strong> berkas.&nbsp;
                     </span>
                   )}
                 </p>
