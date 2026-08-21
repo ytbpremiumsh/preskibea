@@ -58,7 +58,7 @@ function ChartFallback() {
 function AdminOverview() {
   const [recent, setRecent] = useState<RecentRow[]>([]);
   const [lite, setLite] = useState<LiteRow[]>([]);
-  const [counts, setCounts] = useState({ total: 0, prestasi: 0, ekonomi: 0, umum: 0, yatim: 0, pending: 0, today: 0, docs: 0, fastTrack: 0 });
+  const [counts, setCounts] = useState({ total: 0, prestasi: 0, ekonomi: 0, umum: 0, yatim: 0, pending: 0, today: 0, docs: 0, fastTrack: 0, fastTrackPremium: 0 });
   const [loading, setLoading] = useState(true);
   const [notif, setNotif] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
@@ -87,6 +87,7 @@ function AdminOverview() {
         todayRes,
         docsRes,
         fastTrackRes,
+        premiumRes,
       ] = await Promise.all([
         supabase.from("registrations")
           .select("id,full_name,email,kind,status,school_name,education_level,created_at,fast_track")
@@ -105,6 +106,7 @@ function AdminOverview() {
         supabase.from("registrations").select("id", { count: "exact", head: true }).gte("created_at", startToday.toISOString()),
         supabase.from("documents").select("id", { count: "exact", head: true }),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("fast_track", true),
+        supabase.rpc("get_premium_count" as any) || supabase.from("registrations").select("id", { count: "exact", head: true }).contains("extra", { fast_track_type: "premium" }),
       ]);
 
       if (!active) return;

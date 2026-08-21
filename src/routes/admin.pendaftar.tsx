@@ -459,6 +459,7 @@ function AdminPendaftar() {
                   <th className="px-4 py-3">Kode Token</th>
                   <th className="px-4 py-3">Kategori</th>
                   <th className="px-4 py-3">Jalur</th>
+                  <th className="px-4 py-3">Tipe Fast Track</th>
                   <th className="px-4 py-3">Sekolah</th>
                   <th className="px-4 py-3">Kontak</th>
                   <th className="px-4 py-3">Berkas</th>
@@ -490,6 +491,15 @@ function AdminPendaftar() {
                     <td className="px-4 py-3 capitalize">{r.kind}</td>
                     <td className="px-4 py-3">
                       <JalurBadge row={r} />
+                    </td>
+                    <td className="px-4 py-3">
+                      {r.fast_track ? (
+                        <Badge variant="outline" className={(r.extra as any)?.fast_track_type === 'premium' ? 'border-amber-500 text-amber-600 font-bold' : ''}>
+                          {(r.extra as any)?.fast_track_type === 'premium' ? 'Premium' : 'Standard'}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <div>{r.school_name}</div>
