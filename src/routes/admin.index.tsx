@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Json } from "@/integrations/supabase/types";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, GraduationCap, HeartHandshake, Clock, FileText, Bell, BellOff } from "lucide-react";
+import { Loader2, GraduationCap, HeartHandshake, Clock, FileText, Bell, BellOff, Zap } from "lucide-react";
 import { toast } from "sonner";
 
 // Lazy-load charts to keep recharts out of the initial admin bundle
@@ -26,6 +27,7 @@ type RecentRow = {
   education_level: string;
   fast_track: boolean | null;
   created_at: string;
+  extra: Json;
 };
 
 type LiteRow = {
