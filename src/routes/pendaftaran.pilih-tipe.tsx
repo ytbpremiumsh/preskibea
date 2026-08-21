@@ -99,12 +99,12 @@ function PilihTipePage() {
           </div>
 
           {/* Fast Track Card */}
-          <div className="card-block group flex flex-col p-8 transition-all hover:shadow-xl border-t-8 border-[oklch(0.60_0.15_70)] relative overflow-hidden bg-[oklch(0.98_0.02_80)]">
-            <div className="absolute top-0 right-0 bg-[oklch(0.60_0.15_70)] text-white text-[10px] font-bold px-4 py-1.5 rounded-bl-2xl uppercase tracking-widest shadow-sm">
+          <div className="card-block group flex flex-col p-8 transition-all hover:shadow-xl border-t-8 border-[var(--gold)] relative overflow-hidden bg-[oklch(0.98_0.02_80)]">
+            <div className="absolute top-0 right-0 bg-[var(--gold)] text-white text-[10px] font-bold px-4 py-1.5 rounded-bl-2xl uppercase tracking-widest shadow-sm">
               Rekomendasi
             </div>
             
-            <div className="h-14 w-14 rounded-2xl bg-[oklch(0.60_0.15_70)]/10 text-[oklch(0.60_0.15_70)] flex items-center justify-center mb-6">
+            <div className="h-14 w-14 rounded-2xl bg-[var(--gold)]/10 text-[var(--gold)] flex items-center justify-center mb-6">
               <Zap size={32} />
             </div>
             <h2 className="text-2xl font-bold text-foreground mb-3">Jalur Fast Track</h2>
@@ -114,30 +114,30 @@ function PilihTipePage() {
             
             <ul className="space-y-3 mb-8">
               <li className="flex items-center gap-3 text-sm text-foreground/80">
-                <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
+                <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
                 <span className="font-semibold">Bebas Syarat Media Sosial & Share Poster</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
-                <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
+                <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
                 <span>Sertifikat Partisipan Nasional</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
-                <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
+                <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
                 <span>Template CV Lolos Beasiswa</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
-                <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
+                <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
                 <span>E-Book Menjemput Beasiswa Impian ke Kampus Dunia Senilai Rp 79.000,-</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
-                <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
+                <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
                 <span>Group List Beasiswa 2026</span>
               </li>
             </ul>
 
-            <div className="mb-6 p-4 rounded-2xl bg-[oklch(0.60_0.15_70)]/10 border border-[oklch(0.60_0.15_70)]/30 text-center">
-              <span className="text-xs font-bold text-[oklch(0.50_0.15_70)] uppercase tracking-wider block mb-1">BIAYA FAST TRACK</span>
-              <span className="text-2xl font-black text-[oklch(0.50_0.15_70)]">
+            <div className="mb-6 p-4 rounded-2xl bg-[var(--gold)]/10 border border-[var(--gold)]/30 text-center">
+              <span className="text-xs font-bold text-[var(--gold-foreground)] uppercase tracking-wider block mb-1">BIAYA FAST TRACK</span>
+              <span className="text-2xl font-black text-[var(--gold-foreground)]">
                 {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(fastTrackFee)}
               </span>
             </div>
