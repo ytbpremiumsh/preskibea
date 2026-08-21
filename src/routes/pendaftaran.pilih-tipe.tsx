@@ -119,11 +119,19 @@ function PilihTipePage() {
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
-                <span>E-Certificate Resmi Prestasi Kita Batch #8</span>
+                <span>Sertifikat Nasional</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
-                <span>Akses Webinar & E-Book Pengembangan Diri</span>
+                <span>Template CV Lolos Beasiswa</span>
+              </li>
+              <li className="flex items-center gap-3 text-sm text-foreground/80">
+                <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
+                <span>E-Book Menjemput Beasiswa Impian ke Kampus Dunia Senilai Rp 79.000,-</span>
+              </li>
+              <li className="flex items-center gap-3 text-sm text-foreground/80">
+                <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
+                <span>Group List Beasiswa 2026</span>
               </li>
             </ul>
 
