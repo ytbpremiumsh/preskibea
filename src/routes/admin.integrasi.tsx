@@ -110,9 +110,6 @@ function AdminIntegrasi() {
       const premiumFee = settings.find(s => s.key === "fast_track_premium_fee")?.value as string;
       if (premiumFee) setFastTrackPremiumFee(premiumFee);
 
-      const premiumFee = settings.find(s => s.key === "fast_track_premium_fee")?.value as string;
-      if (premiumFee) setFastTrackPremiumFee(premiumFee);
-
       const doku = settings.find(s => s.key === "doku_config")?.value as any;
       if (doku) setDokuConfig(doku);
 
