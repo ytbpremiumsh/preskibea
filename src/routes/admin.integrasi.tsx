@@ -107,6 +107,8 @@ function AdminIntegrasi() {
 
       const fee = settings.find(s => s.key === "fast_track_fee")?.value as string;
       if (fee) setFastTrackFee(fee);
+      const premiumFee = settings.find(s => s.key === "fast_track_premium_fee")?.value as string;
+      if (premiumFee) setFastTrackPremiumFee(premiumFee);
 
       const premiumFee = settings.find(s => s.key === "fast_track_premium_fee")?.value as string;
       if (premiumFee) setFastTrackPremiumFee(premiumFee);
