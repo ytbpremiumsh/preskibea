@@ -170,11 +170,16 @@ function SuksesPage() {
                   Selamat! Karena kamu menggunakan jalur <strong>{ftType === "premium" ? "Fast Track Premium" : "Fast Track"}</strong>, kamu <strong>otomatis lolos</strong> tanpa perlu membagikan poster, follow sosial media, atau mengirim esai.
                   {ftType === "premium" && (
                     <span className="block mt-2 font-medium text-emerald-700 dark:text-emerald-400">
-                      Khusus Fast Track Premium, kamu juga <strong>otomatis lolos seleksi administrasi berkas</strong>.
+                      Khusus <strong>Fast Track Premium</strong>, kamu juga <strong>otomatis Lolos Seleksi Administrasi</strong> berkas. Status ini sudah ditetapkan otomatis oleh sistem, jadi tidak memerlukan publikasi pengumuman maupun update manual dari admin.
                     </span>
                   )}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
+                  {ftType === "premium" && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                      ⚡ FAST TRACK PREMIUM
+                    </span>
+                  )}
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
                     <Check size={10} /> BEBAS POSTER
                   </span>
@@ -186,7 +191,7 @@ function SuksesPage() {
                   </span>
                   {ftType === "premium" && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
-                      <Check size={10} /> BEBAS ADMINISTRASI
+                      <Check size={10} /> LOLOS SELEKSI ADMINISTRASI
                     </span>
                   )}
                 </div>
