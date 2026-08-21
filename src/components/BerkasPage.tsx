@@ -358,7 +358,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
       toast.error("Selesaikan Esai Singkat terlebih dahulu di halaman Esai");
       return;
     }
-    const missing = docs.filter((d) => d.required && !(values[d.key] ?? "").trim());
+    const missing = isFTPremium ? [] : docs.filter((d) => d.required && !(values[d.key] ?? "").trim());
     if (missing.length > 0) {
       toast.error(`Lengkapi: ${missing.map((d) => d.label).join(", ")}`);
       return;
@@ -579,15 +579,21 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
 
               {isFTPremium && (
                 <div className="rounded-2xl border-2 border-[var(--gold)] bg-[oklch(0.98_0.02_85)] p-5 animate-in fade-in slide-in-from-top-2 duration-500">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-start gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--gold)] text-gold-foreground">
                       <Zap size={20} fill="currentColor" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-[var(--gold)] uppercase tracking-wider">Lolos Otomatis</h3>
-                      <p className="text-xs text-muted-foreground font-medium mt-0.5">
-                        Sebagai peserta <strong>Fast Track Premium</strong>, berkas administrasi Anda telah <strong>DIVERIFIKASI OTOMATIS</strong> oleh sistem. Anda tidak wajib mengunggah berkas lagi, namun tetap diperbolehkan jika ingin melengkapi data.
+                      <h3 className="text-sm font-bold text-[var(--gold)] uppercase tracking-wider">Lolos Otomatis — Fast Track Premium</h3>
+                      <p className="text-xs text-muted-foreground font-medium mt-1 leading-relaxed">
+                        Kamu <strong>otomatis lolos Seleksi Administrasi</strong>, jadi <strong>tidak perlu mengirimkan berkas administrasi lagi</strong>. Status kamu sudah langsung masuk ke tahap <strong>Tes Potensi Akademik (TPA)</strong>. Pengisian berkas di bawah bersifat opsional.
                       </p>
+                      <Link
+                        to="/cek-status"
+                        className="mt-3 inline-flex items-center gap-2 rounded-full bg-[var(--gold)] px-4 py-2 text-xs font-bold text-gold-foreground hover:opacity-90 transition"
+                      >
+                        Lihat Status Seleksi <ArrowRight size={14} />
+                      </Link>
                     </div>
                   </div>
                 </div>
