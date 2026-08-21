@@ -345,10 +345,10 @@ function StatusResult({ data }: { data: StatusData }) {
           done={admPass}
           rejected={admFail}
           active={act(2)}
-          desc={isFTPremium ? "✅ Lolos Seleksi Administrasi — otomatis oleh sistem (Fast Track Premium), lanjut ke Tes Potensi Akademik" : adminResultLabel}
+          desc={isFTPremium ? "Lolos Seleksi Administrasi — otomatis oleh sistem (Fast Track Premium), lanjut ke Tes Potensi Akademik" : adminResultLabel}
           status={
             isFTPremium
-              ? { text: "✅ Lolos Seleksi Administrasi", tone: "pass" }
+              ? { text: "Lolos Seleksi Administrasi", tone: "pass" }
               : admPass
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : admFail
