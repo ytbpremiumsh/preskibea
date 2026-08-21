@@ -99,7 +99,7 @@ function PilihTipePage() {
           </div>
 
           {/* Fast Track Card */}
-          <div className="card-block group flex flex-col p-8 transition-all hover:shadow-xl border-t-8 border-[var(--gold)] relative overflow-hidden bg-[oklch(0.98_0.02_80)]">
+          <div className="card-block group flex flex-col p-8 transition-all hover:shadow-xl border-t-8 border-[var(--gold)] relative overflow-hidden bg-white">
             <div className="absolute top-0 right-0 bg-[var(--gold)] text-white text-[10px] font-bold px-4 py-1.5 rounded-bl-2xl uppercase tracking-widest shadow-sm">
               Rekomendasi
             </div>
