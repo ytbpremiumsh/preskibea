@@ -326,7 +326,7 @@ function StatusResult({ data }: { data: StatusData }) {
             fastUnpaid
               ? { text: "Menunggu", tone: "wait" }
               : fastPaid
-              ? { text: "⚡ Auto Lolos (Fast Track)", tone: "pass" }
+              ? { text: "Auto Lolos (Fast Track)", tone: "pass" }
               : essayAutoReguler
               ? { text: "✅ Auto Lolos (Reguler)", tone: "pass" }
               : essayPass
