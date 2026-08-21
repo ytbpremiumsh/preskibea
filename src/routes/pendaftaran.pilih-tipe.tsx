@@ -131,7 +131,7 @@ function PilihTipePage() {
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
-                <span>Group List Beasiswa 2026</span>
+                <span><strong className="font-bold text-foreground">Group</strong> List Beasiswa 2026</span>
               </li>
             </ul>
 
