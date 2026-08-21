@@ -122,7 +122,7 @@ export function TimelineSection() {
                           t.title.toLowerCase().includes("berkas")) 
 
                           ? `Hingga ${fmt(t.date)}` 
-                          : `${fmt(t.startDate)} – ${t.singleDay ? fmt(t.date) : `Hingga ${fmt(t.date)}`}`}
+                          : `${new Date(t.startDate).getDate()} - ${fmt(t.date)}`}
                       </>
                     ) : t.date ? (
                       t.singleDay ? fmt(t.date) : `Hingga ${fmt(t.date)}`
