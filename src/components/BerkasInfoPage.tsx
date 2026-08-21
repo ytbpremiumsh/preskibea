@@ -120,6 +120,12 @@ export function BerkasInfoPage({ kind, educationLevel }: { kind: "prestasi" | "e
               </li>
             ))}
           </ul>
+          <Link
+            to={uploadTo}
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+          >
+            <UploadCloud size={16} /> Lanjut Isi Kode Pendaftaran <ArrowRight size={16} />
+          </Link>
         </div>
 
         <div className="card-block p-8">

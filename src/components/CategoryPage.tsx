@@ -15,46 +15,6 @@ const persyaratan = [
   "Mengikuti seluruh persyaratan yang ditetapkan",
 ];
 
-const docsByKind = {
-  prestasi: [
-    "Kartu Pelajar / Kartu Mahasiswa",
-    "Kartu Hasil Studi (KHS) — Mahasiswa",
-    "Transkrip Nilai — Pelajar & Gap Year",
-    "Prestasi Akademik (isian teks)",
-    "Prestasi Non Akademik (isian teks)",
-    "Organisasi (isian teks)",
-    "Sertifikat Prestasi (Akademik maupun Non-Akademik)",
-    "Berkas Pendukung Lainnya (Optional)",
-
-  ],
-  ekonomi: [
-    "Kartu Pelajar / Kartu Mahasiswa",
-    "Surat Keterangan Penghasilan Orang Tua / Slip Gaji",
-    "Penghasilan Orang Tua per Bulan (pilihan)",
-    "Jumlah Tanggungan Keluarga (pilihan)",
-    "Surat Keterangan Tidak Mampu (SKTM)",
-    "Foto Rumah (Tampak Depan & Ruang Tamu)",
-    "Foto Pembayaran Listrik Terakhir ( Wajib )",
-  ],
-  umum: [
-    "Kartu Pelajar / Kartu Mahasiswa",
-    "Kartu Hasil Studi (KHS) — Mahasiswa",
-    "Transkrip Nilai — Pelajar & Gap Year",
-    "Video Tiktok 1 Menit (Menjelaskan Beasiswa Prestasi Kita)",
-    "Siapa Kamu? (isian teks — tentang dirimu sendiri)",
-    "Organisasi / Pelatihan yang pernah diikuti (Optional)",
-    "Berkas Pendukung Lainnya (Optional)",
-  ],
-  yatim: [
-    "Kartu Pelajar / Kartu Mahasiswa",
-    "Surat Keterangan Yatim / Piatu / Yatim Piatu",
-    "Akta Kematian Orang Tua",
-    
-    "Penghasilan dari Siapa (Ibu / Kakak / Saudara)",
-    "Penghasilan Per Bulan (pilihan)",
-    "Foto Pembayaran Listrik Terakhir ( Wajib )",
-  ],
-} as const;
 
 
 
@@ -181,18 +141,6 @@ export function CategoryPage({
               </Link>{" "}
               ke teman atau hubungi admin via WhatsApp.
             </p>
-          </div>
-          {/* Daftar Berkas */}
-          <div className="mt-8 border-t border-border pt-8">
-            <h2 className="text-2xl font-bold text-foreground">Berkas Pengiriman</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Persiapkan dokumen berikut untuk pengiriman berkas.</p>
-            <ul className="mt-6 space-y-3">
-              {docsByKind[kind].map((d) => (
-                <li key={d} className="flex items-start gap-3 rounded-xl bg-primary-soft/30 p-3 text-sm text-foreground/90 border border-primary/10">
-                  <FileText size={18} className="mt-0.5 text-primary shrink-0" /> {d}
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
 
