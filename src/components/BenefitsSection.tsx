@@ -39,6 +39,12 @@ const benefits = [
     desc: "Kesempatan magang di Prestasi Kita Indonesia dan jaringan partner.",
     accent: "bg-primary-soft text-primary",
   },
+  {
+    icon: Zap,
+    title: "Benefit Jalur Fast Track",
+    desc: "Sertifikat Nasional, Template CV Lolos Beasiswa, E-Book Menjemput Beasiswa Impian ke Kampus Dunia (Rp79rb), & Group List Beasiswa 2026.",
+    accent: "bg-[oklch(0.92_0.14_85)] text-gold-foreground",
+  },
 ];
 
 export function BenefitsSection() {

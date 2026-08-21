@@ -98,6 +98,11 @@ const benefits = [
     title: "Akses Magang",
     desc: "Kesempatan magang di Prestasi Kita Indonesia dan jaringan partner.",
   },
+  {
+    icon: Zap,
+    title: "Benefit Fast Track",
+    desc: "Sertifikat Nasional, Template CV, E-Book (Rp79rb), & Group List Beasiswa 2026.",
+  },
 ];
 
 export function InfoBeasiswaInteraktif() {
