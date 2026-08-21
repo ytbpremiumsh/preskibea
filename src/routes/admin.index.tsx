@@ -33,6 +33,7 @@ type LiteRow = {
   education_level: string;
   fast_track: boolean | null;
   created_at: string;
+  extra: Json;
 };
 
 const JENJANG = ["SMP", "SMA", "SMK", "MA", "Mahasiswa"] as const;
@@ -87,14 +88,13 @@ function AdminOverview() {
         todayRes,
         docsRes,
         fastTrackRes,
-        premiumRes,
       ] = await Promise.all([
         supabase.from("registrations")
-          .select("id,full_name,email,kind,status,school_name,education_level,created_at,fast_track")
+          .select("id,full_name,email,kind,status,school_name,education_level,created_at,fast_track,extra")
           .order("created_at", { ascending: false })
           .limit(8),
         supabase.from("registrations")
-          .select("kind,education_level,created_at,fast_track")
+          .select("kind,education_level,created_at,fast_track,extra")
           .gte("created_at", start14.toISOString())
           .limit(5000),
         supabase.from("registrations").select("id", { count: "exact", head: true }),
@@ -106,12 +106,15 @@ function AdminOverview() {
         supabase.from("registrations").select("id", { count: "exact", head: true }).gte("created_at", startToday.toISOString()),
         supabase.from("documents").select("id", { count: "exact", head: true }),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("fast_track", true),
-        supabase.rpc("get_premium_count" as any) || supabase.from("registrations").select("id", { count: "exact", head: true }).contains("extra", { fast_track_type: "premium" }),
       ]);
 
       if (!active) return;
       setRecent((recentRes.data ?? []) as RecentRow[]);
-      setLite((liteRes.data ?? []) as LiteRow[]);
+      const liteData = (liteRes.data ?? []) as LiteRow[];
+      setLite(liteData);
+      
+      const premiumCount = liteData.filter(r => (r as any).extra?.fast_track_type === 'premium').length;
+
       setCounts({
         total: totalRes.count ?? 0,
         prestasi: prestasiRes.count ?? 0,
@@ -122,6 +125,7 @@ function AdminOverview() {
         today: todayRes.count ?? 0,
         docs: docsRes.count ?? 0,
         fastTrack: fastTrackRes.count ?? 0,
+        fastTrackPremium: premiumCount,
       });
 
       setLoading(false);
@@ -140,7 +144,8 @@ function AdminOverview() {
         (payload) => {
           const newRow = payload.new as RecentRow;
           setRecent((prev) => [newRow, ...prev].slice(0, 8));
-          setLite((prev) => [{ kind: newRow.kind, education_level: newRow.education_level, created_at: newRow.created_at, fast_track: newRow.fast_track }, ...prev]);
+          const isPremium = (newRow.extra as any)?.fast_track_type === 'premium';
+          setLite((prev) => [{ kind: newRow.kind, education_level: newRow.education_level, created_at: newRow.created_at, fast_track: newRow.fast_track, extra: newRow.extra } as any, ...prev]);
           setCounts((c) => ({
             ...c,
             total: c.total + 1,
@@ -151,6 +156,7 @@ function AdminOverview() {
             yatim: c.yatim + (newRow.kind === "yatim" ? 1 : 0),
 
             fastTrack: c.fastTrack + (newRow.fast_track ? 1 : 0),
+            fastTrackPremium: c.fastTrackPremium + (isPremium ? 1 : 0),
           }));
           if (notif) {
             toast.success(`Pendaftar baru: ${newRow.full_name}`, {
@@ -232,6 +238,7 @@ function AdminOverview() {
     { label: "Total Pendaftar", value: counts.total, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10", url: "/admin/pendaftar" },
     { label: "Hari Ini", value: counts.today, icon: Clock, color: "text-emerald-700", bg: "bg-emerald-100", url: "/admin/pendaftar" },
     { label: "Fast Track", value: counts.fastTrack, icon: Clock, color: "text-orange-600", bg: "bg-orange-100", url: "/admin/pendaftar" },
+    { label: "FT Premium", value: counts.fastTrackPremium, icon: Zap, color: "text-amber-600", bg: "bg-amber-100", url: "/admin/pendaftar" },
     { label: "Berkas Diunggah", value: counts.docs, icon: FileText, color: "text-blue-700", bg: "bg-blue-100", url: "/admin/berkas" },
     { label: "Beasiswa Prestasi", value: counts.prestasi, icon: GraduationCap, color: "text-indigo-600", bg: "bg-indigo-100", url: "/admin/pendaftar?kind=prestasi" },
     { label: "Beasiswa Ekonomi", value: counts.ekonomi, icon: HeartHandshake, color: "text-emerald-700", bg: "bg-emerald-100", url: "/admin/pendaftar?kind=ekonomi" },
@@ -261,9 +268,9 @@ function AdminOverview() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {/* Main Stats Row */}
-        {items.slice(0, 4).map((it) => (
+        {items.slice(0, 5).map((it) => (
           <Link key={it.label} to={it.url as any} className="block transition-transform hover:scale-[1.02] active:scale-[0.98]">
             <Card className="rounded-2xl p-5 shadow-soft h-full border-2 border-primary/20 bg-white relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-primary/5 rounded-full transition-transform group-hover:scale-110" />
@@ -285,7 +292,7 @@ function AdminOverview() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Category Stats Row */}
-        {items.slice(4).map((it) => (
+        {items.slice(5).map((it) => (
           <Link key={it.label} to={it.url as any} className="block transition-transform hover:scale-[1.02] active:scale-[0.98]">
             <Card className="rounded-2xl p-5 shadow-sm h-full bg-white border-2 border-muted hover:border-primary/20 transition-colors">
               <div className="flex items-center gap-4">
