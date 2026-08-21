@@ -208,10 +208,12 @@ function defaultPlaceholder(field: FormField): string {
 
 export function RegistrationForm({ 
   kind, 
-  initialType = "reguler" 
+  initialType = "reguler",
+  initialFastTrackType = "standard"
 }: { 
   kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   initialType?: "reguler" | "fast_track";
+  initialFastTrackType?: "standard" | "premium";
 }) {
   const navigate = useNavigate();
   const sendEmail = sendAppEmail;
@@ -223,6 +225,7 @@ export function RegistrationForm({
   const [values, setValues] = useState<Record<string, string>>({});
   const [files, setFiles] = useState<Record<string, File | null>>({});
   const [registrationType, setRegistrationType] = useState<"reguler" | "fast_track">(initialType);
+  const [fastTrackType, setFastTrackType] = useState<"standard" | "premium">(initialFastTrackType);
   const [activePaymentLink, setActivePaymentLink] = useState<string | null>(null);
   const [aulaaPaymentId, setAulaaPaymentId] = useState<string | null>(null);
   const [dokuPaymentUrl, setDokuPaymentUrl] = useState<string | null>(null);
