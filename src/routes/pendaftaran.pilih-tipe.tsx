@@ -127,7 +127,7 @@ function PilihTipePage() {
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
-                <span>E-Book Menjemput Beasiswa Impian ke Kampus Dunia Senilai Rp 79.000,-</span>
+                <span><strong className="font-bold text-foreground">E-Book</strong> Menjemput Beasiswa Impian ke Kampus Dunia Senilai <strong className="font-bold text-foreground">Rp 79.000,-</strong></span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
