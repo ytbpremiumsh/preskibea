@@ -119,7 +119,7 @@ function PilihTipePage() {
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
-                <span>Sertifikat Nasional</span>
+                <span>Sertifikat Partisipan Nasional</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-[oklch(0.60_0.15_70)] shrink-0" />
