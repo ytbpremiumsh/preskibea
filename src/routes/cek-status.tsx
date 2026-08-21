@@ -173,7 +173,7 @@ function StatusResult({ data }: { data: StatusData }) {
   const itwShown = itwPublished || itwStatus !== "pending";
 
   const adminResultLabel = isFTPremium
-    ? "Otomatis lolos (Fast Track Premium)"
+    ? "Lolos Seleksi Administrasi (otomatis — Fast Track Premium)"
     : !hasDocs
     ? "Menunggu pengiriman berkas"
     : !adminPublished
