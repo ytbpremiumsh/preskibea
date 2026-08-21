@@ -173,7 +173,7 @@ function StatusResult({ data }: { data: StatusData }) {
   const itwShown = itwPublished || itwStatus !== "pending";
 
   const adminResultLabel = isFTPremium
-    ? "Otomatis lolos (Fast Track Premium)"
+    ? "Lolos Seleksi Administrasi (otomatis — Fast Track Premium)"
     : !hasDocs
     ? "Menunggu pengiriman berkas"
     : !adminPublished
@@ -345,10 +345,10 @@ function StatusResult({ data }: { data: StatusData }) {
           done={admPass}
           rejected={admFail}
           active={act(2)}
-          desc={isFTPremium ? "Pada Cek Status juga tolong di perbaharui untuk status Fast Track Premium, dia sudah otomatis lolos seleksi administrasi dan bisa langsgung lanjut ke Tes Potensi Akademik" : adminResultLabel}
+          desc={isFTPremium ? "✅ Lolos Seleksi Administrasi — otomatis oleh sistem (Fast Track Premium), lanjut ke Tes Potensi Akademik" : adminResultLabel}
           status={
             isFTPremium
-              ? { text: "⚡ Auto Lolos (Premium)", tone: "pass" }
+              ? { text: "✅ Lolos Seleksi Administrasi", tone: "pass" }
               : admPass
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : admFail
