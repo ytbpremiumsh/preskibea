@@ -108,7 +108,7 @@ function PilihTipePage() {
               <Zap size={32} />
             </div>
             <h2 className="text-2xl font-bold text-foreground mb-3">Jalur Fast Track</h2>
-            <p className="text-muted-foreground text-sm mb-6 flex-1">
+            <p className="text-muted-foreground text-sm mb-6">
               Dapatkan kemudahan pendaftaran tanpa syarat media sosial dan berbagai benefit eksklusif Batch #8.
             </p>
             
