@@ -656,7 +656,19 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
             <div className="card-block p-6 md:p-7">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-base font-bold text-foreground">Form Pengiriman Berkas</h2>
+                {isFTPremium && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                    <Zap size={10} fill="currentColor" /> LOLOS OTOMATIS
+                  </span>
+                )}
               </div>
+              
+              {isFTPremium && (
+                <div className="mt-3 p-3 rounded-xl bg-emerald-50/50 border border-emerald-100 text-[11px] text-emerald-700 leading-relaxed">
+                  <strong>Pemberitahuan:</strong> Berkas Anda telah diverifikasi otomatis oleh sistem. Anda tidak wajib mengisi form ini, namun Anda tetap diperbolehkan jika ingin melengkapi data pendukung lainnya.
+                </div>
+              )}
+
               <div className="mt-5 space-y-6">
                 {docs.map((d) => {
                   const v = values[d.key] ?? "";
