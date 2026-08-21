@@ -157,6 +157,11 @@ function SuksesPage() {
           </div>
         ) : (
           <div className="mt-6 rounded-3xl border-2 border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20 p-6 md:p-7 shadow-card animate-in fade-in slide-in-from-bottom-2">
+            {ftType === "premium" && (
+              <span className="mb-4 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                ⚡ FAST TRACK PREMIUM
+              </span>
+            )}
             <div className="flex items-start gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
                 <CheckCircle2 size={20} />
@@ -175,11 +180,6 @@ function SuksesPage() {
                   )}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {ftType === "premium" && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
-                      ⚡ FAST TRACK PREMIUM
-                    </span>
-                  )}
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
                     <Check size={10} /> BEBAS POSTER
                   </span>
