@@ -170,6 +170,7 @@ type RegInfo = {
   grade?: string | null;
   token?: string | null;
   fast_track?: boolean | null;
+  fast_track_type?: string | null;
   payment_status?: string | null;
   payment_url?: string | null;
   essay_submitted?: boolean | null;
@@ -193,7 +194,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   const [registrant, setRegistrant] = useState<RegInfo | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
   const isFastTrack = !!registrant?.fast_track;
-  const isFTPremium = isFastTrack && (registrant as any)?.extra?.fast_track_type === "premium";
+  const isFTPremium = isFastTrack && (registrant?.fast_track_type === "premium" || (registrant as any)?.extra?.fast_track_type === "premium");
   const paymentDue = isFastTrack && registrant?.payment_status !== "paid";
   const essayDone = !paymentDue && (isFastTrack || !!registrant?.essay_submitted);
 
