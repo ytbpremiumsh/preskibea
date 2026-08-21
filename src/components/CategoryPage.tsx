@@ -15,46 +15,6 @@ const persyaratan = [
   "Mengikuti seluruh persyaratan yang ditetapkan",
 ];
 
-const docsByKind = {
-  prestasi: [
-    "Kartu Pelajar / Kartu Mahasiswa",
-    "Kartu Hasil Studi (KHS) — Mahasiswa",
-    "Transkrip Nilai — Pelajar & Gap Year",
-    "Prestasi Akademik (isian teks)",
-    "Prestasi Non Akademik (isian teks)",
-    "Organisasi (isian teks)",
-    "Sertifikat Prestasi (Akademik maupun Non-Akademik)",
-    "Berkas Pendukung Lainnya (Optional)",
-
-  ],
-  ekonomi: [
-    "Kartu Pelajar / Kartu Mahasiswa",
-    "Surat Keterangan Penghasilan Orang Tua / Slip Gaji",
-    "Penghasilan Orang Tua per Bulan (pilihan)",
-    "Jumlah Tanggungan Keluarga (pilihan)",
-    "Surat Keterangan Tidak Mampu (SKTM)",
-    "Foto Rumah (Tampak Depan & Ruang Tamu)",
-    "Foto Pembayaran Listrik Terakhir ( Wajib )",
-  ],
-  umum: [
-    "Kartu Pelajar / Kartu Mahasiswa",
-    "Kartu Hasil Studi (KHS) — Mahasiswa",
-    "Transkrip Nilai — Pelajar & Gap Year",
-    "Video Tiktok 1 Menit (Menjelaskan Beasiswa Prestasi Kita)",
-    "Siapa Kamu? (isian teks — tentang dirimu sendiri)",
-    "Organisasi / Pelatihan yang pernah diikuti (Optional)",
-    "Berkas Pendukung Lainnya (Optional)",
-  ],
-  yatim: [
-    "Kartu Pelajar / Kartu Mahasiswa",
-    "Surat Keterangan Yatim / Piatu / Yatim Piatu",
-    "Akta Kematian Orang Tua",
-    
-    "Penghasilan dari Siapa (Ibu / Kakak / Saudara)",
-    "Penghasilan Per Bulan (pilihan)",
-    "Foto Pembayaran Listrik Terakhir ( Wajib )",
-  ],
-} as const;
 
 
 
