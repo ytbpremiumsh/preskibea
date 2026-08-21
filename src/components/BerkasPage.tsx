@@ -475,9 +475,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
             </span>
             <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Verifikasi Berkas</h1>
             <p className="mt-2 text-muted-foreground">
-              Perbaikan bagi peserta Fast Track Premium , jika sudah menggunakan jalur tersebut, maka sudah otomatis lolos pengiriman berkas nya dan berikan notif sudah lolos otomatis pada pengiriman berkas jika ingin mengirimkan berkas pada masing-masing kategori
-
-              coontoh kode PK-UMU-YGWZKY
+              Perbaikan ketika memasukkan kode pendaftaran ( Fast track premium) pada berkas administrasi maka otomatis berikan informasi bahwa dia sudah otomatis lolos , jadi tidak perlu melakukan pengiriman berkas administrasi lagi , sudah otomatis langsung masuk tahap TPA
             </p>
           </div>
         </div>
