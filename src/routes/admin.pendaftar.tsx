@@ -407,11 +407,12 @@ function AdminPendaftar() {
           </select>
           <select
             value={filterJalur}
-            onChange={(e) => setFilterJalur(e.target.value as "all" | "fast" | "reguler")}
+            onChange={(e) => setFilterJalur(e.target.value as "all" | "fast" | "premium" | "reguler")}
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             <option value="all">Semua Jalur</option>
             <option value="fast">Fast Track ({totals.fast})</option>
+            <option value="premium">Fast Track Premium ({totals.premium})</option>
             <option value="reguler">Reguler ({rows.length - totals.fast})</option>
           </select>
           <select
