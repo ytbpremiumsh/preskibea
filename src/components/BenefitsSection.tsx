@@ -1,4 +1,4 @@
-import { Wallet, Award, Gift, PlayCircle, Users, Briefcase } from "lucide-react";
+import { Wallet, Award, Gift, PlayCircle, Users, Briefcase, Zap } from "lucide-react";
 import benefitDefault from "@/assets/benefit-prestasi-kita.webp";
 import { useBranding } from "@/hooks/use-branding";
 

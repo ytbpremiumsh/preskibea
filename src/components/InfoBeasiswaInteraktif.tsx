@@ -10,6 +10,7 @@ import {
   PlayCircle,
   Users,
   Briefcase,
+  Zap,
 } from "lucide-react";
 
 type KategoriInfo = {
