@@ -68,7 +68,7 @@ function AdminPendaftar() {
   const [q, setQ] = useState("");
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi" | "umum" | "yatim">("all");
   const [filterBerkas, setFilterBerkas] = useState<"all" | "submitted" | "pending">("all");
-  const [filterJalur, setFilterJalur] = useState<"all" | "fast" | "reguler">("all");
+  const [filterJalur, setFilterJalur] = useState<"all" | "fast" | "premium" | "reguler">("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectedRow, setSelectedRow] = useState<Registration | null>(null);
   const [pageSize, setPageSize] = useState(20);
@@ -122,12 +122,14 @@ function AdminPendaftar() {
   const totals = useMemo(() => {
     const byKind = (k: string) => rows.filter((r) => r.kind === k).length;
     const fast = rows.filter((r) => !!r.fast_track).length;
+    const premium = rows.filter((r) => !!r.fast_track && (r.extra as any)?.fast_track_type === "premium").length;
     return {
       prestasi: byKind("prestasi"),
       ekonomi: byKind("ekonomi"),
       umum: byKind("umum"),
       yatim: byKind("yatim"),
       fast,
+      premium,
       total: rows.length,
     };
   }, [rows]);
@@ -136,7 +138,9 @@ function AdminPendaftar() {
   const filtered = useMemo(() => {
     return rows.filter((r) => {
       if (filterKind !== "all" && r.kind !== filterKind) return false;
+      const isPremium = !!r.fast_track && (r.extra as any)?.fast_track_type === "premium";
       if (filterJalur === "fast" && !r.fast_track) return false;
+      if (filterJalur === "premium" && !isPremium) return false;
       if (filterJalur === "reguler" && r.fast_track) return false;
       const hasDocs = docsForRow(r).length > 0;
       if (filterBerkas === "submitted" && !hasDocs) return false;
@@ -403,11 +407,12 @@ function AdminPendaftar() {
           </select>
           <select
             value={filterJalur}
-            onChange={(e) => setFilterJalur(e.target.value as "all" | "fast" | "reguler")}
+            onChange={(e) => setFilterJalur(e.target.value as "all" | "fast" | "premium" | "reguler")}
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             <option value="all">Semua Jalur</option>
             <option value="fast">Fast Track ({totals.fast})</option>
+            <option value="premium">Fast Track Premium ({totals.premium})</option>
             <option value="reguler">Reguler ({rows.length - totals.fast})</option>
           </select>
           <select
@@ -768,14 +773,24 @@ function JalurBadge({ row }: { row: Registration }) {
     );
   }
   const paid = row.payment_status === "paid";
+  const premium = (row.extra as any)?.fast_track_type === "premium";
   return (
     <div className="flex flex-col gap-1">
-      <Badge className="bg-amber-500/15 text-amber-700 hover:bg-amber-500/20 border border-amber-500/40">
-        <Zap className="h-3 w-3 mr-1" /> Fast Track
+      <Badge
+        className={
+          premium
+            ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-black hover:opacity-90 border border-amber-600 font-bold"
+            : "bg-amber-500/15 text-amber-700 hover:bg-amber-500/20 border border-amber-500/40"
+        }
+      >
+        <Zap className="h-3 w-3 mr-1" /> {premium ? "Fast Track Premium" : "Fast Track"}
       </Badge>
       <span className={`text-[11px] font-medium ${paid ? "text-emerald-600" : "text-muted-foreground"}`}>
         {paid ? "✓ Lunas / tervalidasi" : "Menunggu pembayaran"}
       </span>
+      {premium && paid && (
+        <span className="text-[11px] font-semibold text-emerald-600">✓ Auto lolos administrasi</span>
+      )}
     </div>
   );
 }

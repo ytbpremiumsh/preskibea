@@ -52,7 +52,7 @@ const Input = z.object({
   photo_url: urlOrNull,
   student_card_url: urlOrNull,
   fast_track: z.boolean().optional().default(false),
-  fast_track_type: z.enum(["standard", "premium"]).optional().default("standard"),
+  fast_track_type: z.enum(["standard", "premium"]).nullish().transform((v) => v ?? "standard"),
   extra: z.record(z.string(), z.unknown()).optional().default({}),
   payment_url: z.string().url().nullable().optional(),
 });
@@ -215,7 +215,7 @@ serve(async (req) => {
                 finalInvoiceUrl = link;
                 await supabaseAdmin.from("registrations").update({ 
                   payment_url: link, 
-                  extra: { ...data.extra, mayar_invoice_id: resJson?.data?.id } 
+                  extra: { ...data.extra, fast_track_type: data.fast_track_type, mayar_invoice_id: resJson?.data?.id } 
                 }).eq("id", registrationId);
               }
             }
@@ -251,7 +251,7 @@ serve(async (req) => {
                 finalInvoiceUrl = link;
                 await supabaseAdmin.from("registrations").update({ 
                   payment_url: link, 
-                  extra: { ...data.extra, aulaa_payment_id: paymentId } 
+                  extra: { ...data.extra, fast_track_type: data.fast_track_type, aulaa_payment_id: paymentId } 
                 }).eq("id", registrationId);
                 aulaaPaymentId = paymentId;
               }
@@ -348,7 +348,7 @@ serve(async (req) => {
                 finalInvoiceUrl = link;
                 await supabaseAdmin.from("registrations").update({ 
                   payment_url: link, 
-                  extra: { ...data.extra, doku_invoice_id: resJson?.response?.order?.invoice_number } 
+                  extra: { ...data.extra, fast_track_type: data.fast_track_type, doku_invoice_id: resJson?.response?.order?.invoice_number } 
                 }).eq("id", registrationId);
               }
             } else {
