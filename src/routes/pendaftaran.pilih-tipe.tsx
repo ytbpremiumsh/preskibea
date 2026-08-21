@@ -69,7 +69,7 @@ function PilihTipePage() {
               Jalur pendaftaran standar tanpa biaya. Peserta wajib mengikuti seluruh tahapan seleksi dan syarat media sosial.
             </p>
             
-            <ul className="space-y-3 mb-8">
+            <ul className="space-y-3 mb-8 flex-1">
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-primary shrink-0" />
                 <span>Wajib Follow Instagram & TikTok</span>
