@@ -515,6 +515,7 @@ function Step({
   desc,
   done,
   rejected,
+  active,
   status,
 }: {
   n: number;
@@ -522,24 +523,32 @@ function Step({
   desc: string;
   done?: boolean;
   rejected?: boolean;
-  status?: { text: string; tone: "pass" | "fail" | "wait" };
+  active?: boolean;
+  status?: { text: string; tone: "pass" | "fail" | "wait" | "active" };
 }) {
   const cls = rejected
     ? "border-destructive/40 bg-destructive/5"
     : done
     ? "border-primary/40 bg-primary-soft/40"
+    : active
+    ? "border-amber-500 bg-amber-50 dark:bg-amber-950/20 shadow-[0_0_0_3px_rgba(245,158,11,0.15)]"
     : "border-border bg-background";
   const numCls = rejected
     ? "bg-destructive text-destructive-foreground"
     : done
     ? "bg-primary text-primary-foreground"
+    : active
+    ? "bg-amber-500 text-amber-950 animate-pulse"
     : "bg-muted text-muted-foreground";
   const badgeCls =
     status?.tone === "pass"
       ? "border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200"
       : status?.tone === "fail"
       ? "border-destructive/50 bg-destructive/5 text-destructive"
+      : status?.tone === "active"
+      ? "border-amber-500 bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-200"
       : "border-border bg-muted text-muted-foreground";
+
   return (
     <div className={`flex h-full min-w-0 flex-col rounded-2xl border-2 ${cls} p-3.5`}>
       <div className="flex min-w-0 items-start gap-2">
