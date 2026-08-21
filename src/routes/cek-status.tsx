@@ -393,7 +393,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : itwFail
               ? "Belum lolos tahap interview"
               : act(4)
-              ? "Sedang dalam tahap ini — menunggu hasil"
+              ? "Menunggu"
               : "Hasil belum diumumkan"
           }
           status={
