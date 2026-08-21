@@ -123,7 +123,7 @@ function PilihTipePage() {
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
-                <span>Template CV Lolos Beasiswa</span>
+                <span><strong className="font-bold text-foreground">Template</strong> CV Lolos Beasiswa</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
