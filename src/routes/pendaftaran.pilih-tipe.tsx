@@ -22,15 +22,19 @@ export const Route = createFileRoute("/pendaftaran/pilih-tipe")({
 function PilihTipePage() {
   const { kind } = Route.useSearch();
   const [fastTrackFee, setFastTrackFee] = useState<number>(15000);
+  const [fastTrackPremiumFee, setFastTrackPremiumFee] = useState<number>(35000);
 
   useEffect(() => {
     supabase
       .from("site_settings")
-      .select("value")
-      .eq("key", "fast_track_fee")
-      .maybeSingle()
+      .select("key, value")
+      .in("key", ["fast_track_fee", "fast_track_premium_fee"])
       .then(({ data }) => {
-        if (data?.value) setFastTrackFee(Number(data.value));
+        if (!data) return;
+        const fee = data.find(s => s.key === "fast_track_fee")?.value;
+        if (fee) setFastTrackFee(Number(fee));
+        const premiumFee = data.find(s => s.key === "fast_track_premium_fee")?.value;
+        if (premiumFee) setFastTrackPremiumFee(Number(premiumFee));
       });
   }, []);
 
@@ -58,7 +62,7 @@ function PilihTipePage() {
       </section>
 
       <section className="container-page py-12 -mt-8 md:-mt-12 relative z-10">
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {/* Reguler Card */}
           <div className="card-block group flex flex-col p-8 transition-all hover:shadow-xl border-t-4 border-primary/20">
             <div className="h-14 w-14 rounded-2xl bg-primary-soft text-primary flex items-center justify-center mb-6">
@@ -155,11 +159,71 @@ function PilihTipePage() {
 
             <Link
               to={`/pendaftaran/${kind}`}
-              search={{ type: "fast_track" }}
+              search={{ type: "fast_track", ft_type: "standard" } as any}
               className="btn-block inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-base font-bold shadow-lg hover:shadow-[var(--gold)]/30 hover:-translate-y-0.5 transition-all group"
               style={{ background: "var(--gold)", color: "var(--gold-foreground)" }}
             >
               Pilih Fast Track <Zap size={18} className="fill-current transition-transform group-hover:scale-110" />
+            </Link>
+          </div>
+
+          {/* Fast Track Premium Card */}
+          <div className="card-block group flex flex-col p-8 transition-all hover:shadow-xl border-t-8 border-emerald-500 relative overflow-hidden bg-white">
+            <div className="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-bold px-4 py-1.5 rounded-bl-2xl uppercase tracking-widest shadow-sm">
+              Premium
+            </div>
+            
+            <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-6">
+              <Zap size={32} className="fill-current" />
+            </div>
+            <h2 className="text-2xl font-bold text-foreground mb-3">Fast Track Premium</h2>
+            <p className="text-muted-foreground text-sm mb-6">
+              Benefit maksimal dengan jaminan lolos administrasi berkas untuk percepatan seleksi.
+            </p>
+            
+            <ul className="space-y-3 mb-8">
+              <li className="flex items-center gap-3 text-sm text-foreground/80">
+                <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
+                <span className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/15 border border-emerald-500/40 px-3 py-1.5 animate-pulse">
+                  <span className="font-bold text-emerald-700">Lolos Administrasi Berkas</span>
+                  <Badge className="bg-emerald-500 text-white text-[10px]">Auto</Badge>
+                </span>
+              </li>
+              <li className="flex items-center gap-3 text-sm text-foreground/80">
+                <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
+                <span className="font-bold text-foreground">Lolos Pengiriman Administrasi Esai</span>
+              </li>
+              <li className="flex items-center gap-3 text-sm text-foreground/80">
+                <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
+                <span>Bebas Syarat Media Sosial & Share Poster</span>
+              </li>
+              <li className="flex items-center gap-3 text-sm text-foreground/80">
+                <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
+                <span><strong className="font-bold text-foreground">Sertifikat</strong> Partisipan Nasional</span>
+              </li>
+              <li className="flex items-center gap-3 text-sm text-foreground/80">
+                <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
+                <span><strong className="font-bold text-foreground">Template</strong>&nbsp;E-Sheet Habit Tracker&nbsp;</span>
+              </li>
+              <li className="flex items-center gap-3 text-sm text-foreground/80">
+                <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
+                <span><strong className="font-bold text-foreground">E-Book</strong> Menjemput Beasiswa Impian ke Kampus Dunia</span>
+              </li>
+            </ul>
+
+            <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center">
+              <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider block mb-1">BIAYA FAST TRACK PREMIUM</span>
+              <span className="text-2xl font-black text-emerald-700">
+                {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(fastTrackPremiumFee)}
+              </span>
+            </div>
+
+            <Link
+              to={`/pendaftaran/${kind}`}
+              search={{ type: "fast_track", ft_type: "premium" } as any}
+              className="btn-block inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-base font-bold shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all group bg-emerald-500 text-white"
+            >
+              Pilih Premium <Zap size={18} className="fill-current transition-transform group-hover:scale-110" />
             </Link>
           </div>
         </div>
