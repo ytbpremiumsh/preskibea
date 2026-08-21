@@ -52,7 +52,7 @@ const Input = z.object({
   photo_url: urlOrNull,
   student_card_url: urlOrNull,
   fast_track: z.boolean().optional().default(false),
-  fast_track_type: z.enum(["standard", "premium"]).optional().default("standard"),
+  fast_track_type: z.enum(["standard", "premium"]).nullish().transform((v) => v ?? "standard"),
   extra: z.record(z.string(), z.unknown()).optional().default({}),
   payment_url: z.string().url().nullable().optional(),
 });
