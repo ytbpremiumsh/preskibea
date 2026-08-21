@@ -225,7 +225,7 @@ serve(async (req) => {
 
        let q = supabaseAdmin
          .from("registrations")
-         .select("id, token, full_name, email, whatsapp, kind")
+         .select("id, token, full_name, email, whatsapp, kind, extra")
          .eq("fast_track", true)
          .eq("payment_status", "pending")
          .order("created_at", { ascending: false });
