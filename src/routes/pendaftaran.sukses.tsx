@@ -212,7 +212,7 @@ function SuksesPage() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Langkah 2 dari 3</span>
+                    <span className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Langkah 2 dari {ftType === "premium" ? "2" : "3"}</span>
                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
                       <Check size={10} /> LOLOS OTOMATIS
                     </span>
@@ -225,28 +225,30 @@ function SuksesPage() {
               </div>
             </div>
 
-            {/* Langkah 3: Kirim Berkas */}
-            <div className="mt-6 rounded-3xl border-2 border-primary/30 bg-card p-6 md:p-7 shadow-card">
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <FileUp size={20} />
+            {/* Langkah 3: Kirim Berkas — disembunyikan untuk Fast Track Premium (auto lolos administrasi) */}
+            {ftType !== "premium" && (
+              <div className="mt-6 rounded-3xl border-2 border-primary/30 bg-card p-6 md:p-7 shadow-card">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    <FileUp size={20} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-xs font-bold uppercase tracking-wide text-primary">Langkah 3 dari 3</div>
+                    <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Kirim Berkas Pendukung</h2>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Siapkan dokumen sesuai persyaratan, lalu masukkan kode pendaftar untuk melengkapi pendaftaran.
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <div className="text-xs font-bold uppercase tracking-wide text-primary">Langkah 3 dari 3</div>
-                  <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Kirim Berkas Pendukung</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Siapkan dokumen sesuai persyaratan, lalu masukkan kode pendaftar untuk melengkapi pendaftaran.
-                  </p>
-                </div>
+                <Link
+                  to={berkasTo as any}
+                  search={{ token } as any}
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+                >
+                  Kirim Berkas <ArrowRight size={16} />
+                </Link>
               </div>
-              <Link
-                to={berkasTo as any}
-                search={{ token } as any}
-                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
-              >
-                Kirim Berkas <ArrowRight size={16} />
-              </Link>
-            </div>
+            )}
           </>
         ) : !isFastTrack ? (
           <>
