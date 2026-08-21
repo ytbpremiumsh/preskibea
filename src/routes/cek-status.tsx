@@ -246,6 +246,9 @@ function StatusResult({ data }: { data: StatusData }) {
           <div className="text-xs uppercase tracking-wide text-muted-foreground">Pendaftar</div>
           <div className="mt-1 text-xl font-extrabold text-foreground">{data.full_name}</div>
           <div className="mt-1 text-sm text-muted-foreground">{jenis} · Kode: <span className="font-mono font-semibold text-foreground">{data.token}</span></div>
+          {data.education_level && (
+            <div className="mt-0.5 text-xs text-muted-foreground">Jenjang: <span className="font-semibold text-foreground/80">{data.education_level}</span></div>
+          )}
         </div>
         <span
           className={`rounded-full border-2 px-3 py-1 text-xs font-bold ${
