@@ -292,7 +292,7 @@ function StatusResult({ data }: { data: StatusData }) {
         }
         const act = (i: number) => activeIdx === i;
         const waitText = (i: number, fallback: string) =>
-          act(i) ? "Sedang berlangsung — menunggu hasil" : fallback;
+          act(i) ? "Menunggu" : fallback;
 
         return (
       <div className="mt-6 flex flex-col gap-3">
@@ -370,7 +370,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : tpaFail
               ? "Belum lolos tes potensi akademik"
               : act(3)
-              ? "Sedang dalam tahap ini — menunggu hasil"
+              ? "Menunggu"
               : "Hasil belum diumumkan"
           }
           status={
@@ -393,7 +393,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : itwFail
               ? "Belum lolos tahap interview"
               : act(4)
-              ? "Sedang dalam tahap ini — menunggu hasil"
+              ? "Menunggu"
               : "Hasil belum diumumkan"
           }
           status={
