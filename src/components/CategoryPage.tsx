@@ -224,7 +224,7 @@ export function CategoryPage({
               <PlayCircle size={16} /> Benefit Unggulan
             </div>
             <p className="mt-2 font-semibold text-lg leading-snug">
-              Dukungan Finansial & Pengembangan Diri untuk Masa Depan
+              E-Book Menjemput Beasiswa Impian ke Kampus Dunia
             </p>
           </div>
 
