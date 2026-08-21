@@ -170,6 +170,7 @@ type RegInfo = {
   grade?: string | null;
   token?: string | null;
   fast_track?: boolean | null;
+  fast_track_type?: string | null;
   payment_status?: string | null;
   payment_url?: string | null;
   essay_submitted?: boolean | null;
@@ -193,7 +194,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   const [registrant, setRegistrant] = useState<RegInfo | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
   const isFastTrack = !!registrant?.fast_track;
-  const isFTPremium = isFastTrack && (registrant as any)?.extra?.fast_track_type === "premium";
+  const isFTPremium = isFastTrack && (registrant?.fast_track_type === "premium" || (registrant as any)?.extra?.fast_track_type === "premium");
   const paymentDue = isFastTrack && registrant?.payment_status !== "paid";
   const essayDone = !paymentDue && (isFastTrack || !!registrant?.essay_submitted);
 
@@ -357,7 +358,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
       toast.error("Selesaikan Esai Singkat terlebih dahulu di halaman Esai");
       return;
     }
-    const missing = docs.filter((d) => d.required && !(values[d.key] ?? "").trim());
+    const missing = isFTPremium ? [] : docs.filter((d) => d.required && !(values[d.key] ?? "").trim());
     if (missing.length > 0) {
       toast.error(`Lengkapi: ${missing.map((d) => d.label).join(", ")}`);
       return;
@@ -578,15 +579,21 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
 
               {isFTPremium && (
                 <div className="rounded-2xl border-2 border-[var(--gold)] bg-[oklch(0.98_0.02_85)] p-5 animate-in fade-in slide-in-from-top-2 duration-500">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-start gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--gold)] text-gold-foreground">
                       <Zap size={20} fill="currentColor" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-[var(--gold)] uppercase tracking-wider">Lolos Otomatis</h3>
-                      <p className="text-xs text-muted-foreground font-medium mt-0.5">
-                        Sebagai peserta <strong>Fast Track Premium</strong>, berkas administrasi Anda telah <strong>DIVERIFIKASI OTOMATIS</strong> oleh sistem. Anda tidak wajib mengunggah berkas lagi, namun tetap diperbolehkan jika ingin melengkapi data.
+                      <h3 className="text-sm font-bold text-[var(--gold)] uppercase tracking-wider">Lolos Otomatis — Fast Track Premium</h3>
+                      <p className="text-xs text-muted-foreground font-medium mt-1 leading-relaxed">
+                        Kamu <strong>otomatis lolos Seleksi Administrasi</strong>, jadi <strong>tidak perlu mengirimkan berkas administrasi lagi</strong>. Status kamu sudah langsung masuk ke tahap <strong>Tes Potensi Akademik (TPA)</strong>. Pengisian berkas di bawah bersifat opsional.
                       </p>
+                      <Link
+                        to="/cek-status"
+                        className="mt-3 inline-flex items-center gap-2 rounded-full bg-[var(--gold)] px-4 py-2 text-xs font-bold text-gold-foreground hover:opacity-90 transition"
+                      >
+                        Lihat Status Seleksi <ArrowRight size={14} />
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -698,7 +705,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                           rows={4}
                           maxLength={1500}
                           disabled={!registrant || !essayDone}
-                          required={d.required}
+                          required={d.required && !isFTPremium}
                           className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                         />
                         <div className="mt-1 text-right text-[10px] text-muted-foreground">{v.length}/1500</div>
@@ -720,7 +727,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                             value={v}
                             onChange={(e) => setVal(d.key, e.target.value)}
                             disabled={!registrant || !essayDone}
-                            required={d.required}
+                            required={d.required && !isFTPremium}
                             className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                           >
                             <option value="">{d.placeholder || "Pilih salah satu"}</option>
@@ -758,7 +765,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
                           placeholder="https://drive.google.com/..."
                           disabled={!registrant || !essayDone}
                           className={`w-full rounded-xl border bg-background pl-9 pr-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${showError ? "border-destructive" : "border-border focus:border-primary"}`}
-                          required={d.required}
+                          required={d.required && !isFTPremium}
                         />
                       </div>
                       {showError && (
