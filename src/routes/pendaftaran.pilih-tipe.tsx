@@ -96,7 +96,7 @@ function PilihTipePage() {
 
             <Link
               to={`/pendaftaran/${kind}`}
-              search={{ type: "reguler" }}
+              search={{ type: "reguler", ft_type: "standard" } as any}
               className="btn-block inline-flex w-full items-center justify-center gap-2 rounded-full bg-card border-2 border-primary/20 px-6 py-4 text-base font-bold text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all group"
             >
               Pilih Reguler <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />

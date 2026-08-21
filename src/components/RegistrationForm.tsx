@@ -239,7 +239,7 @@ export function RegistrationForm({
     supabase
       .from("site_settings")
       .select("key, value")
-      .in("key", ["mayar_fast_track_link", "payment_provider", "aulaa_config", "fast_track_fee"])
+      .in("key", ["mayar_fast_track_link", "payment_provider", "aulaa_config", "fast_track_fee", "fast_track_premium_fee"])
       .then(({ data }) => {
         if (!data) return;
         
@@ -250,8 +250,10 @@ export function RegistrationForm({
         const mayarLink = data.find(s => s.key === "mayar_fast_track_link")?.value as string;
         const aulaa = data.find(s => s.key === "aulaa_config")?.value as any;
         const fee = data.find(s => s.key === "fast_track_fee")?.value;
+        const premiumFee = data.find(s => s.key === "fast_track_premium_fee")?.value;
 
         if (fee) setFastTrackFee(Number(fee));
+        if (premiumFee && fastTrackType === "premium") setFastTrackFee(Number(premiumFee));
 
         if (provider === "aulaa" && aulaa?.project_id) {
           // Fallback if Edge Function doesn't return URL
@@ -391,6 +393,7 @@ export function RegistrationForm({
         kind, 
         status: registrationType === "fast_track" ? "pending" : "approved",
         fast_track: registrationType === "fast_track",
+        fast_track_type: registrationType === "fast_track" ? fastTrackType : null,
         payment_url: null,
         payment_status: registrationType === "fast_track" ? "pending" : "paid"
       };
