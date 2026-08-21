@@ -324,6 +324,15 @@ html[data-disable-ads="1"] [data-ad-slot] {
   animation: bounce-soft 1.6s ease-in-out infinite;
 }
 
+/* Blink pulse — highlight benefit populer Fast Track */
+@keyframes blink-gold {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.6); }
+  50% { opacity: 0.55; box-shadow: 0 0 0 6px rgba(234, 179, 8, 0); }
+}
+.animate-blink-gold {
+  animation: blink-gold 1.2s ease-in-out infinite;
+}
+
 /* Marquee band — pita berjalan pada beranda */
 @keyframes marquee-x {
   from { transform: translateX(0); }
