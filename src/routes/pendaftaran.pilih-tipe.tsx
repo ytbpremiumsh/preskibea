@@ -145,8 +145,8 @@ function PilihTipePage() {
             <Link
               to={`/pendaftaran/${kind}`}
               search={{ type: "fast_track" }}
-              className="btn-block inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-base font-bold text-primary-foreground shadow-lg hover:shadow-[var(--gold)]/20 hover:-translate-y-0.5 transition-all group"
-              style={{ background: "var(--gradient-primary)" }}
+              className="btn-block inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-base font-bold shadow-lg hover:shadow-[var(--gold)]/30 hover:-translate-y-0.5 transition-all group"
+              style={{ background: "var(--gold)", color: "var(--gold-foreground)" }}
             >
               Pilih Fast Track <Zap size={18} className="fill-current transition-transform group-hover:scale-110" />
             </Link>
