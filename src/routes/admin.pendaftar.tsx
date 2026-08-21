@@ -122,12 +122,14 @@ function AdminPendaftar() {
   const totals = useMemo(() => {
     const byKind = (k: string) => rows.filter((r) => r.kind === k).length;
     const fast = rows.filter((r) => !!r.fast_track).length;
+    const premium = rows.filter((r) => !!r.fast_track && (r.extra as any)?.fast_track_type === "premium").length;
     return {
       prestasi: byKind("prestasi"),
       ekonomi: byKind("ekonomi"),
       umum: byKind("umum"),
       yatim: byKind("yatim"),
       fast,
+      premium,
       total: rows.length,
     };
   }, [rows]);
@@ -136,7 +138,9 @@ function AdminPendaftar() {
   const filtered = useMemo(() => {
     return rows.filter((r) => {
       if (filterKind !== "all" && r.kind !== filterKind) return false;
+      const isPremium = !!r.fast_track && (r.extra as any)?.fast_track_type === "premium";
       if (filterJalur === "fast" && !r.fast_track) return false;
+      if (filterJalur === "premium" && !isPremium) return false;
       if (filterJalur === "reguler" && r.fast_track) return false;
       const hasDocs = docsForRow(r).length > 0;
       if (filterBerkas === "submitted" && !hasDocs) return false;
