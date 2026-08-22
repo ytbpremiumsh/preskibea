@@ -285,6 +285,21 @@
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
+    /* Tabel yang sudah punya wrapper scroll: biarkan tetap <table> agar kolom rapi */
+    main .overflow-x-auto {
+      -webkit-overflow-scrolling: touch;
+    }
+    main .overflow-x-auto > table {
+      display: table;
+      overflow: visible;
+    }
+    main .overflow-x-auto > table th,
+    main .overflow-x-auto > table td {
+      white-space: nowrap;
+      word-break: normal;
+      overflow-wrap: normal;
+    }
+
   }
 
   /* Mobile (≤640px) — skala tipografi & padding lebih ramah layar kecil */
