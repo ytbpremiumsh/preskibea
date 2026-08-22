@@ -6,16 +6,16 @@ import { ArrowRight, Calendar, FileText, PenLine, Share2, Trophy } from "lucide-
 export type Stage = { title: string; desc: string; date: string; startDate?: string; singleDay?: boolean };
 
 const fallback: Stage[] = [
-  { title: "Pendaftaran Dibuka", desc: "Calon peserta mengisi formulir pendaftaran beasiswa secara online.", date: "2027-02-07", startDate: "2026-08-12" },
-  { title: "Bagikan Poster", desc: "Peserta membagikan poster beasiswa ke media sosial sebagai bagian dari tahapan seleksi.", date: "2027-02-07", startDate: "2026-08-12" },
-  { title: "Pengiriman Essai", desc: "Lengkapi pertanyaan esai yang tersedia sebagai syarat untuk melanjutkan ke tahap berkas administrasi", date: "2027-02-07", startDate: "2026-08-12" },
-  { title: "Berkas Administrasi", desc: "Peserta mengunggah seluruh berkas pendukung sesuai persyaratan yang ditentukan.", date: "2027-02-07", startDate: "2026-08-12" },
-  { title: "Seleksi Administrasi", desc: "Tim panitia memeriksa kelengkapan data dan keabsahan berkas pendaftar.", date: "2027-02-24", startDate: "2027-02-08" },
-  { title: "Pengumuman Kandidat", desc: "Pengumuman peserta yang lolos sebagai kandidat dan berhak mengikuti TPA.", date: "2027-02-27", startDate: "2027-02-27", singleDay: true },
-  { title: "Tes Potensi Akademik (TPA)", desc: "Peserta mengikuti tes online serentak untuk mengukur kemampuan akademik.", date: "2027-03-07", startDate: "2027-03-07", singleDay: true },
-  { title: "Pengumuman TPA", desc: "Pengumuman hasil seleksi Tes Potensi Akademik.", date: "2027-03-10", startDate: "2027-03-10", singleDay: true },
-  { title: "Seleksi Interview", desc: "Wawancara mendalam dengan finalis untuk mengenal lebih jauh potensi dan motivasi.", date: "2027-03-14", startDate: "2027-03-14", singleDay: true },
-  { title: "Pengumuman Awardee", desc: "Pengumuman resmi para penerima beasiswa Prestasi Kita Batch #8.", date: "2027-03-17", startDate: "2027-03-17", singleDay: true },
+  { title: "Pendaftaran Dibuka", desc: "Calon peserta mengisi formulir pendaftaran beasiswa secara online.", date: "2027-02-21", startDate: "2026-08-12" },
+  { title: "Bagikan Poster", desc: "Peserta membagikan poster beasiswa ke media sosial sebagai bagian dari tahapan seleksi.", date: "2027-02-21", startDate: "2026-08-12" },
+  { title: "Pengiriman Essai", desc: "Lengkapi pertanyaan esai yang tersedia sebagai syarat untuk melanjutkan ke tahap berkas administrasi", date: "2027-02-21", startDate: "2026-08-12" },
+  { title: "Berkas Administrasi", desc: "Peserta mengunggah seluruh berkas pendukung sesuai persyaratan yang ditentukan.", date: "2027-02-21", startDate: "2026-08-12" },
+  { title: "Seleksi Administrasi", desc: "Tim panitia memeriksa kelengkapan data dan keabsahan berkas pendaftar.", date: "2027-03-10", startDate: "2027-02-22" },
+  { title: "Pengumuman Kandidat", desc: "Pengumuman peserta yang lolos sebagai kandidat dan berhak mengikuti TPA.", date: "2027-03-13", startDate: "2027-03-13", singleDay: true },
+  { title: "Tes Potensi Akademik (TPA)", desc: "Peserta mengikuti tes online serentak untuk mengukur kemampuan akademik.", date: "2027-03-21", startDate: "2027-03-21", singleDay: true },
+  { title: "Pengumuman TPA", desc: "Pengumuman hasil seleksi Tes Potensi Akademik.", date: "2027-03-24", startDate: "2027-03-24", singleDay: true },
+  { title: "Seleksi Interview", desc: "Wawancara mendalam dengan finalis untuk mengenal lebih jauh potensi dan motivasi.", date: "2027-03-28", startDate: "2027-03-28", singleDay: true },
+  { title: "Pengumuman Awardee", desc: "Pengumuman resmi para penerima beasiswa Prestasi Kita Batch #8.", date: "2027-03-31", startDate: "2027-03-31", singleDay: true },
 ];
 
 function fmt(d: string) {
