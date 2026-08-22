@@ -213,7 +213,7 @@ function AdminOverview() {
 
 
   const dailyStats = useMemo(() => {
-    const days: { date: string; label: string; count: number; fastTrack: number }[] = [];
+    const days: { date: string; label: string; count: number; fastTrack: number; fastTrackPremium: number }[] = [];
     const today = new Date(); today.setHours(0, 0, 0, 0);
     for (let i = 13; i >= 0; i--) {
       const d = new Date(today); d.setDate(d.getDate() - i);
@@ -222,6 +222,7 @@ function AdminOverview() {
         label: d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" }),
         count: 0,
         fastTrack: 0,
+        fastTrackPremium: 0,
       });
     }
     const idx = new Map(days.map((d, i) => [d.date, i]));
@@ -231,6 +232,7 @@ function AdminOverview() {
       if (i !== undefined) {
         days[i].count++;
         if (r.fast_track) days[i].fastTrack++;
+        if (r.fast_track && (r as any).extra?.fast_track_type === 'premium') days[i].fastTrackPremium++;
       }
     }
     return days;
