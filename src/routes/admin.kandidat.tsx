@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Search, Download, RotateCcw, Trophy, RotateCw, X, FileText, ExternalLink, Eye, Users, Award, HeartHandshake } from "lucide-react";
+import { Loader2, Search, Download, RotateCcw, Trophy, RotateCw, X, FileText, ExternalLink, Eye, Users, Award, HeartHandshake, GraduationCap, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { openStoredFile } from "@/lib/storage-url";
 import { exportRowsToXlsx } from "@/lib/excel-export";
@@ -114,6 +114,7 @@ function AdminKandidat() {
 
   const exportExcel = async () => {
     const data = filtered.map((r) => ({
+      "Kode Pendaftaran": r.token ?? "",
       "Nama Lengkap": r.full_name,
       Email: r.email,
       WhatsApp: r.whatsapp,
@@ -150,7 +151,7 @@ function AdminKandidat() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <StatCard
           label="Total Kandidat"
           value={totals.total}
@@ -171,6 +172,20 @@ function AdminKandidat() {
           icon={<HeartHandshake className="h-5 w-5" />}
           gradient="from-emerald-500/15 to-emerald-500/5"
           iconBg="bg-emerald-500/15 text-emerald-600"
+        />
+        <StatCard
+          label="Beasiswa Umum"
+          value={totals.umum}
+          icon={<GraduationCap className="h-5 w-5" />}
+          gradient="from-sky-500/15 to-sky-500/5"
+          iconBg="bg-sky-500/15 text-sky-600"
+        />
+        <StatCard
+          label="Beasiswa Yatim"
+          value={totals.yatim}
+          icon={<Heart className="h-5 w-5" />}
+          gradient="from-rose-500/15 to-rose-500/5"
+          iconBg="bg-rose-500/15 text-rose-600"
         />
       </div>
 
