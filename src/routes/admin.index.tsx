@@ -376,7 +376,9 @@ function AdminOverview() {
           ) : recent.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">Belum ada pendaftar.</p>
           ) : (
-            <table className="w-full text-sm">
+            <div className="w-full max-w-full overflow-x-auto">
+            <table className="w-full min-w-[620px] text-sm">
+
               <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
                 <tr>
                   <th className="px-3 py-2">Nama</th>
