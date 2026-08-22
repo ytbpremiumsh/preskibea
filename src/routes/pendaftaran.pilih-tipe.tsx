@@ -207,9 +207,9 @@ function PilihTipePage() {
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
-                <span className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/15 border border-emerald-500/40 px-3 py-1.5 animate-pulse">
+                <span className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/15 border border-em-emerald-500/40 px-3 py-1.5 animate-pulse whitespace-nowrap">
                   <span className="font-bold text-emerald-700">Otomatis Mengikuti Tes Potensi Akademik (CBT)</span>
-                  <Badge className="bg-emerald-500 text-white text-[10px]">Auto</Badge>
+                  <Badge className="bg-emerald-500 text-white text-[10px] shrink-0">Auto</Badge>
                 </span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
