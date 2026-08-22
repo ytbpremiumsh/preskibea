@@ -155,8 +155,11 @@ function StatusResult({ data }: { data: StatusData }) {
   const isFast = !!data.fast_track;
   const fastPaid = isFast && data.payment_status === "paid";
   const fastUnpaid = isFast && !fastPaid;
+  // Tipe jalur (label) — tetap tampil walau pembayaran belum lunas
+  const premiumTier = isFast && (data.extra as any)?.fast_track_type === "premium";
+  const jalurLabel = !isFast ? "Jalur Reguler" : premiumTier ? "⚡ Fast Track Premium" : "⚡ Fast Track";
   // Auto-lolos Fast Track Premium hanya aktif setelah pembayaran lunas
-  const isFTPremium = fastPaid && (data.extra as any)?.fast_track_type === "premium";
+  const isFTPremium = fastPaid && premiumTier;
   const essayDone = fastPaid || !!data.essay_submitted;
   const essayStatus = fastPaid ? "approved" : (data.essay_status ?? "pending");
   const essayPublished = !!data.essay_announcement_published;
@@ -264,7 +267,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : "border-border bg-muted text-muted-foreground"
           }`}
         >
-          {isFast ? (isFTPremium ? "⚡ Fast Track Premium" : "⚡ Fast Track") : "Jalur Reguler"}
+          {jalurLabel}
         </span>
       </div>
 
@@ -340,8 +343,19 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: waitText(1, "Menunggu"), tone: act(1) ? "active" : "wait" }
               : { text: "Selesaikan esai", tone: "wait" }
           }
-
+          action={
+            fastUnpaid ? (
+              <Link
+                to="/esai"
+                search={{ token: data.token }}
+                className="inline-flex items-center justify-center gap-1.5 rounded-full bg-destructive px-3.5 py-2 text-[11px] font-bold text-white shadow-soft transition hover:opacity-90"
+              >
+                Selesaikan Pembayaran <ArrowRight size={12} />
+              </Link>
+            ) : null
+          }
         />
+
         <Step
           n={3}
           label="Seleksi Administrasi"
@@ -532,6 +546,7 @@ function Step({
   rejected,
   active,
   status,
+  action,
 }: {
   n: number;
   label: string;
@@ -540,6 +555,7 @@ function Step({
   rejected?: boolean;
   active?: boolean;
   status?: { text: string; tone: "pass" | "fail" | "wait" | "active" };
+  action?: React.ReactNode;
 }) {
   const cls = rejected
     ? "border-destructive/40 bg-destructive/5"
@@ -577,6 +593,7 @@ function Step({
         </div>
       </div>
       <div className="mt-2 text-[11px] leading-snug text-muted-foreground break-words">{desc}</div>
+      {action && <div className="mt-3">{action}</div>}
       {status && (
         <div
           className={`mt-auto pt-3 text-[10px] font-bold leading-snug ${
