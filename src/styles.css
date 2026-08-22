@@ -139,6 +139,31 @@
     flex: 1 1 100% !important;
     min-width: 0 !important;
   }
+  /* Iklan & widget mentah tidak boleh melebihi lebar layar */
+  [data-auto-ad-injected] *,
+  [data-custom-ad-injection] *,
+  [id$="-widget"] * {
+    max-width: 100% !important;
+  }
+  [data-auto-ad-injected] iframe,
+  [data-custom-ad-injection] iframe,
+  ins.adsbygoogle iframe {
+    max-width: 100% !important;
+  }
+
+  /* Anti-overflow global: teks panjang & elemen grid/flex tidak menjebol layar */
+  p, li, span, a, h1, h2, h3, h4, h5, h6, td, th, label, dt, dd {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .grid > *,
+  .flex > * {
+    min-width: 0;
+  }
+  table {
+    max-width: 100%;
+  }
+
   /* Card responsif — pastikan tidak terpotong di mobile */
   @media (max-width: 640px) {
     :root {
