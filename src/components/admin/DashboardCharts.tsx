@@ -94,7 +94,7 @@ export function LineDaily({
             stroke={FAST_TRACK_COLOR}
             strokeWidth={2.5}
             fill="url(#fastTrackFill)"
-            name="Fast Track"
+            name="Fast Track Standard"
             dot={false}
             activeDot={{ r: 4, strokeWidth: 2, stroke: "hsl(var(--background))" }}
           />
