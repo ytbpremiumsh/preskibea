@@ -167,7 +167,7 @@ function AdminArtikelPage() {
           <p className="text-center text-muted-foreground py-12">Belum ada artikel.</p>
         ) : (
           <div className="overflow-x-auto rounded-xl border border-border bg-card">
-            <table className="min-w-full text-sm">
+            <table className="w-full min-w-[720px] text-sm">
               <thead className="bg-muted/50 text-muted-foreground">
                 <tr>
                   <th className="text-left p-3">Judul</th>
