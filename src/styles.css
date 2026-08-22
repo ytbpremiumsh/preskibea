@@ -549,3 +549,14 @@ div[style*="Edit with Lovable"],
 .admin-stat-accent {
   background: linear-gradient(135deg, color-mix(in oklab, var(--primary) 92%, black) 0%, color-mix(in oklab, var(--primary) 70%, black) 100%);
 }
+
+/* Tabel admin: kolom tidak pecah per kata, geser horizontal bila sempit */
+.admin-theme .overflow-x-auto > table th,
+.admin-theme .overflow-x-auto > table td {
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.admin-theme table th,
+.admin-theme table td { vertical-align: middle; }
+.admin-theme .overflow-x-auto { border-radius: 0.9rem; }
