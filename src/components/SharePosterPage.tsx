@@ -153,13 +153,31 @@ Cek informasi lengkap di: https://prestasikita.com
         </p>
 
         <ol className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[
-            { t: "Follow Instagram @prestasikita dan @atskolla", d: "Pastikan kamu sudah mengikuti akun Instagram resmi @prestasikita dan @atskolla sebelum lanjut ke tahap berikutnya." },
+          {([
+            {
+              t: (
+                <>
+                  Follow Instagram{" "}
+                  <a href="https://www.instagram.com/prestasikita" target="_blank" rel="noreferrer" className="text-primary font-semibold hover:underline">@prestasikita</a>{" "}
+                  dan{" "}
+                  <a href="https://www.instagram.com/atskolla" target="_blank" rel="noreferrer" className="text-primary font-semibold hover:underline">@atskolla</a>
+                </>
+              ),
+              d: (
+                <>
+                  Pastikan kamu sudah mengikuti akun Instagram resmi{" "}
+                  <a href="https://www.instagram.com/prestasikita" target="_blank" rel="noreferrer" className="text-primary font-semibold hover:underline">@prestasikita</a>{" "}
+                  dan{" "}
+                  <a href="https://www.instagram.com/atskolla" target="_blank" rel="noreferrer" className="text-primary font-semibold hover:underline">@atskolla</a>{" "}
+                  sebelum lanjut ke tahap berikutnya.
+                </>
+              ),
+            },
             { t: "Sebar ke 5 grup WA atau 1 Instagram Feed", d: "Pilih salah satu: bagikan poster + caption ke minimal 5 grup WhatsApp, atau posting poster + caption ke 1 Instagram Feed kamu." },
             { t: "Komentar & tag 3 teman", d: "Komentari unggahan resmi @prestasikita dan mention 3 sahabatmu. Contoh: \"Yuk ikut daftar beasiswa ini 🥳✨ @temanA @temanB @temanC\"." },
             { t: "Konfirmasi bukti via WhatsApp", d: "Kirim screenshot (Story, postingan, dan grup) melalui tombol konfirmasi di bawah agar tim verifikasi mencatat partisipasimu." },
-          ].map((item, i) => (
-            <li key={item.t} className="flex flex-col sm:flex-row gap-4 rounded-2xl border border-border bg-background p-4 h-full">
+          ] as { t: React.ReactNode; d: React.ReactNode }[]).map((item, i) => (
+            <li key={i} className="flex flex-col sm:flex-row gap-4 rounded-2xl border border-border bg-background p-4 h-full">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary font-bold">
                 {i + 1}
               </div>
