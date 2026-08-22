@@ -680,7 +680,7 @@ export function RegistrationForm({
         </div>
         <h1 className="text-3xl font-extrabold text-foreground">Pendaftaran Ditutup</h1>
         <p className="mt-4 text-muted-foreground max-w-md mx-auto">
-          Mohon maaf, periode pendaftaran {kindLabel} telah berakhir pada 7 Februari 2027.
+          Mohon maaf, periode pendaftaran {kindLabel} telah berakhir pada 21 Februari 2027.
           Pantau terus media sosial kami untuk informasi Batch selanjutnya.
         </p>
         <Link to="/" className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft">
