@@ -194,8 +194,10 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   const [registrant, setRegistrant] = useState<RegInfo | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
   const isFastTrack = !!registrant?.fast_track;
-  const isFTPremium = isFastTrack && (registrant?.fast_track_type === "premium" || (registrant as any)?.extra?.fast_track_type === "premium");
   const paymentDue = isFastTrack && registrant?.payment_status !== "paid";
+  const isFTPremiumPlan = isFastTrack && (registrant?.fast_track_type === "premium" || (registrant as any)?.extra?.fast_track_type === "premium");
+  // Fasilitas auto-lolos Premium hanya berlaku setelah pembayaran lunas
+  const isFTPremium = isFTPremiumPlan && !paymentDue;
   const essayDone = !paymentDue && (isFastTrack || !!registrant?.essay_submitted);
 
   useEffect(() => {
