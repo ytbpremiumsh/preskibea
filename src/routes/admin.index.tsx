@@ -129,7 +129,7 @@ function AdminOverview() {
         pending: pendingRes.count ?? 0,
         today: todayRes.count ?? 0,
         docs: docsRes.count ?? 0,
-        fastTrack: fastTrackRes.count ?? 0,
+        fastTrack: Math.max(0, fastTrackTotal - premiumCount),
         fastTrackPremium: premiumCount,
       });
 
