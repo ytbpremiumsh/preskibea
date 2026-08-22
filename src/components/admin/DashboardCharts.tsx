@@ -45,8 +45,17 @@ function LegendDots({ items }: { items: { name: string; color: string; value?: n
   );
 }
 
-export function LineDaily({ data, showFastTrack }: { data: { label: string; count: number; fastTrack?: number }[], showFastTrack?: boolean }) {
+export function LineDaily({
+  data,
+  showFastTrack,
+  showFastTrackPremium,
+}: {
+  data: { label: string; count: number; fastTrack?: number; fastTrackPremium?: number }[];
+  showFastTrack?: boolean;
+  showFastTrackPremium?: boolean;
+}) {
   const FAST_TRACK_COLOR = "oklch(0.76 0.17 65)"; // orange
+  const FAST_TRACK_PREMIUM_COLOR = "oklch(0.70 0.17 150)"; // emerald
   return (
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart data={data} margin={{ top: 16, right: 12, left: -16, bottom: 0 }}>
@@ -58,6 +67,10 @@ export function LineDaily({ data, showFastTrack }: { data: { label: string; coun
           <linearGradient id="fastTrackFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={FAST_TRACK_COLOR} stopOpacity={0.28} />
             <stop offset="100%" stopColor={FAST_TRACK_COLOR} stopOpacity={0} />
+          </linearGradient>
+          <linearGradient id="fastTrackPremiumFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={FAST_TRACK_PREMIUM_COLOR} stopOpacity={0.28} />
+            <stop offset="100%" stopColor={FAST_TRACK_PREMIUM_COLOR} stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" opacity={0.5} vertical={false} />
@@ -82,6 +95,18 @@ export function LineDaily({ data, showFastTrack }: { data: { label: string; coun
             strokeWidth={2.5}
             fill="url(#fastTrackFill)"
             name="Fast Track"
+            dot={false}
+            activeDot={{ r: 4, strokeWidth: 2, stroke: "hsl(var(--background))" }}
+          />
+        )}
+        {showFastTrackPremium && (
+          <Area
+            type="monotone"
+            dataKey="fastTrackPremium"
+            stroke={FAST_TRACK_PREMIUM_COLOR}
+            strokeWidth={2.5}
+            fill="url(#fastTrackPremiumFill)"
+            name="Fast Track Premium"
             dot={false}
             activeDot={{ r: 4, strokeWidth: 2, stroke: "hsl(var(--background))" }}
           />
