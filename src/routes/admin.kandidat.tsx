@@ -29,6 +29,7 @@ type Registration = {
   school_name: string;
   grade: string;
   kind: string;
+  token: string | null;
   candidate_status: "pending" | "approved" | "rejected";
   candidate_reviewed_at: string | null;
 };
@@ -55,7 +56,7 @@ function AdminKandidat() {
     const [r, d] = await Promise.all([
       supabase
         .from("registrations")
-        .select("id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, candidate_status, candidate_reviewed_at")
+        .select("id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status, candidate_reviewed_at")
         .eq("candidate_status", "approved")
         .order("candidate_reviewed_at", { ascending: false }),
       supabase.from("documents").select("id, registration_id, email, doc_type, file_url, kind"),
