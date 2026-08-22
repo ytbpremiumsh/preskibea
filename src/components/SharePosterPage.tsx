@@ -109,6 +109,30 @@ Website www.prestasikita.com
     }
   };
 
+  const [downloading, setDownloading] = useState(false);
+  const handleDownload = async () => {
+    const src = cfg.download_url || cfg.image_url;
+    if (!src) return;
+    setDownloading(true);
+    try {
+      const res = await fetch(src, { mode: "cors" });
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = "poster-prestasi-kita.png";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      // fallback: open in new tab
+      window.open(src, "_blank", "noopener");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const [shares, setShares] = useState({ wa: 0, ig: 0, fb: 0, x: 0 });
   const track = (k: keyof typeof shares) => setShares((s) => ({ ...s, [k]: s[k] + 1 }));
 
