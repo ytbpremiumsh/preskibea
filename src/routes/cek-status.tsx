@@ -272,8 +272,8 @@ function StatusResult({ data }: { data: StatusData }) {
       {(() => {
         const essayPass = fastPaid || essayAutoReguler || (!isFast && essayPublished && essayStatus === "approved");
         const essayFail = !isFast && !essayAutoReguler && essayPublished && essayStatus === "rejected";
-        const admPass = isFTPremium || (adminPublished && adminStatus === "approved");
-        const admFail = !isFTPremium && adminPublished && adminStatus === "rejected";
+        const admPass = isFTPremium || (!fastUnpaid && adminPublished && adminStatus === "approved");
+        const admFail = !isFTPremium && !fastUnpaid && adminPublished && adminStatus === "rejected";
         const tpaPass = tpaShown && tpaStatus === "approved";
         const tpaFail = tpaShown && tpaStatus === "rejected";
         const itwPass = itwShown && itwStatus === "approved";
