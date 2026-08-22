@@ -405,7 +405,9 @@ function AdminOverview() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
+
         </div>
       </Card>
     </div>
