@@ -90,6 +90,7 @@ function AdminOverview() {
         todayRes,
         docsRes,
         fastTrackRes,
+        fastTrackPremiumRes,
       ] = await Promise.all([
         supabase.from("registrations")
           .select("id,full_name,email,kind,status,school_name,education_level,created_at,fast_track,extra")
@@ -108,6 +109,7 @@ function AdminOverview() {
         supabase.from("registrations").select("id", { count: "exact", head: true }).gte("created_at", startToday.toISOString()),
         supabase.from("documents").select("id", { count: "exact", head: true }),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("fast_track", true),
+        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("fast_track", true).eq("extra->>fast_track_type", "premium"),
       ]);
 
       if (!active) return;
@@ -115,7 +117,8 @@ function AdminOverview() {
       const liteData = (liteRes.data ?? []) as LiteRow[];
       setLite(liteData);
       
-      const premiumCount = liteData.filter(r => (r as any).extra?.fast_track_type === 'premium').length;
+      const premiumCount = fastTrackPremiumRes.count ?? 0;
+      const fastTrackTotal = fastTrackRes.count ?? 0;
 
       setCounts({
         total: totalRes.count ?? 0,
@@ -126,7 +129,7 @@ function AdminOverview() {
         pending: pendingRes.count ?? 0,
         today: todayRes.count ?? 0,
         docs: docsRes.count ?? 0,
-        fastTrack: fastTrackRes.count ?? 0,
+        fastTrack: Math.max(0, fastTrackTotal - premiumCount),
         fastTrackPremium: premiumCount,
       });
 
@@ -213,12 +216,15 @@ function AdminOverview() {
 
 
   const dailyStats = useMemo(() => {
+    // Kunci tanggal berbasis waktu lokal (bukan UTC) agar tidak bergeser hari
+    const localKey = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     const days: { date: string; label: string; count: number; fastTrack: number; fastTrackPremium: number }[] = [];
     const today = new Date(); today.setHours(0, 0, 0, 0);
     for (let i = 13; i >= 0; i--) {
       const d = new Date(today); d.setDate(d.getDate() - i);
       days.push({
-        date: d.toISOString().slice(0, 10),
+        date: localKey(d),
         label: d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" }),
         count: 0,
         fastTrack: 0,
@@ -226,8 +232,13 @@ function AdminOverview() {
       });
     }
     const idx = new Map(days.map((d, i) => [d.date, i]));
+    const seen = new Set<string>();
     for (const r of lite) {
-      const k = new Date(r.created_at).toISOString().slice(0, 10);
+      // hindari duplikat dari event realtime
+      const uid = (r as any).id ?? `${r.created_at}-${r.kind}-${r.education_level}`;
+      if (seen.has(uid)) continue;
+      seen.add(uid);
+      const k = localKey(new Date(r.created_at));
       const i = idx.get(k);
       if (i !== undefined) {
         days[i].count++;
