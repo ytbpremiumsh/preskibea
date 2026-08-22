@@ -153,9 +153,10 @@ function StatusResult({ data }: { data: StatusData }) {
   const berkasTo = data.kind === "prestasi" ? "/berkas/prestasi/upload" : data.kind === "ekonomi" ? "/berkas/ekonomi/upload" : data.kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/umum/upload";
   const hasDocs = data.docs.total > 0;
   const isFast = !!data.fast_track;
-  const isFTPremium = isFast && (data.extra as any)?.fast_track_type === "premium";
   const fastPaid = isFast && data.payment_status === "paid";
   const fastUnpaid = isFast && !fastPaid;
+  // Auto-lolos Fast Track Premium hanya aktif setelah pembayaran lunas
+  const isFTPremium = fastPaid && (data.extra as any)?.fast_track_type === "premium";
   const essayDone = fastPaid || !!data.essay_submitted;
   const essayStatus = fastPaid ? "approved" : (data.essay_status ?? "pending");
   const essayPublished = !!data.essay_announcement_published;
@@ -174,6 +175,8 @@ function StatusResult({ data }: { data: StatusData }) {
 
   const adminResultLabel = isFTPremium
     ? "Lolos Seleksi Administrasi (otomatis — Fast Track Premium)"
+    : fastUnpaid
+    ? "Menunggu pembayaran Fast Track diverifikasi"
     : !hasDocs
     ? "Menunggu pengiriman berkas"
     : !adminPublished
@@ -269,8 +272,8 @@ function StatusResult({ data }: { data: StatusData }) {
       {(() => {
         const essayPass = fastPaid || essayAutoReguler || (!isFast && essayPublished && essayStatus === "approved");
         const essayFail = !isFast && !essayAutoReguler && essayPublished && essayStatus === "rejected";
-        const admPass = isFTPremium || (adminPublished && adminStatus === "approved");
-        const admFail = !isFTPremium && adminPublished && adminStatus === "rejected";
+        const admPass = isFTPremium || (!fastUnpaid && adminPublished && adminStatus === "approved");
+        const admFail = !isFTPremium && !fastUnpaid && adminPublished && adminStatus === "rejected";
         const tpaPass = tpaShown && tpaStatus === "approved";
         const tpaFail = tpaShown && tpaStatus === "rejected";
         const itwPass = itwShown && itwStatus === "approved";
@@ -353,6 +356,8 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : admFail
               ? { text: "Tidak lolos", tone: "fail" }
+              : fastUnpaid
+              ? { text: "Selesaikan pembayaran", tone: "wait" }
               : hasDocs
               ? { text: waitText(2, "Menunggu"), tone: act(2) ? "active" : "wait" }
               : { text: "Kirim berkas dahulu", tone: "wait" }
