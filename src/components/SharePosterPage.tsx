@@ -109,6 +109,30 @@ Website www.prestasikita.com
     }
   };
 
+  const [downloading, setDownloading] = useState(false);
+  const handleDownload = async () => {
+    const src = cfg.download_url || cfg.image_url;
+    if (!src) return;
+    setDownloading(true);
+    try {
+      const res = await fetch(src, { mode: "cors" });
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = "poster-prestasi-kita.png";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      // fallback: open in new tab
+      window.open(src, "_blank", "noopener");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const [shares, setShares] = useState({ wa: 0, ig: 0, fb: 0, x: 0 });
   const track = (k: keyof typeof shares) => setShares((s) => ({ ...s, [k]: s[k] + 1 }));
 
@@ -222,17 +246,15 @@ Website www.prestasikita.com
             />
           </div>
           <div className="mt-5 flex justify-center">
-            <a
-              href={cfg.download_url || cfg.image_url}
-              download={`poster-prestasi-kita.png`}
-              target="_blank"
-              rel="noreferrer"
-              className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/80 px-7 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/40 active:scale-95 overflow-hidden"
+            <button
+              onClick={handleDownload}
+              disabled={downloading}
+              className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/80 px-7 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/40 active:scale-95 overflow-hidden disabled:opacity-70 disabled:cursor-wait"
             >
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-              <Download size={18} className="relative animate-bounce-soft transition-transform group-hover:-translate-y-0.5" />
-              <span className="relative">Download Poster</span>
-            </a>
+              <Download size={18} className="relative transition-transform group-hover:-translate-y-0.5" />
+              <span className="relative">{downloading ? "Mengunduh..." : "Download Poster"}</span>
+            </button>
           </div>
         </div>
 
