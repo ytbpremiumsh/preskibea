@@ -449,8 +449,9 @@ function AdminPendaftar() {
             Belum ada pendaftar.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="w-full max-w-full overflow-x-auto">
+            <table className="w-full min-w-[1000px] text-sm">
+
               <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
                 <tr>
                   <th className="px-4 py-3 w-10">
