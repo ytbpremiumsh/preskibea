@@ -139,6 +139,31 @@
     flex: 1 1 100% !important;
     min-width: 0 !important;
   }
+  /* Iklan & widget mentah tidak boleh melebihi lebar layar */
+  [data-auto-ad-injected] *,
+  [data-custom-ad-injection] *,
+  [id$="-widget"] * {
+    max-width: 100% !important;
+  }
+  [data-auto-ad-injected] iframe,
+  [data-custom-ad-injection] iframe,
+  ins.adsbygoogle iframe {
+    max-width: 100% !important;
+  }
+
+  /* Anti-overflow global: teks panjang & elemen grid/flex tidak menjebol layar */
+  p, li, span, a, h1, h2, h3, h4, h5, h6, td, th, label, dt, dd {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .grid > *,
+  .flex > * {
+    min-width: 0;
+  }
+  table {
+    max-width: 100%;
+  }
+
   /* Card responsif — pastikan tidak terpotong di mobile */
   @media (max-width: 640px) {
     :root {
@@ -237,7 +262,59 @@
       margin-bottom: 0.25rem;
     }
   }
+
+  /* Tablet (≤1024px) — iklan & widget selalu full width, tidak melebar keluar kolom */
+  @media (max-width: 1024px) {
+    [data-auto-ad-injected],
+    [data-custom-ad-injection],
+    [id$="-widget"],
+    ins.adsbygoogle {
+      width: 100% !important;
+      max-width: 100% !important;
+      float: none !important;
+      margin-inline: 0 !important;
+    }
+    aside [data-auto-ad-injected],
+    aside [data-custom-ad-injection] {
+      position: static !important;
+    }
+    /* Tabel lebar — bisa digeser, bukan menjebol halaman */
+    main table {
+      display: block;
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
+  /* Mobile (≤640px) — skala tipografi & padding lebih ramah layar kecil */
+  @media (max-width: 640px) {
+    h1 { font-size: clamp(1.75rem, 7.5vw, 2.25rem); line-height: 1.15; }
+    h2 { font-size: clamp(1.35rem, 5.8vw, 1.75rem); line-height: 1.2; }
+    h3 { font-size: clamp(1.1rem, 4.8vw, 1.35rem); }
+    section { overflow-x: clip; }
+    .card-block,
+    .card-block-dark,
+    .card-flat {
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    /* Grid multi-kolom tanpa prefix sm: tetap dipaksa 1 kolom di HP */
+    main .grid.md\:grid-cols-2,
+    main .grid.md\:grid-cols-3,
+    main .grid.md\:grid-cols-4,
+    main .grid.lg\:grid-cols-2,
+    main .grid.lg\:grid-cols-3 {
+      grid-template-columns: 1fr;
+    }
+    /* Kelompok tombol menumpuk penuh */
+    .flex.gap-3 > a.inline-flex,
+    .flex.gap-3 > button.inline-flex {
+      min-width: 0;
+    }
+  }
 }
+
 
 @utility card-block {
   border-radius: 1.75rem;
