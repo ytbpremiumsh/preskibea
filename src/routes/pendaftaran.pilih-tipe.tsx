@@ -236,12 +236,8 @@ function PilihTipePage() {
             </Link>
           </div>
         </div>
-        
-        <div className="mt-12 text-center max-w-2xl mx-auto">
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            *Seluruh dana yang terkumpul melalui Jalur Fast Track akan digunakan untuk pengembangan program beasiswa Prestasi Kita dan operasional bantuan pendidikan bagi yang membutuhkan.
-          </p>
-        </div>
+
+
       </section>
     </main>
   );
