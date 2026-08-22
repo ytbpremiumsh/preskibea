@@ -200,9 +200,9 @@ function PilihTipePage() {
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
-                <span className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/15 border border-emerald-500/40 px-3 py-1.5 animate-pulse whitespace-nowrap">
-                  <span className="font-bold text-emerald-700">Lolos Administrasi Berkas</span>
-                  <Badge className="bg-emerald-500 text-white text-[10px] shrink-0">Auto</Badge>
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/40 px-2 py-1 animate-pulse">
+                  <span className="text-xs font-bold text-emerald-700 leading-none">Lolos Administrasi Berkas</span>
+                  <Badge className="bg-emerald-500 text-white text-[9px] h-4 leading-none shrink-0 px-1.5">Auto</Badge>
                 </span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
