@@ -9,8 +9,11 @@ import { useRouterState } from "@tanstack/react-router";
  */
 export function ForceReloadNavigation() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  // Disable ForceReload completely to keep SPA benefits (lightweight & fast)
-  const disabled = true; 
+  // Aktif di halaman publik agar AdSense fetch iklan baru tiap navigasi.
+  // Dinonaktifkan di /admin dan /login supaya dashboard tetap cepat (tanpa iklan).
+  const disabled = pathname.startsWith("/admin") || pathname.startsWith("/login");
+
+
 
 
   useEffect(() => {
