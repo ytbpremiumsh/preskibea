@@ -290,18 +290,18 @@ function AdminOverview() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {/* Main Stats Row */}
         {items.slice(0, 5).map((it) => (
-          <Link key={it.label} to={it.url as any} className="block transition-transform hover:scale-[1.02] active:scale-[0.98]">
-            <Card className="rounded-2xl p-5 shadow-soft h-full border-2 border-primary/20 bg-white relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-primary/5 rounded-full transition-transform group-hover:scale-110" />
-              <div className="relative flex items-start justify-between">
+          <Link key={it.label} to={it.url as any} className="block transition-transform hover:-translate-y-0.5 active:scale-[0.99]">
+            <Card className="relative h-full overflow-hidden border bg-white p-5 group">
+              <div className="absolute top-0 right-0 h-24 w-24 -mr-8 -mt-8 rounded-full bg-primary/5 transition-transform group-hover:scale-110" />
+              <div className="relative flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-1">{it.label}</p>
-                  <p className="text-3xl font-black tabular-nums text-foreground sm:text-4xl">
+                  <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{it.label}</p>
+                  <p className="text-3xl font-black tabular-nums leading-none text-foreground">
                     {loading ? <span className="inline-block h-8 w-16 animate-pulse rounded bg-muted" /> : it.value}
                   </p>
                 </div>
-                <div className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${it.bg} ${it.color} shadow-sm border border-current/10`}>
-                  <it.icon className="h-6 w-6" />
+                <div className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${it.bg} ${it.color}`}>
+                  <it.icon className="h-5 w-5" />
                 </div>
               </div>
             </Card>
@@ -312,15 +312,15 @@ function AdminOverview() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Category Stats Row */}
         {items.slice(5).map((it) => (
-          <Link key={it.label} to={it.url as any} className="block transition-transform hover:scale-[1.02] active:scale-[0.98]">
-            <Card className="rounded-2xl p-5 shadow-sm h-full bg-white border-2 border-muted hover:border-primary/20 transition-colors">
+          <Link key={it.label} to={it.url as any} className="block transition-transform hover:-translate-y-0.5 active:scale-[0.99]">
+            <Card className="h-full border bg-white p-5">
               <div className="flex items-center gap-4">
-                <div className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${it.bg} ${it.color} shadow-sm border border-current/10`}>
-                  <it.icon className="h-6 w-6" />
+                <div className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${it.bg} ${it.color}`}>
+                  <it.icon className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-0.5">{it.label}</p>
-                  <p className="text-2xl font-black tabular-nums text-foreground">
+                  <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{it.label}</p>
+                  <p className="text-2xl font-black tabular-nums leading-none text-foreground">
                     {loading ? <span className="inline-block h-7 w-12 animate-pulse rounded bg-muted" /> : it.value}
                   </p>
                 </div>
@@ -328,6 +328,7 @@ function AdminOverview() {
             </Card>
           </Link>
         ))}
+
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">

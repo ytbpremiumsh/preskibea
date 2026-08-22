@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, LogOut, Home } from "lucide-react";
@@ -6,6 +6,34 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+
+const PAGE_TITLES: Record<string, string> = {
+  "/admin": "Ringkasan Dashboard",
+  "/admin/analytics": "Google Analytics",
+  "/admin/pendaftar": "Data Pendaftar",
+  "/admin/esai": "Pengiriman Esai",
+  "/admin/berkas": "Pengiriman Berkas",
+  "/admin/tahapan-seleksi": "Tahapan Seleksi",
+  "/admin/kandidat": "Kandidat Lolos",
+  "/admin/artikel": "Artikel",
+  "/admin/formulir": "Formulir",
+  "/admin/bagikan-poster": "Bagikan Poster",
+  "/admin/media": "Media & File",
+  "/admin/whatsapp": "WhatsApp",
+  "/admin/ai-balasan": "Balasan AI",
+  "/admin/pengaturan": "Pengaturan Situs",
+  "/admin/integrasi": "Integrasi Pembayaran",
+  "/admin/branding": "Logo Situs",
+  "/admin/widgets": "Widget Home",
+  "/admin/email-template": "Template Email",
+  "/admin/keamanan": "Keamanan (2FA)",
+  "/admin/adsense": "AdSense",
+  "/admin/iklan-kustom": "Iklan Kustom",
+  "/admin/kode-kustom": "Kode & Performa",
+  "/admin/sistem-update": "Sistem Update",
+  "/admin/maintenance": "Mode Maintenance",
+};
+
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -22,6 +50,9 @@ function AdminLayout() {
   const [checking, setChecking] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
+  const currentPath = useRouterState({ select: (s) => s.location.pathname });
+  const pageTitle = PAGE_TITLES[currentPath.replace(/\/$/, "")] ?? "Admin Dashboard";
+
 
   useEffect(() => {
     let active = true;
@@ -86,27 +117,43 @@ function AdminLayout() {
     );
   }
 
+  const initial = (email ?? "A").charAt(0).toUpperCase();
+
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-muted/20">
+      <div className="admin-theme min-h-screen flex w-full">
         <AdminSidebar />
-        <SidebarInset>
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background px-4">
-            <SidebarTrigger />
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-foreground">Admin Dashboard</p>
-              <p className="text-xs text-muted-foreground truncate">{email}</p>
+        <SidebarInset className="bg-transparent">
+          <header className="admin-header-glass sticky top-0 z-30 flex h-16 items-center gap-2 px-3 md:gap-3 md:px-6">
+            <SidebarTrigger className="shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[15px] font-bold tracking-tight text-foreground">
+                {pageTitle}
+              </p>
+              <p className="truncate text-[11px] text-muted-foreground">Panel Admin — Prestasi Kita</p>
             </div>
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
               <Link to="/" target="_blank" rel="noopener noreferrer">
-                <Home className="h-4 w-4 mr-1" /> Lihat Situs
+                <Home className="mr-1 h-4 w-4" /> Lihat Situs
               </Link>
             </Button>
-            <Button variant="ghost" size="sm" onClick={logout}>
-              <LogOut className="h-4 w-4 mr-1" /> Keluar
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={logout}
+              className="text-muted-foreground hover:text-destructive"
+            >
+              <LogOut className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Keluar</span>
             </Button>
+            <div
+              title={email ?? undefined}
+              className="admin-stat-accent flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-primary-foreground ring-2 ring-white/70"
+            >
+              {initial}
+            </div>
           </header>
-          <div className="px-4 py-6 md:px-6">
+          <div className="mx-auto w-full max-w-[1400px] px-3 py-5 md:px-6 md:py-8">
             <Outlet />
           </div>
         </SidebarInset>
@@ -114,3 +161,4 @@ function AdminLayout() {
     </SidebarProvider>
   );
 }
+

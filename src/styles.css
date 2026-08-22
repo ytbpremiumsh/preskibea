@@ -455,3 +455,108 @@ div[style*="Edit with Lovable"],
   position: absolute !important;
   z-index: -9999 !important;
 }
+
+
+/* =========================================================
+   ADMIN THEME — tampilan dashboard profesional (soft SaaS)
+   Scoped ke .admin-theme agar tidak mengubah situs publik.
+   ========================================================= */
+.admin-theme {
+  --admin-surface: color-mix(in oklab, var(--primary) 4%, white);
+  --admin-line: color-mix(in oklab, var(--primary) 12%, white);
+  background:
+    radial-gradient(ellipse 60% 45% at 100% 0%, color-mix(in oklab, var(--gold) 12%, transparent), transparent 65%),
+    radial-gradient(ellipse 55% 45% at 0% 0%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 70%),
+    color-mix(in oklab, var(--primary) 3%, white);
+}
+
+/* Kartu: sudut lembut, garis tipis, bayangan halus */
+.admin-theme [data-slot="card"],
+.admin-theme .rounded-xl.border.bg-card,
+.admin-theme .rounded-lg.border.bg-card {
+  border-radius: 1.15rem;
+  border-color: var(--admin-line);
+  box-shadow: 0 1px 2px 0 color-mix(in oklab, var(--primary) 8%, transparent),
+              0 12px 28px -18px color-mix(in oklab, var(--primary) 40%, transparent);
+  transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease;
+}
+.admin-theme [data-slot="card"]:hover,
+.admin-theme .rounded-xl.border.bg-card:hover {
+  box-shadow: 0 2px 4px 0 color-mix(in oklab, var(--primary) 10%, transparent),
+              0 22px 40px -22px color-mix(in oklab, var(--primary) 55%, transparent);
+  border-color: color-mix(in oklab, var(--primary) 22%, white);
+}
+
+/* Judul kartu lebih tegas */
+.admin-theme [data-slot="card"] > div:first-child > div:first-child {
+  letter-spacing: -0.015em;
+}
+
+/* Field & kontrol */
+.admin-theme input,
+.admin-theme textarea,
+.admin-theme select,
+.admin-theme [role="combobox"] {
+  border-radius: 0.75rem;
+  background-color: color-mix(in oklab, var(--primary) 2.5%, white);
+}
+.admin-theme input:focus-visible,
+.admin-theme textarea:focus-visible,
+.admin-theme [role="combobox"]:focus-visible {
+  background-color: white;
+}
+.admin-theme button { border-radius: 0.7rem; }
+.admin-theme [role="tablist"] {
+  border-radius: 0.9rem;
+  background-color: color-mix(in oklab, var(--primary) 6%, white);
+  padding: 0.25rem;
+}
+.admin-theme [role="tab"] { border-radius: 0.65rem; }
+.admin-theme [role="tab"][data-state="active"] {
+  box-shadow: 0 4px 14px -8px color-mix(in oklab, var(--primary) 60%, transparent);
+}
+
+/* Tabel: header lembut, baris bergaris tipis */
+.admin-theme table thead th {
+  background-color: color-mix(in oklab, var(--primary) 5%, white);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--primary) 70%, var(--muted-foreground));
+}
+.admin-theme table thead th:first-child { border-top-left-radius: 0.75rem; }
+.admin-theme table thead th:last-child { border-top-right-radius: 0.75rem; }
+.admin-theme table tbody tr { transition: background-color .18s ease; }
+.admin-theme table tbody tr:hover {
+  background-color: color-mix(in oklab, var(--primary) 4%, white);
+}
+
+/* Sidebar: latar bergradasi halus */
+.admin-theme [data-sidebar="sidebar"] {
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--primary) 7%, white) 0%, white 45%);
+}
+
+/* Header sticky bergaya glass */
+.admin-header-glass {
+  background-color: color-mix(in oklab, white 82%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--admin-line, color-mix(in oklab, var(--primary) 12%, white));
+}
+
+/* Utility kecil untuk kartu statistik */
+.admin-stat-accent {
+  background: linear-gradient(135deg, color-mix(in oklab, var(--primary) 92%, black) 0%, color-mix(in oklab, var(--primary) 70%, black) 100%);
+}
+
+/* Tabel admin: kolom tidak pecah per kata, geser horizontal bila sempit */
+.admin-theme .overflow-x-auto > table th,
+.admin-theme .overflow-x-auto > table td {
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.admin-theme table th,
+.admin-theme table td { vertical-align: middle; }
+.admin-theme .overflow-x-auto { border-radius: 0.9rem; }
