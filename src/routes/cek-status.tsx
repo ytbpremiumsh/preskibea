@@ -546,6 +546,7 @@ function Step({
   rejected,
   active,
   status,
+  action,
 }: {
   n: number;
   label: string;
@@ -554,6 +555,7 @@ function Step({
   rejected?: boolean;
   active?: boolean;
   status?: { text: string; tone: "pass" | "fail" | "wait" | "active" };
+  action?: React.ReactNode;
 }) {
   const cls = rejected
     ? "border-destructive/40 bg-destructive/5"
