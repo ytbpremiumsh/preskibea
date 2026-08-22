@@ -112,7 +112,7 @@ function PilihTipePage() {
             <div className="h-14 w-14 rounded-2xl bg-[var(--gold)]/10 text-[var(--gold)] flex items-center justify-center mb-6">
               <Zap size={32} />
             </div>
-            <h2 className="text-2xl font-bold text-foreground mb-3">Jalur Fast Track</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-3">Fast Track</h2>
             <p className="text-muted-foreground text-sm mb-6">
               Dapatkan kemudahan pendaftaran tanpa syarat media sosial dan berbagai benefit eksklusif Batch #8.
             </p>
