@@ -86,27 +86,43 @@ function AdminLayout() {
     );
   }
 
+  const initial = (email ?? "A").charAt(0).toUpperCase();
+
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-muted/20">
+      <div className="admin-theme min-h-screen flex w-full">
         <AdminSidebar />
-        <SidebarInset>
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background px-4">
-            <SidebarTrigger />
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-foreground">Admin Dashboard</p>
-              <p className="text-xs text-muted-foreground truncate">{email}</p>
+        <SidebarInset className="bg-transparent">
+          <header className="admin-header-glass sticky top-0 z-30 flex h-16 items-center gap-2 px-3 md:gap-3 md:px-6">
+            <SidebarTrigger className="shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[15px] font-bold tracking-tight text-foreground">
+                {pageTitle}
+              </p>
+              <p className="truncate text-[11px] text-muted-foreground">Panel Admin — Prestasi Kita</p>
             </div>
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
               <Link to="/" target="_blank" rel="noopener noreferrer">
-                <Home className="h-4 w-4 mr-1" /> Lihat Situs
+                <Home className="mr-1 h-4 w-4" /> Lihat Situs
               </Link>
             </Button>
-            <Button variant="ghost" size="sm" onClick={logout}>
-              <LogOut className="h-4 w-4 mr-1" /> Keluar
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={logout}
+              className="text-muted-foreground hover:text-destructive"
+            >
+              <LogOut className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Keluar</span>
             </Button>
+            <div
+              title={email ?? undefined}
+              className="admin-stat-accent flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-primary-foreground ring-2 ring-white/70"
+            >
+              {initial}
+            </div>
           </header>
-          <div className="px-4 py-6 md:px-6">
+          <div className="mx-auto w-full max-w-[1400px] px-3 py-5 md:px-6 md:py-8">
             <Outlet />
           </div>
         </SidebarInset>
@@ -114,3 +130,4 @@ function AdminLayout() {
     </SidebarProvider>
   );
 }
+
