@@ -356,6 +356,8 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: "Lolos ke tahap berikutnya", tone: "pass" }
               : admFail
               ? { text: "Tidak lolos", tone: "fail" }
+              : fastUnpaid
+              ? { text: "Selesaikan pembayaran", tone: "wait" }
               : hasDocs
               ? { text: waitText(2, "Menunggu"), tone: act(2) ? "active" : "wait" }
               : { text: "Kirim berkas dahulu", tone: "wait" }
