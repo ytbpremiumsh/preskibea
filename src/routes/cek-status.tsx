@@ -343,8 +343,19 @@ function StatusResult({ data }: { data: StatusData }) {
               ? { text: waitText(1, "Menunggu"), tone: act(1) ? "active" : "wait" }
               : { text: "Selesaikan esai", tone: "wait" }
           }
-
+          action={
+            fastUnpaid ? (
+              <Link
+                to="/esai"
+                search={{ token: data.token }}
+                className="inline-flex items-center justify-center gap-1.5 rounded-full bg-destructive px-3.5 py-2 text-[11px] font-bold text-white shadow-soft transition hover:opacity-90"
+              >
+                Selesaikan Pembayaran <ArrowRight size={12} />
+              </Link>
+            ) : null
+          }
         />
+
         <Step
           n={3}
           label="Seleksi Administrasi"
