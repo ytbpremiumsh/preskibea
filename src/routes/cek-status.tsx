@@ -593,6 +593,7 @@ function Step({
         </div>
       </div>
       <div className="mt-2 text-[11px] leading-snug text-muted-foreground break-words">{desc}</div>
+      {action && <div className="mt-3">{action}</div>}
       {status && (
         <div
           className={`mt-auto pt-3 text-[10px] font-bold leading-snug ${
