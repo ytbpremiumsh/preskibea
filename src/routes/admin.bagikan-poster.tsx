@@ -31,20 +31,45 @@ type SharePosterSettings = {
   yatim: PosterCfg;
 };
 
-const DEF_CAPTION = (label: string, url: string) => `🎓✨ BEASISWA PENDIDIKAN PRESTASI KITA — BATCH #8 ✨🎓
+const DEF_CAPTION = (label: string, url: string) => `💰 TOTAL BEASISWA/SEMESTER: RP17.000.000
 
-Halo Sobat Pejuang Pendidikan! 👋
-Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
+📢 Beasiswa Resmi Prestasi Kita (Batch #8) – DIBUKA!
 
-💰 Total Beasiswa hingga Rp17.000.000/semester
-📚 Terbuka untuk SMP, SMA/SMK/MA & Mahasiswa
-🚫 100% TIDAK DIPUNGUT BIAYA
+🎯 35 Pendaftar Pertama mendapat jalur prioritas!
+${url}
 
-📌 Daftar sekarang di: ${url}
-📷 Info lengkap: @prestasikita
-📞 0812 8001 0302
+Beasiswa hanya dibuka setahun sekali
 
-#PrestasiKita #BeasiswaPendidikan`;
+⚠️ Kuota terbatas! Ditutup lebih awal jika penuh!
+
+———————————
+📢 Tentang Kami!
+Prestasi Kita adalah lembaga pemberi beasiswa yang membantu pelajar dan mahasiswa Indonesia meraih mimpi pendidikan setinggi mungkin.
+
+🎁 BENEFIT LAINNYA:
+⭐ Dana pendidikan hingga Rp17.000.000/semester
+⭐ Sertifikat Partisipasi Nasional
+⭐ Merchandise eksklusif & E-Book Menjemput Beasiswa
+
+📌 PERSYARATAN:
+•  Wajib lolos seleksi (online & interview)
+•  Tanpa syarat minimal nilai rapor/IPK
+
+👥 KATEGORI:
+•  Mahasiswa
+•  Pelajar SMA/SMK/MA
+•  Pelajar SMP
+
+Daftar di:
+${url}
+
+Cek informasi lengkap di: https://prestasikita.com
+
+⚠️ Waspada penipuan yang mengatasnamakan lembaga resmi Prestasi Kita
+
+📱 Instagram: https://www.instagram.com/prestasikita
+🌐 Website: https://prestasikita.com
+📞 0812 8001 0302`;
 
 const DEF: SharePosterSettings = {
   is_unified: true,
