@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Calendar, FileText, PenLine, Share2, Trophy, Zap } from "lucide-react";
+import { ArrowRight, Calendar, FileText, PenLine, Share2, Trophy } from "lucide-react";
 
 export type Stage = { title: string; desc: string; date: string; startDate?: string; singleDay?: boolean };
 
