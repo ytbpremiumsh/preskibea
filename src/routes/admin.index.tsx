@@ -90,6 +90,7 @@ function AdminOverview() {
         todayRes,
         docsRes,
         fastTrackRes,
+        fastTrackPremiumRes,
       ] = await Promise.all([
         supabase.from("registrations")
           .select("id,full_name,email,kind,status,school_name,education_level,created_at,fast_track,extra")
