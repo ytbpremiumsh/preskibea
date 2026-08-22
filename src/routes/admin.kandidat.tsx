@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Search, Download, RotateCcw, Trophy, RotateCw, X, FileText, ExternalLink, Eye, Users, Award, HeartHandshake } from "lucide-react";
+import { Loader2, Search, Download, RotateCcw, Trophy, RotateCw, X, FileText, ExternalLink, Eye, Users, Award, HeartHandshake, GraduationCap, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { openStoredFile } from "@/lib/storage-url";
 import { exportRowsToXlsx } from "@/lib/excel-export";
@@ -29,6 +29,7 @@ type Registration = {
   school_name: string;
   grade: string;
   kind: string;
+  token: string | null;
   candidate_status: "pending" | "approved" | "rejected";
   candidate_reviewed_at: string | null;
 };
@@ -55,7 +56,7 @@ function AdminKandidat() {
     const [r, d] = await Promise.all([
       supabase
         .from("registrations")
-        .select("id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, candidate_status, candidate_reviewed_at")
+        .select("id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status, candidate_reviewed_at")
         .eq("candidate_status", "approved")
         .order("candidate_reviewed_at", { ascending: false }),
       supabase.from("documents").select("id, registration_id, email, doc_type, file_url, kind"),
@@ -84,7 +85,8 @@ function AdminKandidat() {
         return (
           r.full_name.toLowerCase().includes(s) ||
           r.email.toLowerCase().includes(s) ||
-          (r.school_name?.toLowerCase().includes(s) ?? false)
+          (r.school_name?.toLowerCase().includes(s) ?? false) ||
+          (r.token?.toLowerCase().includes(s) ?? false)
         );
       }
       return true;
@@ -94,7 +96,9 @@ function AdminKandidat() {
   const totals = useMemo(() => {
     const prestasi = regs.filter((r) => r.kind === "prestasi").length;
     const ekonomi = regs.filter((r) => r.kind === "ekonomi").length;
-    return { prestasi, ekonomi, total: regs.length };
+    const umum = regs.filter((r) => r.kind === "umum").length;
+    const yatim = regs.filter((r) => r.kind === "yatim").length;
+    return { prestasi, ekonomi, umum, yatim, total: regs.length };
   }, [regs]);
 
   const setStatus = async (id: string, status: "pending" | "rejected") => {
@@ -110,6 +114,7 @@ function AdminKandidat() {
 
   const exportExcel = async () => {
     const data = filtered.map((r) => ({
+      "Kode Pendaftaran": r.token ?? "",
       "Nama Lengkap": r.full_name,
       Email: r.email,
       WhatsApp: r.whatsapp,
@@ -146,7 +151,7 @@ function AdminKandidat() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <StatCard
           label="Total Kandidat"
           value={totals.total}
@@ -167,6 +172,20 @@ function AdminKandidat() {
           icon={<HeartHandshake className="h-5 w-5" />}
           gradient="from-emerald-500/15 to-emerald-500/5"
           iconBg="bg-emerald-500/15 text-emerald-600"
+        />
+        <StatCard
+          label="Beasiswa Umum"
+          value={totals.umum}
+          icon={<GraduationCap className="h-5 w-5" />}
+          gradient="from-sky-500/15 to-sky-500/5"
+          iconBg="bg-sky-500/15 text-sky-600"
+        />
+        <StatCard
+          label="Beasiswa Yatim"
+          value={totals.yatim}
+          icon={<Heart className="h-5 w-5" />}
+          gradient="from-rose-500/15 to-rose-500/5"
+          iconBg="bg-rose-500/15 text-rose-600"
         />
       </div>
 
@@ -198,6 +217,7 @@ function AdminKandidat() {
             <TableHeader>
               <TableRow className="bg-muted/40">
                 <TableHead>NAMA</TableHead>
+                <TableHead>KODE PENDAFTARAN</TableHead>
                 <TableHead>KATEGORI</TableHead>
                 <TableHead>SEKOLAH</TableHead>
                 <TableHead className="text-center">BERKAS</TableHead>
@@ -213,6 +233,9 @@ function AdminKandidat() {
                     <TableCell>
                       <div className="font-medium">{r.full_name}</div>
                       <div className="text-xs text-muted-foreground">{r.email}</div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-mono text-xs rounded-md border bg-muted/40 px-2 py-1">{r.token || "-"}</span>
                     </TableCell>
                     <TableCell><Badge variant="secondary" className="capitalize">{r.kind}</Badge></TableCell>
                     <TableCell className="text-sm">
@@ -256,6 +279,7 @@ function AdminKandidat() {
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
+                <Field label="Kode Pendaftaran" value={detail.token || "-"} />
                 <Field label="Email" value={detail.email} />
                 <Field label="WhatsApp" value={detail.whatsapp} />
                 <Field label="Jenis Kelamin" value={detail.gender} />
