@@ -231,8 +231,12 @@ function AdminOverview() {
       const i = idx.get(k);
       if (i !== undefined) {
         days[i].count++;
-        if (r.fast_track) days[i].fastTrack++;
-        if (r.fast_track && (r as any).extra?.fast_track_type === 'premium') days[i].fastTrackPremium++;
+        if (r.fast_track) {
+          const isPrem = (r as any).extra?.fast_track_type === 'premium';
+          if (isPrem) days[i].fastTrackPremium++;
+          else days[i].fastTrack++;
+        }
+
       }
     }
     return days;
