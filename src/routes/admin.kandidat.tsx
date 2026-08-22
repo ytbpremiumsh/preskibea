@@ -217,6 +217,7 @@ function AdminKandidat() {
             <TableHeader>
               <TableRow className="bg-muted/40">
                 <TableHead>NAMA</TableHead>
+                <TableHead>KODE PENDAFTARAN</TableHead>
                 <TableHead>KATEGORI</TableHead>
                 <TableHead>SEKOLAH</TableHead>
                 <TableHead className="text-center">BERKAS</TableHead>
@@ -232,6 +233,9 @@ function AdminKandidat() {
                     <TableCell>
                       <div className="font-medium">{r.full_name}</div>
                       <div className="text-xs text-muted-foreground">{r.email}</div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-mono text-xs rounded-md border bg-muted/40 px-2 py-1">{r.token || "-"}</span>
                     </TableCell>
                     <TableCell><Badge variant="secondary" className="capitalize">{r.kind}</Badge></TableCell>
                     <TableCell className="text-sm">
@@ -275,6 +279,7 @@ function AdminKandidat() {
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
+                <Field label="Kode Pendaftaran" value={detail.token || "-"} />
                 <Field label="Email" value={detail.email} />
                 <Field label="WhatsApp" value={detail.whatsapp} />
                 <Field label="Jenis Kelamin" value={detail.gender} />
