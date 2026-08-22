@@ -23,33 +23,45 @@ export function SharePosterPage({ kind: initialKind }: { kind?: "prestasi" | "ek
   const path = kind === "ekonomi" ? "/beasiswa-ekonomi" : kind === "umum" ? "/beasiswa-umum" : kind === "yatim" ? "/beasiswa-yatim" : "/beasiswa-prestasi";
   const url = typeof window !== "undefined" ? window.location.origin + path : "https://prestasikita.com";
 
-  const defaultCaption = `🎓✨ BEASISWA PENDIDIKAN PRESTASI KITA — BATCH #8 ✨🎓
+  const defaultCaption = `💰 TOTAL BEASISWA/SEMESTER: RP17.000.000
 
-Halo Sobat Pejuang Pendidikan! 👋
-Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
+📢 Beasiswa Resmi Prestasi Kita (Batch #8) – DIBUKA!
 
-💰 Total Beasiswa hingga Rp17.000.000/semester
-📚 Terbuka untuk SMP, SMA/SMK/MA & Mahasiswa
-🚫 100% TIDAK DIPUNGUT BIAYA
+🎯 35 Pendaftar Pertama mendapat jalur prioritas!
+${url}
 
-✅ Persyaratan:
-• Warga Negara Indonesia (WNI) & berdomisili di Indonesia
-• Pelajar/Mahasiswa aktif (atau calon mahasiswa D3–S2)
-• Tanpa minimal nilai rapor / IPK
-• Mengikuti seluruh ketentuan yang berlaku
+Beasiswa hanya dibuka setahun sekali
 
-🎁 Benefit Penerima:
-• Sertifikat resmi Beasiswa Prestasi Kita
-• Merchandise eksklusif (Plakat, Kaos, Block Note, Goodie Bag, dll)
-• Video motivasi & sesi pembinaan penerima
+⚠️ Kuota terbatas! Ditutup lebih awal jika penuh!
 
-📌 Daftar sekarang di: ${url}
-📷 Info lengkap: @prestasikita
-📞 0812 8001 0302
+———————————
+📢 Tentang Kami!
+Prestasi Kita adalah lembaga pemberi beasiswa yang membantu pelajar dan mahasiswa Indonesia meraih mimpi pendidikan setinggi mungkin.
 
-⚠️ Hati-hati terhadap penipuan yang mengatasnamakan Prestasi Kita.
+🎁 BENEFIT LAINNYA:
+⭐ Dana pendidikan hingga Rp17.000.000/semester
+⭐ Sertifikat Partisipasi Nasional
+⭐ Merchandise eksklusif & E-Book Menjemput Beasiswa
 
-#PrestasiKita #BeasiswaPendidikan #BeasiswaIndonesia #BeasiswaPelajar #BeasiswaMahasiswa #PrestasiKitaBatch8`;
+📌 PERSYARATAN:
+•  Wajib lolos seleksi (online & interview)
+•  Tanpa syarat minimal nilai rapor/IPK
+
+👥 KATEGORI:
+•  Mahasiswa
+•  Pelajar SMA/SMK/MA
+•  Pelajar SMP
+
+Daftar di:
+${url}
+
+Cek informasi lengkap di: https://prestasikita.com
+
+⚠️ Waspada penipuan yang mengatasnamakan lembaga resmi Prestasi Kita
+
+📱 Instagram: https://www.instagram.com/prestasikita
+🌐 Website: https://prestasikita.com
+📞 0812 8001 0302`;
 
   const [cfg, setCfg] = useState<PosterCfg>({
     image_url: defaultPoster,
