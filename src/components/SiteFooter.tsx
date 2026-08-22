@@ -42,9 +42,9 @@ export function SiteFooter() {
       </div>
 
       {/* Main grid */}
-      <div className="container-page py-14 grid gap-10 md:grid-cols-12">
+      <div className="container-page py-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-12">
         {/* Brand */}
-        <div className="md:col-span-4">
+        <div className="sm:col-span-2 lg:col-span-4">
           <div className="flex items-center">
             <img
               src={footerLogo}
@@ -121,7 +121,7 @@ export function SiteFooter() {
 
 
         {/* Layanan */}
-        <div className="md:col-span-2">
+        <div className="lg:col-span-2">
           <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">Layanan</h4>
           <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
             <li>
@@ -143,7 +143,7 @@ export function SiteFooter() {
         </div>
 
         {/* Bantuan */}
-        <div className="md:col-span-3">
+        <div className="lg:col-span-3">
           <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">Bantuan &amp; Informasi</h4>
           <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
             <li>
@@ -165,7 +165,7 @@ export function SiteFooter() {
         </div>
 
         {/* Kontak */}
-        <div className="md:col-span-3">
+        <div className="lg:col-span-3">
           <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">Hubungi Kami</h4>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
             <li className="flex items-start gap-3">
