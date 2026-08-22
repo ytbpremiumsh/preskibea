@@ -117,7 +117,7 @@ function PilihTipePage() {
               Dapatkan kemudahan pendaftaran tanpa syarat media sosial dan berbagai benefit eksklusif Batch #8.
             </p>
             
-            <ul className="space-y-3 mb-8">
+            <ul className="space-y-3 mb-8 flex-1">
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
                 <span className="font-semibold">Berkesempatan Meraih Dana Pendidikan Beasiswa</span>
