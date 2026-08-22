@@ -173,7 +173,10 @@ function PilihTipePage() {
             <div className="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-bold px-4 py-1.5 rounded-bl-2xl uppercase tracking-widest shadow-sm">
               Premium
             </div>
-            
+            <div className="absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-white shadow-sm animate-blink-emerald">
+              <span className="h-1.5 w-1.5 rounded-full bg-white" /> Terbatas
+            </div>
+
             <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-6">
               <Zap size={32} className="fill-current" />
             </div>
