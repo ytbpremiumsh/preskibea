@@ -176,7 +176,7 @@ function StatusResult({ data }: { data: StatusData }) {
   const adminResultLabel = isFTPremium
     ? "Lolos Seleksi Administrasi (otomatis — Fast Track Premium)"
     : fastUnpaid
-    ? "Menunggu pembayaran Fast Track diverifikasi"
+    ? "Menunggu pembayaran Fast Track Terverifikasi"
     : !hasDocs
     ? "Menunggu pengiriman berkas"
     : !adminPublished
@@ -187,7 +187,7 @@ function StatusResult({ data }: { data: StatusData }) {
     ? "Belum lolos seleksi administrasi"
     : "Sedang diverifikasi";
   const essayResultLabel = fastUnpaid
-    ? "Menunggu pembayaran Fast Track"
+    ? "Menunggu pembayaran Fast Track Terverifikasi"
     : fastPaid
     ? "Lolos otomatis (Fast Track)"
     : essayAutoReguler
@@ -314,7 +314,7 @@ function StatusResult({ data }: { data: StatusData }) {
           active={act(1)}
           desc={
             fastUnpaid
-              ? "Menunggu pembayaran Fast Track diverifikasi"
+              ? "Menunggu pembayaran Fast Track\u00a0Terverifikasi"
               : fastPaid
               ? "Otomatis lolos (Fast Track)"
               : !essayDone
