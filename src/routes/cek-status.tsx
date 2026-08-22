@@ -175,6 +175,8 @@ function StatusResult({ data }: { data: StatusData }) {
 
   const adminResultLabel = isFTPremium
     ? "Lolos Seleksi Administrasi (otomatis — Fast Track Premium)"
+    : fastUnpaid
+    ? "Menunggu pembayaran Fast Track diverifikasi"
     : !hasDocs
     ? "Menunggu pengiriman berkas"
     : !adminPublished
