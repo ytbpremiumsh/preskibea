@@ -63,7 +63,7 @@ function PilihTipePage() {
       </section>
 
       <section className="container-page py-12 -mt-8 md:-mt-12 relative z-10">
-        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 md:gap-8 max-w-7xl mx-auto">
           {/* Reguler Card */}
           <div className="card-block group flex flex-col p-8 transition-all hover:shadow-xl border-t-4 border-primary/20">
             <div className="h-14 w-14 rounded-2xl bg-primary-soft text-primary flex items-center justify-center mb-6">
