@@ -23,45 +23,40 @@ export function SharePosterPage({ kind: initialKind }: { kind?: "prestasi" | "ek
   const path = kind === "ekonomi" ? "/beasiswa-ekonomi" : kind === "umum" ? "/beasiswa-umum" : kind === "yatim" ? "/beasiswa-yatim" : "/beasiswa-prestasi";
   const url = typeof window !== "undefined" ? window.location.origin + path : "https://prestasikita.com";
 
-  const defaultCaption = `💰 TOTAL BEASISWA/SEMESTER: RP17.000.000
+  const defaultCaption = `🔰 Beasiswa Pendidikan dengan Total hingga Rp17.000.000 🔰
 
-📢 Beasiswa Resmi Prestasi Kita (Batch #8) – DIBUKA!
+Sudahkah kamu menyelesaikan 'Tahap Pendaftaran dan Pengiriman Berkas Administrasi' untuk Beasiswa Pendidikan Prestasi Kita - Batch #8? Buruan daftar, karena pendaftaran bisa ditutup lebih awal jika kuota penuh! 😊
+__
 
-🎯 35 Pendaftar Pertama mendapat jalur prioritas!
-${url}
+Dapatkan beragam manfaat dari program beasiswa ini:
+✅ Total Dana Pendidikan hingga Rp17.000.000/semester
+✅ Sertifikat Partisipasi Nasional by Prestasi Kita
+✅ Merchandise Eksklusif by Prestasi Kita
+✅ E-Book Menjemput Beasiswa Impian ke Kampus Dunia
+✅ Berkesempatan menjadi Ambassador Program Prestasi Kita
 
-Beasiswa hanya dibuka setahun sekali
+Kategori Beasiswa yang Beragam:
+⭐ Kategori Beasiswa Prestasi
+⭐ Kategori Beasiswa Ekonomi
+⭐ Kategori Beasiswa Umum
+⭐ Kategori Beasiswa Yatim
+__
 
-⚠️ Kuota terbatas! Ditutup lebih awal jika penuh!
+Bingung cara daftarnya? Ikuti langkah di bawah ya! ⤵
+▪ Kunjungi situs web kami di ${url}
+▪ Isi formulir pendaftaran dengan informasi lengkap
+▪ Sertakan dokumen yang wajib dilampirkan
 
-———————————
-📢 Tentang Kami!
-Prestasi Kita adalah lembaga pemberi beasiswa yang membantu pelajar dan mahasiswa Indonesia meraih mimpi pendidikan setinggi mungkin.
+Peserta wajib menyelesaikan tahapan tersebut ya 🤗
 
-🎁 BENEFIT LAINNYA:
-⭐ Dana pendidikan hingga Rp17.000.000/semester
-⭐ Sertifikat Partisipasi Nasional
-⭐ Merchandise eksklusif & E-Book Menjemput Beasiswa
+📌 Pendaftaran DIBUKA mulai 12 Agustus 2026 hingga 21 Februari 2027
 
-📌 PERSYARATAN:
-•  Wajib lolos seleksi (online & interview)
-•  Tanpa syarat minimal nilai rapor/IPK
+Lebih dekat dengan kami yuk! ⤵️
+Instagram @prestasikita
+WhatsApp 0812-8001-0302
+Website www.prestasikita.com
 
-👥 KATEGORI:
-•  Mahasiswa
-•  Pelajar SMA/SMK/MA
-•  Pelajar SMP
-
-Daftar di:
-${url}
-
-Cek informasi lengkap di: https://prestasikita.com
-
-⚠️ Waspada penipuan yang mengatasnamakan lembaga resmi Prestasi Kita
-
-📱 Instagram: https://www.instagram.com/prestasikita
-🌐 Website: https://prestasikita.com
-📞 0812 8001 0302`;
+#PrestasiKita #BeasiswaPendidikan #BeasiswaIndonesia #Beasiswa2026 #PrestasiKitaBatch8`;
 
   const [cfg, setCfg] = useState<PosterCfg>({
     image_url: defaultPoster,
