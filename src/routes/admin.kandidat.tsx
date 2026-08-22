@@ -85,7 +85,8 @@ function AdminKandidat() {
         return (
           r.full_name.toLowerCase().includes(s) ||
           r.email.toLowerCase().includes(s) ||
-          (r.school_name?.toLowerCase().includes(s) ?? false)
+          (r.school_name?.toLowerCase().includes(s) ?? false) ||
+          (r.token?.toLowerCase().includes(s) ?? false)
         );
       }
       return true;
@@ -95,7 +96,9 @@ function AdminKandidat() {
   const totals = useMemo(() => {
     const prestasi = regs.filter((r) => r.kind === "prestasi").length;
     const ekonomi = regs.filter((r) => r.kind === "ekonomi").length;
-    return { prestasi, ekonomi, total: regs.length };
+    const umum = regs.filter((r) => r.kind === "umum").length;
+    const yatim = regs.filter((r) => r.kind === "yatim").length;
+    return { prestasi, ekonomi, umum, yatim, total: regs.length };
   }, [regs]);
 
   const setStatus = async (id: string, status: "pending" | "rejected") => {
