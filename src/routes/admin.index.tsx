@@ -320,7 +320,7 @@ function AdminOverview() {
           <h2 className="text-base font-semibold text-foreground">Pendaftar per Hari (14 hari terakhir)</h2>
           <div className="mt-4 h-64">
             <Suspense fallback={<ChartFallback />}>
-              {!loading && <LineDaily data={dailyStats} showFastTrack={true} />}
+              {!loading && <LineDaily data={dailyStats} showFastTrack={true} showFastTrackPremium={true} />}
             </Suspense>
           </div>
         </Card>
