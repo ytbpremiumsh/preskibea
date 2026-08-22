@@ -314,7 +314,7 @@ function StatusResult({ data }: { data: StatusData }) {
           active={act(1)}
           desc={
             fastUnpaid
-              ? "Menunggu pembayaran Fast Track diverifikasi"
+              ? "Menunggu pembayaran Fast Track\u00a0Terverifikasi"
               : fastPaid
               ? "Otomatis lolos (Fast Track)"
               : !essayDone
