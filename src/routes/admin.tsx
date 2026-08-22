@@ -50,6 +50,9 @@ function AdminLayout() {
   const [checking, setChecking] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
+  const currentPath = useRouterState({ select: (s) => s.location.pathname });
+  const pageTitle = PAGE_TITLES[currentPath.replace(/\/$/, "")] ?? "Admin Dashboard";
+
 
   useEffect(() => {
     let active = true;
