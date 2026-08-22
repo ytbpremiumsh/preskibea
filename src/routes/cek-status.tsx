@@ -155,8 +155,11 @@ function StatusResult({ data }: { data: StatusData }) {
   const isFast = !!data.fast_track;
   const fastPaid = isFast && data.payment_status === "paid";
   const fastUnpaid = isFast && !fastPaid;
+  // Tipe jalur (label) — tetap tampil walau pembayaran belum lunas
+  const premiumTier = isFast && (data.extra as any)?.fast_track_type === "premium";
+  const jalurLabel = !isFast ? "Jalur Reguler" : premiumTier ? "⚡ Fast Track Premium" : "⚡ Fast Track";
   // Auto-lolos Fast Track Premium hanya aktif setelah pembayaran lunas
-  const isFTPremium = fastPaid && (data.extra as any)?.fast_track_type === "premium";
+  const isFTPremium = fastPaid && premiumTier;
   const essayDone = fastPaid || !!data.essay_submitted;
   const essayStatus = fastPaid ? "approved" : (data.essay_status ?? "pending");
   const essayPublished = !!data.essay_announcement_published;
