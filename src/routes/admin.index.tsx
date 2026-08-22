@@ -117,7 +117,8 @@ function AdminOverview() {
       const liteData = (liteRes.data ?? []) as LiteRow[];
       setLite(liteData);
       
-      const premiumCount = liteData.filter(r => (r as any).extra?.fast_track_type === 'premium').length;
+      const premiumCount = fastTrackPremiumRes.count ?? 0;
+      const fastTrackTotal = fastTrackRes.count ?? 0;
 
       setCounts({
         total: totalRes.count ?? 0,
