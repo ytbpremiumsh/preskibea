@@ -183,6 +183,9 @@ function PilihTipePage() {
             </p>
             
             <ul className="space-y-3 mb-8 flex-1">
+              <li className="flex items-center gap-3 text-sm text-foreground/80">
+                <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
+                <span className="font-semibold">Berkesempatan Meraih Dana Pendidikan Beasiswa</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
