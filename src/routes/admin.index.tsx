@@ -108,6 +108,7 @@ function AdminOverview() {
         supabase.from("registrations").select("id", { count: "exact", head: true }).gte("created_at", startToday.toISOString()),
         supabase.from("documents").select("id", { count: "exact", head: true }),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("fast_track", true),
+        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("fast_track", true).eq("extra->>fast_track_type", "premium"),
       ]);
 
       if (!active) return;
