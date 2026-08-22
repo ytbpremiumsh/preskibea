@@ -772,10 +772,18 @@ function JalurBadge({ row }: { row: Registration }) {
       </Badge>
     );
   }
-  const paid = row.payment_status === "paid";
+  const ps = (row.payment_status || "").toLowerCase();
+  const paid = ps === "paid";
+  const pending = ["pending", "processing", "waiting", "unpaid_pending"].includes(ps);
   const premium = (row.extra as any)?.fast_track_type === "premium";
+  const payLabel = paid ? "Valid" : pending ? "Pending" : "Belum Bayar";
+  const payClass = paid
+    ? "bg-emerald-500/15 text-emerald-700 border border-emerald-500/40"
+    : pending
+      ? "bg-amber-400/20 text-amber-700 border border-amber-500/40 animate-pulse"
+      : "bg-rose-500/10 text-rose-700 border border-rose-500/40";
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col items-start gap-1">
       <Badge
         className={
           premium
@@ -785,12 +793,14 @@ function JalurBadge({ row }: { row: Registration }) {
       >
         <Zap className="h-3 w-3 mr-1" /> {premium ? "Fast Track Premium" : "Fast Track"}
       </Badge>
-      <span className={`text-[11px] font-medium ${paid ? "text-emerald-600" : "text-muted-foreground"}`}>
-        {paid ? "✓ Lunas / tervalidasi" : "Menunggu pembayaran"}
-      </span>
+      <Badge className={`${payClass} hover:opacity-90 font-bold text-[11px]`}>
+        {paid ? "✓ " : pending ? "⏳ " : "• "}
+        {payLabel}
+      </Badge>
       {premium && paid && (
         <span className="text-[11px] font-semibold text-emerald-600">✓ Auto lolos administrasi</span>
       )}
     </div>
   );
 }
+
