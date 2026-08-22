@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, LogOut, Home } from "lucide-react";
@@ -6,6 +6,34 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+
+const PAGE_TITLES: Record<string, string> = {
+  "/admin": "Ringkasan Dashboard",
+  "/admin/analytics": "Google Analytics",
+  "/admin/pendaftar": "Data Pendaftar",
+  "/admin/esai": "Pengiriman Esai",
+  "/admin/berkas": "Pengiriman Berkas",
+  "/admin/tahapan-seleksi": "Tahapan Seleksi",
+  "/admin/kandidat": "Kandidat Lolos",
+  "/admin/artikel": "Artikel",
+  "/admin/formulir": "Formulir",
+  "/admin/bagikan-poster": "Bagikan Poster",
+  "/admin/media": "Media & File",
+  "/admin/whatsapp": "WhatsApp",
+  "/admin/ai-balasan": "Balasan AI",
+  "/admin/pengaturan": "Pengaturan Situs",
+  "/admin/integrasi": "Integrasi Pembayaran",
+  "/admin/branding": "Logo Situs",
+  "/admin/widgets": "Widget Home",
+  "/admin/email-template": "Template Email",
+  "/admin/keamanan": "Keamanan (2FA)",
+  "/admin/adsense": "AdSense",
+  "/admin/iklan-kustom": "Iklan Kustom",
+  "/admin/kode-kustom": "Kode & Performa",
+  "/admin/sistem-update": "Sistem Update",
+  "/admin/maintenance": "Mode Maintenance",
+};
+
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
