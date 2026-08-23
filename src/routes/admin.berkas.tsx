@@ -330,15 +330,25 @@ function AdminBerkas() {
   };
 
   const totals = useMemo(() => {
+    const docKeys = new Set(
+      docs.map((d) => `${d.email.toLowerCase()}__${d.kind}`),
+    );
+    // Tambahkan FT Premium (sudah bayar) yang belum mengirim berkas manual
+    const premiumAuto = regs.filter(
+      (r) =>
+        isPremiumPaid(r) &&
+        !docKeys.has(`${r.email.toLowerCase()}__${r.kind}`),
+    );
     const all = Array.from(
       new Map(docs.map((d) => [`${d.email.toLowerCase()}__${d.kind}`, d])).values(),
-    );
+    ).concat(premiumAuto as any);
     const prestasi = all.filter((d) => d.kind === "prestasi").length;
     const ekonomi = all.filter((d) => d.kind === "ekonomi").length;
     const umum = all.filter((d) => d.kind === "umum").length;
     const yatim = all.filter((d) => d.kind === "yatim").length;
     return { prestasi, ekonomi, umum, yatim, total: all.length };
-  }, [docs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [docs, regs]);
 
   return (
     <div className="space-y-4">
