@@ -180,9 +180,27 @@ function AdminOverview() {
           }
         },
       )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "registrations" },
+        () => scheduleRefresh(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "registrations" },
+        () => scheduleRefresh(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "documents" },
+        () => scheduleRefresh(),
+      )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [notif]);
+    return () => {
+      if (refreshTimer.current) clearTimeout(refreshTimer.current);
+      supabase.removeChannel(channel);
+    };
+  }, [notif, scheduleRefresh]);
 
   const toggleNotif = async () => {
     const next = !notif;
