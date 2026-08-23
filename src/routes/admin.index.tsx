@@ -135,10 +135,14 @@ function AdminOverview() {
       });
 
       setLoading(false);
-    };
-    load();
-    return () => { active = false; };
+    }
   }, []);
+
+  useEffect(() => {
+    activeRef.current = true;
+    load();
+    return () => { activeRef.current = false; };
+  }, [load]);
 
   // Realtime subscribe (only after initial paint)
   useEffect(() => {
