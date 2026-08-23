@@ -173,8 +173,8 @@ function AdminOverview() {
             umum: c.umum + (newRow.kind === "umum" ? 1 : 0),
             yatim: c.yatim + (newRow.kind === "yatim" ? 1 : 0),
 
-            fastTrack: c.fastTrack + (newRow.fast_track ? 1 : 0),
-            fastTrackPremium: c.fastTrackPremium + (isPremium ? 1 : 0),
+            fastTrack: c.fastTrack + (newRow.fast_track && newRow.payment_status === "paid" && !isPremium ? 1 : 0),
+            fastTrackPremium: c.fastTrackPremium + (isPremium && newRow.payment_status === "paid" ? 1 : 0),
           }));
           if (notif) {
             toast.success(`Pendaftar baru: ${newRow.full_name}`, {
