@@ -82,7 +82,7 @@ type Group = {
   email: string;
   kind: string;
   items: Document[];
-  latest: string;
+  latest: string | null;
   status: CandidateStatus;
 };
 
