@@ -519,7 +519,13 @@ function AdminBerkas() {
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <TokenBadge token={g.reg?.token} />
                 <Badge variant="secondary" className="capitalize">{g.kind}</Badge>
-                <Badge variant="outline">{g.items.length} file</Badge>
+                {g.reg && isPremiumPaid(g.reg) ? (
+                  <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 font-semibold">
+                    ⚡ Auto Lolos
+                  </Badge>
+                ) : (
+                  <Badge variant="outline">{g.items.length} file</Badge>
+                )}
                 {statusBadge(g.status)}
               </div>
               {g.reg ? (
