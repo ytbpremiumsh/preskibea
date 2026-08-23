@@ -71,6 +71,9 @@ type Registration = {
   kind: string;
   token: string | null;
   candidate_status: CandidateStatus;
+  fast_track?: boolean | null;
+  payment_status?: string | null;
+  extra?: Record<string, unknown> | null;
 };
 
 type Group = {
@@ -79,7 +82,7 @@ type Group = {
   email: string;
   kind: string;
   items: Document[];
-  latest: string;
+  latest: string | null;
   status: CandidateStatus;
 };
 
@@ -126,7 +129,7 @@ function AdminBerkas() {
       supabase
         .from("registrations")
         .select(
-          "id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status",
+          "id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status, fast_track, payment_status, extra",
         ),
       supabase.from("site_settings").select("value").eq("key", "administrasi_announcement").maybeSingle(),
     ]);
@@ -156,6 +159,12 @@ function AdminBerkas() {
     );
   };
 
+  // Fast Track Premium dengan pembayaran valid = lolos otomatis berkas
+  const isPremiumPaid = (r: Registration): boolean =>
+    !!r.fast_track &&
+    (r.extra as Record<string, unknown> | null)?.fast_track_type === "premium" &&
+    (r.payment_status || "").toLowerCase() === "paid";
+
   const grouped = useMemo<Group[]>(() => {
     const map = new Map<string, Document[]>();
     for (const d of docs) {
@@ -176,6 +185,27 @@ function AdminBerkas() {
         status: (reg?.candidate_status ?? "pending") as CandidateStatus,
       };
     });
+
+    // Tambahkan peserta Fast Track Premium (sudah bayar) yang belum mengirim berkas
+    // secara manual — mereka lolos berkas secara otomatis.
+    const existingKeys = new Set(rows.map((r) => r.key));
+    const existingRegIds = new Set(rows.map((r) => r.reg?.id).filter(Boolean) as string[]);
+    for (const r of regs) {
+      if (!isPremiumPaid(r)) continue;
+      const key = `${r.email.toLowerCase()}__${r.kind}`;
+      if (existingKeys.has(key) || existingRegIds.has(r.id)) continue;
+      rows.push({
+        key,
+        reg: r,
+        email: r.email,
+        kind: r.kind,
+        items: [],
+        latest: null,
+        status: (r.candidate_status ?? "pending") as CandidateStatus,
+      });
+      existingKeys.add(key);
+    }
+
     if (filterKind !== "all") rows = rows.filter((r) => r.kind === filterKind);
     if (filterStatus !== "all") rows = rows.filter((r) => r.status === filterStatus);
     if (q) {
@@ -300,15 +330,25 @@ function AdminBerkas() {
   };
 
   const totals = useMemo(() => {
+    const docKeys = new Set(
+      docs.map((d) => `${d.email.toLowerCase()}__${d.kind}`),
+    );
+    // Tambahkan FT Premium (sudah bayar) yang belum mengirim berkas manual
+    const premiumAuto = regs.filter(
+      (r) =>
+        isPremiumPaid(r) &&
+        !docKeys.has(`${r.email.toLowerCase()}__${r.kind}`),
+    );
     const all = Array.from(
       new Map(docs.map((d) => [`${d.email.toLowerCase()}__${d.kind}`, d])).values(),
-    );
+    ).concat(premiumAuto as any);
     const prestasi = all.filter((d) => d.kind === "prestasi").length;
     const ekonomi = all.filter((d) => d.kind === "ekonomi").length;
     const umum = all.filter((d) => d.kind === "umum").length;
     const yatim = all.filter((d) => d.kind === "yatim").length;
     return { prestasi, ekonomi, umum, yatim, total: all.length };
-  }, [docs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [docs, regs]);
 
   return (
     <div className="space-y-4">
@@ -489,7 +529,13 @@ function AdminBerkas() {
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <TokenBadge token={g.reg?.token} />
                 <Badge variant="secondary" className="capitalize">{g.kind}</Badge>
-                <Badge variant="outline">{g.items.length} file</Badge>
+                {g.reg && isPremiumPaid(g.reg) ? (
+                  <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 font-semibold">
+                    ⚡ Auto Lolos
+                  </Badge>
+                ) : (
+                  <Badge variant="outline">{g.items.length} file</Badge>
+                )}
                 {statusBadge(g.status)}
               </div>
               {g.reg ? (
@@ -569,7 +615,13 @@ function AdminBerkas() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{g.items.length} file</Badge>
+                    {g.reg && isPremiumPaid(g.reg) ? (
+                      <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 font-semibold">
+                        ⚡ Auto Lolos
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline">{g.items.length} file</Badge>
+                    )}
                   </TableCell>
                   <TableCell>{statusBadge(g.status)}</TableCell>
                   <TableCell className="text-right">
@@ -602,14 +654,20 @@ function AdminBerkas() {
 
           {detail && (
             <div className="space-y-4">
-              <div className="flex flex-wrap items-center gap-2">
-                {statusBadge(detail.status)}
-                <Badge variant="secondary" className="capitalize">
-                  {detail.kind}
-                </Badge>
-                <Badge variant="outline">{detail.items.length} file</Badge>
-                <TokenBadge token={detail.reg?.token} size="md" />
-              </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  {statusBadge(detail.status)}
+                  <Badge variant="secondary" className="capitalize">
+                    {detail.kind}
+                  </Badge>
+                  {detail.reg && isPremiumPaid(detail.reg) ? (
+                    <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 font-semibold">
+                      ⚡ Auto Lolos Berkas
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline">{detail.items.length} file</Badge>
+                  )}
+                  <TokenBadge token={detail.reg?.token} size="md" />
+                </div>
 
               {detail.reg ? (
                 <div className="grid grid-cols-1 gap-x-4 gap-y-2 rounded-lg border border-border bg-muted/20 p-3 text-sm sm:grid-cols-2">
@@ -634,7 +692,12 @@ function AdminBerkas() {
               <div>
                 <div className="mb-2 text-sm font-semibold">Berkas Terkirim</div>
                 <div className="grid gap-2">
-                  {detail.items.map((d) => (
+                  {detail.items.length === 0 ? (
+                    <div className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-3 py-3 text-sm text-amber-700">
+                      Peserta Fast Track Premium — lolos berkas secara otomatis, tidak perlu mengunggah berkas pendukung.
+                    </div>
+                  ) : (
+                    detail.items.map((d) => (
                     <div
                       key={d.id}
                       className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2"
@@ -663,7 +726,8 @@ function AdminBerkas() {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
 
