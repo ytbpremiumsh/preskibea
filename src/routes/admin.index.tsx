@@ -96,7 +96,7 @@ function AdminOverview() {
         fastTrackPremiumRes,
       ] = await Promise.all([
         supabase.from("registrations")
-          .select("id,full_name,email,kind,status,school_name,education_level,created_at,fast_track,extra")
+          .select("id,full_name,email,kind,status,school_name,education_level,created_at,fast_track,payment_status,extra")
           .order("created_at", { ascending: false })
           .limit(8),
         supabase.from("registrations")
