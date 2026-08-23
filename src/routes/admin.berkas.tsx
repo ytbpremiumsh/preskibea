@@ -588,6 +588,7 @@ function AdminBerkas() {
             </TableBody>
           </Table>
         </Card>
+        </>
       )}
 
       <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
