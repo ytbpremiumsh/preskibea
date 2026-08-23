@@ -26,6 +26,7 @@ type RecentRow = {
   school_name: string;
   education_level: string;
   fast_track: boolean | null;
+  payment_status: string | null;
   created_at: string;
   extra: Json;
 };
