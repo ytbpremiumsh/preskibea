@@ -228,6 +228,41 @@ function AdminTahapanSeleksi() {
               Belum ada peserta yang lolos seleksi administrasi.
             </div>
           ) : (
+            <>
+            {/* Mobile: kartu */}
+            <div className="grid gap-3 md:hidden">
+              {filtered.map((r) => (
+                <div key={r.id} className="rounded-xl border border-border p-3">
+                  <div className="min-w-0">
+                    <div className="truncate font-semibold text-foreground">{r.full_name}</div>
+                    <div className="truncate text-xs text-muted-foreground">{r.email}</div>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {r.token ? <TokenBadge token={r.token} /> : null}
+                    <Badge variant="outline">{KIND_LABEL[r.kind] ?? r.kind}</Badge>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <div>
+                      <div className="text-xs font-semibold text-muted-foreground">Tes Potensi Akademik</div>
+                      <div className="mt-1">
+                        <StageCell status={statusOf(r, "tpa_status")} onSet={(s) => setStage(r, "tpa_status", s)} />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-muted-foreground">Interview</div>
+                      <div className="mt-1">
+                        <StageCell
+                          status={statusOf(r, "interview_status")}
+                          onSet={(s) => setStage(r, "interview_status", s)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow>
