@@ -644,14 +644,20 @@ function AdminBerkas() {
 
           {detail && (
             <div className="space-y-4">
-              <div className="flex flex-wrap items-center gap-2">
-                {statusBadge(detail.status)}
-                <Badge variant="secondary" className="capitalize">
-                  {detail.kind}
-                </Badge>
-                <Badge variant="outline">{detail.items.length} file</Badge>
-                <TokenBadge token={detail.reg?.token} size="md" />
-              </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  {statusBadge(detail.status)}
+                  <Badge variant="secondary" className="capitalize">
+                    {detail.kind}
+                  </Badge>
+                  {detail.reg && isPremiumPaid(detail.reg) ? (
+                    <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 font-semibold">
+                      ⚡ Auto Lolos Berkas
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline">{detail.items.length} file</Badge>
+                  )}
+                  <TokenBadge token={detail.reg?.token} size="md" />
+                </div>
 
               {detail.reg ? (
                 <div className="grid grid-cols-1 gap-x-4 gap-y-2 rounded-lg border border-border bg-muted/20 p-3 text-sm sm:grid-cols-2">
