@@ -134,11 +134,19 @@ function AdminPendaftar() {
     return uniqueLatestDocuments(matched);
   };
 
+  // Fast Track Premium yang sudah lunas otomatis dianggap lolos Esai & Berkas
+  const isAutoPremium = (r: Registration) =>
+    !!r.fast_track &&
+    (r.extra as any)?.fast_track_type === "premium" &&
+    (r as any).payment_status === "paid";
+
+  const berkasDone = (r: Registration) => isAutoPremium(r) || docsForRow(r).length > 0;
+
   const counts = useMemo(() => {
     let submitted = 0;
     let pending = 0;
     for (const r of rows) {
-      if (docsForRow(r).length > 0) submitted++;
+      if (berkasDone(r)) submitted++;
       else pending++;
     }
     return { submitted, pending };
