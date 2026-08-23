@@ -69,9 +69,10 @@ function AdminOverview() {
   });
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    let active = true;
-    const load = async () => {
+  const activeRef = useRef(true);
+  const load = useCallback(async () => {
+    {
+      const active = activeRef.current;
       // Fast: today (start) ISO + 14 days back ISO
       const now = new Date();
       const startToday = new Date(now); startToday.setHours(0, 0, 0, 0);
