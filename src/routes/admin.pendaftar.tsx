@@ -176,9 +176,7 @@ function AdminPendaftar() {
       if (filterJalur === "fast" && !r.fast_track) return false;
       if (filterJalur === "premium" && !isPremium) return false;
       if (filterJalur === "reguler" && r.fast_track) return false;
-      const hasDocs = docsForRow(r).length > 0;
-      if (filterBerkas === "submitted" && !hasDocs) return false;
-      if (filterBerkas === "pending" && hasDocs) return false;
+      const hasDocs = berkasDone(r);
 
       if (q) {
         const s = q.toLowerCase();
