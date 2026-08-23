@@ -71,6 +71,9 @@ type Registration = {
   kind: string;
   token: string | null;
   candidate_status: CandidateStatus;
+  fast_track?: boolean | null;
+  payment_status?: string | null;
+  extra?: Record<string, unknown> | null;
 };
 
 type Group = {
