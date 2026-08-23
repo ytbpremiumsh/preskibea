@@ -129,7 +129,7 @@ function AdminBerkas() {
       supabase
         .from("registrations")
         .select(
-          "id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status",
+          "id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status, fast_track, payment_status, extra",
         ),
       supabase.from("site_settings").select("value").eq("key", "administrasi_announcement").maybeSingle(),
     ]);
