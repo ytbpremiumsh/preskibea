@@ -523,6 +523,9 @@ function AdminPendaftar() {
                       <div className="font-medium text-foreground">{r.full_name}</div>
                       <div className="text-xs text-muted-foreground">
                         {new Date(r.created_at).toLocaleDateString("id-ID")}
+                        <span className="text-[10px] text-muted-foreground/70">
+                          {" "}{new Date(r.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}{" "}
+                        </span>
                       </div>
                     </td>
                     <td className="px-4 py-3">
