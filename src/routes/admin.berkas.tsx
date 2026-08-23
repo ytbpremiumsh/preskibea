@@ -605,7 +605,13 @@ function AdminBerkas() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{g.items.length} file</Badge>
+                    {g.reg && isPremiumPaid(g.reg) ? (
+                      <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 font-semibold">
+                        ⚡ Auto Lolos
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline">{g.items.length} file</Badge>
+                    )}
                   </TableCell>
                   <TableCell>{statusBadge(g.status)}</TableCell>
                   <TableCell className="text-right">
