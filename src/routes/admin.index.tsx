@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Json } from "@/integrations/supabase/types";
 import { Card } from "@/components/ui/card";
@@ -69,9 +69,10 @@ function AdminOverview() {
   });
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    let active = true;
-    const load = async () => {
+  const activeRef = useRef(true);
+  const load = useCallback(async () => {
+    {
+      const active = activeRef.current;
       // Fast: today (start) ISO + 14 days back ISO
       const now = new Date();
       const startToday = new Date(now); startToday.setHours(0, 0, 0, 0);
@@ -134,10 +135,20 @@ function AdminOverview() {
       });
 
       setLoading(false);
-    };
-    load();
-    return () => { active = false; };
+    }
   }, []);
+
+  useEffect(() => {
+    activeRef.current = true;
+    load();
+    return () => { activeRef.current = false; };
+  }, [load]);
+
+  const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleRefresh = useCallback(() => {
+    if (refreshTimer.current) clearTimeout(refreshTimer.current);
+    refreshTimer.current = setTimeout(() => { load(); }, 600);
+  }, [load]);
 
   // Realtime subscribe (only after initial paint)
   useEffect(() => {
@@ -175,9 +186,27 @@ function AdminOverview() {
           }
         },
       )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "registrations" },
+        () => scheduleRefresh(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "registrations" },
+        () => scheduleRefresh(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "documents" },
+        () => scheduleRefresh(),
+      )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [notif]);
+    return () => {
+      if (refreshTimer.current) clearTimeout(refreshTimer.current);
+      supabase.removeChannel(channel);
+    };
+  }, [notif, scheduleRefresh]);
 
   const toggleNotif = async () => {
     const next = !notif;

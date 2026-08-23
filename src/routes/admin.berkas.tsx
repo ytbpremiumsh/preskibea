@@ -465,7 +465,47 @@ function AdminBerkas() {
           Belum ada berkas terkirim.
         </Card>
       ) : (
-        <Card className="rounded-2xl overflow-hidden shadow-soft">
+        <>
+        {/* Mobile: kartu */}
+        <div className="grid gap-3 md:hidden">
+          {grouped.map((g) => (
+            <Card key={g.key} className="rounded-2xl p-3 shadow-soft">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 font-medium">
+                    <User className="h-4 w-4 shrink-0 text-primary" />
+                    <span className="truncate">
+                      {g.reg?.full_name ?? <span className="italic text-muted-foreground">Tidak terdaftar</span>}
+                    </span>
+                  </div>
+                  <div className="mt-0.5 truncate text-xs text-muted-foreground">{g.email}</div>
+                </div>
+                <Checkbox
+                  checked={selected.has(g.key)}
+                  onCheckedChange={() => toggleOne(g.key)}
+                  aria-label="Pilih baris"
+                />
+              </div>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <TokenBadge token={g.reg?.token} />
+                <Badge variant="secondary" className="capitalize">{g.kind}</Badge>
+                <Badge variant="outline">{g.items.length} file</Badge>
+                {statusBadge(g.status)}
+              </div>
+              {g.reg ? (
+                <div className="mt-2 text-xs text-muted-foreground">
+                  {g.reg.school_name || "-"} · {g.reg.education_level}
+                  {g.reg.grade ? ` · ${g.reg.grade}` : ""}
+                </div>
+              ) : null}
+              <Button size="sm" variant="outline" className="mt-3 w-full" onClick={() => setDetail(g)}>
+                <Eye className="mr-1 h-3.5 w-3.5" /> Detail
+              </Button>
+            </Card>
+          ))}
+        </div>
+
+        <Card className="hidden rounded-2xl overflow-hidden shadow-soft md:block">
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40">
@@ -548,6 +588,7 @@ function AdminBerkas() {
             </TableBody>
           </Table>
         </Card>
+        </>
       )}
 
       <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>

@@ -285,6 +285,59 @@ function AdminEsai() {
               Belum ada peserta yang mengirimkan esai.
             </div>
           ) : (
+            <>
+            {/* Mobile: kartu */}
+            <div className="grid gap-3 md:hidden">
+              {filtered.map((r) => {
+                const st = statusOf(r, autoReguler);
+                const at = submittedAt(r);
+                return (
+                  <div key={r.id} className="rounded-xl border border-border p-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="truncate font-semibold text-foreground">{r.full_name}</div>
+                        <div className="truncate text-xs text-muted-foreground">{r.email}</div>
+                      </div>
+                      <Badge
+                        variant={st === "approved" ? "default" : st === "rejected" ? "destructive" : "secondary"}
+                        className="shrink-0"
+                      >
+                        {st === "approved" ? "Lolos" : st === "rejected" ? "Tidak Lolos" : "Menunggu"}
+                      </Badge>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                      {r.token ? <TokenBadge token={r.token} /> : null}
+                      <Badge variant="outline">{KIND_LABEL[r.kind] ?? r.kind}</Badge>
+                      {r.fast_track ? (
+                        <span className="inline-flex items-center gap-1 font-semibold text-amber-600">
+                          <Zap className="h-3 w-3" /> Fast Track
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground">Reguler</span>
+                      )}
+                    </div>
+                    <div className="mt-2 text-xs text-muted-foreground">
+                      {at
+                        ? new Date(at).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })
+                        : "Auto (Fast Track)"}
+                    </div>
+                    <div className="mt-3 grid grid-cols-3 gap-2">
+                      <Button size="sm" variant="outline" onClick={() => setDetail(r)}>
+                        <Eye className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setStatus(r, "approved")}>
+                        <Check className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setStatus(r, "rejected")}>
+                        <X className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -350,6 +403,8 @@ function AdminEsai() {
                 })}
               </TableBody>
             </Table>
+            </div>
+            </>
           )}
         </div>
       </Card>
