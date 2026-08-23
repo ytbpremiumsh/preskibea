@@ -682,7 +682,12 @@ function AdminBerkas() {
               <div>
                 <div className="mb-2 text-sm font-semibold">Berkas Terkirim</div>
                 <div className="grid gap-2">
-                  {detail.items.map((d) => (
+                  {detail.items.length === 0 ? (
+                    <div className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-3 py-3 text-sm text-amber-700">
+                      Peserta Fast Track Premium — lolos berkas secara otomatis, tidak perlu mengunggah berkas pendukung.
+                    </div>
+                  ) : (
+                    detail.items.map((d) => (
                     <div
                       key={d.id}
                       className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2"
