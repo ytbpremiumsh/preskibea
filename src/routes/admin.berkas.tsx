@@ -159,6 +159,12 @@ function AdminBerkas() {
     );
   };
 
+  // Fast Track Premium dengan pembayaran valid = lolos otomatis berkas
+  const isPremiumPaid = (r: Registration): boolean =>
+    !!r.fast_track &&
+    (r.extra as Record<string, unknown> | null)?.fast_track_type === "premium" &&
+    (r.payment_status || "").toLowerCase() === "paid";
+
   const grouped = useMemo<Group[]>(() => {
     const map = new Map<string, Document[]>();
     for (const d of docs) {
@@ -179,6 +185,27 @@ function AdminBerkas() {
         status: (reg?.candidate_status ?? "pending") as CandidateStatus,
       };
     });
+
+    // Tambahkan peserta Fast Track Premium (sudah bayar) yang belum mengirim berkas
+    // secara manual — mereka lolos berkas secara otomatis.
+    const existingKeys = new Set(rows.map((r) => r.key));
+    const existingRegIds = new Set(rows.map((r) => r.reg?.id).filter(Boolean) as string[]);
+    for (const r of regs) {
+      if (!isPremiumPaid(r)) continue;
+      const key = `${r.email.toLowerCase()}__${r.kind}`;
+      if (existingKeys.has(key) || existingRegIds.has(r.id)) continue;
+      rows.push({
+        key,
+        reg: r,
+        email: r.email,
+        kind: r.kind,
+        items: [],
+        latest: null,
+        status: (r.candidate_status ?? "pending") as CandidateStatus,
+      });
+      existingKeys.add(key);
+    }
+
     if (filterKind !== "all") rows = rows.filter((r) => r.kind === filterKind);
     if (filterStatus !== "all") rows = rows.filter((r) => r.status === filterStatus);
     if (q) {
