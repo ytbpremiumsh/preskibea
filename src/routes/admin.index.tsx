@@ -144,6 +144,12 @@ function AdminOverview() {
     return () => { activeRef.current = false; };
   }, [load]);
 
+  const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleRefresh = useCallback(() => {
+    if (refreshTimer.current) clearTimeout(refreshTimer.current);
+    refreshTimer.current = setTimeout(() => { load(); }, 600);
+  }, [load]);
+
   // Realtime subscribe (only after initial paint)
   useEffect(() => {
     const channel = supabase
