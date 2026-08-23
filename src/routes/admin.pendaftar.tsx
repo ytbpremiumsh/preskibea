@@ -544,15 +544,35 @@ function AdminPendaftar() {
                       <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
                     </td>
                     <td className="px-4 py-3">
-                      {docsForRow(r).length > 0 ? (
-                        <Badge className="bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20 border border-emerald-500/30">
-                          ✓ {docsForRow(r).length} berkas
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-muted-foreground">
-                          Belum kirim
-                        </Badge>
-                      )}
+                      {(() => {
+                        const isPremium =
+                          !!r.fast_track && (r.extra as any)?.fast_track_type === "premium";
+                        const paid = (r.payment_status || "").toLowerCase() === "paid";
+                        const count = docsForRow(r).length;
+                        if (isPremium && paid) {
+                          return (
+                            <Badge className="bg-amber-500/15 text-amber-700 hover:bg-amber-500/20 border border-amber-500/40 font-bold">
+                              ✓ Lolos Otomatis{count > 0 ? ` · ${count} berkas` : ""}
+                            </Badge>
+                          );
+                        }
+                        if (isPremium && !paid) {
+                          return (
+                            <Badge variant="outline" className="border-amber-500/40 text-amber-600">
+                              Menunggu pembayaran
+                            </Badge>
+                          );
+                        }
+                        return count > 0 ? (
+                          <Badge className="bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20 border border-emerald-500/30">
+                            ✓ {count} berkas
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-muted-foreground">
+                            Belum kirim
+                          </Badge>
+                        );
+                      })()}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
