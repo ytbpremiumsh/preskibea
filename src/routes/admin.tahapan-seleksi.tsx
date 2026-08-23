@@ -304,6 +304,8 @@ function AdminTahapanSeleksi() {
                 })}
               </TableBody>
             </Table>
+            </div>
+            </>
           )}
         </div>
       </Card>
