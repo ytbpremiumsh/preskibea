@@ -403,6 +403,8 @@ function AdminEsai() {
                 })}
               </TableBody>
             </Table>
+            </div>
+            </>
           )}
         </div>
       </Card>
