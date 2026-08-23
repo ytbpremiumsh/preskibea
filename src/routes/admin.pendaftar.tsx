@@ -99,6 +99,32 @@ function AdminPendaftar() {
     load();
   }, []);
 
+  // Realtime: refresh saat ada perubahan pendaftar / berkas / status pembayaran
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const refresh = async () => {
+      const [r, d] = await Promise.all([
+        supabase.from("registrations").select("*").order("created_at", { ascending: false }),
+        supabase.from("documents").select("*").order("created_at", { ascending: false }),
+      ]);
+      setRows((r.data ?? []) as Registration[]);
+      setDocs((d.data ?? []) as Document[]);
+    };
+    const schedule = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(refresh, 500);
+    };
+    const channel = supabase
+      .channel("admin-pendaftar-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "registrations" }, schedule)
+      .on("postgres_changes", { event: "*", schema: "public", table: "documents" }, schedule)
+      .subscribe();
+    return () => {
+      if (timer) clearTimeout(timer);
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const docsForRow = (r: Registration) => {
     const matched = docs.filter(
       (d) =>
