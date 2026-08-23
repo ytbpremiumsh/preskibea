@@ -26,6 +26,7 @@ type RecentRow = {
   school_name: string;
   education_level: string;
   fast_track: boolean | null;
+  payment_status: string | null;
   created_at: string;
   extra: Json;
 };
@@ -34,6 +35,7 @@ type LiteRow = {
   kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   education_level: string;
   fast_track: boolean | null;
+  payment_status: string | null;
   created_at: string;
   extra: Json;
 };
@@ -94,11 +96,11 @@ function AdminOverview() {
         fastTrackPremiumRes,
       ] = await Promise.all([
         supabase.from("registrations")
-          .select("id,full_name,email,kind,status,school_name,education_level,created_at,fast_track,extra")
+          .select("id,full_name,email,kind,status,school_name,education_level,created_at,fast_track,payment_status,extra")
           .order("created_at", { ascending: false })
           .limit(8),
         supabase.from("registrations")
-          .select("kind,education_level,created_at,fast_track,extra")
+          .select("kind,education_level,created_at,fast_track,payment_status,extra")
           .gte("created_at", start14.toISOString())
           .limit(5000),
         supabase.from("registrations").select("id", { count: "exact", head: true }),
@@ -161,7 +163,7 @@ function AdminOverview() {
           const newRow = payload.new as RecentRow;
           setRecent((prev) => [newRow, ...prev].slice(0, 8));
           const isPremium = (newRow.extra as any)?.fast_track_type === 'premium';
-          setLite((prev) => [{ kind: newRow.kind, education_level: newRow.education_level, created_at: newRow.created_at, fast_track: newRow.fast_track, extra: newRow.extra } as any, ...prev]);
+          setLite((prev) => [{ kind: newRow.kind, education_level: newRow.education_level, created_at: newRow.created_at, fast_track: newRow.fast_track, payment_status: newRow.payment_status, extra: newRow.extra } as any, ...prev]);
           setCounts((c) => ({
             ...c,
             total: c.total + 1,
@@ -271,12 +273,12 @@ function AdminOverview() {
       const i = idx.get(k);
       if (i !== undefined) {
         days[i].count++;
-        if (r.fast_track) {
+        // Hanya hitung Fast Track yang pembayarannya sudah valid (paid)
+        if (r.fast_track && (r as any).payment_status === 'paid') {
           const isPrem = (r as any).extra?.fast_track_type === 'premium';
           if (isPrem) days[i].fastTrackPremium++;
           else days[i].fastTrack++;
         }
-
       }
     }
     return days;
