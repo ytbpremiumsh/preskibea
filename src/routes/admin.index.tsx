@@ -5,6 +5,8 @@ import { Json } from "@/integrations/supabase/types";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Loader2, GraduationCap, HeartHandshake, Clock, FileText, Bell, BellOff, Zap } from "lucide-react";
 import { toast } from "sonner";
 
@@ -12,6 +14,8 @@ import { toast } from "sonner";
 const LineDaily = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.LineDaily })));
 const PieKind = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.PieKind })));
 const BarJenjang = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.BarJenjang })));
+const RevenuePanel = lazy(() => import("@/components/admin/RevenuePanel").then((m) => ({ default: m.RevenuePanel })));
+
 
 export const Route = createFileRoute("/admin/")({
   component: AdminOverview,
@@ -318,7 +322,21 @@ function AdminOverview() {
         </Button>
       </div>
 
+      <Tabs defaultValue="ringkasan" className="w-full">
+        <TabsList>
+          <TabsTrigger value="ringkasan">Ringkasan</TabsTrigger>
+          <TabsTrigger value="pendapatan">Pendapatan Harian</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="pendapatan" className="mt-4">
+          <Suspense fallback={<ChartFallback />}>
+            <RevenuePanel />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="ringkasan" className="mt-4 space-y-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+
         {/* Main Stats Row */}
         {items.slice(0, 5).map((it) => (
           <Link key={it.label} to={it.url as any} className="block transition-transform hover:-translate-y-0.5 active:scale-[0.99]">
@@ -442,6 +460,9 @@ function AdminOverview() {
 
         </div>
       </Card>
+        </TabsContent>
+      </Tabs>
     </div>
+
   );
 }
