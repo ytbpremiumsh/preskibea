@@ -317,7 +317,7 @@ function StatusResult({ data }: { data: StatusData }) {
           active={act(1)}
           desc={
             fastUnpaid
-              ? "Menunggu pembayaran Fast Track\u00a0Terverifikasi"
+              ? "Menunggu pembayaran Fast Track Terverifikasi"
               : fastPaid
               ? "Otomatis lolos (Fast Track)"
               : !essayDone
@@ -389,7 +389,7 @@ function StatusResult({ data }: { data: StatusData }) {
               : tpaFail
               ? "Belum lolos tes potensi akademik (pelaksanaan 21 Maret 2027)"
               : act(3)
-              ? "Tes online serentak dijadwalkan 21 Maret 2027, Peserta diharapkan untuk mempersiapkan diri.\u00a0"
+              ? "Tes online serentak dijadwalkan 21 Maret 2027, Peserta diharapkan untuk mempersiapkan diri."
               : "Tes online serentak 21 Maret 2027, pengumuman hasil 24 Maret 2027"
           }
 
