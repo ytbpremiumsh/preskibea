@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";
 import { getRouter } from "./router";
+import { TextScrubber } from "./components/TextScrubber";
 import "./styles.css";
 
 const router = getRouter();
@@ -15,6 +16,7 @@ declare module "@tanstack/react-router" {
 const rootEl = document.getElementById("root")!;
 createRoot(rootEl).render(
   <StrictMode>
+    <TextScrubber />
     <RouterProvider router={router} />
   </StrictMode>,
 );
