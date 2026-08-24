@@ -12,6 +12,8 @@ import { toast } from "sonner";
 const LineDaily = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.LineDaily })));
 const PieKind = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.PieKind })));
 const BarJenjang = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.BarJenjang })));
+const RevenuePanel = lazy(() => import("@/components/admin/RevenuePanel").then((m) => ({ default: m.RevenuePanel })));
+
 
 export const Route = createFileRoute("/admin/")({
   component: AdminOverview,
