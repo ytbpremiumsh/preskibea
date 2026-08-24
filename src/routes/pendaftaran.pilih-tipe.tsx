@@ -180,7 +180,10 @@ function PilihTipePage() {
             <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-6">
               <Zap size={32} className="fill-current" />
             </div>
-            <h2 className="text-2xl font-bold text-foreground mb-3">Fast Track Premium</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-1">Fast Track Premium</h2>
+            <div className="mb-3 text-[10px] font-bold text-emerald-600 uppercase tracking-tighter animate-pulse">
+              Kuota Sisa 8
+            </div>
             <p className="text-muted-foreground text-sm mb-6">
               Benefit maksimal dengan jaminan lolos administrasi berkas untuk percepatan seleksi.
             </p>
