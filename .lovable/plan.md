@@ -1,38 +1,26 @@
-# Plan - Dual Fast Track Tracks (Standard & Premium)
+# Plan: Remove specific text from index page
 
-Implement "Fast Track Premium" as a new registration type that offers automatic document selection approval (lolos administrasi berkas) in addition to existing Fast Track benefits.
+The user wants to remove the text "terbatas Kuota Sisa 8" and "ditegas kan lagi" from the landing page. Since this text is not found in the source code or static assets, it is likely injected via a dynamic widget (AdSense, RawHtmlWidget, or Custom Script) managed in the admin dashboard.
 
-## User Review Required
+## Technical Details
 
-> [!IMPORTANT]
-> - **Fast Track Premium** automatically sets the document status to `approved`, effectively bypassing the manual verification stage for documents.
-> - The admin can configure separate fees for "Fast Track" (Standard) and "Fast Track Premium" in the dashboard.
-
-- Does the "Fast Track Premium" also need a different set of benefits in the UI (e.g., extra E-Books or exclusive merchandise) or is the "Auto Lolos Administrasi" the only functional difference?
-- Should the "Premium" status be visible on the generated e-certificate?
+- The text "terbatas Kuota Sisa 8" and "ditegas kan lagi" does not exist in the project's source files (`.tsx`, `.css`, `.json`, etc.).
+- It appears to be content injected at runtime, possibly via the `RawHtmlWidget` (home-widget-1, 2, or 3) or the `GlobalCodeInjector` (AdSense header/footer code).
+- Since I cannot directly edit the database values for these widgets via source code changes (they are fetched from the `site_settings` table), I will implement a global text-scrubbing utility that runs in the browser to remove these specific phrases if they appear. This ensures the text is removed regardless of its source (database, external script, etc.).
 
 ## Proposed Changes
 
-### Database & Schema
-- Update `site_settings` to include `fast_track_premium_fee`.
-- The `registrations` table already has `fast_track` (boolean). We will use the `extra` JSON column to store `fast_track_type` ('standard' | 'premium') to avoid schema migrations, or check if a new column is preferred. Given the prompt, using `extra` is safer and faster.
+- Add a new utility `TextScrubber.tsx` to handle the removal of unwanted strings from the DOM at runtime.
+- Inject this utility into the main application layout to ensure it runs on every page load.
+- If the text is found in a specific component that *is* in source but was elided in previous searches, I will double-check common landing page sections.
 
-### Backend (Edge Functions)
-- **submit-registration**: Update to handle `fast_track_type`. If 'premium', record it in `extra`. Fetch `fast_track_premium_fee` from settings if applicable.
-- **check-payment-status** & **mayar-webhook**: When a payment is successful, if `fast_track_type` is 'premium', automatically set `candidate_status` to 'approved' (which corresponds to Seleksi Administrasi in this app's logic).
+### Implementation steps
 
-### Admin Dashboard
-- **admin.integrasi.tsx**: Add a new input field for "Biaya Fast Track Premium".
-- **admin.pendaftar.tsx**: Update the "Jalur" column to distinguish between Standard and Premium.
-- **admin.index.tsx**: Update statistics to show counts for both Fast Track types.
+1. Create `src/components/TextScrubber.tsx` that uses a `MutationObserver` to find and remove the specific target strings from the DOM.
+2. Register `TextScrubber` in `src/main.tsx` or a global layout component.
+3. Perform one last thorough check of `src/routes/index.tsx` for any hardcoded banners or badges added in very recent turns that might have been missed by standard `grep`.
 
-### Frontend
-- **pendaftaran.pilih-tipe.tsx**: 
-    - Split the Fast Track card into two or add a selector.
-    - Add "Fast Track Premium" with the "Auto Lolos Administrasi" highlight.
-- **RegistrationForm.tsx**: Pass the selected track type to the submission function.
-- **cek-status.tsx**: Update the timeline to show "⚡ Auto Lolos (Premium)" for the Seleksi Administrasi stage if the user is a Premium member.
+## User review required
 
-## Technical Details
-- `registrations.extra.fast_track_type` values: `standard`, `premium`.
-- Payment logic will pull `fast_track_fee` or `fast_track_premium_fee` based on the selection.
+> [!IMPORTANT]
+> This text appears to be coming from a dynamic widget or external script managed in the admin dashboard rather than the core source code. I will add a script to automatically hide this text from the landing page.
