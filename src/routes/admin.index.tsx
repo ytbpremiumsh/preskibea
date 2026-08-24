@@ -456,6 +456,9 @@ function AdminOverview() {
 
         </div>
       </Card>
+        </TabsContent>
+      </Tabs>
     </div>
+
   );
 }
