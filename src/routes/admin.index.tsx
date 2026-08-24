@@ -318,7 +318,21 @@ function AdminOverview() {
         </Button>
       </div>
 
+      <Tabs defaultValue="ringkasan" className="w-full">
+        <TabsList>
+          <TabsTrigger value="ringkasan">Ringkasan</TabsTrigger>
+          <TabsTrigger value="pendapatan">Pendapatan Harian</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="pendapatan" className="mt-4">
+          <Suspense fallback={<ChartFallback />}>
+            <RevenuePanel />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="ringkasan" className="mt-4 space-y-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+
         {/* Main Stats Row */}
         {items.slice(0, 5).map((it) => (
           <Link key={it.label} to={it.url as any} className="block transition-transform hover:-translate-y-0.5 active:scale-[0.99]">
