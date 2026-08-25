@@ -343,10 +343,14 @@ function AdminPendaftar() {
             {filtered.length} dari {rows.length} pendaftar
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={load}>
             <RotateCcw className="h-4 w-4 mr-1" />
             Refresh
+          </Button>
+          <Button variant="outline" onClick={syncPayments} disabled={syncing}>
+            <Zap className={`h-4 w-4 mr-1 ${syncing ? "animate-pulse" : ""}`} />
+            {syncing ? "Menyinkronkan..." : "Sinkron Pembayaran"}
           </Button>
           {selected.size > 0 && (
             <Button variant="destructive" onClick={bulkDelete}>
