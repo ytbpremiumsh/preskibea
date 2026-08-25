@@ -255,20 +255,30 @@ serve(async (req) => {
          
          console.log(`Registration ${reg.token} marked as paid.`);
 
-          try {
-            await sendTelegramPaymentNotification(reg, Number(paymentAmount) || 0, provider);
-            const { data: cur } = await supabaseAdmin
-              .from("registrations")
-              .select("extra")
-              .eq("id", reg.id)
-              .maybeSingle();
-            await supabaseAdmin
-              .from("registrations")
-              .update({ extra: { ...((cur?.extra as Record<string, unknown>) || {}), telegram_notified: true } })
-              .eq("id", reg.id);
-          } catch (telErr) {
-            console.error("Telegram notification failed:", telErr.message);
+          // Atomic claim: hanya satu proses yang boleh mengirim notifikasi Telegram
+          const { data: claimed } = await supabaseAdmin
+            .from("registrations")
+            .update({ extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: true } })
+            .eq("id", reg.id)
+            .not("extra->>telegram_notified", "eq", "true")
+            .select("id")
+            .maybeSingle();
+
+          if (claimed) {
+            try {
+              await sendTelegramPaymentNotification(reg, Number(paymentAmount) || 0, provider);
+            } catch (telErr) {
+              console.error("Telegram notification failed:", telErr.message);
+              // lepas klaim agar bisa dicoba lagi nanti
+              await supabaseAdmin
+                .from("registrations")
+                .update({ extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: false } })
+                .eq("id", reg.id);
+            }
+          } else {
+            console.log(`Telegram notification skipped (already sent) for ${reg.token}`);
           }
+
 
          try {
            await supabaseAdmin.from("payments").insert({
