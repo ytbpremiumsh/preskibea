@@ -13,19 +13,19 @@ const FALLBACK_ALUMNI_IMAGES = [
 const alumniBase = [
   {
     name: "Kalaj Nazhiful Haq",
-    school: "Universitas Andalas",
+    school: "\n",
     year: "BATCH #7 - 2025",
     quote: "Beasiswa ini membantu saya fokus belajar tanpa khawatir biaya pendidikan.",
   },
   {
     name: "Amelia Kusuma Suryandari",
-    school: "Universitas Diponegoro",
+    school: "\n",
     year: "BATCH #7 - 2025",
     quote: "Selain dana, pembinaannya membuka banyak peluang baru bagi saya.",
   },
   {
     name: "Jahwa Aulia Hasan",
-    school: "Jenjang Pelajar",
+    school: "\n",
     year: "BATCH #7 - 2025",
     quote: "Proses seleksinya transparan dan benar-benar tanpa pungutan biaya.",
   },
