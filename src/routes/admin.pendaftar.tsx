@@ -470,9 +470,18 @@ function AdminPendaftar() {
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             <option value="all">Semua Jalur</option>
-            <option value="fast">Fast Track ({totals.fast})</option>
+            <option value="fast">Fast Track ({totals.standard})</option>
             <option value="premium">Fast Track Premium ({totals.premium})</option>
             <option value="reguler">Reguler ({rows.length - totals.fast})</option>
+          </select>
+          <select
+            value={filterBayar}
+            onChange={(e) => setFilterBayar(e.target.value as "all" | "paid" | "unpaid")}
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            <option value="all">Semua Pembayaran</option>
+            <option value="paid">Sukses / Valid ({totals.paid})</option>
+            <option value="unpaid">Belum Valid ({totals.unpaid})</option>
           </select>
           <select
             value={filterBerkas}
@@ -483,6 +492,38 @@ function AdminPendaftar() {
             <option value="submitted">Sudah Kirim Berkas ({counts.submitted})</option>
             <option value="pending">Belum Kirim Berkas ({counts.pending})</option>
           </select>
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="text-muted-foreground whitespace-nowrap">Tanggal:</span>
+            <Input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="h-9 w-[150px] text-sm"
+            />
+            <span className="text-muted-foreground">s/d</span>
+            <Input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="h-9 w-[150px] text-sm"
+            />
+            {(dateFrom || dateTo || filterBayar !== "all" || filterJalur !== "all" || filterKind !== "all" || filterBerkas !== "all") && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setDateFrom("");
+                  setDateTo("");
+                  setFilterBayar("all");
+                  setFilterJalur("all");
+                  setFilterKind("all");
+                  setFilterBerkas("all");
+                }}
+              >
+                Reset
+              </Button>
+            )}
+          </div>
           <div className="flex items-center gap-2 text-sm ml-auto">
             <span className="text-muted-foreground whitespace-nowrap">Tampilkan:</span>
             <select
