@@ -189,24 +189,36 @@ serve(async (req) => {
     }
 
     if (!alreadyNotified) {
-      try {
-        await sendTelegramPaymentNotification(
-          {
-            full_name: reg.full_name,
-            email: reg.email,
-            whatsapp: reg.whatsapp,
-            token: reg.token,
-          },
-          Number(body?.order?.amount) || 0,
-        );
-        await supabaseAdmin
-          .from("registrations")
-          .update({ extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: true } })
-          .eq("id", reg.id);
-      } catch (e) {
-        console.error("Telegram notification failed:", (e as Error).message);
+      // Atomic claim: cegah notifikasi Telegram ganda (webhook vs polling)
+      const { data: claimed } = await supabaseAdmin
+        .from("registrations")
+        .update({ extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: true } })
+        .eq("id", reg.id)
+        .not("extra->>telegram_notified", "eq", "true")
+        .select("id")
+        .maybeSingle();
+
+      if (claimed) {
+        try {
+          await sendTelegramPaymentNotification(
+            {
+              full_name: reg.full_name,
+              email: reg.email,
+              whatsapp: reg.whatsapp,
+              token: reg.token,
+            },
+            Number(body?.order?.amount) || 0,
+          );
+        } catch (e) {
+          console.error("Telegram notification failed:", (e as Error).message);
+          await supabaseAdmin
+            .from("registrations")
+            .update({ extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: false } })
+            .eq("id", reg.id);
+        }
       }
     }
+
 
     if (!firstTransition) return json({ status: "paid" });
 
