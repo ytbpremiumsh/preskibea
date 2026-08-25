@@ -177,9 +177,22 @@ function AdminPendaftar() {
     return rows.filter((r) => {
       if (filterKind !== "all" && r.kind !== filterKind) return false;
       const isPremium = !!r.fast_track && (r.extra as any)?.fast_track_type === "premium";
-      if (filterJalur === "fast" && !r.fast_track) return false;
+      if (filterJalur === "fast" && (!r.fast_track || isPremium)) return false;
       if (filterJalur === "premium" && !isPremium) return false;
       if (filterJalur === "reguler" && r.fast_track) return false;
+
+      const paid = (r.payment_status || "").toLowerCase() === "paid";
+      if (filterBayar === "paid" && !paid) return false;
+      if (filterBayar === "unpaid" && paid) return false;
+
+      // Filter tanggal daftar (waktu lokal / WIB perangkat)
+      if (dateFrom || dateTo) {
+        const d = new Date(r.created_at);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        if (dateFrom && key < dateFrom) return false;
+        if (dateTo && key > dateTo) return false;
+      }
+
       const hasDocs = berkasDone(r);
       if (filterBerkas === "submitted" && !hasDocs) return false;
       if (filterBerkas === "pending" && hasDocs) return false;
@@ -196,12 +209,12 @@ function AdminPendaftar() {
       return true;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, q, filterKind, filterBerkas, filterJalur, docs]);
+  }, [rows, q, filterKind, filterBerkas, filterJalur, filterBayar, dateFrom, dateTo, docs]);
 
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [q, filterKind, filterBerkas, filterJalur, pageSize]);
+  }, [q, filterKind, filterBerkas, filterJalur, filterBayar, dateFrom, dateTo, pageSize]);
 
   const paginatedRows = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
