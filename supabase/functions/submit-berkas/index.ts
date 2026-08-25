@@ -27,8 +27,10 @@ const Input = z.object({
       z.object({
         key: z.string().min(1).max(80),
         label: z.string().min(1).max(180),
-        url: z.string().url().max(1000),
+        // Bisa berupa URL berkas ATAU jawaban teks/pilihan (isian esai singkat, dropdown penghasilan, dll)
+        url: z.string().trim().min(1).max(3000),
       }),
+
     )
     .min(1)
     .max(20),
