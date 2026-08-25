@@ -334,6 +334,26 @@ function AdminPendaftar() {
     deleteIds([r.id]);
   };
 
+  // Rekonsiliasi manual: tanya ulang status pembayaran Fast Track ke gateway
+  const syncPayments = async () => {
+    setSyncing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("reconcile-payments", {
+        body: { days: 60, limit: 300 },
+      });
+      if (error) throw error;
+      const updated = (data as any)?.updated ?? 0;
+      const checked = (data as any)?.checked ?? 0;
+      toast.success(`Sinkron selesai: ${checked} diperiksa, ${updated} pembayaran tervalidasi`);
+      if (updated > 0) await load();
+    } catch (e) {
+      toast.error((e as Error).message || "Gagal sinkron pembayaran");
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
