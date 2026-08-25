@@ -69,6 +69,10 @@ function AdminPendaftar() {
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi" | "umum" | "yatim">("all");
   const [filterBerkas, setFilterBerkas] = useState<"all" | "submitted" | "pending">("all");
   const [filterJalur, setFilterJalur] = useState<"all" | "fast" | "premium" | "reguler">("all");
+  const [filterBayar, setFilterBayar] = useState<"all" | "paid" | "unpaid">("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [syncing, setSyncing] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectedRow, setSelectedRow] = useState<Registration | null>(null);
   const [pageSize, setPageSize] = useState(20);
