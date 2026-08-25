@@ -159,15 +159,23 @@ function AdminPendaftar() {
 
   const totals = useMemo(() => {
     const byKind = (k: string) => rows.filter((r) => r.kind === k).length;
-    const fast = rows.filter((r) => !!r.fast_track).length;
-    const premium = rows.filter((r) => !!r.fast_track && (r.extra as any)?.fast_track_type === "premium").length;
+    const isPrem = (r: Registration) => !!r.fast_track && (r.extra as any)?.fast_track_type === "premium";
+    const isPaid = (r: Registration) => (r.payment_status || "").toLowerCase() === "paid";
+    const fastAll = rows.filter((r) => !!r.fast_track);
+    const premium = fastAll.filter(isPrem);
+    const standard = fastAll.filter((r) => !isPrem(r));
     return {
       prestasi: byKind("prestasi"),
       ekonomi: byKind("ekonomi"),
       umum: byKind("umum"),
       yatim: byKind("yatim"),
-      fast,
-      premium,
+      fast: fastAll.length,
+      standard: standard.length,
+      standardPaid: standard.filter(isPaid).length,
+      premium: premium.length,
+      premiumPaid: premium.filter(isPaid).length,
+      paid: rows.filter(isPaid).length,
+      unpaid: rows.filter((r) => !isPaid(r)).length,
       total: rows.length,
     };
   }, [rows]);
