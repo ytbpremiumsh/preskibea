@@ -69,6 +69,10 @@ function AdminPendaftar() {
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi" | "umum" | "yatim">("all");
   const [filterBerkas, setFilterBerkas] = useState<"all" | "submitted" | "pending">("all");
   const [filterJalur, setFilterJalur] = useState<"all" | "fast" | "premium" | "reguler">("all");
+  const [filterBayar, setFilterBayar] = useState<"all" | "paid" | "unpaid">("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [syncing, setSyncing] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectedRow, setSelectedRow] = useState<Registration | null>(null);
   const [pageSize, setPageSize] = useState(20);
@@ -155,15 +159,23 @@ function AdminPendaftar() {
 
   const totals = useMemo(() => {
     const byKind = (k: string) => rows.filter((r) => r.kind === k).length;
-    const fast = rows.filter((r) => !!r.fast_track).length;
-    const premium = rows.filter((r) => !!r.fast_track && (r.extra as any)?.fast_track_type === "premium").length;
+    const isPrem = (r: Registration) => !!r.fast_track && (r.extra as any)?.fast_track_type === "premium";
+    const isPaid = (r: Registration) => (r.payment_status || "").toLowerCase() === "paid";
+    const fastAll = rows.filter((r) => !!r.fast_track);
+    const premium = fastAll.filter(isPrem);
+    const standard = fastAll.filter((r) => !isPrem(r));
     return {
       prestasi: byKind("prestasi"),
       ekonomi: byKind("ekonomi"),
       umum: byKind("umum"),
       yatim: byKind("yatim"),
-      fast,
-      premium,
+      fast: fastAll.length,
+      standard: standard.length,
+      standardPaid: standard.filter(isPaid).length,
+      premium: premium.length,
+      premiumPaid: premium.filter(isPaid).length,
+      paid: rows.filter(isPaid).length,
+      unpaid: rows.filter((r) => !isPaid(r)).length,
       total: rows.length,
     };
   }, [rows]);
@@ -173,9 +185,22 @@ function AdminPendaftar() {
     return rows.filter((r) => {
       if (filterKind !== "all" && r.kind !== filterKind) return false;
       const isPremium = !!r.fast_track && (r.extra as any)?.fast_track_type === "premium";
-      if (filterJalur === "fast" && !r.fast_track) return false;
+      if (filterJalur === "fast" && (!r.fast_track || isPremium)) return false;
       if (filterJalur === "premium" && !isPremium) return false;
       if (filterJalur === "reguler" && r.fast_track) return false;
+
+      const paid = (r.payment_status || "").toLowerCase() === "paid";
+      if (filterBayar === "paid" && !paid) return false;
+      if (filterBayar === "unpaid" && paid) return false;
+
+      // Filter tanggal daftar (waktu lokal / WIB perangkat)
+      if (dateFrom || dateTo) {
+        const d = new Date(r.created_at);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        if (dateFrom && key < dateFrom) return false;
+        if (dateTo && key > dateTo) return false;
+      }
+
       const hasDocs = berkasDone(r);
       if (filterBerkas === "submitted" && !hasDocs) return false;
       if (filterBerkas === "pending" && hasDocs) return false;
@@ -192,12 +217,12 @@ function AdminPendaftar() {
       return true;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, q, filterKind, filterBerkas, filterJalur, docs]);
+  }, [rows, q, filterKind, filterBerkas, filterJalur, filterBayar, dateFrom, dateTo, docs]);
 
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [q, filterKind, filterBerkas, filterJalur, pageSize]);
+  }, [q, filterKind, filterBerkas, filterJalur, filterBayar, dateFrom, dateTo, pageSize]);
 
   const paginatedRows = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
@@ -309,6 +334,26 @@ function AdminPendaftar() {
     deleteIds([r.id]);
   };
 
+  // Rekonsiliasi manual: tanya ulang status pembayaran Fast Track ke gateway
+  const syncPayments = async () => {
+    setSyncing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("reconcile-payments", {
+        body: { days: 60, limit: 300 },
+      });
+      if (error) throw error;
+      const updated = (data as any)?.updated ?? 0;
+      const checked = (data as any)?.checked ?? 0;
+      toast.success(`Sinkron selesai: ${checked} diperiksa, ${updated} pembayaran tervalidasi`);
+      if (updated > 0) await load();
+    } catch (e) {
+      toast.error((e as Error).message || "Gagal sinkron pembayaran");
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -318,10 +363,14 @@ function AdminPendaftar() {
             {filtered.length} dari {rows.length} pendaftar
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={load}>
             <RotateCcw className="h-4 w-4 mr-1" />
             Refresh
+          </Button>
+          <Button variant="outline" onClick={syncPayments} disabled={syncing}>
+            <Zap className={`h-4 w-4 mr-1 ${syncing ? "animate-pulse" : ""}`} />
+            {syncing ? "Menyinkronkan..." : "Sinkron Pembayaran"}
           </Button>
           {selected.size > 0 && (
             <Button variant="destructive" onClick={bulkDelete}>
@@ -445,9 +494,18 @@ function AdminPendaftar() {
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             <option value="all">Semua Jalur</option>
-            <option value="fast">Fast Track ({totals.fast})</option>
+            <option value="fast">Fast Track ({totals.standard})</option>
             <option value="premium">Fast Track Premium ({totals.premium})</option>
             <option value="reguler">Reguler ({rows.length - totals.fast})</option>
+          </select>
+          <select
+            value={filterBayar}
+            onChange={(e) => setFilterBayar(e.target.value as "all" | "paid" | "unpaid")}
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            <option value="all">Semua Pembayaran</option>
+            <option value="paid">Sukses / Valid ({totals.paid})</option>
+            <option value="unpaid">Belum Valid ({totals.unpaid})</option>
           </select>
           <select
             value={filterBerkas}
@@ -458,6 +516,38 @@ function AdminPendaftar() {
             <option value="submitted">Sudah Kirim Berkas ({counts.submitted})</option>
             <option value="pending">Belum Kirim Berkas ({counts.pending})</option>
           </select>
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="text-muted-foreground whitespace-nowrap">Tanggal:</span>
+            <Input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="h-9 w-[150px] text-sm"
+            />
+            <span className="text-muted-foreground">s/d</span>
+            <Input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="h-9 w-[150px] text-sm"
+            />
+            {(dateFrom || dateTo || filterBayar !== "all" || filterJalur !== "all" || filterKind !== "all" || filterBerkas !== "all") && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setDateFrom("");
+                  setDateTo("");
+                  setFilterBayar("all");
+                  setFilterJalur("all");
+                  setFilterKind("all");
+                  setFilterBerkas("all");
+                }}
+              >
+                Reset
+              </Button>
+            )}
+          </div>
           <div className="flex items-center gap-2 text-sm ml-auto">
             <span className="text-muted-foreground whitespace-nowrap">Tampilkan:</span>
             <select
