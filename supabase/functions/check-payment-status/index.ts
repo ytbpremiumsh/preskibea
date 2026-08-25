@@ -194,7 +194,7 @@ serve(async (req) => {
         .from("registrations")
         .update({ extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: true } })
         .eq("id", reg.id)
-        .not("extra->>telegram_notified", "eq", "true")
+        .or("extra->>telegram_notified.is.null,extra->>telegram_notified.neq.true")
         .select("id")
         .maybeSingle();
 
