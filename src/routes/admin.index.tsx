@@ -70,6 +70,25 @@ function jakartaMidnightUtc(date: Date) {
   return new Date(Date.UTC(year, month - 1, day, -7));
 }
 
+// Supabase membatasi 1000 baris per request; ambil bertahap agar data 14 hari lengkap.
+async function fetchAllLite(sinceIso: string) {
+  const page = 1000;
+  const rows: any[] = [];
+  for (let from = 0; from < 20000; from += page) {
+    const { data, error } = await supabase
+      .from("registrations")
+      .select("id,kind,education_level,created_at,fast_track,payment_status,extra")
+      .gte("created_at", sinceIso)
+      .order("created_at", { ascending: true })
+      .range(from, from + page - 1);
+    if (error) break;
+    const chunk = data ?? [];
+    rows.push(...chunk);
+    if (chunk.length < page) break;
+  }
+  return rows;
+}
+
 function normalizeJenjang(v: string): string {
   const u = (v || "").toUpperCase();
   if (u.includes("MAHASISWA") || u.includes("KULIAH") || u.includes("UNIV")) return "Mahasiswa";
