@@ -126,7 +126,9 @@ serve(async (req) => {
     if (!cfg?.client_id || !cfg?.secret_key) return json({ status: reg.payment_status || "pending" });
 
     const baseUrl = cfg.is_production ? "https://api.doku.com" : "https://api-sandbox.doku.com";
-    const target = `/orders/v1/status/${token}`;
+    const invoiceNumber = ((reg.extra as any)?.doku_invoice_number as string) || token;
+    const target = `/orders/v1/status/${invoiceNumber}`;
+
     const requestId = crypto.randomUUID();
     const timestamp = new Date().toISOString().slice(0, 19) + "Z";
     const signaturePayload =
