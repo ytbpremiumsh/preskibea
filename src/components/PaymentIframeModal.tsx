@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { CheckCircle2, Loader2, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 type Props = {
@@ -17,6 +18,38 @@ type Props = {
  */
 export function PaymentIframeModal({ open, token, paymentUrl, onClose, onSuccess, title }: Props) {
   const [paid, setPaid] = useState(false);
+  const [url, setUrl] = useState(paymentUrl);
+  const [renewing, setRenewing] = useState(false);
+  const [frameKey, setFrameKey] = useState(0);
+
+  useEffect(() => {
+    setUrl(paymentUrl);
+  }, [paymentUrl]);
+
+  const renewLink = useCallback(async () => {
+    if (!token || renewing) return;
+    setRenewing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("renew-payment-link", {
+        body: { token },
+      });
+      const res = data as { payment_url?: string; status?: string; error?: string } | null;
+      if (error || res?.error || !res?.payment_url) {
+        if (res?.status === "paid") {
+          setPaid(true);
+          setTimeout(() => onSuccess(), 1000);
+          return;
+        }
+        toast.error(res?.error || "Gagal membuat link pembayaran baru. Coba lagi.");
+        return;
+      }
+      setUrl(res.payment_url);
+      setFrameKey((k) => k + 1);
+      toast.success("Link pembayaran baru berhasil dibuat.");
+    } finally {
+      setRenewing(false);
+    }
+  }, [token, renewing, onSuccess]);
 
   useEffect(() => {
     if (!open || !token) return;
@@ -71,34 +104,60 @@ export function PaymentIframeModal({ open, token, paymentUrl, onClose, onSuccess
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-foreground/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-2xl max-h-[92vh] overflow-hidden rounded-3xl border-2 border-foreground bg-background shadow-card flex flex-col">
-        <div className="flex items-center justify-between gap-3 border-b border-border p-4">
-          <div>
-            <p className="text-sm font-extrabold text-foreground">{title ?? "Pembayaran Fast Track"}</p>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
+    <div className="fixed inset-0 z-[100] flex items-stretch justify-center bg-foreground/60 backdrop-blur-sm p-0 sm:items-center sm:p-4">
+      <div className="flex h-[100dvh] w-full flex-col overflow-hidden border-foreground bg-background shadow-card sm:h-[96dvh] sm:max-w-2xl sm:rounded-3xl sm:border-2">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border p-3 sm:p-4">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-extrabold text-foreground">{title ?? "Pembayaran Fast Track"}</p>
+            <p className="truncate text-[10px] font-bold uppercase tracking-wider text-primary">
               BEASISWA PENDIDIKAN PRESTASI KITA #8 - PEMBAYARAN QRIS
             </p>
           </div>
-          <button onClick={onClose} className="rounded-full p-2 transition hover:bg-muted" aria-label="Tutup">
-            ✕
-          </button>
+          <div className="flex shrink-0 items-center gap-1">
+            <button
+              onClick={renewLink}
+              disabled={renewing}
+              className="flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-[11px] font-bold text-foreground transition hover:bg-muted disabled:opacity-60"
+              title="Buat link pembayaran baru jika link lama kedaluwarsa"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${renewing ? "animate-spin" : ""}`} />
+              Link Baru
+            </button>
+            <button onClick={onClose} className="rounded-full p-2 transition hover:bg-muted" aria-label="Tutup">
+              ✕
+            </button>
+          </div>
         </div>
 
         {paid ? (
-          <div className="flex flex-col items-center gap-3 p-10 text-center">
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 p-10 text-center">
             <CheckCircle2 className="h-12 w-12 text-emerald-500" />
             <p className="text-lg font-extrabold text-foreground">Pembayaran Berhasil</p>
             <p className="text-sm text-muted-foreground">Mengalihkan ke halaman sukses…</p>
           </div>
         ) : (
           <>
-            <div className="flex-1 min-h-[60vh]">
-              <iframe src={paymentUrl} className="h-full w-full border-0" title="Pembayaran" allow="payment" />
+            <div className="min-h-0 flex-1 overflow-auto -webkit-overflow-scrolling-touch">
+              <iframe
+                key={frameKey}
+                src={url}
+                className="h-full min-h-[560px] w-full border-0"
+                title="Pembayaran"
+                allow="payment"
+              />
             </div>
-            <div className="flex items-center gap-2 border-t border-border p-3 text-xs text-muted-foreground">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Jangan tutup jendela ini. Sistem otomatis memverifikasi pembayaran Anda.
+            <div className="flex shrink-0 flex-wrap items-center gap-2 border-t border-border p-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-2">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Jangan tutup jendela ini. Sistem otomatis memverifikasi pembayaran Anda.
+              </span>
+              <button
+                onClick={renewLink}
+                disabled={renewing}
+                className="ml-auto font-bold text-primary underline underline-offset-2 disabled:opacity-60"
+              >
+                Link kedaluwarsa? Buat link baru
+              </button>
             </div>
           </>
         )}
