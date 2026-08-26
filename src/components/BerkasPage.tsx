@@ -393,17 +393,24 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
           url: v,
         }));
 
+      // Hanya kirim kolom yang benar-benar ada di tabel registrations,
+      // dan hanya jika terisi (menghindari update gagal / menimpa data lama).
+      const regUpdates: Record<string, unknown> = { status: "verified" };
+      const optionalCols: Record<string, string> = {
+        khs_url: "khs",
+        transcript_custom_url: "transcript_custom",
+        additional_docs_url: "additional_docs",
+      };
+      for (const [col, key] of Object.entries(optionalCols)) {
+        const v = (values[key] ?? "").trim();
+        if (v) regUpdates[col] = v;
+      }
+
       const result = await submitBerkas({
         token: token.trim().toUpperCase(),
         kind,
         documents: submittedDocs,
-        registration_updates: {
-          khs_url: (values["khs"] ?? "").trim() || null,
-          transcript_custom_url: (values["transcript_custom"] ?? "").trim() || null,
-          additional_docs_url: (values["additional_docs"] ?? "").trim() || null,
-          tiktok_video_url: (values["tiktok_video"] ?? "").trim() || null,
-          status: "verified" // Set status to verified after docs are submitted
-        }
+        registration_updates: regUpdates,
       });
 
       supabase.functions
