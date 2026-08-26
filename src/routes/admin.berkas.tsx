@@ -122,24 +122,44 @@ function AdminBerkas() {
     }
   }, []);
 
+  // Ambil semua baris bertahap — hindari batas default 1000 baris.
+  const fetchAll = async <T,>(
+    table: "documents" | "registrations",
+    columns: string,
+    order?: { column: string; ascending: boolean },
+  ): Promise<T[]> => {
+    const size = 1000;
+    const out: T[] = [];
+    for (let from = 0; ; from += size) {
+      let query = supabase.from(table).select(columns).range(from, from + size - 1);
+      if (order) query = query.order(order.column, { ascending: order.ascending });
+      const { data, error } = await query;
+      if (error) {
+        toast.error(error.message);
+        break;
+      }
+      const rows = (data ?? []) as unknown as T[];
+      out.push(...rows);
+      if (rows.length < size) break;
+    }
+    return out;
+  };
+
   const load = async () => {
     setLoading(true);
     const [d, r, s] = await Promise.all([
-      supabase.from("documents").select("*").order("created_at", { ascending: false }),
-      supabase
-        .from("registrations")
-        .select(
-          "id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status, fast_track, payment_status, extra",
-        ),
+      fetchAll<Document>("documents", "*", { column: "created_at", ascending: false }),
+      fetchAll<Registration>(
+        "registrations",
+        "id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status, fast_track, payment_status, extra",
+      ),
       supabase.from("site_settings").select("value").eq("key", "administrasi_announcement").maybeSingle(),
     ]);
-    if (d.error) toast.error(d.error.message);
-    if (r.error) toast.error(r.error.message);
     const admCfg = (s.data?.value ?? {}) as { published?: boolean; message?: string };
     setAdmPublished(!!admCfg.published);
     setAdmMessage(admCfg.message ?? "");
-    setDocs((d.data ?? []) as Document[]);
-    setRegs((r.data ?? []) as Registration[]);
+    setDocs(d);
+    setRegs(r);
     setLoading(false);
   };
 
