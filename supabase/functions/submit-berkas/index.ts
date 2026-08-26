@@ -127,18 +127,34 @@ serve(async (req) => {
     }
     
     if (data.registration_updates && Object.keys(data.registration_updates).length > 0) {
-      const { status: newStatus, ...otherUpdates } = data.registration_updates;
-      
-      // If setting status to verified, only do it if not already approved/paid
-      const updates = { ...otherUpdates };
-      if (newStatus === "verified" && reg.status !== "approved") {
+      // Whitelist kolom agar key yang tidak ada di tabel tidak membuat update gagal.
+      const ALLOWED = new Set([
+        "khs_url",
+        "transcript_custom_url",
+        "additional_docs_url",
+        "photo_url",
+        "student_card_url",
+        "parent_income",
+        "dependents",
+      ]);
+      const updates: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(data.registration_updates)) {
+        if (ALLOWED.has(k) && v !== null && v !== undefined && v !== "") updates[k] = v;
+      }
+
+      // Status hanya dinaikkan ke "verified" bila belum approved.
+      const newStatus = (data.registration_updates as Record<string, unknown>).status;
+      if (newStatus === "verified" && (reg as { status?: string }).status !== "approved") {
         updates.status = "verified";
       }
 
-      await supabaseAdmin
-        .from("registrations")
-        .update(updates)
-        .eq("id", reg.id);
+      if (Object.keys(updates).length > 0) {
+        const { error: updErr } = await supabaseAdmin
+          .from("registrations")
+          .update(updates)
+          .eq("id", reg.id);
+        if (updErr) console.error("registration update failed:", updErr.message);
+      }
     }
 
     try {
