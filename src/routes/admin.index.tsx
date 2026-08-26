@@ -127,10 +127,7 @@ function AdminOverview() {
           .select("id,full_name,email,kind,status,school_name,education_level,created_at,fast_track,payment_status,extra")
           .order("created_at", { ascending: false })
           .limit(8),
-        supabase.from("registrations")
-          .select("id,kind,education_level,created_at,fast_track,payment_status,extra")
-          .gte("created_at", start14.toISOString())
-          .limit(5000),
+        fetchAllLite(start14.toISOString()),
         supabase.from("registrations").select("id", { count: "exact", head: true }),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "prestasi"),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "ekonomi"),
