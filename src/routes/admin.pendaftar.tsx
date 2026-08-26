@@ -87,15 +87,34 @@ function AdminPendaftar() {
     }
   }, []);
 
+  // Ambil semua baris (lewati batas default 1000 baris per request)
+  const fetchAll = async <T,>(table: "registrations" | "documents"): Promise<T[]> => {
+    const pageSize = 1000;
+    const all: T[] = [];
+    for (let from = 0; ; from += pageSize) {
+      const { data, error } = await supabase
+        .from(table)
+        .select("*")
+        .order("created_at", { ascending: false })
+        .range(from, from + pageSize - 1);
+      if (error) {
+        toast.error(error.message);
+        break;
+      }
+      all.push(...((data ?? []) as T[]));
+      if (!data || data.length < pageSize) break;
+    }
+    return all;
+  };
+
   const load = async () => {
     setLoading(true);
     const [r, d] = await Promise.all([
-      supabase.from("registrations").select("*").order("created_at", { ascending: false }),
-      supabase.from("documents").select("*").order("created_at", { ascending: false }),
+      fetchAll<Registration>("registrations"),
+      fetchAll<Document>("documents"),
     ]);
-    if (r.error) toast.error(r.error.message);
-    setRows((r.data ?? []) as Registration[]);
-    setDocs((d.data ?? []) as Document[]);
+    setRows(r);
+    setDocs(d);
     setLoading(false);
   };
 
@@ -108,12 +127,13 @@ function AdminPendaftar() {
     let timer: ReturnType<typeof setTimeout> | null = null;
     const refresh = async () => {
       const [r, d] = await Promise.all([
-        supabase.from("registrations").select("*").order("created_at", { ascending: false }),
-        supabase.from("documents").select("*").order("created_at", { ascending: false }),
+        fetchAll<Registration>("registrations"),
+        fetchAll<Document>("documents"),
       ]);
-      setRows((r.data ?? []) as Registration[]);
-      setDocs((d.data ?? []) as Document[]);
+      setRows(r);
+      setDocs(d);
     };
+
     const schedule = () => {
       if (timer) clearTimeout(timer);
       timer = setTimeout(refresh, 500);
