@@ -36,6 +36,7 @@ type RecentRow = {
 };
 
 type LiteRow = {
+  id: string;
   kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   education_level: string;
   fast_track: boolean | null;
@@ -45,6 +46,29 @@ type LiteRow = {
 };
 
 const JENJANG = ["SMP", "SMA", "SMK", "MA", "Mahasiswa"] as const;
+const JAKARTA_TIME_ZONE = "Asia/Jakarta";
+
+function jakartaDateParts(date: Date) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: JAKARTA_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const value = (type: "year" | "month" | "day") =>
+    Number(parts.find((part) => part.type === type)?.value ?? 0);
+  return { year: value("year"), month: value("month"), day: value("day") };
+}
+
+function jakartaDateKey(date: Date) {
+  const { year, month, day } = jakartaDateParts(date);
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function jakartaMidnightUtc(date: Date) {
+  const { year, month, day } = jakartaDateParts(date);
+  return new Date(Date.UTC(year, month - 1, day, -7));
+}
 
 function normalizeJenjang(v: string): string {
   const u = (v || "").toUpperCase();
@@ -79,10 +103,10 @@ function AdminOverview() {
   const load = useCallback(async () => {
     {
       const active = activeRef.current;
-      // Fast: today (start) ISO + 14 days back ISO
+      // Batas hari wajib mengikuti WIB, bukan zona waktu perangkat/browser.
       const now = new Date();
-      const startToday = new Date(now); startToday.setHours(0, 0, 0, 0);
-      const start14 = new Date(startToday); start14.setDate(start14.getDate() - 13);
+      const startToday = jakartaMidnightUtc(now);
+      const start14 = new Date(startToday); start14.setUTCDate(start14.getUTCDate() - 13);
 
       // Fire all queries in parallel; use head:true counts for totals (no row data)
       const [
@@ -104,7 +128,7 @@ function AdminOverview() {
           .order("created_at", { ascending: false })
           .limit(8),
         supabase.from("registrations")
-          .select("kind,education_level,created_at,fast_track,payment_status,extra")
+          .select("id,kind,education_level,created_at,fast_track,payment_status,extra")
           .gte("created_at", start14.toISOString())
           .limit(5000),
         supabase.from("registrations").select("id", { count: "exact", head: true }),
@@ -167,7 +191,7 @@ function AdminOverview() {
           const newRow = payload.new as RecentRow;
           setRecent((prev) => [newRow, ...prev].slice(0, 8));
           const isPremium = (newRow.extra as any)?.fast_track_type === 'premium';
-          setLite((prev) => [{ kind: newRow.kind, education_level: newRow.education_level, created_at: newRow.created_at, fast_track: newRow.fast_track, payment_status: newRow.payment_status, extra: newRow.extra } as any, ...prev]);
+          setLite((prev) => [{ id: newRow.id, kind: newRow.kind, education_level: newRow.education_level, created_at: newRow.created_at, fast_track: newRow.fast_track, payment_status: newRow.payment_status, extra: newRow.extra }, ...prev]);
           setCounts((c) => ({
             ...c,
             total: c.total + 1,
@@ -251,16 +275,13 @@ function AdminOverview() {
 
 
   const dailyStats = useMemo(() => {
-    // Kunci tanggal berbasis waktu lokal (bukan UTC) agar tidak bergeser hari
-    const localKey = (d: Date) =>
-      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     const days: { date: string; label: string; count: number; fastTrack: number; fastTrackPremium: number }[] = [];
-    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const today = jakartaMidnightUtc(new Date());
     for (let i = 13; i >= 0; i--) {
-      const d = new Date(today); d.setDate(d.getDate() - i);
+      const d = new Date(today); d.setUTCDate(d.getUTCDate() - i);
       days.push({
-        date: localKey(d),
-        label: d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" }),
+        date: jakartaDateKey(d),
+        label: d.toLocaleDateString("id-ID", { timeZone: JAKARTA_TIME_ZONE, day: "2-digit", month: "short" }),
         count: 0,
         fastTrack: 0,
         fastTrackPremium: 0,
@@ -270,10 +291,10 @@ function AdminOverview() {
     const seen = new Set<string>();
     for (const r of lite) {
       // hindari duplikat dari event realtime
-      const uid = (r as any).id ?? `${r.created_at}-${r.kind}-${r.education_level}`;
+      const uid = r.id;
       if (seen.has(uid)) continue;
       seen.add(uid);
-      const k = localKey(new Date(r.created_at));
+      const k = jakartaDateKey(new Date(r.created_at));
       const i = idx.get(k);
       if (i !== undefined) {
         days[i].count++;
