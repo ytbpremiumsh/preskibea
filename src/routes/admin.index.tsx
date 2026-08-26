@@ -161,7 +161,7 @@ function AdminOverview() {
 
       if (!active) return;
       setRecent((recentRes.data ?? []) as RecentRow[]);
-      const liteData = (liteRes.data ?? []) as LiteRow[];
+      const liteData = (liteRes ?? []) as LiteRow[];
       setLite(liteData);
       
       const premiumCount = fastTrackPremiumRes.count ?? 0;
