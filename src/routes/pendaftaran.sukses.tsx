@@ -143,6 +143,7 @@ function SuksesPage() {
             </button>
             {token && (
               <PaymentIframeModal
+              renewOnOpen
                 open={payOpen}
                 token={token}
                 paymentUrl={fastTrackPayUrl}

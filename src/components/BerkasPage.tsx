@@ -628,6 +628,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
 
           {registrant?.payment_url && (
             <PaymentIframeModal
+              renewOnOpen
               open={payOpen}
               token={(registrant.token ?? token).trim().toUpperCase()}
               paymentUrl={registrant.payment_url}
