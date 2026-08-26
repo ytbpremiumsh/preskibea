@@ -219,9 +219,13 @@ serve(async (req) => {
       if (status === "SUCCESS") status = "paid";
     }
 
+    // Link pembayaran ulang memakai invoice `TOKEN-R1`, `TOKEN-R2`, dst.
+    if (typeof tokenFromExtra === "string") tokenFromExtra = tokenFromExtra.replace(/-R\d+$/i, "");
+
     const normalizedStatus = String(status || "").toLowerCase();
     if (["success", "paid", "settlement"].includes(normalizedStatus) || body?.event === "payment.success" || body?.data?.event === "payment.success") {
        console.log(`Processing successful payment (${provider}), token: ${tokenFromExtra}`);
+
 
        let q = supabaseAdmin
          .from("registrations")
