@@ -10,16 +10,21 @@ async function invoke<T>(fn: string, body: unknown): Promise<T> {
     // Coba ambil pesan dari response body kalau ada
     const ctx = (error as { context?: Response }).context;
     if (ctx && typeof ctx.text === "function") {
+      let txt = "";
       try {
-        const txt = await ctx.text();
+        txt = await ctx.text();
+      } catch {
+        /* ignore */
+      }
+      if (txt) {
+        let msg = txt;
         try {
-          const j = JSON.parse(txt);
-          throw new Error(j.error || j.message || txt || error.message);
+          const j = JSON.parse(txt) as { error?: string; message?: string };
+          msg = j.error || j.message || txt;
         } catch {
-          throw new Error(txt || error.message);
+          /* body bukan JSON */
         }
-      } catch (e) {
-        if (e instanceof Error) throw e;
+        throw new Error(msg);
       }
     }
     throw new Error(error.message);
