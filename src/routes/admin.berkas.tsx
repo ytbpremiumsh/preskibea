@@ -717,24 +717,38 @@ function AdminBerkas() {
                       Peserta Fast Track Premium — lolos berkas secara otomatis, tidak perlu mengunggah berkas pendukung.
                     </div>
                   ) : (
-                    detail.items.map((d) => (
+                    detail.items.map((d) => {
+                      const isFile = isDocumentUrl(d.file_url);
+                      return (
                     <div
                       key={d.id}
-                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2"
+                      className="flex items-start justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2.5"
                     >
-                      <button
-                        type="button"
-                        onClick={() =>
-                          openStoredFile(d.file_url).catch((e: unknown) =>
-                            toast.error(e instanceof Error ? e.message : "Gagal membuka berkas"),
-                          )
-                        }
-                        className="flex items-start gap-2 text-sm flex-1 min-w-0 text-left"
-                      >
-                        <FileText className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                        <span className="font-medium break-words">{d.doc_type}</span>
-                        <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
-                      </button>
+                      {isFile ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            openStoredFile(d.file_url).catch((e: unknown) =>
+                              toast.error(e instanceof Error ? e.message : "Gagal membuka berkas"),
+                            )
+                          }
+                          className="flex min-w-0 flex-1 items-start gap-2 text-left text-sm"
+                        >
+                          <FileText className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                          <span className="font-medium break-words">{d.doc_type}</span>
+                          <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                        </button>
+                      ) : (
+                        <div className="flex min-w-0 flex-1 items-start gap-2 text-sm">
+                          <FileText className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                          <div className="min-w-0">
+                            <div className="font-medium break-words">{d.doc_type}</div>
+                            <div className="mt-1 whitespace-pre-wrap break-words text-foreground/80">
+                              {formatDocumentAnswer(d.doc_type, d.file_url)}
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       <Button
                         size="icon"
@@ -746,7 +760,8 @@ function AdminBerkas() {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
               </div>
@@ -786,6 +801,38 @@ function AdminBerkas() {
       </Dialog>
     </div>
   );
+}
+
+function isDocumentUrl(value: string): boolean {
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+const documentAnswerLabels: Record<string, string> = {
+  "0-1jt": "Rp 0 - Rp 1.000.000",
+  "1jt-2.5jt": "Rp 1.000.001 - Rp 2.500.000",
+  "2.5jt-5jt": "Rp 2.500.001 - Rp 5.000.000",
+  "5jt-10jt": "Rp 5.000.001 - Rp 10.000.000",
+  ">10jt": "> Rp 10.000.000",
+  ibu: "Ibu",
+  kakak: "Kakak",
+  saudara: "Saudara",
+};
+
+function formatDocumentAnswer(docType: string, value: string): string {
+  const answer = value.trim();
+  if (documentAnswerLabels[answer]) return documentAnswerLabels[answer];
+
+  if (docType.toLowerCase().includes("tanggungan")) {
+    if (answer === ">5") return "> 5 Orang";
+    if (/^\d+$/.test(answer)) return `${answer} Orang`;
+  }
+
+  return answer || "-";
 }
 
 function Info({ label, value, className }: { label: string; value: string; className?: string }) {
