@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { CheckCircle2, Loader2, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -10,24 +10,27 @@ type Props = {
   onClose: () => void;
   onSuccess: () => void;
   title?: string;
+  /** Buat link pembayaran baru otomatis saat modal dibuka (menghindari link expired). */
+  renewOnOpen?: boolean;
 };
 
 /**
  * Overlay pembayaran (iframe). Melakukan polling status pembayaran dan
  * otomatis menutup + memanggil onSuccess ketika pembayaran valid.
  */
-export function PaymentIframeModal({ open, token, paymentUrl, onClose, onSuccess, title }: Props) {
+export function PaymentIframeModal({ open, token, paymentUrl, onClose, onSuccess, title, renewOnOpen }: Props) {
   const [paid, setPaid] = useState(false);
   const [url, setUrl] = useState(paymentUrl);
   const [renewing, setRenewing] = useState(false);
   const [frameKey, setFrameKey] = useState(0);
+  const renewedFor = useRef<string | null>(null);
 
   useEffect(() => {
     setUrl(paymentUrl);
   }, [paymentUrl]);
 
   const renewLink = useCallback(async () => {
-    if (!token || renewing) return;
+    if (!token) return;
     setRenewing(true);
     try {
       const { data, error } = await supabase.functions.invoke("renew-payment-link", {
@@ -45,11 +48,23 @@ export function PaymentIframeModal({ open, token, paymentUrl, onClose, onSuccess
       }
       setUrl(res.payment_url);
       setFrameKey((k) => k + 1);
-      toast.success("Link pembayaran baru berhasil dibuat.");
     } finally {
       setRenewing(false);
     }
-  }, [token, renewing, onSuccess]);
+  }, [token, onSuccess]);
+
+  // Setiap kali modal dibuka lewat tombol "Selesaikan Pembayaran", buat link baru
+  useEffect(() => {
+    if (!open || !renewOnOpen || !token) return;
+    if (renewedFor.current === token) return;
+    renewedFor.current = token;
+    renewLink();
+  }, [open, renewOnOpen, token, renewLink]);
+
+  useEffect(() => {
+    if (!open) renewedFor.current = null;
+  }, [open]);
+
 
   useEffect(() => {
     if (!open || !token) return;
