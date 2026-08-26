@@ -125,6 +125,7 @@ function EsaiRoute() {
 
   const paymentModal = registrant?.payment_url ? (
     <PaymentIframeModal
+      renewOnOpen
       open={payOpen}
       token={(registrant.token ?? token).trim().toUpperCase()}
       paymentUrl={registrant.payment_url}

@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { CheckCircle2, Loader2, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -10,24 +10,27 @@ type Props = {
   onClose: () => void;
   onSuccess: () => void;
   title?: string;
+  /** Buat link pembayaran baru otomatis saat modal dibuka (menghindari link expired). */
+  renewOnOpen?: boolean;
 };
 
 /**
  * Overlay pembayaran (iframe). Melakukan polling status pembayaran dan
  * otomatis menutup + memanggil onSuccess ketika pembayaran valid.
  */
-export function PaymentIframeModal({ open, token, paymentUrl, onClose, onSuccess, title }: Props) {
+export function PaymentIframeModal({ open, token, paymentUrl, onClose, onSuccess, title, renewOnOpen }: Props) {
   const [paid, setPaid] = useState(false);
   const [url, setUrl] = useState(paymentUrl);
   const [renewing, setRenewing] = useState(false);
   const [frameKey, setFrameKey] = useState(0);
+  const renewedFor = useRef<string | null>(null);
 
   useEffect(() => {
     setUrl(paymentUrl);
   }, [paymentUrl]);
 
   const renewLink = useCallback(async () => {
-    if (!token || renewing) return;
+    if (!token) return;
     setRenewing(true);
     try {
       const { data, error } = await supabase.functions.invoke("renew-payment-link", {
@@ -45,11 +48,23 @@ export function PaymentIframeModal({ open, token, paymentUrl, onClose, onSuccess
       }
       setUrl(res.payment_url);
       setFrameKey((k) => k + 1);
-      toast.success("Link pembayaran baru berhasil dibuat.");
     } finally {
       setRenewing(false);
     }
-  }, [token, renewing, onSuccess]);
+  }, [token, onSuccess]);
+
+  // Setiap kali modal dibuka lewat tombol "Selesaikan Pembayaran", buat link baru
+  useEffect(() => {
+    if (!open || !renewOnOpen || !token) return;
+    if (renewedFor.current === token) return;
+    renewedFor.current = token;
+    renewLink();
+  }, [open, renewOnOpen, token, renewLink]);
+
+  useEffect(() => {
+    if (!open) renewedFor.current = null;
+  }, [open]);
+
 
   useEffect(() => {
     if (!open || !token) return;
@@ -113,20 +128,9 @@ export function PaymentIframeModal({ open, token, paymentUrl, onClose, onSuccess
               BEASISWA PENDIDIKAN PRESTASI KITA #8 - PEMBAYARAN QRIS
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-1">
-            <button
-              onClick={renewLink}
-              disabled={renewing}
-              className="flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-[11px] font-bold text-foreground transition hover:bg-muted disabled:opacity-60"
-              title="Buat link pembayaran baru jika link lama kedaluwarsa"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${renewing ? "animate-spin" : ""}`} />
-              Link Baru
-            </button>
-            <button onClick={onClose} className="rounded-full p-2 transition hover:bg-muted" aria-label="Tutup">
-              ✕
-            </button>
-          </div>
+          <button onClick={onClose} className="shrink-0 rounded-full p-2 transition hover:bg-muted" aria-label="Tutup">
+            ✕
+          </button>
         </div>
 
         {paid ? (
@@ -135,9 +139,14 @@ export function PaymentIframeModal({ open, token, paymentUrl, onClose, onSuccess
             <p className="text-lg font-extrabold text-foreground">Pembayaran Berhasil</p>
             <p className="text-sm text-muted-foreground">Mengalihkan ke halaman sukses…</p>
           </div>
+        ) : renewing ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 p-10 text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm font-bold text-foreground">Menyiapkan link pembayaran baru…</p>
+          </div>
         ) : (
           <>
-            <div className="min-h-0 flex-1 overflow-auto -webkit-overflow-scrolling-touch">
+            <div className="min-h-0 flex-1 overflow-auto">
               <iframe
                 key={frameKey}
                 src={url}
@@ -146,21 +155,13 @@ export function PaymentIframeModal({ open, token, paymentUrl, onClose, onSuccess
                 allow="payment"
               />
             </div>
-            <div className="flex shrink-0 flex-wrap items-center gap-2 border-t border-border p-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-2">
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                Jangan tutup jendela ini. Sistem otomatis memverifikasi pembayaran Anda.
-              </span>
-              <button
-                onClick={renewLink}
-                disabled={renewing}
-                className="ml-auto font-bold text-primary underline underline-offset-2 disabled:opacity-60"
-              >
-                Link kedaluwarsa? Buat link baru
-              </button>
+            <div className="flex shrink-0 items-center gap-2 border-t border-border p-3 text-xs text-muted-foreground">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              Jangan tutup jendela ini. Sistem otomatis memverifikasi pembayaran Anda.
             </div>
           </>
         )}
+
       </div>
     </div>
   );
