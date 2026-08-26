@@ -717,24 +717,40 @@ function AdminBerkas() {
                       Peserta Fast Track Premium — lolos berkas secara otomatis, tidak perlu mengunggah berkas pendukung.
                     </div>
                   ) : (
-                    detail.items.map((d) => (
+                    detail.items.map((d) => {
+                      const isFile = /^https?:\/\//i.test((d.file_url ?? "").trim());
+                      return (
                     <div
                       key={d.id}
-                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2"
+                      className="flex flex-wrap items-start justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2"
                     >
-                      <button
-                        type="button"
-                        onClick={() =>
-                          openStoredFile(d.file_url).catch((e: unknown) =>
-                            toast.error(e instanceof Error ? e.message : "Gagal membuka berkas"),
-                          )
-                        }
-                        className="flex items-start gap-2 text-sm flex-1 min-w-0 text-left"
-                      >
-                        <FileText className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                        <span className="font-medium break-words">{d.doc_type}</span>
-                        <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
-                      </button>
+                      {isFile ? (
+                        <div className="flex-1 min-w-0">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              openStoredFile(d.file_url).catch((e: unknown) =>
+                                toast.error(e instanceof Error ? e.message : "Gagal membuka berkas"),
+                              )
+                            }
+                            className="flex items-start gap-2 text-sm text-left w-full"
+                          >
+                            <FileText className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                            <span className="font-medium break-words">{d.doc_type}</span>
+                            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                          </button>
+                          <div className="mt-1 pl-6 text-[11px] text-muted-foreground break-all">
+                            {d.file_url}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-semibold text-muted-foreground">{d.doc_type}</div>
+                          <div className="mt-0.5 text-sm font-medium text-foreground whitespace-pre-wrap break-words">
+                            {d.file_url}
+                          </div>
+                        </div>
+                      )}
 
                       <Button
                         size="icon"
@@ -746,7 +762,9 @@ function AdminBerkas() {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                    ))
+                      );
+                    })
+
                   )}
                 </div>
               </div>
