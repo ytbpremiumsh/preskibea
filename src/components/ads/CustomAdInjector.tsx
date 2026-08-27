@@ -43,6 +43,8 @@ function isManagedAdSenseScript(script: HTMLScriptElement) {
   );
 }
 
+const HEAD_ONLY = new Set(["STYLE", "META", "LINK", "TITLE", "BASE"]);
+
 function inject(target: HTMLElement, html: string, where: "prepend" | "append") {
   if (!html?.trim()) return;
   const wrapper = document.createElement("div");
@@ -55,20 +57,45 @@ function inject(target: HTMLElement, html: string, where: "prepend" | "append") 
   wrapper.style.flexDirection = "column";
   const tpl = document.createElement("template");
   tpl.innerHTML = html;
+  const deferredScripts: HTMLScriptElement[] = [];
   Array.from(tpl.content.childNodes).forEach((node) => {
-    if (node.nodeType === 1 && (node as HTMLElement).tagName === "SCRIPT") {
-      const orig = node as HTMLScriptElement;
-      if (isManagedAdSenseScript(orig)) return;
-      const s = document.createElement("script");
-      for (const a of Array.from(orig.attributes)) s.setAttribute(a.name, a.value);
-      s.text = orig.textContent || "";
-      wrapper.appendChild(s);
-    } else {
-      wrapper.appendChild(node.cloneNode(true));
+    if (node.nodeType === 1) {
+      const el = node as HTMLElement;
+      if (el.tagName === "SCRIPT") {
+        const orig = el as HTMLScriptElement;
+        if (isManagedAdSenseScript(orig)) return;
+        deferredScripts.push(orig);
+        return;
+      }
+      // <style>/<meta>/<link> harus di <head> supaya berlaku global
+      if (HEAD_ONLY.has(el.tagName)) {
+        const clone = el.cloneNode(true) as HTMLElement;
+        clone.setAttribute(MARK, "1");
+        document.head.appendChild(clone);
+        return;
+      }
+      // hindari duplikasi id (mis. #sticky-ads dari injector lain)
+      const id = el.getAttribute("id");
+      if (id) document.getElementById(id)?.remove();
+      wrapper.appendChild(el.cloneNode(true));
+      return;
     }
+    if (node.nodeType === 3 && !node.textContent?.trim()) return;
+    wrapper.appendChild(node.cloneNode(true));
   });
-  if (where === "prepend") target.prepend(wrapper);
-  else target.append(wrapper);
+
+  if (wrapper.childNodes.length) {
+    if (where === "prepend") target.prepend(wrapper);
+    else target.append(wrapper);
+  }
+
+  deferredScripts.forEach((orig) => {
+    const s = document.createElement("script");
+    for (const a of Array.from(orig.attributes)) s.setAttribute(a.name, a.value);
+    s.text = orig.textContent || "";
+    s.setAttribute(MARK, "1");
+    document.body.appendChild(s);
+  });
 }
 
 function clearOld() {
