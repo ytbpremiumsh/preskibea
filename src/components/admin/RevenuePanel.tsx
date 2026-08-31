@@ -29,8 +29,19 @@ const rupiah = (n: number) =>
 const localKey = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
+type RangeKey = "all" | 30 | 14 | 7 | 1;
+
+const RANGES: { key: RangeKey; label: string }[] = [
+  { key: "all", label: "Semua" },
+  { key: 30, label: "30 Hari" },
+  { key: 14, label: "14 Hari" },
+  { key: 7, label: "7 Hari" },
+  { key: 1, label: "1 Hari" },
+];
+
 export function RevenuePanel() {
   const [loading, setLoading] = useState(true);
+  const [range, setRange] = useState<RangeKey>(14);
   const [rows, setRows] = useState<{ created_at: string; amount: number; tier: Tier }[]>([]);
 
   useEffect(() => {
@@ -38,7 +49,7 @@ export function RevenuePanel() {
     (async () => {
       setLoading(true);
       const since = new Date();
-      since.setDate(since.getDate() - 29);
+      since.setDate(since.getDate() - 365);
       since.setHours(0, 0, 0, 0);
 
       const { data: pays } = await supabase
