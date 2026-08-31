@@ -144,8 +144,9 @@ export function RevenuePanel() {
   const trendUp = diff > 0;
   const trendFlat = diff === 0;
 
-  const total14 = days.reduce((a, d) => a + d.total, 0);
+  const totalRange = days.reduce((a, d) => a + d.total, 0);
   const maxDay = Math.max(1, ...days.map((d) => d.total));
+  const rangeLabel = range === "all" ? "Semua" : `${range} Hari`;
 
   if (loading) {
     return (
