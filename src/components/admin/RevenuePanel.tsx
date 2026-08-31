@@ -158,6 +158,22 @@ export function RevenuePanel() {
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-wrap items-center gap-2">
+        {RANGES.map((r) => (
+          <button
+            key={String(r.key)}
+            onClick={() => setRange(r.key)}
+            className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+              range === r.key
+                ? "border-primary bg-primary text-primary-foreground"
+                : "bg-white text-muted-foreground hover:border-primary/50 hover:text-foreground"
+            }`}
+          >
+            {r.label}
+          </button>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border bg-white p-5">
           <div className="flex items-start justify-between gap-3">
