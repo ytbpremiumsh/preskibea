@@ -193,7 +193,7 @@ serve(async (req) => {
       .from("registrations")
       .update(updates)
       .eq("id", reg.id)
-      .eq("payment_status", "pending")
+      .or("payment_status.is.null,payment_status.neq.paid")
       .select("id")
       .maybeSingle();
 
