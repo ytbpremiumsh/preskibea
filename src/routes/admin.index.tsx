@@ -15,6 +15,7 @@ const LineDaily = lazy(() => import("@/components/admin/DashboardCharts").then((
 const PieKind = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.PieKind })));
 const BarJenjang = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.BarJenjang })));
 const RevenuePanel = lazy(() => import("@/components/admin/RevenuePanel").then((m) => ({ default: m.RevenuePanel })));
+const ValidPaymentsPanel = lazy(() => import("@/components/admin/ValidPaymentsPanel").then((m) => ({ default: m.ValidPaymentsPanel })));
 
 
 export const Route = createFileRoute("/admin/")({
@@ -363,11 +364,18 @@ function AdminOverview() {
         <TabsList>
           <TabsTrigger value="ringkasan">Ringkasan</TabsTrigger>
           <TabsTrigger value="pendapatan">Pendapatan Harian</TabsTrigger>
+          <TabsTrigger value="peserta-valid">Peserta Valid</TabsTrigger>
         </TabsList>
 
         <TabsContent value="pendapatan" className="mt-4">
           <Suspense fallback={<ChartFallback />}>
             <RevenuePanel />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="peserta-valid" className="mt-4">
+          <Suspense fallback={<ChartFallback />}>
+            <ValidPaymentsPanel />
           </Suspense>
         </TabsContent>
 
