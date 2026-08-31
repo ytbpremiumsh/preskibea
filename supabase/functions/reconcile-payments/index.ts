@@ -45,7 +45,7 @@ serve(async (req) => {
       .from("registrations")
       .select("token")
       .eq("fast_track", true)
-      .neq("payment_status", "paid")
+      .or("payment_status.is.null,payment_status.neq.paid")
       .gte("created_at", since)
       .order("created_at", { ascending: false })
       .limit(limit);
