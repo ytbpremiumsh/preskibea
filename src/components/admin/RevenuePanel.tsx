@@ -135,7 +135,7 @@ export function RevenuePanel() {
       }
     }
     return out;
-  }, [rows]);
+  }, [rows, range]);
 
   const today = days[days.length - 1];
   const yesterday = days[days.length - 2];
