@@ -126,38 +126,62 @@ serve(async (req) => {
     if (!cfg?.client_id || !cfg?.secret_key) return json({ status: reg.payment_status || "pending" });
 
     const baseUrl = cfg.is_production ? "https://api.doku.com" : "https://api-sandbox.doku.com";
-    const invoiceNumber = ((reg.extra as any)?.doku_invoice_number as string) || token;
-    const target = `/orders/v1/status/${invoiceNumber}`;
 
-    const requestId = crypto.randomUUID();
-    const timestamp = new Date().toISOString().slice(0, 19) + "Z";
-    const signaturePayload =
-      `Client-Id:${cfg.client_id}\nRequest-Id:${requestId}\nRequest-Timestamp:${timestamp}\nRequest-Target:${target}`;
-    const signature = `HMACSHA256=${await hmacBase64(cfg.secret_key, signaturePayload)}`;
+    // Peserta bisa membayar invoice lama meski link sudah diperbarui (TOKEN-R1, -R2, ...).
+    // Cek SEMUA nomor invoice yang pernah dibuat untuk token ini.
+    const retry = Number((reg.extra as any)?.payment_retry ?? 0);
+    const candidates = [
+      token,
+      ...Array.from({ length: Math.min(retry, 10) }, (_, i) => `${token}-R${i + 1}`),
+      (reg.extra as any)?.doku_invoice_number as string | undefined,
+    ].filter((v, i, a) => !!v && a.indexOf(v) === i) as string[];
 
-    const res = await fetch(`${baseUrl}${target}`, {
-      method: "GET",
-      headers: {
-        "Client-Id": cfg.client_id,
-        "Request-Id": requestId,
-        "Request-Timestamp": timestamp,
-        "Signature": signature,
-      },
-    });
+    const fetchStatus = async (invoiceNumber: string) => {
+      const target = `/orders/v1/status/${invoiceNumber}`;
+      const requestId = crypto.randomUUID();
+      const timestamp = new Date().toISOString().slice(0, 19) + "Z";
+      const signaturePayload =
+        `Client-Id:${cfg.client_id}\nRequest-Id:${requestId}\nRequest-Timestamp:${timestamp}\nRequest-Target:${target}`;
+      const signature = `HMACSHA256=${await hmacBase64(cfg.secret_key, signaturePayload)}`;
+      const res = await fetch(`${baseUrl}${target}`, {
+        method: "GET",
+        headers: {
+          "Client-Id": cfg.client_id,
+          "Request-Id": requestId,
+          "Request-Timestamp": timestamp,
+          "Signature": signature,
+        },
+      });
+      if (!res.ok) {
+        console.log("Doku status check failed:", invoiceNumber, res.status, await res.text());
+        return null;
+      }
+      return await res.json();
+    };
 
-    if (!res.ok) {
-      console.log("Doku status check failed:", res.status, await res.text());
-      return json({ status: reg.payment_status || "pending" });
+    let body: any = null;
+    let txStatus = "";
+    for (const invoiceNumber of candidates) {
+      const result = await fetchStatus(invoiceNumber);
+      if (!result) continue;
+      const st = String(
+        result?.transaction?.status ?? result?.order?.status ?? result?.status ?? "",
+      ).toUpperCase();
+      if (!body) {
+        body = result;
+        txStatus = st;
+      }
+      if (st === "SUCCESS" || st === "PAID" || st === "SETTLEMENT") {
+        body = result;
+        txStatus = st;
+        break;
+      }
     }
-
-    const body = await res.json();
-    const txStatus = String(
-      body?.transaction?.status ?? body?.order?.status ?? body?.status ?? "",
-    ).toUpperCase();
 
     if (txStatus !== "SUCCESS" && txStatus !== "PAID" && txStatus !== "SETTLEMENT") {
-      return json({ status: "pending", doku_status: txStatus });
+      return json({ status: reg.payment_status || "pending", doku_status: txStatus });
     }
+
 
     const isPremium = (reg.extra as any)?.fast_track_type === "premium";
     const updates: Record<string, any> = { payment_status: "paid", status: "approved" };
