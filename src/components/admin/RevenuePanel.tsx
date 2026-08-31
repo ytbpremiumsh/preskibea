@@ -228,30 +228,37 @@ export function RevenuePanel() {
               <TrendingUp className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Total 14 Hari</p>
-              <p className="text-2xl font-black tabular-nums leading-none text-foreground">{rupiah(total14)}</p>
+              <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Total {rangeLabel}</p>
+              <p className="text-2xl font-black tabular-nums leading-none text-foreground">{rupiah(totalRange)}</p>
             </div>
           </div>
         </Card>
       </div>
 
       <Card className="rounded-2xl p-5 shadow-soft">
-        <h2 className="text-base font-semibold text-foreground">Pendapatan Harian (14 hari terakhir)</h2>
+        <h2 className="text-base font-semibold text-foreground">Pendapatan Harian ({rangeLabel})</h2>
         <p className="text-xs text-muted-foreground">Hanya pembayaran yang benar-benar valid (paid).</p>
-        <div className="mt-4 flex h-48 items-end gap-2">
-          {days.map((d) => (
-            <div key={d.key} className="flex flex-1 flex-col items-center gap-1.5">
-              <span className="text-[10px] font-semibold tabular-nums text-muted-foreground">
-                {d.total > 0 ? (d.total / 1000).toFixed(0) + "k" : ""}
-              </span>
+        <div className="mt-4 flex h-56 items-end gap-2 overflow-x-auto pb-1">
+          {days.map((d) => {
+            const hPct = d.total > 0 ? Math.max(4, Math.round((d.total / maxDay) * 100)) : 0;
+            return (
               <div
-                className="w-full rounded-t-md bg-primary/80"
-                style={{ height: `${Math.round((d.total / maxDay) * 100)}%`, minHeight: d.total > 0 ? 4 : 2 }}
-                title={`${d.label}: ${rupiah(d.total)}`}
-              />
-              <span className="text-[10px] text-muted-foreground">{d.label}</span>
-            </div>
-          ))}
+                key={d.key}
+                className="flex h-full flex-1 flex-col items-center justify-end gap-1.5"
+                style={{ minWidth: days.length > 20 ? 34 : undefined }}
+              >
+                <span className="text-[10px] font-semibold tabular-nums text-muted-foreground">
+                  {d.total > 0 ? (d.total / 1000).toFixed(0) + "k" : ""}
+                </span>
+                <div
+                  className={`w-full rounded-t-md transition-all ${d.total > 0 ? "bg-primary/80" : "bg-muted"}`}
+                  style={{ height: `${hPct}%`, minHeight: 2 }}
+                  title={`${d.label}: ${rupiah(d.total)}`}
+                />
+                <span className="whitespace-nowrap text-[10px] text-muted-foreground">{d.label}</span>
+              </div>
+            );
+          })}
         </div>
       </Card>
 
