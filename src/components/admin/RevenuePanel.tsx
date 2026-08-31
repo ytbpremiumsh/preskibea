@@ -95,7 +95,20 @@ export function RevenuePanel() {
     const out: DayRow[] = [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    for (let i = 13; i >= 0; i--) {
+
+    let start: Date | null = null;
+    if (range !== "all") {
+      start = new Date(today);
+      start.setDate(start.getDate() - (range - 1));
+    } else if (rows.length) {
+      start = new Date(rows.reduce((a, r) => (r.created_at < a ? r.created_at : a), rows[0].created_at));
+      start.setHours(0, 0, 0, 0);
+    } else {
+      start = new Date(today);
+    }
+
+    const span = Math.max(1, Math.round((today.getTime() - start.getTime()) / 86400000) + 1);
+    for (let i = span - 1; i >= 0; i--) {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       out.push({
