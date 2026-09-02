@@ -896,6 +896,30 @@ function DetailDialog({
           {row.tiktok_video_url && <Field label="Video Tiktok (URL)" value={row.tiktok_video_url} />}
         </div>
 
+        {isPaid && (
+          <div className="mt-6 rounded-2xl border border-emerald-500/40 bg-emerald-500/5 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                  <FileCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-foreground">Invoice Transaksi</p>
+                  <p className="text-xs text-muted-foreground">
+                    Pembayaran lunas & valid
+                    {payment?.provider ? ` · ${payment.provider.toUpperCase()}` : ""}
+                    {payment ? ` · Rp ${(Number(payment.amount) || 0).toLocaleString("id-ID")}` : ""}
+                  </p>
+                </div>
+              </div>
+              <Button size="sm" onClick={handleDownloadInvoice} className="bg-emerald-600 text-white hover:bg-emerald-700">
+                <Download className="h-4 w-4 mr-1.5" />
+                Download Invoice (PDF)
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="mt-6">
           <h3 className="text-sm font-semibold text-foreground mb-2">
             Berkas ({docs.length + (row.photo_url ? 1 : 0) + (row.student_card_url ? 1 : 0)})
