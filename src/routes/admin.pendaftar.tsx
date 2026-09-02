@@ -904,9 +904,12 @@ function DetailDialog({
                   <FileCheck className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-foreground">Invoice Transaksi</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold text-foreground">Invoice Transaksi</p>
+                    <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">VALID</Badge>
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    Pembayaran lunas & valid
+                    Transaksi berhasil dan pembayaran tervalidasi
                     {payment?.provider ? ` · ${payment.provider.toUpperCase()}` : ""}
                     {payment ? ` · Rp ${(Number(payment.amount) || 0).toLocaleString("id-ID")}` : ""}
                   </p>
@@ -914,7 +917,7 @@ function DetailDialog({
               </div>
               <Button size="sm" onClick={handleDownloadInvoice} className="bg-emerald-600 text-white hover:bg-emerald-700">
                 <Download className="h-4 w-4 mr-1.5" />
-                Download Invoice (PDF)
+                Download Invoice Valid (PDF)
               </Button>
             </div>
           </div>
