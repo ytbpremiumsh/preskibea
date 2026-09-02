@@ -15,6 +15,7 @@ import { openStoredFile } from "@/lib/storage-url";
 import { exportRowsToXlsx, exportRowsToCsv } from "@/lib/excel-export";
 import { TokenBadge } from "@/components/admin/TokenBadge";
 import { uniqueLatestDocuments } from "@/lib/document-utils";
+import { downloadInvoicePdf } from "@/lib/invoice-pdf";
 
 export const Route = createFileRoute("/admin/pendaftar")({
   component: AdminPendaftar,
@@ -794,6 +795,15 @@ function AdminPendaftar() {
   );
 }
 
+type PaymentRow = {
+  id: string;
+  amount: number | string;
+  status: string;
+  external_id: string | null;
+  provider: string | null;
+  created_at: string | null;
+};
+
 function DetailDialog({
   row,
   docs,
@@ -803,6 +813,45 @@ function DetailDialog({
   docs: Document[];
   onClose: () => void;
 }) {
+  const isPaid = (row.payment_status || "").toLowerCase() === "paid";
+  const [payment, setPayment] = useState<PaymentRow | null>(null);
+
+  useEffect(() => {
+    if (!isPaid) return;
+    let active = true;
+    supabase
+      .from("payments")
+      .select("id,amount,status,external_id,provider,created_at")
+      .eq("registration_id", row.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (active && data) setPayment(data as PaymentRow);
+      });
+    return () => { active = false; };
+  }, [isPaid, row.id]);
+
+  const handleDownloadInvoice = () => {
+    const premium = (row.extra as any)?.fast_track_type === "premium";
+    const tier = row.fast_track ? (premium ? "Fast Track Premium" : "Fast Track") : "Reguler";
+    const kindLabel = `Beasiswa ${row.kind.charAt(0).toUpperCase() + row.kind.slice(1)}`;
+    const amount = payment ? Number(payment.amount) || 0 : Number((row.extra as any)?.fast_track_fee) || 0;
+    downloadInvoicePdf({
+      invoiceNo: `INV/${row.token ?? row.id.slice(0, 8)}`,
+      date: payment?.created_at ? new Date(payment.created_at) : new Date(row.created_at),
+      name: row.full_name,
+      email: row.email,
+      whatsapp: row.whatsapp,
+      item: `Biaya ${tier} — ${kindLabel} Batch #8`,
+      kind: kindLabel,
+      amount,
+      provider: payment?.provider ?? null,
+      reference: payment?.external_id ?? row.token ?? null,
+    });
+    toast.success("Invoice berhasil diunduh");
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
@@ -846,6 +895,30 @@ function DetailDialog({
           {row.additional_docs_url && <Field label="Berkas Pendukung (URL)" value={row.additional_docs_url} />}
           {row.tiktok_video_url && <Field label="Video Tiktok (URL)" value={row.tiktok_video_url} />}
         </div>
+
+        {isPaid && (
+          <div className="mt-6 rounded-2xl border border-emerald-500/40 bg-emerald-500/5 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                  <FileCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-foreground">Invoice Transaksi</p>
+                  <p className="text-xs text-muted-foreground">
+                    Pembayaran lunas & valid
+                    {payment?.provider ? ` · ${payment.provider.toUpperCase()}` : ""}
+                    {payment ? ` · Rp ${(Number(payment.amount) || 0).toLocaleString("id-ID")}` : ""}
+                  </p>
+                </div>
+              </div>
+              <Button size="sm" onClick={handleDownloadInvoice} className="bg-emerald-600 text-white hover:bg-emerald-700">
+                <Download className="h-4 w-4 mr-1.5" />
+                Download Invoice (PDF)
+              </Button>
+            </div>
+          </div>
+        )}
 
         <div className="mt-6">
           <h3 className="text-sm font-semibold text-foreground mb-2">
