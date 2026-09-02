@@ -794,6 +794,15 @@ function AdminPendaftar() {
   );
 }
 
+type PaymentRow = {
+  id: string;
+  amount: number | string;
+  status: string;
+  external_id: string | null;
+  provider: string | null;
+  created_at: string | null;
+};
+
 function DetailDialog({
   row,
   docs,
@@ -803,6 +812,45 @@ function DetailDialog({
   docs: Document[];
   onClose: () => void;
 }) {
+  const isPaid = (row.payment_status || "").toLowerCase() === "paid";
+  const [payment, setPayment] = useState<PaymentRow | null>(null);
+
+  useEffect(() => {
+    if (!isPaid) return;
+    let active = true;
+    supabase
+      .from("payments")
+      .select("id,amount,status,external_id,provider,created_at")
+      .eq("registration_id", row.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (active && data) setPayment(data as PaymentRow);
+      });
+    return () => { active = false; };
+  }, [isPaid, row.id]);
+
+  const handleDownloadInvoice = () => {
+    const premium = (row.extra as any)?.fast_track_type === "premium";
+    const tier = row.fast_track ? (premium ? "Fast Track Premium" : "Fast Track") : "Reguler";
+    const kindLabel = `Beasiswa ${row.kind.charAt(0).toUpperCase() + row.kind.slice(1)}`;
+    const amount = payment ? Number(payment.amount) || 0 : Number((row.extra as any)?.fast_track_fee) || 0;
+    downloadInvoicePdf({
+      invoiceNo: `INV/${row.token ?? row.id.slice(0, 8)}`,
+      date: payment?.created_at ? new Date(payment.created_at) : new Date(row.created_at),
+      name: row.full_name,
+      email: row.email,
+      whatsapp: row.whatsapp,
+      item: `Biaya ${tier} — ${kindLabel} Batch #8`,
+      kind: kindLabel,
+      amount,
+      provider: payment?.provider ?? null,
+      reference: payment?.external_id ?? row.token ?? null,
+    });
+    toast.success("Invoice berhasil diunduh");
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
