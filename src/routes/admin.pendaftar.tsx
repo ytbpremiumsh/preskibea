@@ -15,6 +15,7 @@ import { openStoredFile } from "@/lib/storage-url";
 import { exportRowsToXlsx, exportRowsToCsv } from "@/lib/excel-export";
 import { TokenBadge } from "@/components/admin/TokenBadge";
 import { uniqueLatestDocuments } from "@/lib/document-utils";
+import { downloadInvoicePdf } from "@/lib/invoice-pdf";
 
 export const Route = createFileRoute("/admin/pendaftar")({
   component: AdminPendaftar,
