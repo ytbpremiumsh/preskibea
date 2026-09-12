@@ -23,7 +23,9 @@ log "Menyiapkan webroot $WEBROOT"
 mkdir -p "$WEBROOT/releases" "$WEBROOT/.well-known/acme-challenge"
 
 log "Memeriksa konfigurasi domain ganda"
-duplicates="$(grep -RslE "server_name[^;]*((www\\.)?$DOMAIN)" /etc/nginx 2>/dev/null | grep -Fv "$NGINX_TARGET" || true)"
+duplicates="$(grep -RslE "server_name[^;]*((www\\.)?$DOMAIN)" /etc/nginx 2>/dev/null \
+  | grep -Fv "$NGINX_TARGET" \
+  | grep -vE '\.backup-[0-9]{14}$' || true)"
 if [ -n "$duplicates" ]; then
   printf 'ERROR: konfigurasi nginx lama untuk domain yang sama ditemukan:\n%s\n' "$duplicates" >&2
   printf 'Nonaktifkan file tersebut, lalu jalankan installer kembali.\n' >&2
