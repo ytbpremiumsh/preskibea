@@ -1,64 +1,63 @@
-# Install Kejar Prestasi di VPS (Static SPA)
+# Install Prestasi Kita di VPS (Static SPA + Nginx)
 
-Arsitektur: **Static SPA (Vite + React Router)**. 
-Deployment cukup dengan menaruh hasil build (`dist/`) ke webroot Nginx. Tidak perlu Node.js runtime/PM2 di production.
+Aplikasi berupa file statis yang langsung dilayani nginx. Tidak diperlukan PM2,
+Node.js runtime, reverse proxy, atau service systemd aplikasi.
 
-## 1. Prasyarat
+## Prasyarat
 
-- VPS (Ubuntu/Debian direkomendasikan)
-- Node.js ≥ 20 & npm/bun (untuk proses build di server)
-- Nginx
-- Git
+- Ubuntu/Debian, nginx, Git, rsync, dan curl
+- Node.js 20 atau lebih baru dan npm
+- Repo berada di `/var/www/prestasikita` (atau lokasi lain yang tetap)
 
-## 2. Persiapan Folder & Izin
+## Instalasi atau perbaikan
 
 ```bash
-sudo mkdir -p /www/wwwroot/kejarprestasi.id
-sudo chown -R $USER:$USER /www/wwwroot/kejarprestasi.id
+cd /var/www/prestasikita
+sudo bash deploy/install-vps.sh
 ```
 
-## 3. Clone & Initial Build
+Installer akan membangun aplikasi, memvalidasi hasilnya, membuat rilis atomik,
+memasang konfigurasi nginx, dan memeriksa halaman `/admin`. Konfigurasi lama
+dicadangkan. Jika ada dua konfigurasi untuk domain yang sama, installer berhenti
+dan menampilkan file lama yang harus dinonaktifkan.
+
+## SSL
 
 ```bash
-cd /var/www
-git clone https://github.com/USERNAME/REPO.git kejarprestasi
-cd kejarprestasi
-npm install
-npm run build
-# Sync hasil build ke webroot
-rsync -a --delete dist/ /www/wwwroot/kejarprestasi.id/
+sudo certbot --nginx -d prestasikita.com -d www.prestasikita.com
 ```
 
-## 4. Konfigurasi Nginx
-
-Salin konfigurasi dari `deploy/nginx-kejarprestasi.id.conf`:
+## Update rutin
 
 ```bash
-sudo cp deploy/nginx-kejarprestasi.id.conf /etc/nginx/conf.d/kejarprestasi.id.conf
-# Edit path 'root' di config jika folder Anda berbeda
-sudo nano /etc/nginx/conf.d/kejarprestasi.id.conf
+cd /var/www/prestasikita
+sudo bash deploy/update.sh
+```
+
+Script menjalankan pull, pemasangan dependensi, build, validasi, lalu mengganti
+rilis secara atomik. Situs lama tetap aktif jika build atau pemeriksaan gagal.
+Lima rilis terakhir disimpan untuk pemulihan.
+
+## Verifikasi
+
+```bash
 sudo nginx -t
-sudo systemctl reload nginx
+readlink -f /www/wwwroot/prestasikita.com/current
+curl -I https://prestasikita.com/
+curl -I https://prestasikita.com/admin
 ```
 
-## 5. SSL dengan Certbot
+## Jika masih error
+
+| Status | Penyebab paling mungkin | Tindakan |
+|---|---|---|
+| 500 pada `/admin` | vhost lama atau fallback nginx berulang | Jalankan installer; nonaktifkan konfigurasi ganda yang dilaporkan |
+| 502 | nginx lama masih memakai `proxy_pass` | Ganti dengan konfigurasi installer; PM2 tidak dipakai |
+| 503 | `current/index.html` tidak tersedia | Jalankan `sudo bash deploy/update.sh` |
+| Update terkunci | Dua deploy berjalan bersamaan | Tunggu proses pertama selesai |
+
+Domain atau webroot lain:
 
 ```bash
-sudo certbot --nginx -d kejarprestasi.id -d www.kejarprestasi.id
+sudo DOMAIN=contoh.id WEBROOT=/www/wwwroot/contoh.id bash deploy/install-vps.sh
 ```
-
-## 6. Update Rutin
-
-Gunakan script `update.sh` di root folder:
-
-```bash
-bash update.sh
-```
-
-Script ini akan melakukan: `git pull` -> `npm install` -> `npm run build` -> `rsync` ke webroot dengan pengecekan keamanan.
-
----
-
-## Catatan Penting
-- **SSR**: Jika Anda melihat referensi SSR atau `build:node` di dokumen lama, abaikan. App ini sudah migrasi ke Static SPA untuk performa dan kemudahan maintenance.
-- **Webroot**: Pastikan path Nginx `root` sama dengan target `rsync` di `update.sh`.

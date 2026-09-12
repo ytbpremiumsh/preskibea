@@ -1,14 +1,13 @@
-# Deployment VPS (Static SPA)
+# Systemd tidak diperlukan
 
-Aplikasi ini adalah **Static SPA**. Tidak memerlukan service systemd atau PM2 untuk berjalan, karena hanya berupa file statis yang dilayani langsung oleh Nginx.
+Prestasi Kita sekarang berupa situs statis. Nginx membaca hasil build secara
+langsung, sehingga tidak ada proses aplikasi yang harus dijaga oleh systemd atau
+PM2. Gunakan panduan `INSTALL-VPS.md`.
 
-Jika sebelumnya Anda menggunakan systemd untuk menjalankan Node.js server (SSR), Anda bisa menghapusnya:
+Jika service aplikasi lama masih aktif, service tersebut boleh dihentikan karena
+nginx tidak lagi terhubung kepadanya:
 
 ```bash
-sudo systemctl stop kejar-prestasi
-sudo systemctl disable kejar-prestasi
-sudo rm /etc/systemd/system/kejar-prestasi.service
-sudo systemctl daemon-reload
+sudo systemctl disable --now kejar-prestasi 2>/dev/null || true
+sudo systemctl status nginx
 ```
-
-Cukup ikuti panduan di `docs/INSTALL-VPS.md` untuk setup Nginx statis.
