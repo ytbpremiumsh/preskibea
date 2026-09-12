@@ -1,106 +1,64 @@
-# Install Kejar Prestasi di VPS (Node SSR + PM2 + Nginx)
+# Install Kejar Prestasi di VPS (Static SPA)
 
-Arsitektur: **TanStack Start SSR di Node.js**, di-proxy Nginx. **Bukan** static SPA.
-
-```text
-Browser ──HTTPS──▶ Nginx :443
-                   ├─ /assets/*  → file disk (cache 1y)
-                   └─ /*         → proxy_pass 127.0.0.1:3000 (Node SSR)
-```
-
-App Node SSR tetap di `/var/www/kejarprestasi`. Webroot aaPanel/Nginx `/www/wwwroot/kejarprestasi.id` hanya berisi static fallback: `assets/`, `index.html`, `favicon.ico`.
-
----
+Arsitektur: **Static SPA (Vite + React Router)**. 
+Deployment cukup dengan menaruh hasil build (`dist/`) ke webroot Nginx. Tidak perlu Node.js runtime/PM2 di production.
 
 ## 1. Prasyarat
 
-- Ubuntu/Debian VPS
-- Node.js ≥ 20 (installer akan setup otomatis lewat NodeSource jika belum)
+- VPS (Ubuntu/Debian direkomendasikan)
+- Node.js ≥ 20 & npm/bun (untuk proses build di server)
 - Nginx
-- Git, akses ke repo
+- Git
 
-## 2. Install otomatis
+## 2. Persiapan Folder & Izin
 
 ```bash
-sudo mkdir -p /var/www && cd /var/www
-sudo git clone -b main <REPO_URL> kejarprestasi
+sudo mkdir -p /www/wwwroot/kejarprestasi.id
+sudo chown -R $USER:$USER /www/wwwroot/kejarprestasi.id
+```
+
+## 3. Clone & Initial Build
+
+```bash
+cd /var/www
+git clone https://github.com/USERNAME/REPO.git kejarprestasi
 cd kejarprestasi
-
-# isi .env dulu (Supabase keys, LOVABLE_API_KEY, dll)
-sudo nano .env
-
-# jalankan installer
-sudo REPO_URL=<REPO_URL> bash deploy/install-vps.sh
+npm install
+npm run build
+# Sync hasil build ke webroot
+rsync -a --delete dist/ /www/wwwroot/kejarprestasi.id/
 ```
 
-Installer akan:
-1. Install Node 20 + PM2 (jika belum)
-2. `npm ci && npm run build:node`
-3. Validasi `dist/server/server.node.js` ada
-4. Stage `dist/client` ke `/www/wwwroot/kejarprestasi.id` sehingga muncul `assets/`, `index.html`, `favicon.ico`
-5. `pm2 start ecosystem.config.cjs` + `pm2 save` + autostart on boot
-6. Salin contoh Nginx config ke `/etc/nginx/conf.d/kejarprestasi.id.conf.example`
-7. Smoke test `curl http://127.0.0.1:3000`
+## 4. Konfigurasi Nginx
 
-## 3. Nginx
-
-Review & aktifkan:
+Salin konfigurasi dari `deploy/nginx-kejarprestasi.id.conf`:
 
 ```bash
-sudo cp /etc/nginx/conf.d/kejarprestasi.id.conf.example /etc/nginx/conf.d/kejarprestasi.id.conf
-sudo nginx -t && sudo systemctl reload nginx
+sudo cp deploy/nginx-kejarprestasi.id.conf /etc/nginx/conf.d/kejarprestasi.id.conf
+# Edit path 'root' di config jika folder Anda berbeda
+sudo nano /etc/nginx/conf.d/kejarprestasi.id.conf
+sudo nginx -t
+sudo systemctl reload nginx
 ```
 
-HTTPS dengan certbot:
+## 5. SSL dengan Certbot
 
 ```bash
 sudo certbot --nginx -d kejarprestasi.id -d www.kejarprestasi.id
 ```
 
-## 4. Update / deploy ulang
+## 6. Update Rutin
+
+Gunakan script `update.sh` di root folder:
 
 ```bash
-cd /var/www/kejarprestasi
-sudo bash deploy/update.sh
+bash update.sh
 ```
 
-Script: `git pull` → `npm ci` → `npm run build:node` → stage webroot → validasi → `pm2 reload` (zero-downtime). Auto-rollback jika build gagal. Webroot otomatis menjadi `assets/`, `index.html`, `favicon.ico` — bukan `client/` + `server/`.
+Script ini akan melakukan: `git pull` -> `npm install` -> `npm run build` -> `rsync` ke webroot dengan pengecekan keamanan.
 
-## 5. Migrasi dari instalasi aaPanel/static lama
+---
 
-Jika `/www/wwwroot/kejarprestasi.id/` berisi `client/` + `server/`, berarti folder `dist/` tersalin mentah ke webroot. Jalankan:
-
-```bash
-sudo bash /var/www/kejarprestasi/deploy/migrate-from-static.sh
-```
-
-Script: hapus `client/` + `server/`, salin isi `dist/client`, buat fallback `index.html`/`favicon.ico` bila belum ada, install Nginx config, disable vhost aaPanel lama, restart PM2.
-
-## 6. Verifikasi
-
-```bash
-ls /var/www/kejarprestasi/dist/server/server.node.js   # harus ada
-pm2 status                                              # kejarprestasi: online
-curl -I http://127.0.0.1:3000                           # 200
-curl -I https://kejarprestasi.id                        # 200 + text/html
-curl -I https://kejarprestasi.id/assets/<hash>.js       # 200 + Cache-Control: immutable
-ls -lah /www/wwwroot/kejarprestasi.id                   # assets/ index.html favicon.ico
-```
-
-## 7. Troubleshooting
-
-| Gejala | Penyebab | Fix |
-|---|---|---|
-| Webroot berisi `client/` + `server/` | `dist/` tersalin mentah ke webroot | `bash deploy/migrate-from-static.sh` |
-| `dist/server/server.node.js` tidak ada setelah build | Build pakai config Worker, bukan Node | Pastikan jalankan `npm run build:node`, bukan `npm run build` |
-| PM2 restart loop | `.env` kurang / port 3000 sudah dipakai | `pm2 logs kejarprestasi` |
-| 502 Bad Gateway | Node mati | `pm2 status` lalu `pm2 restart kejarprestasi` |
-
-## 8. Catatan: dua jalur build
-
-- `npm run build` → Cloudflare Worker (dipakai Lovable Publish di `*.lovable.app`)
-- `npm run build:node` → Node SSR (dipakai VPS ini)
-
-VPS **wajib** pakai `build:node`. Jangan tertukar.
-
-> systemd? Lihat `docs/INSTALL-VPS-SYSTEMD.md` (opsional, PM2 adalah default).
+## Catatan Penting
+- **SSR**: Jika Anda melihat referensi SSR atau `build:node` di dokumen lama, abaikan. App ini sudah migrasi ke Static SPA untuk performa dan kemudahan maintenance.
+- **Webroot**: Pastikan path Nginx `root` sama dengan target `rsync` di `update.sh`.

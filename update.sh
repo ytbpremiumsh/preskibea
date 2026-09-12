@@ -1,44 +1,67 @@
 #!/usr/bin/env bash
-# Update script untuk VPS — pull, install, build, sync ke webroot.
-# Jalankan dari root proyek:
-#     bash deploy/update.sh
-#
-# Atau via SSH dari mesin lain:
-#     ssh user@server "cd /path/to/repo && bash deploy/update.sh"
-#
-# Asumsi:
-#   - Repo Git ada di direktori kerja
-#   - Node 20+ + npm tersedia
-#   - Webroot: /www/wwwroot/kejarprestasi.id (sesuaikan kalau beda)
-#   - User punya izin tulis ke webroot
+# Update script for VPS — pull, install, build, sync to webroot.
+# This script is optimized for a STATIC SPA deployment.
 
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 WEBROOT="${WEBROOT:-/www/wwwroot/kejarprestasi.id}"
 BRANCH="${BRANCH:-main}"
 
+echo "==> [1/4] Updating source code (Branch: $BRANCH)"
 cd "$ROOT_DIR"
-
-echo "==> [1/4] git pull origin $BRANCH"
-git fetch --quiet origin "$BRANCH"
+git fetch origin "$BRANCH"
 git reset --hard "origin/$BRANCH"
 
-echo "==> [2/4] npm install"
-if [ -f package-lock.json ]; then
-  npm ci --no-audit --no-fund
+# Detect package manager
+if [ -f "bun.lock" ]; then
+    PKG_MANAGER="bun"
+    INSTALL_CMD="bun install"
+elif [ -f "package-lock.json" ]; then
+    PKG_MANAGER="npm"
+    INSTALL_CMD="npm ci"
 else
-  npm install --no-audit --no-fund
+    PKG_MANAGER="npm"
+    INSTALL_CMD="npm install"
 fi
 
-echo "==> [3/4] npm run build (SPA → dist/)"
+echo "==> [2/4] Installing dependencies ($PKG_MANAGER)"
+$INSTALL_CMD --no-audit --no-fund
+
+echo "==> [3/4] Building production assets (SPA)"
+# Ensure we use the correct build script for SPA
 npm run build
 
-echo "==> [4/4] sync dist/ ke $WEBROOT"
-mkdir -p "$WEBROOT"
-rsync -a --delete \
-  --exclude='.well-known' \
-  dist/ "$WEBROOT/"
+# SAFETY CHECK: Ensure build actually produced output
+if [ ! -f "dist/index.html" ]; then
+    echo "ERROR: dist/index.html not found! Build might have failed."
+    exit 1
+fi
 
-echo "==> Selesai. Tidak perlu reload nginx (cuma file statis)."
-echo "    Akses: https://kejarprestasi.id"
+echo "==> [4/4] Syncing to webroot: $WEBROOT"
+
+# If WEBROOT is the same as ROOT_DIR, we must NOT use --delete or we'll wipe the repo!
+if [ "$ROOT_DIR" == "$WEBROOT" ] || [ "$ROOT_DIR" == "$(realpath "$WEBROOT")" ]; then
+    echo "NOTICE: Root and Webroot are the same. Syncing with care..."
+    # Only sync the dist contents to the current dir, no delete of other files
+    cp -r dist/* "$WEBROOT/"
+else
+    mkdir -p "$WEBROOT"
+    rsync -a --delete \
+      --exclude='.well-known' \
+      --exclude='.git' \
+      --exclude='.env' \
+      dist/ "$WEBROOT/"
+fi
+
+# Set permissions for Nginx (www-data)
+# We try to chown only if running as root/sudo, otherwise just chmod
+if [ "$EUID" -eq 0 ]; then
+    chown -R www-data:www-data "$WEBROOT"
+fi
+find "$WEBROOT" -type d -exec chmod 755 {} +
+find "$WEBROOT" -type f -exec chmod 644 {} +
+
+echo "==> Done! Deployment successful."
+echo "    Webroot: $WEBROOT"
+echo "    Domain:  https://kejarprestasi.id"

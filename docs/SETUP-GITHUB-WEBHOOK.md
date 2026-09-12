@@ -1,129 +1,62 @@
-# Setup GitHub Webhook Auto-Update
+# Setup GitHub Webhook Auto-Update (Static SPA)
 
-Setelah `npm run build:node` jalan di VPS, Anda bisa setup **auto-update** setiap push ke GitHub. Endpoint webhook sudah tersedia di `/api/public/github-webhook`.
+Aplikasi ini mendukung auto-update via GitHub Webhook. Endpoint tersedia di `/api/public/github-webhook` (dihandle oleh Supabase Edge Function).
 
 ## Alur Kerja
 
 ```
-Anda push ke GitHub
+Push ke GitHub
    ↓
-GitHub kirim POST ke https://domain-anda.com/api/public/github-webhook
+GitHub POST ke https://kejarprestasi.id/api/public/github-webhook
    ↓
-Server verifikasi signature HMAC SHA-256
+Supabase verifikasi signature & flag auto_update_enabled
    ↓
-Cek flag auto_update_enabled di database
+Trigger action ke VPS (via SSH command atau agent) untuk jalankan update.sh
    ↓
-Spawn bash deploy/update.sh → git pull → build:node → stage webroot → restart PM2
-   ↓
-Log hasil ke tabel system_updates (cek di admin dashboard)
+git pull → npm install → npm run build → sync dist/ ke webroot
 ```
 
-## 1. Generate Webhook Secret
+## 1. Konfigurasi di VPS
 
-Di VPS, generate string random:
+Pastikan script `update.sh` di root repo bisa dijalankan:
+
+```bash
+cd /var/www/kejarprestasi
+chmod +x update.sh
+```
+
+## 2. Generate Webhook Secret
+
+Generate string random di VPS:
 
 ```bash
 openssl rand -hex 32
 ```
 
-Copy output-nya (contoh: `a3f5b8c9d2e1...`). **Simpan baik-baik** — ini dipakai di GitHub & database.
+## 3. Simpan Secret ke Supabase
 
-## 2. Simpan Secret + Aktifkan Auto-Update di Database
-
-Buka **Backend → SQL Editor** (atau Lovable Cloud), jalankan:
+Jalankan SQL ini di dashboard Supabase:
 
 ```sql
--- Simpan webhook secret
 INSERT INTO site_settings (key, value)
-VALUES ('github_webhook_secret', '{"secret": "PASTE_SECRET_DARI_STEP_1"}'::jsonb)
-ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now();
+VALUES ('github_webhook_secret', '{"secret": "PASTE_SECRET_DARI_STEP_2"}'::jsonb)
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 
--- Aktifkan auto-update
 INSERT INTO site_settings (key, value)
 VALUES ('auto_update_enabled', '{"enabled": true}'::jsonb)
-ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now();
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 ```
 
-Atau pakai admin UI di `/admin/sistem-update` kalau toggle-nya sudah ada.
+## 4. Setup Webhook di GitHub
 
-## 3. Pastikan Script Deploy Tersedia
-
-Webhook menjalankan `${APP_DIR}/deploy/update.sh`. Pastikan repo ada di path standar:
-
-```bash
-cd /var/www/kejarprestasi
-chmod +x deploy/update.sh deploy/stage-webroot.sh update.sh
-```
-
-## 4. Tambah Webhook di GitHub
-
-1. Buka repo GitHub → **Settings → Webhooks → Add webhook**
-2. Isi:
-   - **Payload URL**: `https://domain-anda.com/api/public/github-webhook`
-   - **Content type**: `application/json`
-   - **Secret**: paste secret dari Step 1
-   - **SSL verification**: Enable
-   - **Which events?**: pilih **"Just the push event"**
-   - **Active**: ✅ centang
-3. Klik **Add webhook**
-
-GitHub akan otomatis kirim event `ping`. Cek di tab "Recent Deliveries" — harus muncul **Response 200** dengan body `{"ok":true,"pong":true}`.
-
-## 5. Test End-to-End
-
-Push commit dummy ke `main`:
-
-```bash
-git commit --allow-empty -m "test webhook"
-git push origin main
-```
-
-Lalu cek:
-- GitHub → Webhook → Recent Deliveries → status 200 dengan body `{"ok":true,"triggered":true}`
-- VPS: `pm2 logs kejarprestasi --lines 50` → ada output `update started`
-- Admin dashboard `/admin/sistem-update` → tabel `system_updates` ada row baru dengan status `success`
-
-## 6. Permission untuk User PM2
-
-Pastikan user yang menjalankan PM2/systemd punya:
-- Write akses ke `/var/www/kejarprestasi` (untuk `git pull`, build, dan stage webroot)
-- Akses jalankan `pm2` atau `systemctl restart` (untuk restart service)
-
-Kalau pakai PM2 sebagai user biasa (bukan root), PM2 restart otomatis tanpa sudo.
-Kalau pakai systemd, tambah sudoers rule:
-
-```bash
-# /etc/sudoers.d/kejarprestasi-restart
-kejarprestasi ALL=(ALL) NOPASSWD: /bin/systemctl restart kejar-prestasi
-```
+1. Repo Settings → Webhooks → Add webhook
+2. Payload URL: `https://kejarprestasi.id/api/public/github-webhook` (Sesuaikan domain)
+3. Content type: `application/json`
+4. Secret: Paste secret dari Step 2
+5. Events: `Just the push event`
 
 ## Troubleshooting
 
-| Gejala | Penyebab | Solusi |
-|---|---|---|
-| `401 Invalid signature` | Secret di GitHub ≠ database | Re-copy secret, pastikan tidak ada whitespace |
-| `503 Webhook secret not configured` | Row `site_settings` belum diisi | Jalankan SQL Step 2 |
-| `{"ok":true,"autoUpdate":false}` | Flag `auto_update_enabled` masih false | Update row jadi `{"enabled": true}` |
-| `501 Self-hosted Node.js required` | Webhook hit ke deployment Lovable (Worker) | Pastikan webhook URL pakai domain VPS, bukan `*.lovable.app` |
-| Build sukses tapi PM2 tidak restart | User PM2 beda dengan user webhook | Set env `PM2_NAME` & jalankan PM2 sebagai user yang sama |
-| `deploy/update.sh: No such file or directory` | Repo bukan di path standar / file belum executable | Step 3: `chmod +x deploy/update.sh deploy/stage-webroot.sh update.sh` |
-
-## Disable Auto-Update Sementara
-
-Toggle off lewat SQL tanpa hapus secret:
-
-```sql
-UPDATE site_settings
-SET value = '{"enabled": false}'::jsonb
-WHERE key = 'auto_update_enabled';
-```
-
-Webhook tetap valid, tapi `update.sh` tidak akan dijalankan. Anda bisa update manual lewat tombol di admin dashboard atau `bash update.sh`.
-
-## Keamanan
-
-- ✅ Signature HMAC SHA-256 → request palsu langsung ditolak 401
-- ✅ Hanya event `push` ke `main`/`master` yang trigger build
-- ✅ Auto-rollback kalau build gagal (commit terakhir di-restore)
-- ✅ Log lengkap di tabel `system_updates` (audit trail)
-- ⚠️ **Jangan share secret** ke siapapun — ini sekuat password
+- **500 Error**: Periksa izin folder `/www/wwwroot/kejarprestasi.id`. Script update harus punya izin tulis dan Nginx harus punya izin baca.
+- **Webhook Status**: Cek tab "Recent Deliveries" di GitHub.
+- **SSR References**: Abaikan referensi PM2 atau Node.js server di dokumentasi lama. App ini murni statis.
