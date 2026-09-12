@@ -34,12 +34,12 @@ function AdminSistemUpdate() {
               Untuk update di VPS, jalankan manual dari SSH:
             </p>
             <pre className="mt-2 overflow-x-auto rounded-lg bg-foreground/95 p-3 text-xs text-background">
-              <code>{`cd /www/wwwroot/kejarprestasi.id
+              <code>{`cd /www/wwwroot/prestasikita.com
 git pull origin main
 npm ci
 npm run build
 # salin output ke webroot
-rsync -a --delete dist/ /www/wwwroot/kejarprestasi.id/`}</code>
+rsync -a --delete dist/ /www/wwwroot/prestasikita.com/`}</code>
             </pre>
           </div>
         </div>
@@ -70,7 +70,7 @@ rsync -a --delete dist/ /www/wwwroot/kejarprestasi.id/`}</code>
               Script deploy disediakan
             </h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              File <code className="rounded bg-muted px-1 py-0.5">update.sh</code> di
+              File <code className="rounded bg-muted px-1 py-0.5">deploy/update.sh</code> di
               repo melakukan git pull + build + sync dist ke webroot. Jalankan dari
               SSH atau panggil via cron / webhook eksternal.
             </p>
