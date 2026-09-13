@@ -68,8 +68,7 @@ type RegInfo = {
 };
 
 function kindFromToken(t: string): Kind | null {
-  const m = /^(?:PK|KP)-(PRE|EKO|UMU|YAT)-/.exec(t.trim().toUpperCase());
-  return m ? KIND_BY_CODE[m[1]] : null;
+  return normalizeKindFromToken(t) as Kind | null;
 }
 
 function EsaiRoute() {

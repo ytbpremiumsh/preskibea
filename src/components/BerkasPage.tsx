@@ -17,6 +17,7 @@ import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
 import { submitBerkasDocuments, sendAppEmail } from "@/lib/api";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
+import { normalizeToken, kindFromToken as kindOfToken, kindLabel, berkasPathFor } from "@/lib/token";
 
 const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> = {
   prestasi: [

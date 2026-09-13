@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { KeyRound, Loader2, AlertCircle, FileText, ArrowRight, Zap, PenLine, Award, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { normalizeToken, isValidToken } from "@/lib/token";
 
 type Search = { token?: string };
 
