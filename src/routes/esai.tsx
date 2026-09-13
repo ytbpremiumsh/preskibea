@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { submitEsai } from "@/lib/api";
 import { PaymentIframeModal } from "@/components/PaymentIframeModal";
 import { toast } from "sonner";
+import { normalizeToken, kindFromToken as normalizeKindFromToken } from "@/lib/token";
 
 type Search = { token?: string };
 
@@ -68,8 +69,7 @@ type RegInfo = {
 };
 
 function kindFromToken(t: string): Kind | null {
-  const m = /^(?:PK|KP)-(PRE|EKO|UMU|YAT)-/.exec(t.trim().toUpperCase());
-  return m ? KIND_BY_CODE[m[1]] : null;
+  return normalizeKindFromToken(t) as Kind | null;
 }
 
 function EsaiRoute() {
@@ -139,7 +139,7 @@ function EsaiRoute() {
   ) : null;
 
   const handleVerify = async (silent = false) => {
-    const t = token.trim().toUpperCase();
+    const t = normalizeToken(token);
     if (!t) {
       if (!silent) toast.error("Masukkan kode pendaftar Anda");
       return;
@@ -268,7 +268,7 @@ function EsaiRoute() {
     setSubmitting(true);
     try {
       await submitEsai({
-        token: token.trim().toUpperCase(),
+        token: normalizeToken(token),
         kind,
         essays: ESSAY_QUESTIONS.map((q, i) => ({ question: q, answer: essays[i].trim() })),
       });

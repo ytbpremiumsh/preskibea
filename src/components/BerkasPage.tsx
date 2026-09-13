@@ -17,6 +17,7 @@ import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
 import { submitBerkasDocuments, sendAppEmail } from "@/lib/api";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
+import { normalizeToken, kindFromToken as kindOfToken, kindLabel, berkasPathFor } from "@/lib/token";
 
 const defaultDocs: Record<"prestasi" | "ekonomi" | "umum" | "yatim", DocSlot[]> = {
   prestasi: [
@@ -267,15 +268,22 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   const setVal = (key: string, v: string) => setValues((s) => ({ ...s, [key]: v }));
 
   const handleVerify = async (silent = false) => {
-    const t = token.trim().toUpperCase();
+    const t = normalizeToken(token);
     if (!t) {
       if (!silent) toast.error("Masukkan kode pendaftar Anda");
       return;
     }
-    if (!t.startsWith(tokenPrefix(kind))) {
+    const tokenKind = kindOfToken(t);
+    if (!tokenKind) {
+      setSearchError("Format kode tidak valid. Contoh: PK-PRE-7F3K9D");
+      return;
+    }
+    if (tokenKind !== kind) {
+      // Kode milik jalur lain — arahkan otomatis ke halaman berkas yang benar
       setSearchError(
-        `Kode tidak sesuai jenis beasiswa. Kode ${kind === "prestasi" ? "Prestasi" : kind === "ekonomi" ? "Ekonomi" : kind === "yatim" ? "Yatim" : "Umum"} diawali ${tokenPrefix(kind)}`,
+        `Kode ini milik Beasiswa ${kindLabel(tokenKind)}. Kami arahkan ke halaman berkas yang sesuai…`,
       );
+      navigate({ to: berkasPathFor(tokenKind), search: { token: t } as never });
       return;
     }
     setVerifying(true);
@@ -407,7 +415,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
       }
 
       const result = await submitBerkas({
-        token: token.trim().toUpperCase(),
+        token: normalizeToken(token),
         kind,
         documents: submittedDocs,
         registration_updates: regUpdates,

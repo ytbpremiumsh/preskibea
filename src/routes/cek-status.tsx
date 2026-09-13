@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { KeyRound, Loader2, AlertCircle, FileText, ArrowRight, Zap, PenLine, Award, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { normalizeToken, isValidToken } from "@/lib/token";
 
 type Search = { token?: string };
 
@@ -56,7 +57,7 @@ function CekStatusPage() {
   const [data, setData] = useState<StatusData | null>(null);
 
   const handleCheck = async (silent = false) => {
-    const t = token.trim().toUpperCase();
+    const t = normalizeToken(token);
     if (!t) {
       if (!silent) toast.error("Masukkan kode pendaftar");
       return;
