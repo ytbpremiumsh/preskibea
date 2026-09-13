@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { submitEsai } from "@/lib/api";
 import { PaymentIframeModal } from "@/components/PaymentIframeModal";
 import { toast } from "sonner";
+import { normalizeToken, kindFromToken as normalizeKindFromToken } from "@/lib/token";
 
 type Search = { token?: string };
 
