@@ -268,7 +268,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
   const setVal = (key: string, v: string) => setValues((s) => ({ ...s, [key]: v }));
 
   const handleVerify = async (silent = false) => {
-    const t = token.trim().toUpperCase();
+    const t = normalizeToken(token);
     if (!t) {
       if (!silent) toast.error("Masukkan kode pendaftar Anda");
       return;
@@ -408,7 +408,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
       }
 
       const result = await submitBerkas({
-        token: token.trim().toUpperCase(),
+        token: normalizeToken(token),
         kind,
         documents: submittedDocs,
         registration_updates: regUpdates,

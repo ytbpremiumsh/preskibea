@@ -139,7 +139,7 @@ function EsaiRoute() {
   ) : null;
 
   const handleVerify = async (silent = false) => {
-    const t = token.trim().toUpperCase();
+    const t = normalizeToken(token);
     if (!t) {
       if (!silent) toast.error("Masukkan kode pendaftar Anda");
       return;
@@ -268,7 +268,7 @@ function EsaiRoute() {
     setSubmitting(true);
     try {
       await submitEsai({
-        token: token.trim().toUpperCase(),
+        token: normalizeToken(token),
         kind,
         essays: ESSAY_QUESTIONS.map((q, i) => ({ question: q, answer: essays[i].trim() })),
       });

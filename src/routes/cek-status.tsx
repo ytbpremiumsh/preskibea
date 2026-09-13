@@ -57,7 +57,7 @@ function CekStatusPage() {
   const [data, setData] = useState<StatusData | null>(null);
 
   const handleCheck = async (silent = false) => {
-    const t = token.trim().toUpperCase();
+    const t = normalizeToken(token);
     if (!t) {
       if (!silent) toast.error("Masukkan kode pendaftar");
       return;
