@@ -273,10 +273,17 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" | "umum" | "
       if (!silent) toast.error("Masukkan kode pendaftar Anda");
       return;
     }
-    if (!t.startsWith(tokenPrefix(kind))) {
+    const tokenKind = kindOfToken(t);
+    if (!tokenKind) {
+      setSearchError("Format kode tidak valid. Contoh: PK-PRE-7F3K9D");
+      return;
+    }
+    if (tokenKind !== kind) {
+      // Kode milik jalur lain — arahkan otomatis ke halaman berkas yang benar
       setSearchError(
-        `Kode tidak sesuai jenis beasiswa. Kode ${kind === "prestasi" ? "Prestasi" : kind === "ekonomi" ? "Ekonomi" : kind === "yatim" ? "Yatim" : "Umum"} diawali ${tokenPrefix(kind)}`,
+        `Kode ini milik Beasiswa ${kindLabel(tokenKind)}. Kami arahkan ke halaman berkas yang sesuai…`,
       );
+      navigate({ to: berkasPathFor(tokenKind), search: { token: t } as never });
       return;
     }
     setVerifying(true);
