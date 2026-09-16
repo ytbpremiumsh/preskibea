@@ -24,5 +24,7 @@ project_id = "ltmfvbcazebowndigkyi"
   [functions.reconcile-payments]
     verify_jwt = false
 
+  [functions.send-admin-payment-push]
+    verify_jwt = true
 
 

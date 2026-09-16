@@ -209,6 +209,23 @@ serve(async (req) => {
           external_id: token,
           provider: "doku",
         });
+        const { error: pushError } = await supabaseAdmin.functions.invoke(
+          "send-admin-payment-push",
+          {
+            body: {
+              amount: Number(body?.order?.amount) || 0,
+              provider: "doku",
+              registration: {
+                id: reg.id,
+                full_name: reg.full_name,
+                token: reg.token,
+                kind: reg.kind,
+                tier: isPremium ? "premium" : "standard",
+              },
+            },
+          },
+        );
+        if (pushError) console.error("admin push failed", pushError.message);
       } catch (e) {
         console.error("payment insert failed", (e as Error).message);
       }

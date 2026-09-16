@@ -292,6 +292,23 @@ serve(async (req) => {
              external_id: externalId,
              provider: provider,
            });
+           const { error: pushError } = await supabaseAdmin.functions.invoke(
+             "send-admin-payment-push",
+             {
+               body: {
+                 amount: Number(paymentAmount) || 0,
+                 provider,
+                 registration: {
+                   id: reg.id,
+                   full_name: reg.full_name,
+                   token: reg.token,
+                   kind: reg.kind,
+                   tier: isPremium ? "premium" : "standard",
+                 },
+               },
+             },
+           );
+           if (pushError) console.error("admin push failed", pushError.message);
          } catch (payErr) {
            console.error("Failed to record payment:", payErr.message);
          }
