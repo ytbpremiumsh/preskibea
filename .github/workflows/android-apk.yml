@@ -22,7 +22,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
       - name: Install dependencies
         working-directory: mobile
         run: npm install --no-audit --no-fund
