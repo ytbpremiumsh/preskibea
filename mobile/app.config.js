@@ -22,11 +22,16 @@ module.exports = {
     slug: 'prestasi-kita-admin',
     version: '1.0.0',
     orientation: 'portrait',
+    icon: './assets/prestasi-kita-icon.png',
     userInterfaceStyle: 'light',
     scheme: 'prestasikitaadmin',
     android: {
       package: 'com.prestasikita.admin',
-      versionCode: 1,
+      versionCode: 2,
+      adaptiveIcon: {
+        foregroundImage: './assets/prestasi-kita-icon.png',
+        backgroundColor: '#FFFFFF',
+      },
       predictiveBackGestureEnabled: false,
       permissions: ['android.permission.POST_NOTIFICATIONS'],
     },

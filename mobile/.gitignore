@@ -39,6 +39,3 @@ yarn-error.*
 # generated native folders
 /ios
 /android
-
-# Default Expo artwork is not needed by the generated Android build
-/assets
