@@ -20,14 +20,14 @@ module.exports = {
   expo: {
     name: 'Prestasi Kita Admin',
     slug: 'prestasi-kita-admin',
-    version: '1.1.1',
+    version: '1.1.2',
     orientation: 'portrait',
     icon: './assets/prestasi-kita-icon.png',
     userInterfaceStyle: 'light',
     scheme: 'prestasikitaadmin',
     android: {
       package: 'com.prestasikita.admin',
-      versionCode: 4,
+      versionCode: 5,
       adaptiveIcon: {
         foregroundImage: './assets/prestasi-kita-icon.png',
         backgroundColor: '#FFFFFF',
@@ -37,7 +37,8 @@ module.exports = {
     },
     plugins: [
       ['expo-notifications', {
-        color: '#5132A8',
+        icon: './assets/notification-icon.png',
+        color: '#082E67',
         defaultChannel: 'payments_sound',
       }],
       'expo-secure-store',

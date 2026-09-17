@@ -28,7 +28,7 @@ serve(async (req) => {
     const messages = devices.map((device) => ({
       to: device.push_token,
       title: 'Pembayaran baru masuk 💰',
-      body: `${registration.full_name || 'Peserta'} · ${formatter.format(amount)} · ${registration.token || '-'}`,
+      body: `${formatter.format(amount)} berhasil diverifikasi dari ${registration.full_name || 'Peserta'}.`,
       data: { type: 'payment_paid', registration_id: registration.id, token: registration.token },
       sound: device.sound_enabled ? 'default' : null,
       channelId: device.sound_enabled ? 'payments_sound' : 'payments_silent',
