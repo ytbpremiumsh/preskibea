@@ -20,14 +20,14 @@ module.exports = {
   expo: {
     name: 'Prestasi Kita Admin',
     slug: 'prestasi-kita-admin',
-    version: '1.1.0',
+    version: '1.1.1',
     orientation: 'portrait',
     icon: './assets/prestasi-kita-icon.png',
     userInterfaceStyle: 'light',
     scheme: 'prestasikitaadmin',
     android: {
       package: 'com.prestasikita.admin',
-      versionCode: 3,
+      versionCode: 4,
       adaptiveIcon: {
         foregroundImage: './assets/prestasi-kita-icon.png',
         backgroundColor: '#FFFFFF',
