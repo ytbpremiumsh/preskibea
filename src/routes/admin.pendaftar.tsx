@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 /**
  * Perbaikan: Menambahkan sistem paginasi (20/50 per halaman) pada daftar pendaftar admin agar lebih rapi dan ringan saat di-scroll.
  */
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,10 +12,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, Users, Award, HeartHandshake, FileCheck, Zap, CheckCircle2, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { openStoredFile } from "@/lib/storage-url";
-import { exportRowsToXlsx, exportRowsToCsv } from "@/lib/excel-export";
 import { TokenBadge } from "@/components/admin/TokenBadge";
 import { uniqueLatestDocuments } from "@/lib/document-utils";
-import { downloadInvoicePdf } from "@/lib/invoice-pdf";
 
 export const Route = createFileRoute("/admin/pendaftar")({
   component: AdminPendaftar,
@@ -78,6 +76,13 @@ function AdminPendaftar() {
   const [selectedRow, setSelectedRow] = useState<Registration | null>(null);
   const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalRows, setTotalRows] = useState(0);
+  const [debouncedQ, setDebouncedQ] = useState("");
+  const [totals, setTotals] = useState({
+    prestasi: 0, ekonomi: 0, umum: 0, yatim: 0, fast: 0,
+    standard: 0, standardPaid: 0, premium: 0, premiumPaid: 0,
+    paid: 0, unpaid: 0, total: 0,
+  });
 
   // Handle URL params for filtering from Dashboard
   useEffect(() => {
@@ -88,7 +93,8 @@ function AdminPendaftar() {
     }
   }, []);
 
-  // Ambil semua baris (lewati batas default 1000 baris per request)
+  // Pengambilan seluruh data hanya digunakan saat pengguna meminta export.
+  // Halaman utama selalu memakai pagination server agar first-load tetap ringan.
   const fetchAll = async <T,>(table: "registrations" | "documents"): Promise<T[]> => {
     const pageSize = 1000;
     const all: T[] = [];
@@ -108,31 +114,106 @@ function AdminPendaftar() {
     return all;
   };
 
-  const load = async () => {
-    setLoading(true);
-    const [r, d] = await Promise.all([
-      fetchAll<Registration>("registrations"),
-      fetchAll<Document>("documents"),
+  const loadTotals = useCallback(async () => {
+    const count = (filters?: (query: any) => any) => {
+      let query: any = supabase.from("registrations").select("id", { count: "exact", head: true });
+      if (filters) query = filters(query);
+      return query;
+    };
+    const [total, prestasi, ekonomi, umum, yatim, fast, premium, paid, standardPaid, premiumPaid] = await Promise.all([
+      count(),
+      count((q) => q.eq("kind", "prestasi")),
+      count((q) => q.eq("kind", "ekonomi")),
+      count((q) => q.eq("kind", "umum")),
+      count((q) => q.eq("kind", "yatim")),
+      count((q) => q.eq("fast_track", true)),
+      count((q) => q.eq("fast_track", true).eq("extra->>fast_track_type", "premium")),
+      count((q) => q.eq("payment_status", "paid")),
+      count((q) => q.eq("fast_track", true).eq("payment_status", "paid").or("extra->>fast_track_type.is.null,extra->>fast_track_type.neq.premium")),
+      count((q) => q.eq("fast_track", true).eq("payment_status", "paid").eq("extra->>fast_track_type", "premium")),
     ]);
-    setRows(r);
-    setDocs(d);
+    const totalCount = total.count ?? 0;
+    const fastCount = fast.count ?? 0;
+    const premiumCount = premium.count ?? 0;
+    const paidCount = paid.count ?? 0;
+    setTotals({
+      total: totalCount,
+      prestasi: prestasi.count ?? 0,
+      ekonomi: ekonomi.count ?? 0,
+      umum: umum.count ?? 0,
+      yatim: yatim.count ?? 0,
+      fast: fastCount,
+      premium: premiumCount,
+      standard: Math.max(0, fastCount - premiumCount),
+      paid: paidCount,
+      unpaid: Math.max(0, totalCount - paidCount),
+      standardPaid: standardPaid.count ?? 0,
+      premiumPaid: premiumPaid.count ?? 0,
+    });
+  }, []);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    let query: any = supabase
+      .from("registrations")
+      .select("id,full_name,email,whatsapp,gender,birth_place,birth_date,address,education_level,school_name,grade,kind,khs_url,transcript_custom_url,additional_docs_url,tiktok_video_url,status,token,fast_track,payment_status,extra,parent_income,dependents,main_achievement,photo_url,student_card_url,created_at", { count: "exact" });
+    if (filterKind !== "all") query = query.eq("kind", filterKind);
+    if (filterJalur === "fast") query = query.eq("fast_track", true).or("extra->>fast_track_type.is.null,extra->>fast_track_type.neq.premium");
+    if (filterJalur === "premium") query = query.eq("fast_track", true).eq("extra->>fast_track_type", "premium");
+    if (filterJalur === "reguler") query = query.or("fast_track.is.null,fast_track.eq.false");
+    if (filterBayar === "paid") query = query.eq("payment_status", "paid");
+    if (filterBayar === "unpaid") query = query.or("payment_status.is.null,payment_status.neq.paid");
+    if (dateFrom) query = query.gte("created_at", `${dateFrom}T00:00:00+07:00`);
+    if (dateTo) query = query.lte("created_at", `${dateTo}T23:59:59.999+07:00`);
+    if (debouncedQ) {
+      const term = debouncedQ.replace(/[,%()]/g, " ").trim();
+      if (term) query = query.or(`full_name.ilike.%${term}%,email.ilike.%${term}%,token.ilike.%${term}%,school_name.ilike.%${term}%`);
+    }
+    const from = (currentPage - 1) * pageSize;
+    const { data, error, count } = await query.order("created_at", { ascending: false }).range(from, from + pageSize - 1);
+    if (error) {
+      toast.error(error.message);
+      setLoading(false);
+      return;
+    }
+    const pageRows = (data ?? []) as Registration[];
+    let pageDocs: Document[] = [];
+    if (pageRows.length) {
+      const ids = pageRows.map((r) => r.id);
+      const emails = [...new Set(pageRows.map((r) => r.email).filter(Boolean))];
+      const [byId, byEmail] = await Promise.all([
+        supabase.from("documents").select("id,registration_id,email,doc_type,file_url,kind,created_at").in("registration_id", ids).order("created_at", { ascending: false }),
+        emails.length
+          ? supabase.from("documents").select("id,registration_id,email,doc_type,file_url,kind,created_at").in("email", emails).order("created_at", { ascending: false })
+          : Promise.resolve({ data: [], error: null }),
+      ]);
+      if (byId.error || byEmail.error) toast.error(byId.error?.message ?? byEmail.error?.message ?? "Gagal memuat berkas");
+      pageDocs = Array.from(new Map([...(byId.data ?? []), ...(byEmail.data ?? [])].map((d: any) => [d.id, d])).values()) as Document[];
+    }
+    setRows(pageRows);
+    setDocs(pageDocs);
+    setTotalRows(count ?? 0);
     setLoading(false);
-  };
+  }, [currentPage, pageSize, filterKind, filterJalur, filterBayar, dateFrom, dateTo, debouncedQ]);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
+
+  useEffect(() => {
+    loadTotals();
+  }, [loadTotals]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQ(q.trim()), 350);
+    return () => clearTimeout(timer);
+  }, [q]);
 
   // Realtime: refresh saat ada perubahan pendaftar / berkas / status pembayaran
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
     const refresh = async () => {
-      const [r, d] = await Promise.all([
-        fetchAll<Registration>("registrations"),
-        fetchAll<Document>("documents"),
-      ]);
-      setRows(r);
-      setDocs(d);
+      await Promise.all([load(), loadTotals()]);
     };
 
     const schedule = () => {
@@ -148,7 +229,7 @@ function AdminPendaftar() {
       if (timer) clearTimeout(timer);
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [load, loadTotals]);
 
   const docsForRow = (r: Registration) => {
     const matched = docs.filter(
@@ -178,79 +259,24 @@ function AdminPendaftar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, docs]);
 
-  const totals = useMemo(() => {
-    const byKind = (k: string) => rows.filter((r) => r.kind === k).length;
-    const isPrem = (r: Registration) => !!r.fast_track && (r.extra as any)?.fast_track_type === "premium";
-    const isPaid = (r: Registration) => (r.payment_status || "").toLowerCase() === "paid";
-    const fastAll = rows.filter((r) => !!r.fast_track);
-    const premium = fastAll.filter(isPrem);
-    const standard = fastAll.filter((r) => !isPrem(r));
-    return {
-      prestasi: byKind("prestasi"),
-      ekonomi: byKind("ekonomi"),
-      umum: byKind("umum"),
-      yatim: byKind("yatim"),
-      fast: fastAll.length,
-      standard: standard.length,
-      standardPaid: standard.filter(isPaid).length,
-      premium: premium.length,
-      premiumPaid: premium.filter(isPaid).length,
-      paid: rows.filter(isPaid).length,
-      unpaid: rows.filter((r) => !isPaid(r)).length,
-      total: rows.length,
-    };
-  }, [rows]);
-
-
   const filtered = useMemo(() => {
     return rows.filter((r) => {
-      if (filterKind !== "all" && r.kind !== filterKind) return false;
-      const isPremium = !!r.fast_track && (r.extra as any)?.fast_track_type === "premium";
-      if (filterJalur === "fast" && (!r.fast_track || isPremium)) return false;
-      if (filterJalur === "premium" && !isPremium) return false;
-      if (filterJalur === "reguler" && r.fast_track) return false;
-
-      const paid = (r.payment_status || "").toLowerCase() === "paid";
-      if (filterBayar === "paid" && !paid) return false;
-      if (filterBayar === "unpaid" && paid) return false;
-
-      // Filter tanggal daftar (waktu lokal / WIB perangkat)
-      if (dateFrom || dateTo) {
-        const d = new Date(r.created_at);
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-        if (dateFrom && key < dateFrom) return false;
-        if (dateTo && key > dateTo) return false;
-      }
-
       const hasDocs = berkasDone(r);
       if (filterBerkas === "submitted" && !hasDocs) return false;
       if (filterBerkas === "pending" && hasDocs) return false;
-
-      if (q) {
-        const s = q.toLowerCase();
-        return (
-          r.full_name.toLowerCase().includes(s) ||
-          r.email.toLowerCase().includes(s) ||
-          (r.token?.toLowerCase().includes(s) ?? false) ||
-          r.school_name.toLowerCase().includes(s)
-        );
-      }
       return true;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, q, filterKind, filterBerkas, filterJalur, filterBayar, dateFrom, dateTo, docs]);
+  }, [rows, filterBerkas, docs]);
 
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [q, filterKind, filterBerkas, filterJalur, filterBayar, dateFrom, dateTo, pageSize]);
 
-  const paginatedRows = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filtered.slice(start, start + pageSize);
-  }, [filtered, currentPage, pageSize]);
+  const paginatedRows = filtered;
 
-  const totalPages = Math.ceil(filtered.length / pageSize);
+  const totalPages = Math.ceil(totalRows / pageSize);
 
   const setPayment = async (r: Registration, next: "paid" | "pending") => {
     if (next === "paid") {
@@ -269,7 +295,9 @@ function AdminPendaftar() {
   };
 
   const exportExcel = async () => {
-    const data = filtered.map((r) => ({
+    const allRows = await fetchAll<Registration>("registrations");
+    const { exportRowsToXlsx } = await import("@/lib/excel-export");
+    const data = allRows.map((r) => ({
       Kode: r.token ?? "",
       "Nama Lengkap": r.full_name,
       Email: r.email,
@@ -291,8 +319,10 @@ function AdminPendaftar() {
     await exportRowsToXlsx(data, "Pendaftar", `pendaftar-beasiswa-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
-  const exportCSV = () => {
-    const data = filtered.map((r) => ({
+  const exportCSV = async () => {
+    const allRows = await fetchAll<Registration>("registrations");
+    const { exportRowsToCsv } = await import("@/lib/excel-export");
+    const data = allRows.map((r) => ({
       Kode: r.token ?? "",
       "Nama Lengkap": r.full_name,
       Email: r.email,
@@ -381,7 +411,7 @@ function AdminPendaftar() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Pendaftar</h1>
           <p className="text-sm text-muted-foreground">
-            {filtered.length} dari {rows.length} pendaftar
+            Menampilkan {rows.length} dari {totalRows} pendaftar
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -421,7 +451,7 @@ function AdminPendaftar() {
           className="border-2 border-primary/20 shadow-soft p-5"
         />
         <StatCard
-          label="Sudah Kirim Berkas"
+          label="Berkas di Halaman"
           value={counts.submitted}
           icon={<FileCheck className="h-6 w-6" />}
           gradient="bg-white"
@@ -437,7 +467,7 @@ function AdminPendaftar() {
           className="border-2 border-amber-500/20 shadow-soft p-5"
         />
         <StatCard
-          label="Belum Kirim"
+          label="Belum di Halaman"
           value={counts.pending}
           icon={<Clock className="h-6 w-6" />}
           gradient="bg-white"
@@ -533,9 +563,9 @@ function AdminPendaftar() {
             onChange={(e) => setFilterBerkas(e.target.value as "all" | "submitted" | "pending")}
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
-            <option value="all">Semua Berkas ({rows.length})</option>
-            <option value="submitted">Sudah Kirim Berkas ({counts.submitted})</option>
-            <option value="pending">Belum Kirim Berkas ({counts.pending})</option>
+            <option value="all">Semua Berkas</option>
+            <option value="submitted">Sudah Kirim (halaman ini: {counts.submitted})</option>
+            <option value="pending">Belum Kirim (halaman ini: {counts.pending})</option>
           </select>
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <span className="text-muted-foreground whitespace-nowrap">Tanggal:</span>
@@ -743,7 +773,7 @@ function AdminPendaftar() {
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-muted/50 px-4 py-3 bg-muted/20">
             <div className="text-xs text-muted-foreground">
-              Menampilkan {(currentPage - 1) * pageSize + 1} sampai {Math.min(currentPage * pageSize, filtered.length)} dari {filtered.length} pendaftar
+              Menampilkan {(currentPage - 1) * pageSize + 1} sampai {Math.min(currentPage * pageSize, totalRows)} dari {totalRows} pendaftar
             </div>
             <div className="flex gap-2">
               <Button
@@ -832,7 +862,8 @@ function DetailDialog({
     return () => { active = false; };
   }, [isPaid, row.id]);
 
-  const handleDownloadInvoice = () => {
+  const handleDownloadInvoice = async () => {
+    const { downloadInvoicePdf } = await import("@/lib/invoice-pdf");
     const premium = (row.extra as any)?.fast_track_type === "premium";
     const tier = row.fast_track ? (premium ? "Fast Track Premium" : "Fast Track") : "Reguler";
     const kindLabel = `Beasiswa ${row.kind.charAt(0).toUpperCase() + row.kind.slice(1)}`;
@@ -1047,4 +1078,3 @@ function JalurBadge({ row }: { row: Registration }) {
     </div>
   );
 }
-
