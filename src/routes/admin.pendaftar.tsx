@@ -156,7 +156,10 @@ function AdminPendaftar() {
     setLoading(true);
     let query: any = supabase
       .from("registrations")
-      .select("id,full_name,email,whatsapp,gender,birth_place,birth_date,address,education_level,school_name,grade,kind,khs_url,transcript_custom_url,additional_docs_url,tiktok_video_url,status,token,fast_track,payment_status,extra,parent_income,dependents,main_achievement,photo_url,student_card_url,created_at", { count: "exact" });
+      // Tetap ringan karena hanya 20/50/100 baris per halaman. Memakai `*`
+      // membuat halaman kompatibel dengan skema produksi yang belum memiliki
+      // sebagian kolom opsional seperti tiktok_video_url.
+      .select("*", { count: "exact" });
     if (filterKind !== "all") query = query.eq("kind", filterKind);
     if (filterJalur === "fast") query = query.eq("fast_track", true).or("extra->>fast_track_type.is.null,extra->>fast_track_type.neq.premium");
     if (filterJalur === "premium") query = query.eq("fast_track", true).eq("extra->>fast_track_type", "premium");
