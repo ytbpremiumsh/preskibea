@@ -7,16 +7,34 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Loader2, GraduationCap, HeartHandshake, Clock, FileText, Bell, BellOff, Zap } from "lucide-react";
+import {
+  Loader2,
+  GraduationCap,
+  HeartHandshake,
+  Clock,
+  FileText,
+  Bell,
+  BellOff,
+  Zap,
+} from "lucide-react";
 import { toast } from "sonner";
 
 // Lazy-load charts to keep recharts out of the initial admin bundle
-const LineDaily = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.LineDaily })));
-const PieKind = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.PieKind })));
-const BarJenjang = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.BarJenjang })));
-const RevenuePanel = lazy(() => import("@/components/admin/RevenuePanel").then((m) => ({ default: m.RevenuePanel })));
-const ValidPaymentsPanel = lazy(() => import("@/components/admin/ValidPaymentsPanel").then((m) => ({ default: m.ValidPaymentsPanel })));
-
+const LineDaily = lazy(() =>
+  import("@/components/admin/DashboardCharts").then((m) => ({ default: m.LineDaily })),
+);
+const PieKind = lazy(() =>
+  import("@/components/admin/DashboardCharts").then((m) => ({ default: m.PieKind })),
+);
+const BarJenjang = lazy(() =>
+  import("@/components/admin/DashboardCharts").then((m) => ({ default: m.BarJenjang })),
+);
+const RevenuePanel = lazy(() =>
+  import("@/components/admin/RevenuePanel").then((m) => ({ default: m.RevenuePanel })),
+);
+const ValidPaymentsPanel = lazy(() =>
+  import("@/components/admin/ValidPaymentsPanel").then((m) => ({ default: m.ValidPaymentsPanel })),
+);
 
 export const Route = createFileRoute("/admin/")({
   component: AdminOverview,
@@ -111,7 +129,19 @@ function ChartFallback() {
 function AdminOverview() {
   const [recent, setRecent] = useState<RecentRow[]>([]);
   const [lite, setLite] = useState<LiteRow[]>([]);
-  const [counts, setCounts] = useState({ total: 0, prestasi: 0, ekonomi: 0, umum: 0, yatim: 0, pending: 0, today: 0, docs: 0, fastTrack: 0, fastTrackPremium: 0 });
+  const [counts, setCounts] = useState({
+    total: 0,
+    prestasi: 0,
+    ekonomi: 0,
+    umum: 0,
+    yatim: 0,
+    pending: 0,
+    today: 0,
+    yesterday: 0,
+    docs: 0,
+    fastTrack: 0,
+    fastTrackPremium: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [notif, setNotif] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
@@ -126,7 +156,12 @@ function AdminOverview() {
       // Batas hari wajib mengikuti WIB, bukan zona waktu perangkat/browser.
       const now = new Date();
       const startToday = jakartaMidnightUtc(now);
-      const start14 = new Date(startToday); start14.setUTCDate(start14.getUTCDate() - 13);
+      const startTomorrow = new Date(startToday);
+      startTomorrow.setUTCDate(startTomorrow.getUTCDate() + 1);
+      const startYesterday = new Date(startToday);
+      startYesterday.setUTCDate(startYesterday.getUTCDate() - 1);
+      const start14 = new Date(startToday);
+      start14.setUTCDate(start14.getUTCDate() - 13);
 
       // Fire all queries in parallel; use head:true counts for totals (no row data)
       const [
@@ -139,32 +174,69 @@ function AdminOverview() {
         yatimRes,
         pendingRes,
         todayRes,
+        yesterdayRes,
         docsRes,
         fastTrackRes,
         fastTrackPremiumRes,
       ] = await Promise.all([
-        supabase.from("registrations")
-          .select("id,full_name,email,kind,status,school_name,education_level,created_at,fast_track,payment_status,extra")
+        supabase
+          .from("registrations")
+          .select(
+            "id,full_name,email,kind,status,school_name,education_level,created_at,fast_track,payment_status,extra",
+          )
           .order("created_at", { ascending: false })
           .limit(8),
         fetchAllLite(start14.toISOString()),
         supabase.from("registrations").select("id", { count: "exact", head: true }),
-        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "prestasi"),
-        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "ekonomi"),
-        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "umum"),
-        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "yatim"),
-        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("registrations").select("id", { count: "exact", head: true }).gte("created_at", startToday.toISOString()),
+        supabase
+          .from("registrations")
+          .select("id", { count: "exact", head: true })
+          .eq("kind", "prestasi"),
+        supabase
+          .from("registrations")
+          .select("id", { count: "exact", head: true })
+          .eq("kind", "ekonomi"),
+        supabase
+          .from("registrations")
+          .select("id", { count: "exact", head: true })
+          .eq("kind", "umum"),
+        supabase
+          .from("registrations")
+          .select("id", { count: "exact", head: true })
+          .eq("kind", "yatim"),
+        supabase
+          .from("registrations")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending"),
+        supabase
+          .from("registrations")
+          .select("id", { count: "exact", head: true })
+          .gte("created_at", startToday.toISOString())
+          .lt("created_at", startTomorrow.toISOString()),
+        supabase
+          .from("registrations")
+          .select("id", { count: "exact", head: true })
+          .gte("created_at", startYesterday.toISOString())
+          .lt("created_at", startToday.toISOString()),
         supabase.from("documents").select("id", { count: "exact", head: true }),
-        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("fast_track", true).eq("payment_status", "paid"),
-        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("fast_track", true).eq("payment_status", "paid").eq("extra->>fast_track_type", "premium"),
+        supabase
+          .from("registrations")
+          .select("id", { count: "exact", head: true })
+          .eq("fast_track", true)
+          .eq("payment_status", "paid"),
+        supabase
+          .from("registrations")
+          .select("id", { count: "exact", head: true })
+          .eq("fast_track", true)
+          .eq("payment_status", "paid")
+          .eq("extra->>fast_track_type", "premium"),
       ]);
 
       if (!active) return;
       setRecent((recentRes.data ?? []) as RecentRow[]);
       const liteData = (liteRes ?? []) as LiteRow[];
       setLite(liteData);
-      
+
       const premiumCount = fastTrackPremiumRes.count ?? 0;
       const fastTrackTotal = fastTrackRes.count ?? 0;
 
@@ -176,6 +248,7 @@ function AdminOverview() {
         yatim: yatimRes.count ?? 0,
         pending: pendingRes.count ?? 0,
         today: todayRes.count ?? 0,
+        yesterday: yesterdayRes.count ?? 0,
         docs: docsRes.count ?? 0,
         fastTrack: Math.max(0, fastTrackTotal - premiumCount),
         fastTrackPremium: premiumCount,
@@ -188,13 +261,17 @@ function AdminOverview() {
   useEffect(() => {
     activeRef.current = true;
     load();
-    return () => { activeRef.current = false; };
+    return () => {
+      activeRef.current = false;
+    };
   }, [load]);
 
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scheduleRefresh = useCallback(() => {
     if (refreshTimer.current) clearTimeout(refreshTimer.current);
-    refreshTimer.current = setTimeout(() => { load(); }, 600);
+    refreshTimer.current = setTimeout(() => {
+      load();
+    }, 600);
   }, [load]);
 
   // Realtime subscribe (only after initial paint)
@@ -206,47 +283,67 @@ function AdminOverview() {
         { event: "INSERT", schema: "public", table: "registrations" },
         (payload) => {
           const newRow = payload.new as RecentRow;
+          const isToday =
+            jakartaDateKey(new Date(newRow.created_at)) === jakartaDateKey(new Date());
           setRecent((prev) => [newRow, ...prev].slice(0, 8));
-          const isPremium = (newRow.extra as any)?.fast_track_type === 'premium';
-          setLite((prev) => [{ id: newRow.id, kind: newRow.kind, education_level: newRow.education_level, created_at: newRow.created_at, fast_track: newRow.fast_track, payment_status: newRow.payment_status, extra: newRow.extra }, ...prev]);
+          const isPremium = (newRow.extra as any)?.fast_track_type === "premium";
+          setLite((prev) => [
+            {
+              id: newRow.id,
+              kind: newRow.kind,
+              education_level: newRow.education_level,
+              created_at: newRow.created_at,
+              fast_track: newRow.fast_track,
+              payment_status: newRow.payment_status,
+              extra: newRow.extra,
+            },
+            ...prev,
+          ]);
           setCounts((c) => ({
             ...c,
             total: c.total + 1,
-            today: c.today + 1,
+            today: c.today + (isToday ? 1 : 0),
             prestasi: c.prestasi + (newRow.kind === "prestasi" ? 1 : 0),
             ekonomi: c.ekonomi + (newRow.kind === "ekonomi" ? 1 : 0),
             umum: c.umum + (newRow.kind === "umum" ? 1 : 0),
             yatim: c.yatim + (newRow.kind === "yatim" ? 1 : 0),
 
-            fastTrack: c.fastTrack + (newRow.fast_track && newRow.payment_status === "paid" && !isPremium ? 1 : 0),
-            fastTrackPremium: c.fastTrackPremium + (isPremium && newRow.payment_status === "paid" ? 1 : 0),
+            fastTrack:
+              c.fastTrack +
+              (newRow.fast_track && newRow.payment_status === "paid" && !isPremium ? 1 : 0),
+            fastTrackPremium:
+              c.fastTrackPremium + (isPremium && newRow.payment_status === "paid" ? 1 : 0),
           }));
           if (notif) {
             toast.success(`Pendaftar baru: ${newRow.full_name}`, {
               description: `${newRow.kind === "prestasi" ? "Beasiswa Prestasi" : "Beasiswa Ekonomi"} · ${newRow.school_name}`,
               duration: 8000,
             });
-            try { audioRef.current?.play().catch(() => {}); } catch { /* ignore */ }
-            if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
-              new Notification("Pendaftar baru", { body: `${newRow.full_name} — ${newRow.school_name}` });
+            try {
+              audioRef.current?.play().catch(() => {});
+            } catch {
+              /* ignore */
+            }
+            if (
+              typeof window !== "undefined" &&
+              "Notification" in window &&
+              Notification.permission === "granted"
+            ) {
+              new Notification("Pendaftar baru", {
+                body: `${newRow.full_name} — ${newRow.school_name}`,
+              });
             }
           }
         },
       )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "registrations" },
-        () => scheduleRefresh(),
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "registrations" }, () =>
+        scheduleRefresh(),
       )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "registrations" },
-        () => scheduleRefresh(),
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "registrations" }, () =>
+        scheduleRefresh(),
       )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "documents" },
-        () => scheduleRefresh(),
+      .on("postgres_changes", { event: "*", schema: "public", table: "documents" }, () =>
+        scheduleRefresh(),
       )
       .subscribe();
     return () => {
@@ -259,15 +356,34 @@ function AdminOverview() {
     const next = !notif;
     setNotif(next);
     localStorage.setItem("admin_notif_off", next ? "0" : "1");
-    if (next && typeof window !== "undefined" && "Notification" in window && Notification.permission === "default") {
+    if (
+      next &&
+      typeof window !== "undefined" &&
+      "Notification" in window &&
+      Notification.permission === "default"
+    ) {
       await Notification.requestPermission();
     }
     toast.message(next ? "Notifikasi diaktifkan" : "Notifikasi dimatikan");
   };
 
   const byJenjang = useMemo(() => {
-    type Row = { name: string; prestasi: number; ekonomi: number; umum: number; yatim: number; total: number };
-    const blank = (name: string): Row => ({ name, prestasi: 0, ekonomi: 0, umum: 0, yatim: 0, total: 0 });
+    type Row = {
+      name: string;
+      prestasi: number;
+      ekonomi: number;
+      umum: number;
+      yatim: number;
+      total: number;
+    };
+    const blank = (name: string): Row => ({
+      name,
+      prestasi: 0,
+      ekonomi: 0,
+      umum: 0,
+      yatim: 0,
+      total: 0,
+    });
     const map = new Map<string, Row>();
     for (const j of JENJANG) map.set(j, blank(j));
     for (const r of lite) {
@@ -283,22 +399,35 @@ function AdminOverview() {
     return Array.from(map.values());
   }, [lite]);
 
-  const byKind = useMemo(() => [
-    { name: "Prestasi", value: counts.prestasi },
-    { name: "Ekonomi", value: counts.ekonomi },
-    { name: "Umum", value: counts.umum },
-    { name: "Yatim", value: counts.yatim },
-  ], [counts]);
-
+  const byKind = useMemo(
+    () => [
+      { name: "Prestasi", value: counts.prestasi },
+      { name: "Ekonomi", value: counts.ekonomi },
+      { name: "Umum", value: counts.umum },
+      { name: "Yatim", value: counts.yatim },
+    ],
+    [counts],
+  );
 
   const dailyStats = useMemo(() => {
-    const days: { date: string; label: string; count: number; fastTrack: number; fastTrackPremium: number }[] = [];
+    const days: {
+      date: string;
+      label: string;
+      count: number;
+      fastTrack: number;
+      fastTrackPremium: number;
+    }[] = [];
     const today = jakartaMidnightUtc(new Date());
     for (let i = 13; i >= 0; i--) {
-      const d = new Date(today); d.setUTCDate(d.getUTCDate() - i);
+      const d = new Date(today);
+      d.setUTCDate(d.getUTCDate() - i);
       days.push({
         date: jakartaDateKey(d),
-        label: d.toLocaleDateString("id-ID", { timeZone: JAKARTA_TIME_ZONE, day: "2-digit", month: "short" }),
+        label: d.toLocaleDateString("id-ID", {
+          timeZone: JAKARTA_TIME_ZONE,
+          day: "2-digit",
+          month: "short",
+        }),
         count: 0,
         fastTrack: 0,
         fastTrackPremium: 0,
@@ -316,8 +445,8 @@ function AdminOverview() {
       if (i !== undefined) {
         days[i].count++;
         // Hanya hitung Fast Track yang pembayarannya sudah valid (paid)
-        if (r.fast_track && (r as any).payment_status === 'paid') {
-          const isPrem = (r as any).extra?.fast_track_type === 'premium';
+        if (r.fast_track && (r as any).payment_status === "paid") {
+          const isPrem = (r as any).extra?.fast_track_type === "premium";
           if (isPrem) days[i].fastTrackPremium++;
           else days[i].fastTrack++;
         }
@@ -327,17 +456,87 @@ function AdminOverview() {
   }, [lite]);
 
   const items = [
-    { label: "Total Pendaftar", value: counts.total, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10", url: "/admin/pendaftar" },
-    { label: "Hari Ini", value: counts.today, icon: Clock, color: "text-emerald-700", bg: "bg-emerald-100", url: "/admin/pendaftar" },
-    { label: "Fast Track", value: counts.fastTrack, icon: Clock, color: "text-orange-600", bg: "bg-orange-100", url: "/admin/pendaftar" },
-    { label: "FT Premium", value: counts.fastTrackPremium, icon: Zap, color: "text-amber-600", bg: "bg-amber-100", url: "/admin/pendaftar" },
-    { label: "Berkas Diunggah", value: counts.docs, icon: FileText, color: "text-blue-700", bg: "bg-blue-100", url: "/admin/berkas" },
-    { label: "Beasiswa Prestasi", value: counts.prestasi, icon: GraduationCap, color: "text-indigo-600", bg: "bg-indigo-100", url: "/admin/pendaftar?kind=prestasi" },
-    { label: "Beasiswa Ekonomi", value: counts.ekonomi, icon: HeartHandshake, color: "text-emerald-700", bg: "bg-emerald-100", url: "/admin/pendaftar?kind=ekonomi" },
-    { label: "Beasiswa Umum", value: counts.umum, icon: GraduationCap, color: "text-teal-700", bg: "bg-teal-100", url: "/admin/pendaftar?kind=umum" },
-    { label: "Beasiswa Yatim", value: counts.yatim, icon: HeartHandshake, color: "text-fuchsia-700", bg: "bg-fuchsia-100", url: "/admin/pendaftar?kind=yatim" },
+    {
+      label: "Total Pendaftar",
+      value: counts.total,
+      icon: GraduationCap,
+      color: "text-primary",
+      bg: "bg-primary/10",
+      url: "/admin/pendaftar",
+    },
+    {
+      label: "Hari Ini",
+      value: counts.today,
+      icon: Clock,
+      color: "text-emerald-700",
+      bg: "bg-emerald-100",
+      url: "/admin/pendaftar",
+    },
+    {
+      label: "Kemarin",
+      value: counts.yesterday,
+      icon: Clock,
+      color: "text-sky-700",
+      bg: "bg-sky-100",
+      url: "/admin/pendaftar",
+    },
+    {
+      label: "Fast Track",
+      value: counts.fastTrack,
+      icon: Clock,
+      color: "text-orange-600",
+      bg: "bg-orange-100",
+      url: "/admin/pendaftar",
+    },
+    {
+      label: "FT Premium",
+      value: counts.fastTrackPremium,
+      icon: Zap,
+      color: "text-amber-600",
+      bg: "bg-amber-100",
+      url: "/admin/pendaftar",
+    },
+    {
+      label: "Berkas Diunggah",
+      value: counts.docs,
+      icon: FileText,
+      color: "text-blue-700",
+      bg: "bg-blue-100",
+      url: "/admin/berkas",
+    },
+    {
+      label: "Beasiswa Prestasi",
+      value: counts.prestasi,
+      icon: GraduationCap,
+      color: "text-indigo-600",
+      bg: "bg-indigo-100",
+      url: "/admin/pendaftar?kind=prestasi",
+    },
+    {
+      label: "Beasiswa Ekonomi",
+      value: counts.ekonomi,
+      icon: HeartHandshake,
+      color: "text-emerald-700",
+      bg: "bg-emerald-100",
+      url: "/admin/pendaftar?kind=ekonomi",
+    },
+    {
+      label: "Beasiswa Umum",
+      value: counts.umum,
+      icon: GraduationCap,
+      color: "text-teal-700",
+      bg: "bg-teal-100",
+      url: "/admin/pendaftar?kind=umum",
+    },
+    {
+      label: "Beasiswa Yatim",
+      value: counts.yatim,
+      icon: HeartHandshake,
+      color: "text-fuchsia-700",
+      bg: "bg-fuchsia-100",
+      url: "/admin/pendaftar?kind=yatim",
+    },
   ];
-
 
   return (
     <div className="space-y-6">
@@ -380,134 +579,173 @@ function AdminOverview() {
         </TabsContent>
 
         <TabsContent value="ringkasan" className="mt-4 space-y-6">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {/* Main Stats Row */}
+            {items.slice(0, 5).map((it) => (
+              <Link
+                key={it.label}
+                to={it.url as any}
+                className="block transition-transform hover:-translate-y-0.5 active:scale-[0.99]"
+              >
+                <Card className="relative h-full overflow-hidden border bg-white p-5 group">
+                  <div className="absolute top-0 right-0 h-24 w-24 -mr-8 -mt-8 rounded-full bg-primary/5 transition-transform group-hover:scale-110" />
+                  <div className="relative flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                        {it.label}
+                      </p>
+                      <p className="text-3xl font-black tabular-nums leading-none text-foreground">
+                        {loading ? (
+                          <span className="inline-block h-8 w-16 animate-pulse rounded bg-muted" />
+                        ) : (
+                          it.value
+                        )}
+                      </p>
+                    </div>
+                    <div
+                      className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${it.bg} ${it.color}`}
+                    >
+                      <it.icon className="h-5 w-5" />
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            ))}
+          </div>
 
-        {/* Main Stats Row */}
-        {items.slice(0, 5).map((it) => (
-          <Link key={it.label} to={it.url as any} className="block transition-transform hover:-translate-y-0.5 active:scale-[0.99]">
-            <Card className="relative h-full overflow-hidden border bg-white p-5 group">
-              <div className="absolute top-0 right-0 h-24 w-24 -mr-8 -mt-8 rounded-full bg-primary/5 transition-transform group-hover:scale-110" />
-              <div className="relative flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{it.label}</p>
-                  <p className="text-3xl font-black tabular-nums leading-none text-foreground">
-                    {loading ? <span className="inline-block h-8 w-16 animate-pulse rounded bg-muted" /> : it.value}
-                  </p>
-                </div>
-                <div className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${it.bg} ${it.color}`}>
-                  <it.icon className="h-5 w-5" />
-                </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Category Stats Row */}
+            {items.slice(5).map((it) => (
+              <Link
+                key={it.label}
+                to={it.url as any}
+                className="block transition-transform hover:-translate-y-0.5 active:scale-[0.99]"
+              >
+                <Card className="h-full border bg-white p-5">
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${it.bg} ${it.color}`}
+                    >
+                      <it.icon className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                        {it.label}
+                      </p>
+                      <p className="text-2xl font-black tabular-nums leading-none text-foreground">
+                        {loading ? (
+                          <span className="inline-block h-7 w-12 animate-pulse rounded bg-muted" />
+                        ) : (
+                          it.value
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            ))}
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            <Card className="rounded-2xl p-5 shadow-soft lg:col-span-2">
+              <h2 className="text-base font-semibold text-foreground">
+                Pendaftar per Hari (14 hari terakhir)
+              </h2>
+              <div className="mt-4 h-64">
+                <Suspense fallback={<ChartFallback />}>
+                  {!loading && (
+                    <LineDaily data={dailyStats} showFastTrack={true} showFastTrackPremium={true} />
+                  )}
+                </Suspense>
               </div>
             </Card>
-          </Link>
-        ))}
-      </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Category Stats Row */}
-        {items.slice(5).map((it) => (
-          <Link key={it.label} to={it.url as any} className="block transition-transform hover:-translate-y-0.5 active:scale-[0.99]">
-            <Card className="h-full border bg-white p-5">
-              <div className="flex items-center gap-4">
-                <div className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${it.bg} ${it.color}`}>
-                  <it.icon className="h-5 w-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{it.label}</p>
-                  <p className="text-2xl font-black tabular-nums leading-none text-foreground">
-                    {loading ? <span className="inline-block h-7 w-12 animate-pulse rounded bg-muted" /> : it.value}
-                  </p>
-                </div>
+            <Card className="rounded-2xl p-5 shadow-soft">
+              <h2 className="text-base font-semibold text-foreground">Distribusi Kategori</h2>
+              <div className="mt-4 h-72">
+                <Suspense fallback={<ChartFallback />}>
+                  {!loading && <PieKind data={byKind} />}
+                </Suspense>
               </div>
             </Card>
-          </Link>
-        ))}
-
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="rounded-2xl p-5 shadow-soft lg:col-span-2">
-          <h2 className="text-base font-semibold text-foreground">Pendaftar per Hari (14 hari terakhir)</h2>
-          <div className="mt-4 h-64">
-            <Suspense fallback={<ChartFallback />}>
-              {!loading && <LineDaily data={dailyStats} showFastTrack={true} showFastTrackPremium={true} />}
-            </Suspense>
           </div>
-        </Card>
 
-        <Card className="rounded-2xl p-5 shadow-soft">
-          <h2 className="text-base font-semibold text-foreground">Distribusi Kategori</h2>
-          <div className="mt-4 h-72">
-
-            <Suspense fallback={<ChartFallback />}>
-              {!loading && <PieKind data={byKind} />}
-            </Suspense>
-          </div>
-        </Card>
-      </div>
-
-      <Card className="rounded-2xl p-5 shadow-soft">
-        <h2 className="text-base font-semibold text-foreground">Pendaftar per Jenjang (14 hari terakhir)</h2>
-        <div className="mt-4 h-72">
-          <Suspense fallback={<ChartFallback />}>
-            {!loading && <BarJenjang data={byJenjang} />}
-          </Suspense>
-        </div>
-      </Card>
-
-      <Card className="rounded-2xl p-6 shadow-soft">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-foreground">Pendaftar Beasiswa Terbaru</h2>
-            <p className="text-xs text-muted-foreground">8 pendaftar paling baru.</p>
-          </div>
-          <Link to="/admin/pendaftar" className="text-sm font-medium text-primary hover:underline">
-            Lihat semua
-          </Link>
-        </div>
-        <div className="mt-4 overflow-x-auto">
-          {loading ? (
-            <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
-          ) : recent.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">Belum ada pendaftar.</p>
-          ) : (
-            <div className="w-full max-w-full overflow-x-auto">
-            <table className="w-full min-w-[620px] text-sm">
-
-              <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
-                <tr>
-                  <th className="px-3 py-2">Nama</th>
-                  <th className="px-3 py-2">Kategori</th>
-                  <th className="px-3 py-2">Sekolah / Kampus</th>
-                  <th className="px-3 py-2">Email</th>
-                  <th className="px-3 py-2">Tanggal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recent.map((r) => (
-                  <tr key={r.id} className="border-t">
-                    <td className="px-3 py-2 font-medium text-foreground">{r.full_name}</td>
-                    <td className="px-3 py-2">
-                      <Badge variant="outline" className="capitalize">{r.kind}</Badge>
-                    </td>
-                    <td className="px-3 py-2">
-                      <div>{r.school_name}</div>
-                      <div className="text-xs uppercase text-muted-foreground">{r.education_level}</div>
-                    </td>
-                    <td className="px-3 py-2 text-muted-foreground">{r.email}</td>
-                    <td className="px-3 py-2 text-muted-foreground">{new Date(r.created_at).toLocaleDateString("id-ID")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <Card className="rounded-2xl p-5 shadow-soft">
+            <h2 className="text-base font-semibold text-foreground">
+              Pendaftar per Jenjang (14 hari terakhir)
+            </h2>
+            <div className="mt-4 h-72">
+              <Suspense fallback={<ChartFallback />}>
+                {!loading && <BarJenjang data={byJenjang} />}
+              </Suspense>
             </div>
-          )}
+          </Card>
 
-        </div>
-      </Card>
+          <Card className="rounded-2xl p-6 shadow-soft">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">
+                  Pendaftar Beasiswa Terbaru
+                </h2>
+                <p className="text-xs text-muted-foreground">8 pendaftar paling baru.</p>
+              </div>
+              <Link
+                to="/admin/pendaftar"
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Lihat semua
+              </Link>
+            </div>
+            <div className="mt-4 overflow-x-auto">
+              {loading ? (
+                <div className="flex justify-center py-10">
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                </div>
+              ) : recent.length === 0 ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  Belum ada pendaftar.
+                </p>
+              ) : (
+                <div className="w-full max-w-full overflow-x-auto">
+                  <table className="w-full min-w-[620px] text-sm">
+                    <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
+                      <tr>
+                        <th className="px-3 py-2">Nama</th>
+                        <th className="px-3 py-2">Kategori</th>
+                        <th className="px-3 py-2">Sekolah / Kampus</th>
+                        <th className="px-3 py-2">Email</th>
+                        <th className="px-3 py-2">Tanggal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recent.map((r) => (
+                        <tr key={r.id} className="border-t">
+                          <td className="px-3 py-2 font-medium text-foreground">{r.full_name}</td>
+                          <td className="px-3 py-2">
+                            <Badge variant="outline" className="capitalize">
+                              {r.kind}
+                            </Badge>
+                          </td>
+                          <td className="px-3 py-2">
+                            <div>{r.school_name}</div>
+                            <div className="text-xs uppercase text-muted-foreground">
+                              {r.education_level}
+                            </div>
+                          </td>
+                          <td className="px-3 py-2 text-muted-foreground">{r.email}</td>
+                          <td className="px-3 py-2 text-muted-foreground">
+                            {new Date(r.created_at).toLocaleDateString("id-ID")}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
-
   );
 }
