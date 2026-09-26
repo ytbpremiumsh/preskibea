@@ -148,6 +148,9 @@ export function RevenuePanel() {
 
     const list = (pays || []) as PayRow[];
     const paidRegs = (paidRegistrations || []) as PaidRegistrationRow[];
+    const paidRegistrationById = new Map(
+      paidRegs.map((registration) => [registration.id, registration]),
+    );
     const ids = Array.from(
       new Set(
         [...list.map((p) => p.registration_id), ...paidRegs.map((r) => r.id)].filter(Boolean),
@@ -179,7 +182,11 @@ export function RevenuePanel() {
     const mapped = list
       .filter((p) => !!p.created_at)
       .map((p) => ({
-        created_at: p.created_at as string,
+        // Gunakan waktu registrasi terakhir berubah menjadi paid. Beberapa provider
+        // membuat baris payment lebih awal, sehingga created_at payment bukan waktu validasi.
+        created_at:
+          (p.registration_id ? paidRegistrationById.get(p.registration_id)?.updated_at : null) ||
+          (p.created_at as string),
         amount: Number(p.amount) || 0,
         tier:
           (p.registration_id ? tierById.get(p.registration_id) : undefined) ?? ("standard" as Tier),
@@ -232,7 +239,17 @@ export function RevenuePanel() {
     const channel = supabase
       .channel("admin-revenue-payments")
       .on("postgres_changes", { event: "*", schema: "public", table: "payments" }, scheduleRefresh)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "registrations" },
+        scheduleRefresh,
+      )
       .subscribe();
+
+    // Pengaman apabila Postgres Realtime sempat terputus atau tabel belum masuk publication.
+    const pollingTimer = window.setInterval(() => {
+      if (document.visibilityState === "visible") void loadRevenue();
+    }, 30_000);
 
     const refreshWhenActive = () => {
       if (document.visibilityState === "visible") void loadRevenue();
@@ -243,6 +260,7 @@ export function RevenuePanel() {
     return () => {
       mountedRef.current = false;
       if (refreshTimer) clearTimeout(refreshTimer);
+      window.clearInterval(pollingTimer);
       window.removeEventListener("focus", refreshWhenActive);
       document.removeEventListener("visibilitychange", refreshWhenActive);
       void supabase.removeChannel(channel);
