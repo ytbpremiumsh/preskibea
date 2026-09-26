@@ -17,8 +17,8 @@ const supabaseAdmin = createClient(
 );
 
 const SITE_NAME = "Prestasi Kita";
-const SENDER_DOMAIN = "notify.prestasikita.com";
-const FROM_DOMAIN = "prestasikita.com";
+const SENDER_DOMAIN = "mail.prestasikita.com";
+const FROM_DOMAIN = "mail.prestasikita.com";
 
 const CUSTOMIZABLE: Record<string, string> = {
   "registration-confirmation": "email_template_registration",
