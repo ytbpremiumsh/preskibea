@@ -379,7 +379,8 @@ serve(async (req) => {
         });
       }
     } catch (emailErr) {
-      console.error("Failed to trigger registration email:", emailErr.message);
+      const message = emailErr instanceof Error ? emailErr.message : "Unknown email error";
+      console.error("Failed to trigger registration email:", message);
     }
 
     return new Response(
