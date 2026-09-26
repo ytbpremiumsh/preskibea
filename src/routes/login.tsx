@@ -12,7 +12,10 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Login Admin — Beasiswa Prestasi Kita" },
-      { name: "description", content: "Akses dashboard admin program Beasiswa Pendidikan Prestasi Kita." },
+      {
+        name: "description",
+        content: "Akses dashboard admin program Beasiswa Pendidikan Prestasi Kita.",
+      },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),
@@ -23,13 +26,12 @@ type Step = "credentials" | "mfa";
 
 function LoginPage() {
   const navigate = useNavigate();
-  
+
   const [step, setStep] = useState<Step>("credentials");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
-  const [factorId, setFactorId] = useState<string | null>(null);
-  const [challengeId, setChallengeId] = useState<string | null>(null);
+  const [factorIds, setFactorIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -48,16 +50,15 @@ function LoginPage() {
     if (aal && aal.nextLevel === "aal2" && aal.currentLevel === "aal1") {
       const { data: factors, error: fErr } = await supabase.auth.mfa.listFactors();
       if (fErr) throw fErr;
-      const totp = factors.totp.find((f) => f.status === "verified");
-      if (!totp) {
+      const verifiedTotp = factors.totp.filter((factor) => factor.status === "verified");
+      if (!verifiedTotp.length) {
         toast.success("Berhasil masuk");
         navigate({ to: "/admin" });
         return;
       }
-      const { data: ch, error: cErr } = await supabase.auth.mfa.challenge({ factorId: totp.id });
-      if (cErr) throw cErr;
-      setFactorId(totp.id);
-      setChallengeId(ch.id);
+      // Simpan seluruh factor verified. Akun yang pernah memasang ulang
+      // Authenticator dapat mempunyai factor lama dan baru sekaligus.
+      setFactorIds(verifiedTotp.map((factor) => factor.id).reverse());
       setStep("mfa");
       toast.info("Masukkan kode 6-digit dari aplikasi Authenticator Anda");
     } else {
@@ -73,7 +74,6 @@ function LoginPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       await proceedAfterPassword();
-
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Gagal";
       toast.error(msg);
@@ -84,20 +84,45 @@ function LoginPage() {
 
   const verifyMfa = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!factorId || !challengeId) return;
+    if (!factorIds.length) return;
     setLoading(true);
     try {
-      const { error } = await supabase.auth.mfa.verify({
-        factorId,
-        challengeId,
-        code: otp.trim(),
-      });
-      if (error) throw error;
+      let verificationError: Error | null = null;
+      let verified = false;
+
+      // challengeAndVerify membuat challenge baru pada setiap percobaan sehingga
+      // challenge kedaluwarsa/terpakai tidak membuat kode yang benar ditolak.
+      for (const factorId of factorIds) {
+        const { error } = await supabase.auth.mfa.challengeAndVerify({
+          factorId,
+          code: otp.trim(),
+        });
+        if (!error) {
+          verified = true;
+          break;
+        }
+        verificationError = error;
+      }
+
+      if (!verified) throw verificationError ?? new Error("Kode Authenticator tidak valid");
+
+      const { data: aal, error: aalError } =
+        await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aalError) throw aalError;
+      if (aal?.currentLevel !== "aal2") {
+        throw new Error("Session 2FA belum aktif. Silakan coba kode terbaru.");
+      }
+
       toast.success("Verifikasi berhasil");
-      navigate({ to: "/admin" });
+      await navigate({ to: "/admin", replace: true });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Kode tidak valid";
-      toast.error(msg);
+      setOtp("");
+      toast.error(
+        /invalid|expired|challenge|verify|totp/i.test(msg)
+          ? "Kode belum dapat diverifikasi. Gunakan kode terbaru dan pastikan waktu ponsel otomatis."
+          : msg,
+      );
     } finally {
       setLoading(false);
     }
@@ -107,8 +132,7 @@ function LoginPage() {
     await supabase.auth.signOut();
     setStep("credentials");
     setOtp("");
-    setFactorId(null);
-    setChallengeId(null);
+    setFactorIds([]);
   };
 
   return (
@@ -127,7 +151,11 @@ function LoginPage() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
             <div className="relative flex flex-col items-center text-center">
               <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/30 backdrop-blur-sm">
-                {step === "mfa" ? <KeyRound className="h-7 w-7" /> : <ShieldCheck className="h-7 w-7" />}
+                {step === "mfa" ? (
+                  <KeyRound className="h-7 w-7" />
+                ) : (
+                  <ShieldCheck className="h-7 w-7" />
+                )}
               </div>
               <h1 className="text-2xl font-bold tracking-tight">
                 {step === "mfa" ? "Verifikasi 2 Langkah" : "Admin Dashboard"}
@@ -136,7 +164,6 @@ function LoginPage() {
                 {step === "mfa"
                   ? "Masukkan kode dari Google Authenticator"
                   : "Masuk untuk mengelola pendaftar"}
-
               </p>
             </div>
           </div>
@@ -145,7 +172,10 @@ function LoginPage() {
             {step === "credentials" ? (
               <form onSubmit={submit} className="space-y-5">
                 <div className="space-y-1.5">
-                  <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <Label
+                    htmlFor="email"
+                    className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                  >
                     Email
                   </Label>
                   <div className="relative">
@@ -163,7 +193,10 @@ function LoginPage() {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <Label
+                    htmlFor="password"
+                    className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                  >
                     Password
                   </Label>
                   <div className="relative">
@@ -197,12 +230,14 @@ function LoginPage() {
                 <p className="text-center text-xs text-muted-foreground">
                   Akses dashboard terbatas untuk satu akun admin resmi.
                 </p>
-
               </form>
             ) : (
               <form onSubmit={verifyMfa} className="space-y-5">
                 <div className="space-y-1.5">
-                  <Label htmlFor="otp" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <Label
+                    htmlFor="otp"
+                    className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                  >
                     Kode Authenticator
                   </Label>
                   <Input
@@ -241,7 +276,10 @@ function LoginPage() {
             )}
 
             <div className="mt-5 text-center">
-              <Link to="/" className="text-xs text-muted-foreground hover:text-foreground hover:underline">
+              <Link
+                to="/"
+                className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+              >
                 ← Kembali ke beranda
               </Link>
             </div>
