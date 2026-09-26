@@ -118,8 +118,10 @@ export function RevenuePanel() {
         .select("id,created_at,updated_at,extra")
         .eq("fast_track", true)
         .eq("payment_status", "paid")
-        .gte("updated_at", since.toISOString())
-        .order("updated_at", { ascending: false })
+        // Sebagian data lama tidak memiliki updated_at yang konsisten. created_at
+        // memastikan peserta paid tetap masuk ke sumber perhitungan harian.
+        .gte("created_at", since.toISOString())
+        .order("created_at", { ascending: false })
         .limit(5000),
       supabase
         .from("site_settings")
@@ -241,7 +243,7 @@ export function RevenuePanel() {
       .on("postgres_changes", { event: "*", schema: "public", table: "payments" }, scheduleRefresh)
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "registrations" },
+        { event: "*", schema: "public", table: "registrations" },
         scheduleRefresh,
       )
       .subscribe();
