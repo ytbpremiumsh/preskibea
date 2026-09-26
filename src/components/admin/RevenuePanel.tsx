@@ -101,7 +101,7 @@ export function RevenuePanel() {
     const { data: pays, error: paymentsError } = await supabase
       .from("payments")
       .select("id,amount,created_at,registration_id")
-      .eq("status", "paid")
+      .in("status", ["paid", "success", "SUCCESS", "settlement", "SETTLEMENT"])
       .gte("created_at", since.toISOString())
       .order("created_at", { ascending: false })
       .limit(5000);
