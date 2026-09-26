@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import type { FormField, FormSchema } from "@/lib/form-schema";
 import { STANDARD_REG_COLUMNS } from "@/lib/form-schema";
 import { AdSlot } from "@/components/ads/AdSlot";
-import { sendAppEmail, submitRegistrationFn } from "@/lib/api";
+import { submitRegistrationFn } from "@/lib/api";
 
 function f(
   name: string,
@@ -224,7 +224,6 @@ export function RegistrationForm({
   initialFastTrackType?: "standard" | "premium";
 }) {
   const navigate = useNavigate();
-  const sendEmail = sendAppEmail;
   const [schema, setSchema] = useState<FormSchema>(FALLBACK[kind]);
   const [isExpired, setIsExpired] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -460,30 +459,6 @@ export function RegistrationForm({
           .catch(() => {
             /* ignore */
           });
-      } catch {
-        /* ignore */
-      }
-
-      // Fire-and-forget email confirmation with token
-      try {
-        const emailAddr = String(payload.email ?? "").trim();
-        if (emailAddr && emailAddr.includes("@") && token) {
-          sendEmail({
-            data: {
-              templateName: "registration-confirmation",
-              recipientEmail: emailAddr,
-              idempotencyKey: `reg-${token}`,
-              templateData: {
-                fullName: String(payload.full_name ?? ""),
-                token,
-                kind,
-                whatsapp: String(payload.whatsapp ?? ""),
-              },
-            },
-          }).catch(() => {
-            /* ignore */
-          });
-        }
       } catch {
         /* ignore */
       }

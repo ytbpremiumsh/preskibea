@@ -250,6 +250,15 @@ serve(async (req) => {
   } catch (e) {
     const err = e as Error & { code?: string; status?: number };
     console.error(`send-app-email failed [${err.code ?? "unknown"}]: ${err.message}`);
+    if (err.code === "domain_not_verified") {
+      return new Response(
+        JSON.stringify({ ok: true, sent: false, pending: "domain_verification" }),
+        {
+          status: 202,
+          headers: { ...cors, "Content-Type": "application/json" },
+        },
+      );
+    }
     return new Response(JSON.stringify({ error: err.message, code: err.code ?? null }), {
       status: 500,
       headers: { ...cors, "Content-Type": "application/json" },

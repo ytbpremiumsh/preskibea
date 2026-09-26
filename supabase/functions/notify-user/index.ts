@@ -52,13 +52,18 @@ serve(async (req) => {
 
     const resJson = await result.json();
 
+    if (!result.ok) {
+      console.error(`Email delivery request failed with status ${result.status}`)
+    }
+
     return new Response(JSON.stringify(resJson), {
       status: result.status,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
-    console.error("Email error:", error.message)
-    return new Response(JSON.stringify({ error: error.message }), {
+    const message = error instanceof Error ? error.message : "Unknown email error"
+    console.error("Email error:", message)
+    return new Response(JSON.stringify({ error: message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
