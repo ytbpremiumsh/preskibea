@@ -288,7 +288,9 @@ serve(async (req) => {
            await supabaseAdmin.from("payments").insert({
              registration_id: reg.id,
              amount: Number(paymentAmount) || 0,
-             status: status,
+             // Semua status sukses provider disimpan konsisten agar laporan
+             // pendapatan tidak melewatkan SUCCESS/settlement.
+             status: "paid",
              external_id: externalId,
              provider: provider,
            });
