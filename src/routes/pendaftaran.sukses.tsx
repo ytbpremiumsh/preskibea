@@ -112,7 +112,7 @@ function SuksesPage() {
               </button>
             </div>
             <div className="mt-4 rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:border-amber-900/40 dark:text-amber-200">
-              ⚠️ <span className="font-semibold">Simpan kode ini baik-baik.</span> Kode wajib dimasukkan saat <strong>kirim berkas</strong> dan <strong>cek status</strong> pendaftaran. Kode juga sudah kami kirim via WhatsApp.
+              ⚠️ <span className="font-semibold">Simpan kode ini baik-baik.</span> Kode wajib dimasukkan saat <strong>kirim berkas</strong> dan <strong>cek status</strong> pendaftaran. Kode juga sudah kami kirim via Email.
             </div>
           </div>
         )}
