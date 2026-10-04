@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Bell, BellOff, Loader2, LogOut, Home } from "lucide-react";
+import { Bell, BellOff, Loader2, LogOut, Home, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
@@ -83,8 +83,8 @@ function AdminLayout() {
     }
   }, []);
 
-  const playPaymentSound = useCallback(async () => {
-    if (!soundEnabled) return;
+  const playPaymentSound = useCallback(async (force = false) => {
+    if (!force && !soundEnabled) return;
     await unlockAudio();
     const context = audioContextRef.current;
     if (!context || context.state !== "running") return;
@@ -220,6 +220,11 @@ function AdminLayout() {
     }
   };
 
+  const testSound = async () => {
+    await playPaymentSound(true);
+    toast.success("Tes suara pembayaran berhasil diputar");
+  };
+
   const logout = async () => {
     await supabase.auth.signOut();
     toast.success("Anda telah keluar");
@@ -279,6 +284,16 @@ function AdminLayout() {
             >
               {soundEnabled ? <Bell className="h-4 w-4 sm:mr-1" /> : <BellOff className="h-4 w-4 sm:mr-1" />}
               <span className="hidden sm:inline">Suara: {soundEnabled ? "ON" : "OFF"}</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={testSound}
+              title="Tes suara pembayaran"
+              className="shrink-0"
+            >
+              <Volume2 className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Tes Suara</span>
             </Button>
             <Button
               variant="ghost"
