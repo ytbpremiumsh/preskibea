@@ -64,8 +64,21 @@ type LiteRow = {
   extra: Json;
 };
 
+type PaymentRealtimeRow = {
+  id: string;
+  amount: number | string | null;
+  registration_id: string;
+  status: string;
+};
+
 const JENJANG = ["SMP", "SMA", "SMK", "MA", "Mahasiswa"] as const;
 const JAKARTA_TIME_ZONE = "Asia/Jakarta";
+const rupiah = (value: number) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(value || 0);
 
 function jakartaDateParts(date: Date) {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -143,11 +156,57 @@ function AdminOverview() {
     fastTrackPremium: 0,
   });
   const [loading, setLoading] = useState(true);
-  const [notif, setNotif] = useState<boolean>(() => {
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
-    return localStorage.getItem("admin_notif_off") !== "1";
+    return localStorage.getItem("admin_payment_sound_off") !== "1";
   });
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const notifiedPaymentsRef = useRef(new Set<string>());
+
+  const unlockAudio = useCallback(async () => {
+    if (typeof window === "undefined") return;
+    const AudioContextClass = window.AudioContext;
+    if (!AudioContextClass) return;
+    if (!audioContextRef.current) audioContextRef.current = new AudioContextClass();
+    if (audioContextRef.current.state === "suspended") {
+      await audioContextRef.current.resume().catch(() => undefined);
+    }
+  }, []);
+
+  const playPaymentSound = useCallback(async () => {
+    if (!soundEnabled || typeof window === "undefined") return;
+    await unlockAudio();
+    const context = audioContextRef.current;
+    if (!context || context.state !== "running") return;
+
+    // Nada dua tingkat yang jelas tetapi tidak terlalu panjang/mengganggu.
+    const start = context.currentTime;
+    [784, 1046.5].forEach((frequency, index) => {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const toneStart = start + index * 0.18;
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(frequency, toneStart);
+      gain.gain.setValueAtTime(0.0001, toneStart);
+      gain.gain.exponentialRampToValueAtTime(0.22, toneStart + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, toneStart + 0.28);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start(toneStart);
+      oscillator.stop(toneStart + 0.3);
+    });
+  }, [soundEnabled, unlockAudio]);
+
+  useEffect(() => {
+    // Browser mengharuskan interaksi pengguna sebelum audio boleh diputar.
+    const unlock = () => void unlockAudio();
+    window.addEventListener("pointerdown", unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+  }, [unlockAudio]);
 
   const activeRef = useRef(true);
   const load = useCallback(async () => {
@@ -314,26 +373,6 @@ function AdminOverview() {
             fastTrackPremium:
               c.fastTrackPremium + (isPremium && newRow.payment_status === "paid" ? 1 : 0),
           }));
-          if (notif) {
-            toast.success(`Pendaftar baru: ${newRow.full_name}`, {
-              description: `${newRow.kind === "prestasi" ? "Beasiswa Prestasi" : "Beasiswa Ekonomi"} · ${newRow.school_name}`,
-              duration: 8000,
-            });
-            try {
-              audioRef.current?.play().catch(() => {});
-            } catch {
-              /* ignore */
-            }
-            if (
-              typeof window !== "undefined" &&
-              "Notification" in window &&
-              Notification.permission === "granted"
-            ) {
-              new Notification("Pendaftar baru", {
-                body: `${newRow.full_name} — ${newRow.school_name}`,
-              });
-            }
-          }
         },
       )
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "registrations" }, () =>
@@ -345,17 +384,66 @@ function AdminOverview() {
       .on("postgres_changes", { event: "*", schema: "public", table: "documents" }, () =>
         scheduleRefresh(),
       )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "payments" },
+        async (payload) => {
+          const payment = payload.new as PaymentRealtimeRow;
+          if (!payment?.id || payment.status !== "paid") return;
+          if (notifiedPaymentsRef.current.has(payment.id)) return;
+
+          const previous = payload.old as Partial<PaymentRealtimeRow>;
+          if (previous?.status === "paid") return;
+
+          const { data: registration } = await supabase
+            .from("registrations")
+            .select("id,full_name,fast_track,extra")
+            .eq("id", payment.registration_id)
+            .maybeSingle();
+
+          if (!registration?.fast_track) return;
+          notifiedPaymentsRef.current.add(payment.id);
+          if (notifiedPaymentsRef.current.size > 100) {
+            const oldest = notifiedPaymentsRef.current.values().next().value;
+            if (oldest) notifiedPaymentsRef.current.delete(oldest);
+          }
+
+          const isPremium = (registration.extra as any)?.fast_track_type === "premium";
+          const tier = isPremium ? "FT Premium" : "Fast Track";
+          const amount = Number(payment.amount) || 0;
+          const description = `${registration.full_name || "Peserta"} · ${rupiah(amount)} · 1 pembayaran`;
+
+          toast.success(`Pembayaran ${tier} masuk`, {
+            description,
+            duration: 10000,
+          });
+          void playPaymentSound();
+
+          if (
+            typeof window !== "undefined" &&
+            "Notification" in window &&
+            Notification.permission === "granted"
+          ) {
+            new Notification(`Pembayaran ${tier} masuk`, {
+              body: description,
+              tag: `payment-${payment.id}`,
+            });
+          }
+
+          scheduleRefresh();
+        },
+      )
       .subscribe();
     return () => {
       if (refreshTimer.current) clearTimeout(refreshTimer.current);
       supabase.removeChannel(channel);
     };
-  }, [notif, scheduleRefresh]);
+  }, [playPaymentSound, scheduleRefresh]);
 
-  const toggleNotif = async () => {
-    const next = !notif;
-    setNotif(next);
-    localStorage.setItem("admin_notif_off", next ? "0" : "1");
+  const toggleSound = async () => {
+    const next = !soundEnabled;
+    setSoundEnabled(next);
+    localStorage.setItem("admin_payment_sound_off", next ? "0" : "1");
     if (
       next &&
       typeof window !== "undefined" &&
@@ -364,7 +452,12 @@ function AdminOverview() {
     ) {
       await Notification.requestPermission();
     }
-    toast.message(next ? "Notifikasi diaktifkan" : "Notifikasi dimatikan");
+    if (next) {
+      await unlockAudio();
+      toast.success("Suara pembayaran diaktifkan");
+    } else {
+      toast.message("Suara pembayaran dinonaktifkan");
+    }
   };
 
   const byJenjang = useMemo(() => {
@@ -540,12 +633,6 @@ function AdminOverview() {
 
   return (
     <div className="space-y-6">
-      <audio
-        ref={audioRef}
-        preload="none"
-        src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="
-      />
-
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Statistik Pendaftaran</h1>
@@ -553,9 +640,13 @@ function AdminOverview() {
             Update real-time {loading ? "· memuat…" : `· ${counts.today} pendaftar hari ini`}
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={toggleNotif}>
-          {notif ? <Bell className="h-4 w-4 mr-1.5" /> : <BellOff className="h-4 w-4 mr-1.5" />}
-          {notif ? "Notifikasi: ON" : "Notifikasi: OFF"}
+        <Button variant="outline" size="sm" onClick={toggleSound}>
+          {soundEnabled ? (
+            <Bell className="h-4 w-4 mr-1.5" />
+          ) : (
+            <BellOff className="h-4 w-4 mr-1.5" />
+          )}
+          {soundEnabled ? "Suara Pembayaran: ON" : "Suara Pembayaran: OFF"}
         </Button>
       </div>
 
