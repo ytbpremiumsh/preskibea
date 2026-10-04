@@ -20,13 +20,6 @@ type PayRow = {
   registration_id: string | null;
 };
 
-type PaidRegistrationRow = {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  extra: Record<string, unknown> | null;
-};
-
 type Tier = "standard" | "premium";
 
 type DayRow = {
@@ -105,32 +98,15 @@ export function RevenuePanel() {
     since.setDate(since.getDate() - 365);
     since.setHours(0, 0, 0, 0);
 
-    const [paymentsResult, paidRegistrationsResult, settingsResult] = await Promise.all([
-      supabase
-        .from("payments")
-        .select("id,amount,created_at,registration_id")
-        .in("status", ["paid", "success", "SUCCESS", "settlement", "SETTLEMENT"])
-        .gte("created_at", since.toISOString())
-        .order("created_at", { ascending: false })
-        .limit(5000),
-      supabase
-        .from("registrations")
-        .select("id,created_at,updated_at,extra")
-        .eq("fast_track", true)
-        .eq("payment_status", "paid")
-        // Sebagian data lama tidak memiliki updated_at yang konsisten. created_at
-        // memastikan peserta paid tetap masuk ke sumber perhitungan harian.
-        .gte("created_at", since.toISOString())
-        .order("created_at", { ascending: false })
-        .limit(5000),
-      supabase
-        .from("site_settings")
-        .select("key,value")
-        .in("key", ["fast_track_fee", "fast_track_premium_fee"]),
-    ]);
+    const paymentsResult = await supabase
+      .from("payments")
+      .select("id,amount,created_at,registration_id")
+      .eq("status", "paid")
+      .gte("created_at", since.toISOString())
+      .order("created_at", { ascending: false })
+      .limit(5000);
 
     const { data: pays, error: paymentsError } = paymentsResult;
-    const { data: paidRegistrations, error: registrationsFallbackError } = paidRegistrationsResult;
 
     if (paymentsError) {
       if (mountedRef.current && requestId === requestRef.current) {
@@ -140,23 +116,9 @@ export function RevenuePanel() {
       return;
     }
 
-    if (registrationsFallbackError) {
-      if (mountedRef.current && requestId === requestRef.current) {
-        setError(`Data peserta valid gagal dimuat: ${registrationsFallbackError.message}`);
-        setLoading(false);
-      }
-      return;
-    }
-
     const list = (pays || []) as PayRow[];
-    const paidRegs = (paidRegistrations || []) as PaidRegistrationRow[];
-    const paidRegistrationById = new Map(
-      paidRegs.map((registration) => [registration.id, registration]),
-    );
     const ids = Array.from(
-      new Set(
-        [...list.map((p) => p.registration_id), ...paidRegs.map((r) => r.id)].filter(Boolean),
-      ),
+      new Set(list.map((payment) => payment.registration_id).filter(Boolean)),
     ) as string[];
 
     const tierById = new Map<string, Tier>();
@@ -184,44 +146,12 @@ export function RevenuePanel() {
     const mapped = list
       .filter((p) => !!p.created_at)
       .map((p) => ({
-        // Gunakan waktu registrasi terakhir berubah menjadi paid. Beberapa provider
-        // membuat baris payment lebih awal, sehingga created_at payment bukan waktu validasi.
-        created_at:
-          (p.registration_id ? paidRegistrationById.get(p.registration_id)?.updated_at : null) ||
-          (p.created_at as string),
+        // Samakan sumber dan tanggal dengan tab Peserta Valid.
+        created_at: p.created_at as string,
         amount: Number(p.amount) || 0,
         tier:
           (p.registration_id ? tierById.get(p.registration_id) : undefined) ?? ("standard" as Tier),
       }));
-
-    const settingValue = (key: string, fallback: number) => {
-      const raw = settingsResult.data?.find((item) => item.key === key)?.value;
-      const value = Number(raw);
-      return Number.isFinite(value) && value > 0 ? value : fallback;
-    };
-    const standardFee = settingValue("fast_track_fee", 10000);
-    const premiumFee = settingValue("fast_track_premium_fee", 40000);
-    const registrationsWithPayment = new Set(
-      list.map((payment) => payment.registration_id).filter(Boolean),
-    );
-
-    for (const registration of paidRegs) {
-      if (registrationsWithPayment.has(registration.id)) continue;
-      const tier = tierById.get(registration.id) ?? "standard";
-      const extraFee = Number(registration.extra?.fast_track_fee);
-      mapped.push({
-        // Untuk data lama yang tidak memiliki baris payments, updated_at adalah
-        // waktu paling dekat dengan saat status pembayaran menjadi paid.
-        created_at: registration.updated_at || registration.created_at,
-        amount:
-          Number.isFinite(extraFee) && extraFee > 0
-            ? extraFee
-            : tier === "premium"
-              ? premiumFee
-              : standardFee,
-        tier,
-      });
-    }
 
     if (!mountedRef.current || requestId !== requestRef.current) return;
     setRows(mapped);
