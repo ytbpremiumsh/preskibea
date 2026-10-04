@@ -48,6 +48,22 @@ const rupiah = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value || 0);
 
+const spokenRupiah = (value: number) => `${Math.round(value || 0).toLocaleString("id-ID")} rupiah`;
+
+function jakartaTodayRange() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const value = (type: "year" | "month" | "day") =>
+    Number(parts.find((part) => part.type === type)?.value ?? 0);
+  const start = new Date(Date.UTC(value("year"), value("month") - 1, value("day"), -7));
+  const end = new Date(start);
+  end.setUTCDate(end.getUTCDate() + 1);
+  return { start: start.toISOString(), end: end.toISOString() };
+}
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -70,42 +86,30 @@ function AdminLayout() {
     if (typeof window === "undefined") return true;
     return localStorage.getItem("admin_payment_sound_off") !== "1";
   });
-  const audioContextRef = useRef<AudioContext | null>(null);
   const notifiedPaymentsRef = useRef(new Set<string>());
 
-  const unlockAudio = useCallback(async () => {
-    if (typeof window === "undefined") return;
-    const AudioContextClass = window.AudioContext;
-    if (!AudioContextClass) return;
-    if (!audioContextRef.current) audioContextRef.current = new AudioContextClass();
-    if (audioContextRef.current.state === "suspended") {
-      await audioContextRef.current.resume().catch(() => undefined);
-    }
-  }, []);
+  const speakPayment = useCallback(
+    (message: string, force = false) => {
+      if (!force && !soundEnabled) return;
+      if (!("speechSynthesis" in window)) {
+        toast.error("Perangkat ini belum mendukung suara pembaca");
+        return;
+      }
 
-  const playPaymentSound = useCallback(async (force = false) => {
-    if (!force && !soundEnabled) return;
-    await unlockAudio();
-    const context = audioContextRef.current;
-    if (!context || context.state !== "running") return;
-
-    const start = context.currentTime;
-    [784, 1046.5].forEach((frequency, index) => {
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      const toneStart = start + index * 0.18;
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(frequency, toneStart);
-      gain.gain.setValueAtTime(0.0001, toneStart);
-      gain.gain.exponentialRampToValueAtTime(0.22, toneStart + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, toneStart + 0.28);
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.start(toneStart);
-      oscillator.stop(toneStart + 0.3);
-    });
-  }, [soundEnabled, unlockAudio]);
-
+      const utterance = new SpeechSynthesisUtterance(message);
+      utterance.lang = "id-ID";
+      utterance.rate = 0.95;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      const indonesianVoice = window.speechSynthesis
+        .getVoices()
+        .find((voice) => voice.lang.toLowerCase().startsWith("id"));
+      if (indonesianVoice) utterance.voice = indonesianVoice;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+    },
+    [soundEnabled],
+  );
 
   useEffect(() => {
     let active = true;
@@ -141,16 +145,6 @@ function AdminLayout() {
   }, [navigate]);
 
   useEffect(() => {
-    const unlock = () => void unlockAudio();
-    window.addEventListener("pointerdown", unlock, { once: true });
-    window.addEventListener("keydown", unlock, { once: true });
-    return () => {
-      window.removeEventListener("pointerdown", unlock);
-      window.removeEventListener("keydown", unlock);
-    };
-  }, [unlockAudio]);
-
-  useEffect(() => {
     if (!isAdmin) return;
 
     const channel = supabase
@@ -184,11 +178,26 @@ function AdminLayout() {
           const amount = Number(payment.amount) || 0;
           const description = `${registration.full_name || "Peserta"} · ${rupiah(amount)} · 1 pembayaran`;
 
+          const { start, end } = jakartaTodayRange();
+          const { data: todayPayments } = await supabase
+            .from("payments")
+            .select("amount")
+            .eq("status", "paid")
+            .gte("created_at", start)
+            .lt("created_at", end);
+          const todayCount = todayPayments?.length ?? 1;
+          const todayTotal = (todayPayments ?? []).reduce(
+            (total, row) => total + (Number(row.amount) || 0),
+            0,
+          );
+
           toast.success(`Pembayaran ${tier} masuk`, {
             description,
             duration: 10000,
           });
-          void playPaymentSound();
+          speakPayment(
+            `Pembayaran baru masuk dari ${registration.full_name || "peserta"}, sebesar ${spokenRupiah(amount)}. Total pendapatan hari ini ${spokenRupiah(todayTotal)} dari ${todayCount} pembayaran.`,
+          );
 
           if ("Notification" in window && Notification.permission === "granted") {
             new Notification(`Pembayaran ${tier} masuk`, {
@@ -203,14 +212,13 @@ function AdminLayout() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [isAdmin, playPaymentSound]);
+  }, [isAdmin, speakPayment]);
 
   const toggleSound = async () => {
     const next = !soundEnabled;
     setSoundEnabled(next);
     localStorage.setItem("admin_payment_sound_off", next ? "0" : "1");
     if (next) {
-      await unlockAudio();
       if ("Notification" in window && Notification.permission === "default") {
         await Notification.requestPermission();
       }
@@ -221,7 +229,19 @@ function AdminLayout() {
   };
 
   const testSound = async () => {
-    await playPaymentSound(true);
+    const { start, end } = jakartaTodayRange();
+    const { data } = await supabase
+      .from("payments")
+      .select("amount")
+      .eq("status", "paid")
+      .gte("created_at", start)
+      .lt("created_at", end);
+    const count = data?.length ?? 0;
+    const total = (data ?? []).reduce((sum, row) => sum + (Number(row.amount) || 0), 0);
+    speakPayment(
+      `Tes suara pembayaran. Total pendapatan hari ini ${spokenRupiah(total)} dari ${count} pembayaran.`,
+      true,
+    );
     toast.success("Tes suara pembayaran berhasil diputar");
   };
 
@@ -244,12 +264,19 @@ function AdminLayout() {
       <div className="mx-auto max-w-xl px-4 py-20 text-center">
         <h1 className="text-2xl font-bold text-foreground">Akses Ditolak</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Akun <span className="font-medium">{email}</span> belum memiliki role admin.
-          Hubungi administrator utama untuk diberikan akses.
+          Akun <span className="font-medium">{email}</span> belum memiliki role admin. Hubungi
+          administrator utama untuk diberikan akses.
         </p>
         <div className="mt-6 flex justify-center gap-2">
-          <Button variant="outline" onClick={logout}>Keluar</Button>
-          <Link to="/" className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">Beranda</Link>
+          <Button variant="outline" onClick={logout}>
+            Keluar
+          </Button>
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          >
+            Beranda
+          </Link>
         </div>
       </div>
     );
@@ -268,7 +295,9 @@ function AdminLayout() {
               <p className="truncate text-[15px] font-bold tracking-tight text-foreground">
                 {pageTitle}
               </p>
-              <p className="truncate text-[11px] text-muted-foreground">Panel Admin — Prestasi Kita</p>
+              <p className="truncate text-[11px] text-muted-foreground">
+                Panel Admin — Prestasi Kita
+              </p>
             </div>
             <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
               <Link to="/" target="_blank" rel="noopener noreferrer">
@@ -282,7 +311,11 @@ function AdminLayout() {
               title={soundEnabled ? "Matikan suara pembayaran" : "Aktifkan suara pembayaran"}
               className="shrink-0"
             >
-              {soundEnabled ? <Bell className="h-4 w-4 sm:mr-1" /> : <BellOff className="h-4 w-4 sm:mr-1" />}
+              {soundEnabled ? (
+                <Bell className="h-4 w-4 sm:mr-1" />
+              ) : (
+                <BellOff className="h-4 w-4 sm:mr-1" />
+              )}
               <span className="hidden sm:inline">Suara: {soundEnabled ? "ON" : "OFF"}</span>
             </Button>
             <Button
