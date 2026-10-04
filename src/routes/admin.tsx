@@ -87,6 +87,7 @@ function AdminLayout() {
     return localStorage.getItem("admin_payment_sound_off") !== "1";
   });
   const notifiedPaymentsRef = useRef(new Set<string>());
+  const seenPaymentIdsRef = useRef(new Set<string>());
 
   const speakPayment = useCallback(
     (message: string, force = false) => {
@@ -105,7 +106,16 @@ function AdminLayout() {
         .getVoices()
         .find((voice) => voice.lang.toLowerCase().startsWith("id"));
       if (indonesianVoice) utterance.voice = indonesianVoice;
+      utterance.onerror = (event) => {
+        console.error("Suara pembayaran gagal diputar", event.error);
+        if (event.error !== "interrupted" && event.error !== "canceled") {
+          toast.error(
+            "Browser menolak suara otomatis. Tekan Tes Suara sekali, lalu biarkan tab admin terbuka.",
+          );
+        }
+      };
       window.speechSynthesis.cancel();
+      window.speechSynthesis.resume();
       window.speechSynthesis.speak(utterance);
     },
     [soundEnabled],
@@ -239,6 +249,8 @@ function AdminLayout() {
         async (payload) => {
           const payment = payload.new as PaymentRealtimeRow;
           if (!payment?.id || payment.status !== "paid") return;
+          if (seenPaymentIdsRef.current.has(payment.id)) return;
+          seenPaymentIdsRef.current.add(payment.id);
 
           const previous = payload.old as Partial<PaymentRealtimeRow>;
           if (previous?.status === "paid") return;
@@ -269,9 +281,39 @@ function AdminLayout() {
       )
       .subscribe();
 
+    let pollingReady = false;
+    const pollPayments = async () => {
+      const { data, error } = await supabase
+        .from("payments")
+        .select("id,amount,registration_id,status,created_at")
+        .eq("status", "paid")
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error || !data) return;
+
+      if (!pollingReady) {
+        data.forEach((payment) => seenPaymentIdsRef.current.add(payment.id));
+        pollingReady = true;
+        return;
+      }
+
+      const newPayments = data
+        .filter((payment) => !seenPaymentIdsRef.current.has(payment.id))
+        .reverse();
+      for (const payment of newPayments) {
+        seenPaymentIdsRef.current.add(payment.id);
+        await notifyPaidRegistration(payment.registration_id, Number(payment.amount) || 0);
+      }
+    };
+    void pollPayments();
+    const pollingTimer = window.setInterval(() => {
+      if (document.visibilityState === "visible") void pollPayments();
+    }, 10_000);
+
     return () => {
       window.removeEventListener("pointerdown", unlockSpeech);
       window.removeEventListener("keydown", unlockSpeech);
+      window.clearInterval(pollingTimer);
       supabase.removeChannel(channel);
     };
   }, [isAdmin, speakPayment]);
