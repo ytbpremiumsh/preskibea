@@ -147,6 +147,90 @@ function AdminLayout() {
   useEffect(() => {
     if (!isAdmin) return;
 
+    const unlockSpeech = () => {
+      if (!("speechSynthesis" in window)) return;
+      const silent = new SpeechSynthesisUtterance(" ");
+      silent.volume = 0;
+      silent.lang = "id-ID";
+      window.speechSynthesis.speak(silent);
+      window.speechSynthesis.resume();
+    };
+    window.addEventListener("pointerdown", unlockSpeech, { once: true });
+    window.addEventListener("keydown", unlockSpeech, { once: true });
+
+    const notifyPaidRegistration = async (registrationId: string, knownAmount?: number) => {
+      if (!registrationId || notifiedPaymentsRef.current.has(registrationId)) return;
+      // Klaim berdasarkan peserta agar event payments + registrations tidak bersuara dua kali.
+      notifiedPaymentsRef.current.add(registrationId);
+
+      const { data: registration } = await supabase
+        .from("registrations")
+        .select("id,full_name,fast_track,extra")
+        .eq("id", registrationId)
+        .maybeSingle();
+      if (!registration?.fast_track) {
+        notifiedPaymentsRef.current.delete(registrationId);
+        return;
+      }
+
+      let amount = knownAmount ?? 0;
+      if (!amount) {
+        // Webhook menulis registrations lebih dahulu, lalu payments. Beri waktu agar
+        // record pembayaran tersedia sebelum nominal dan total dibacakan.
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          if (attempt > 0) await new Promise((resolve) => window.setTimeout(resolve, 500));
+          const { data: latestPayment } = await supabase
+            .from("payments")
+            .select("amount")
+            .eq("registration_id", registrationId)
+            .eq("status", "paid")
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          amount = Number(latestPayment?.amount) || 0;
+          if (amount > 0) break;
+        }
+      }
+
+      const isPremium = (registration.extra as any)?.fast_track_type === "premium";
+      const tier = isPremium ? "FT Premium" : "Fast Track";
+      if (!amount) amount = isPremium ? 40000 : 10000;
+      const description = `${registration.full_name || "Peserta"} · ${rupiah(amount)} · 1 pembayaran`;
+
+      const { start, end } = jakartaTodayRange();
+      const { data: todayPayments } = await supabase
+        .from("payments")
+        .select("amount")
+        .eq("status", "paid")
+        .gte("created_at", start)
+        .lt("created_at", end);
+      const todayCount = todayPayments?.length ?? 1;
+      const todayTotal = (todayPayments ?? []).reduce(
+        (total, row) => total + (Number(row.amount) || 0),
+        0,
+      );
+
+      toast.success(`Pembayaran ${tier} masuk`, {
+        description,
+        duration: 10000,
+      });
+      speakPayment(
+        `Pembayaran baru masuk dari ${registration.full_name || "peserta"}, sebesar ${spokenRupiah(amount)}. Total pendapatan hari ini ${spokenRupiah(todayTotal)} dari ${todayCount} pembayaran.`,
+      );
+
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(`Pembayaran ${tier} masuk`, {
+          body: description,
+          tag: `payment-${registrationId}`,
+        });
+      }
+
+      if (notifiedPaymentsRef.current.size > 100) {
+        const oldest = notifiedPaymentsRef.current.values().next().value;
+        if (oldest) notifiedPaymentsRef.current.delete(oldest);
+      }
+    };
+
     const channel = supabase
       .channel("admin-global-payment-notifications")
       .on(
@@ -155,61 +239,39 @@ function AdminLayout() {
         async (payload) => {
           const payment = payload.new as PaymentRealtimeRow;
           if (!payment?.id || payment.status !== "paid") return;
-          if (notifiedPaymentsRef.current.has(payment.id)) return;
 
           const previous = payload.old as Partial<PaymentRealtimeRow>;
           if (previous?.status === "paid") return;
-
-          const { data: registration } = await supabase
-            .from("registrations")
-            .select("id,full_name,fast_track,extra")
-            .eq("id", payment.registration_id)
-            .maybeSingle();
-          if (!registration?.fast_track) return;
-
-          notifiedPaymentsRef.current.add(payment.id);
-          if (notifiedPaymentsRef.current.size > 100) {
-            const oldest = notifiedPaymentsRef.current.values().next().value;
-            if (oldest) notifiedPaymentsRef.current.delete(oldest);
+          await notifyPaidRegistration(payment.registration_id, Number(payment.amount) || 0);
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "registrations" },
+        async (payload) => {
+          const current = payload.new as {
+            id?: string;
+            fast_track?: boolean | null;
+            payment_status?: string | null;
+          };
+          const previous = payload.old as { payment_status?: string | null };
+          if (
+            !current.id ||
+            !current.fast_track ||
+            current.payment_status !== "paid" ||
+            previous?.payment_status === "paid"
+          ) {
+            return;
           }
-
-          const isPremium = (registration.extra as any)?.fast_track_type === "premium";
-          const tier = isPremium ? "FT Premium" : "Fast Track";
-          const amount = Number(payment.amount) || 0;
-          const description = `${registration.full_name || "Peserta"} · ${rupiah(amount)} · 1 pembayaran`;
-
-          const { start, end } = jakartaTodayRange();
-          const { data: todayPayments } = await supabase
-            .from("payments")
-            .select("amount")
-            .eq("status", "paid")
-            .gte("created_at", start)
-            .lt("created_at", end);
-          const todayCount = todayPayments?.length ?? 1;
-          const todayTotal = (todayPayments ?? []).reduce(
-            (total, row) => total + (Number(row.amount) || 0),
-            0,
-          );
-
-          toast.success(`Pembayaran ${tier} masuk`, {
-            description,
-            duration: 10000,
-          });
-          speakPayment(
-            `Pembayaran baru masuk dari ${registration.full_name || "peserta"}, sebesar ${spokenRupiah(amount)}. Total pendapatan hari ini ${spokenRupiah(todayTotal)} dari ${todayCount} pembayaran.`,
-          );
-
-          if ("Notification" in window && Notification.permission === "granted") {
-            new Notification(`Pembayaran ${tier} masuk`, {
-              body: description,
-              tag: `payment-${payment.id}`,
-            });
-          }
+          await new Promise((resolve) => window.setTimeout(resolve, 700));
+          await notifyPaidRegistration(current.id);
         },
       )
       .subscribe();
 
     return () => {
+      window.removeEventListener("pointerdown", unlockSpeech);
+      window.removeEventListener("keydown", unlockSpeech);
       supabase.removeChannel(channel);
     };
   }, [isAdmin, speakPayment]);
