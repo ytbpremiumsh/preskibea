@@ -83,10 +83,11 @@ const fullDayLabel = (key: string) =>
     timeZone: "UTC",
   }).format(new Date(`${key}T00:00:00Z`));
 
-type RangeKey = "all" | 30 | 14 | 7 | 1;
+type RangeKey = "all" | "yesterday" | 30 | 14 | 7 | 1;
 
 const RANGES: { key: RangeKey; label: string }[] = [
   { key: "all", label: "Semua" },
+  { key: "yesterday", label: "Kemarin" },
   { key: 30, label: "30 Hari" },
   { key: 14, label: "14 Hari" },
   { key: 7, label: "7 Hari" },
@@ -234,6 +235,9 @@ export function RevenuePanel() {
           }, jakartaKey(new Date(rows[0].created_at)))
         : todayKey);
       endKey = dateTo || todayKey;
+    } else if (range === "yesterday") {
+      startKey = addDays(todayKey, -1);
+      endKey = startKey;
     } else if (range !== "all") {
       startKey = addDays(todayKey, -(range - 1));
     } else if (rows.length) {
@@ -315,6 +319,10 @@ export function RevenuePanel() {
   const trendFlat = diff === 0;
 
   const totalRange = days.reduce((a, d) => a + d.total, 0);
+  const countStandardRange = days.reduce((total, day) => total + day.countStandard, 0);
+  const countPremiumRange = days.reduce((total, day) => total + day.countPremium, 0);
+  const amountStandardRange = days.reduce((total, day) => total + day.amountStandard, 0);
+  const amountPremiumRange = days.reduce((total, day) => total + day.amountPremium, 0);
   const maxDay = Math.max(1, ...days.map((d) => d.total));
   const rangeLabel = customRangeActive
     ? dateFrom && dateTo
@@ -324,6 +332,8 @@ export function RevenuePanel() {
         : `Sampai ${fullDayLabel(dateTo)}`
     : range === "all"
       ? "Semua"
+      : range === "yesterday"
+        ? "Kemarin"
       : `${range} Hari`;
   const firstPaymentKey = rows.length
     ? rows.reduce((earliest, row) => {
@@ -522,6 +532,73 @@ export function RevenuePanel() {
             </div>
           </div>
         </Card>
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <h2 className="text-base font-semibold text-foreground">Total Peserta Valid ({rangeLabel})</h2>
+          <p className="text-xs text-muted-foreground">
+            Jumlah Fast Track berdasarkan periode atau rentang tanggal yang dipilih.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <Card className="border bg-white p-5">
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                  FT Standar
+                </p>
+                <p className="text-3xl font-black tabular-nums leading-none text-foreground">
+                  {countStandardRange.toLocaleString("id-ID")}
+                </p>
+                <p className="mt-2 text-xs font-medium text-muted-foreground">
+                  {rupiah(amountStandardRange)}
+                </p>
+              </div>
+              <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+                <Clock className="h-5 w-5" />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="border bg-white p-5">
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                  FT Premium
+                </p>
+                <p className="text-3xl font-black tabular-nums leading-none text-foreground">
+                  {countPremiumRange.toLocaleString("id-ID")}
+                </p>
+                <p className="mt-2 text-xs font-medium text-muted-foreground">
+                  {rupiah(amountPremiumRange)}
+                </p>
+              </div>
+              <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
+                <Zap className="h-5 w-5" />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="border bg-white p-5">
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                  Total FT Valid
+                </p>
+                <p className="text-3xl font-black tabular-nums leading-none text-foreground">
+                  {(countStandardRange + countPremiumRange).toLocaleString("id-ID")}
+                </p>
+                <p className="mt-2 text-xs font-medium text-muted-foreground">
+                  {rupiah(amountStandardRange + amountPremiumRange)}
+                </p>
+              </div>
+              <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+                <TrendingUp className="h-5 w-5" />
+              </div>
+            </div>
+          </Card>
+        </div>
       </div>
 
       <Card className="rounded-2xl p-5 shadow-soft">
