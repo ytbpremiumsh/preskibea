@@ -26,6 +26,14 @@ export const Route = createFileRoute("/admin/esai")({
 
 type EssayAnswer = { question: string; answer: string };
 type EssayStatus = "pending" | "approved" | "rejected";
+type BerkasTab = "all" | "fast_pending" | "regular_pending" | "submitted";
+
+type DocumentRef = {
+  id: string;
+  registration_id: string | null;
+  email: string;
+  kind: string;
+};
 
 type Row = {
   id: string;
@@ -37,6 +45,7 @@ type Row = {
   education_level: string | null;
   school_name: string | null;
   fast_track: boolean | null;
+  payment_status: string | null;
   extra: Record<string, unknown> | null;
 };
 
@@ -68,6 +77,8 @@ function AdminEsai() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [filterKind, setFilterKind] = useState<"all" | keyof typeof KIND_LABEL>("all");
+  const [berkasTab, setBerkasTab] = useState<BerkasTab>("all");
+  const [documents, setDocuments] = useState<DocumentRef[]>([]);
   const [detail, setDetail] = useState<Row | null>(null);
 
   // Pengumuman
@@ -78,20 +89,41 @@ function AdminEsai() {
   // Auto lolos khusus jalur Reguler
   const [autoReguler, setAutoReguler] = useState(false);
 
+  const loadDocumentRefs = async (): Promise<DocumentRef[]> => {
+    const result: DocumentRef[] = [];
+    const pageSize = 1000;
+    for (let from = 0; ; from += pageSize) {
+      const { data, error } = await supabase
+        .from("documents")
+        .select("id,registration_id,email,kind")
+        .range(from, from + pageSize - 1);
+      if (error) {
+        toast.error(`Data berkas gagal dimuat: ${error.message}`);
+        break;
+      }
+      const page = (data ?? []) as DocumentRef[];
+      result.push(...page);
+      if (page.length < pageSize) break;
+    }
+    return result;
+  };
+
   const load = async () => {
     setLoading(true);
-    const [r, s, a] = await Promise.all([
+    const [r, s, a, documentRows] = await Promise.all([
       supabase
         .from("registrations")
         .select(
-          "id, full_name, email, whatsapp, kind, token, education_level, school_name, fast_track, extra",
+          "id, full_name, email, whatsapp, kind, token, education_level, school_name, fast_track, payment_status, extra",
         )
         .order("created_at", { ascending: false }),
       supabase.from("site_settings").select("value").eq("key", "esai_announcement").maybeSingle(),
       supabase.from("site_settings").select("value").eq("key", "esai_auto_lolos_reguler").maybeSingle(),
+      loadDocumentRefs(),
     ]);
     if (r.error) toast.error(r.error.message);
     setRows((r.data ?? []) as Row[]);
+    setDocuments(documentRows);
     const cfg = (s.data?.value ?? {}) as { published?: boolean; message?: string };
     setPublished(!!cfg.published);
     setMessage(cfg.message ?? "");
@@ -145,10 +177,47 @@ function AdminEsai() {
     [rows],
   );
 
+  const documentRegistrationIds = useMemo(
+    () => new Set(documents.map((document) => document.registration_id).filter(Boolean)),
+    [documents],
+  );
+  const documentEmailKeys = useMemo(
+    () => new Set(documents.map((document) => `${document.email.toLowerCase()}__${document.kind}`)),
+    [documents],
+  );
+  const hasDocuments = (row: Row) =>
+    documentRegistrationIds.has(row.id) ||
+    documentEmailKeys.has(`${row.email.toLowerCase()}__${row.kind}`);
+  const isPremium = (row: Row) => row.extra?.fast_track_type === "premium";
+  const isValidStandardFastTrack = (row: Row) =>
+    !!row.fast_track &&
+    !isPremium(row) &&
+    (row.payment_status ?? "").toLowerCase() === "paid";
+
+  const berkasCounts = useMemo(
+    () => ({
+      all: submitted.length,
+      fast_pending: submitted.filter(
+        (row) => isValidStandardFastTrack(row) && !hasDocuments(row),
+      ).length,
+      regular_pending: submitted.filter(
+        (row) => !row.fast_track && !hasDocuments(row),
+      ).length,
+      submitted: submitted.filter((row) => hasDocuments(row)).length,
+    }),
+    // Set dokumen sudah menjadi dependency stabil untuk penghitungan ulang.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [submitted, documentRegistrationIds, documentEmailKeys],
+  );
+
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
     return submitted.filter((r) => {
       if (filterKind !== "all" && r.kind !== filterKind) return false;
+      if (berkasTab === "fast_pending" && !(isValidStandardFastTrack(r) && !hasDocuments(r)))
+        return false;
+      if (berkasTab === "regular_pending" && !(!r.fast_track && !hasDocuments(r))) return false;
+      if (berkasTab === "submitted" && !hasDocuments(r)) return false;
       if (!s) return true;
       return (
         r.full_name.toLowerCase().includes(s) ||
@@ -156,7 +225,7 @@ function AdminEsai() {
         (r.token ?? "").toLowerCase().includes(s)
       );
     });
-  }, [submitted, q, filterKind]);
+  }, [submitted, q, filterKind, berkasTab, documentRegistrationIds, documentEmailKeys]);
 
   const stats = useMemo(() => {
     const fast = submitted.filter((r) => r.fast_track).length;
@@ -251,6 +320,33 @@ function AdminEsai() {
       </Card>
 
       <Card className="p-5">
+        <div className="mb-4 flex flex-wrap gap-2 border-b border-border pb-4">
+          {(
+            [
+              ["all", "Semua Peserta", berkasCounts.all],
+              ["fast_pending", "FT Valid · Belum Kirim Berkas", berkasCounts.fast_pending],
+              ["regular_pending", "Reguler · Belum Kirim Berkas", berkasCounts.regular_pending],
+              ["submitted", "Sudah Kirim Berkas", berkasCounts.submitted],
+            ] as const
+          ).map(([key, label, count]) => (
+            <Button
+              key={key}
+              type="button"
+              size="sm"
+              variant={berkasTab === key ? "default" : "outline"}
+              onClick={() => setBerkasTab(key)}
+              className="gap-1.5"
+            >
+              {label}
+              <Badge
+                variant="secondary"
+                className={berkasTab === key ? "bg-white/20 text-current" : ""}
+              >
+                {count}
+              </Badge>
+            </Button>
+          ))}
+        </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -282,7 +378,7 @@ function AdminEsai() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="py-16 text-center text-sm text-muted-foreground">
-              Belum ada peserta yang mengirimkan esai.
+              Tidak ada peserta pada kelompok yang dipilih.
             </div>
           ) : (
             <>
