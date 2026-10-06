@@ -94,6 +94,35 @@ const RANGES: { key: RangeKey; label: string }[] = [
   { key: 1, label: "1 Hari" },
 ];
 
+function DailyCountTrend({ current, previous }: { current: number; previous: number }) {
+  const difference = current - previous;
+  const percentage = previous > 0 ? Math.round((Math.abs(difference) / previous) * 100) : null;
+
+  if (difference === 0) {
+    return (
+      <span className="inline-flex items-center gap-1 text-muted-foreground">
+        <Minus className="h-3.5 w-3.5" /> Sama dengan kemarin
+      </span>
+    );
+  }
+
+  if (difference > 0) {
+    return (
+      <span className="inline-flex items-center gap-1 text-emerald-600">
+        <TrendingUp className="h-3.5 w-3.5" /> Naik {difference} peserta
+        {percentage !== null ? ` (${percentage}%)` : ""}
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex items-center gap-1 text-red-600">
+      <TrendingDown className="h-3.5 w-3.5" /> Turun {Math.abs(difference)} peserta
+      {percentage !== null ? ` (${percentage}%)` : ""}
+    </span>
+  );
+}
+
 export function RevenuePanel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -494,6 +523,12 @@ export function RevenuePanel() {
               <p className="mt-1 text-xs text-muted-foreground">
                 {rupiah(today?.amountStandard || 0)}
               </p>
+              <div className="mt-2 text-xs font-semibold">
+                <DailyCountTrend
+                  current={today?.countStandard || 0}
+                  previous={yesterday?.countStandard || 0}
+                />
+              </div>
             </div>
           </div>
         </Card>
@@ -513,6 +548,12 @@ export function RevenuePanel() {
               <p className="mt-1 text-xs text-muted-foreground">
                 {rupiah(today?.amountPremium || 0)}
               </p>
+              <div className="mt-2 text-xs font-semibold">
+                <DailyCountTrend
+                  current={today?.countPremium || 0}
+                  previous={yesterday?.countPremium || 0}
+                />
+              </div>
             </div>
           </div>
         </Card>
