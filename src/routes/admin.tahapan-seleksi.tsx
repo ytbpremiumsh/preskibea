@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -65,52 +65,104 @@ function AdminTahapanSeleksi() {
   const [filterKind, setFilterKind] = useState<"all" | keyof typeof KIND_LABEL>("all");
   const [ann, setAnn] = useState<AnnState>({});
   const [saving, setSaving] = useState<string | null>(null);
+  const [pageSize, setPageSize] = useState(20);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalRows, setTotalRows] = useState(0);
+  const [debouncedQ, setDebouncedQ] = useState("");
+  const [trackCounts, setTrackCounts] = useState({ regular: 0, standard: 0, premium: 0 });
 
-  const fetchAllRegistrations = async (): Promise<Row[]> => {
-    const result: Row[] = [];
-    const pageSize = 1000;
-    for (let from = 0; ; from += pageSize) {
-      const { data, error } = await supabase
+  const applyEligibility = (query: any) =>
+    query.or(
+      "candidate_status.eq.approved,and(fast_track.eq.true,payment_status.eq.paid,extra->>fast_track_type.eq.premium)",
+    );
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    let query: any = applyEligibility(
+      supabase
         .from("registrations")
         .select(
           "id, full_name, email, kind, token, candidate_status, fast_track, payment_status, extra",
-        )
-        .order("created_at", { ascending: false })
-        .range(from, from + pageSize - 1);
-      if (error) {
-        toast.error(error.message);
-        break;
+          { count: "exact" },
+        ),
+    );
+    if (filterKind !== "all") query = query.eq("kind", filterKind);
+    if (debouncedQ) {
+      const term = debouncedQ.replace(/[,%()]/g, " ").trim();
+      if (term) {
+        query = query.or(
+          `full_name.ilike.%${term}%,email.ilike.%${term}%,token.ilike.%${term}%`,
+        );
       }
-      const page = (data ?? []) as Row[];
-      result.push(...page);
-      if (page.length < pageSize) break;
     }
-    return result;
-  };
+    const from = (currentPage - 1) * pageSize;
+    const { data, error, count } = await query
+      .order("created_at", { ascending: false })
+      .range(from, from + pageSize - 1);
+    if (error) {
+      toast.error(error.message);
+      setLoading(false);
+      return;
+    }
+    setRows((data ?? []) as Row[]);
+    setTotalRows(count ?? 0);
+    setLoading(false);
+  }, [currentPage, pageSize, filterKind, debouncedQ]);
 
-  const load = async () => {
-    setLoading(true);
-    const [registrationRows, s] = await Promise.all([
-      fetchAllRegistrations(),
-      supabase
-        .from("site_settings")
-        .select("key, value")
-        .in("key", ANNOUNCEMENTS.map((a) => a.key) as string[]),
-    ]);
-    setRows(registrationRows);
+  const loadSettings = useCallback(async () => {
+    const { data } = await supabase
+      .from("site_settings")
+      .select("key, value")
+      .in("key", ANNOUNCEMENTS.map((a) => a.key) as string[]);
     const next: AnnState = {};
     for (const a of ANNOUNCEMENTS) next[a.key] = { published: false, message: "" };
-    for (const row of s.data ?? []) {
+    for (const row of data ?? []) {
       const v = (row.value ?? {}) as { published?: boolean; message?: string };
       next[row.key] = { published: !!v.published, message: v.message ?? "" };
     }
     setAnn(next);
-    setLoading(false);
-  };
+  }, []);
+
+  const loadTrackCounts = useCallback(async () => {
+    const count = (configure?: (query: any) => any) => {
+      let query: any = applyEligibility(
+        supabase.from("registrations").select("id", { count: "exact", head: true }),
+      );
+      if (configure) query = configure(query);
+      return query;
+    };
+    const [regular, standard, premium] = await Promise.all([
+      count((query) => query.or("fast_track.is.null,fast_track.eq.false")),
+      count((query) =>
+        query
+          .eq("fast_track", true)
+          .or("extra->>fast_track_type.is.null,extra->>fast_track_type.neq.premium"),
+      ),
+      count((query) => query.eq("fast_track", true).eq("extra->>fast_track_type", "premium")),
+    ]);
+    setTrackCounts({
+      regular: regular.count ?? 0,
+      standard: standard.count ?? 0,
+      premium: premium.count ?? 0,
+    });
+  }, []);
 
   useEffect(() => {
-    load();
-  }, []);
+    void load();
+  }, [load]);
+
+  useEffect(() => {
+    void Promise.all([loadSettings(), loadTrackCounts()]);
+  }, [loadSettings, loadTrackCounts]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedQ(q.trim()), 350);
+    return () => window.clearTimeout(timer);
+  }, [q]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [q, filterKind, pageSize]);
 
   const saveAnn = async (key: string, value: { published: boolean; message: string }) => {
     setSaving(key);
@@ -133,43 +185,7 @@ function AdminTahapanSeleksi() {
     toast.success(status === "approved" ? "Ditandai lolos" : "Ditandai tidak lolos");
   };
 
-  const isPremiumPaid = (row: Row) =>
-    !!row.fast_track &&
-    row.extra?.fast_track_type === "premium" &&
-    (row.payment_status ?? "").toLowerCase() === "paid";
-
-  // Peserta yang relevan: disetujui pada seleksi administrasi atau FT Premium
-  // valid yang memang otomatis lolos administrasi.
-  const eligible = useMemo(
-    () => rows.filter((r) => r.candidate_status === "approved" || isPremiumPaid(r)),
-    [rows],
-  );
-
-  const trackCounts = useMemo(
-    () => ({
-      regular: eligible.filter((row) => !row.fast_track).length,
-      standard: eligible.filter(
-        (row) => !!row.fast_track && row.extra?.fast_track_type !== "premium",
-      ).length,
-      premium: eligible.filter(
-        (row) => !!row.fast_track && row.extra?.fast_track_type === "premium",
-      ).length,
-    }),
-    [eligible],
-  );
-
-  const filtered = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    return eligible.filter((r) => {
-      if (filterKind !== "all" && r.kind !== filterKind) return false;
-      if (!s) return true;
-      return (
-        r.full_name.toLowerCase().includes(s) ||
-        r.email.toLowerCase().includes(s) ||
-        (r.token ?? "").toLowerCase().includes(s)
-      );
-    });
-  }, [eligible, q, filterKind]);
+  const totalPages = Math.max(1, Math.ceil(totalRows / pageSize));
 
   return (
     <div className="space-y-6">
@@ -264,6 +280,16 @@ function AdminTahapanSeleksi() {
                 {k === "all" ? "Semua" : KIND_LABEL[k]}
               </Button>
             ))}
+            <select
+              value={pageSize}
+              onChange={(event) => setPageSize(Number(event.target.value))}
+              className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+              aria-label="Jumlah peserta per halaman"
+            >
+              <option value={20}>20 per halaman</option>
+              <option value={50}>50 per halaman</option>
+              <option value={100}>100 per halaman</option>
+            </select>
           </div>
         </div>
 
@@ -272,7 +298,7 @@ function AdminTahapanSeleksi() {
             <div className="flex items-center justify-center py-16 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
-          ) : filtered.length === 0 ? (
+          ) : rows.length === 0 ? (
             <div className="py-16 text-center text-sm text-muted-foreground">
               Belum ada peserta yang lolos seleksi administrasi.
             </div>
@@ -280,7 +306,7 @@ function AdminTahapanSeleksi() {
             <>
             {/* Mobile: kartu */}
             <div className="grid gap-3 md:hidden">
-              {filtered.map((r) => (
+              {rows.map((r) => (
                 <div key={r.id} className="rounded-xl border border-border p-3">
                   <div className="min-w-0">
                     <div className="truncate font-semibold text-foreground">{r.full_name}</div>
@@ -325,7 +351,7 @@ function AdminTahapanSeleksi() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((r) => {
+                {rows.map((r) => {
                   const tpa = statusOf(r, "tpa_status");
                   const itw = statusOf(r, "interview_status");
                   return (
@@ -362,6 +388,35 @@ function AdminTahapanSeleksi() {
             </>
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div className="mt-4 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-muted-foreground">
+              Menampilkan {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, totalRows)} dari {totalRows} peserta
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              >
+                Sebelumnya
+              </Button>
+              <span className="min-w-[92px] text-center text-xs font-semibold">
+                Halaman {currentPage} / {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              >
+                Selanjutnya
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   );
