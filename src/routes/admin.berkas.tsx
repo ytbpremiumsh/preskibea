@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -99,6 +99,9 @@ function AdminBerkas() {
   const [admPublished, setAdmPublished] = useState(false);
   const [admMessage, setAdmMessage] = useState("");
   const [savingAdm, setSavingAdm] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [pageSize, setPageSize] = useState(20);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const saveAdmAnnouncement = async (nextPublished = admPublished, nextMessage = admMessage) => {
     setSavingAdm(true);
@@ -122,15 +125,17 @@ function AdminBerkas() {
     }
   }, []);
 
-  // Ambil semua baris bertahap — hindari batas default 1000 baris.
-  const fetchAll = async <T,>(
+  // Lanjutan data dimuat di latar belakang. Batch pertama ditampilkan segera
+  // agar halaman tidak menunggu seluruh isi tabel selesai diunduh.
+  const fetchRemaining = async <T,>(
     table: "documents" | "registrations",
     columns: string,
+    start: number,
     order?: { column: string; ascending: boolean },
   ): Promise<T[]> => {
-    const size = 1000;
+    const size = 500;
     const out: T[] = [];
-    for (let from = 0; ; from += size) {
+    for (let from = start; ; from += size) {
       let query = supabase.from(table).select(columns).range(from, from + size - 1);
       if (order) query = query.order(order.column, { ascending: order.ascending });
       const { data, error } = await query;
@@ -145,27 +150,66 @@ function AdminBerkas() {
     return out;
   };
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
+    const batchSize = 500;
+    const registrationColumns =
+      "id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status, fast_track, payment_status, extra";
     const [d, r, s] = await Promise.all([
-      fetchAll<Document>("documents", "*", { column: "created_at", ascending: false }),
-      fetchAll<Registration>(
-        "registrations",
-        "id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status, fast_track, payment_status, extra",
-      ),
+      supabase
+        .from("documents")
+        .select("id,registration_id,email,doc_type,file_url,kind,created_at")
+        .order("created_at", { ascending: false })
+        .range(0, batchSize - 1),
+      supabase
+        .from("registrations")
+        .select(registrationColumns)
+        .order("created_at", { ascending: false })
+        .range(0, batchSize - 1),
       supabase.from("site_settings").select("value").eq("key", "administrasi_announcement").maybeSingle(),
     ]);
+    if (d.error || r.error) {
+      toast.error(d.error?.message ?? r.error?.message ?? "Gagal memuat pengiriman berkas");
+      setLoading(false);
+      return;
+    }
     const admCfg = (s.data?.value ?? {}) as { published?: boolean; message?: string };
     setAdmPublished(!!admCfg.published);
     setAdmMessage(admCfg.message ?? "");
-    setDocs(d);
-    setRegs(r);
+    setDocs((d.data ?? []) as Document[]);
+    setRegs((r.data ?? []) as Registration[]);
     setLoading(false);
-  };
+
+    // Setelah tampilan awal siap, lanjutkan mengambil arsip lama tanpa
+    // menahan halaman dengan layar loading.
+    const needsMoreDocs = (d.data?.length ?? 0) === batchSize;
+    const needsMoreRegs = (r.data?.length ?? 0) === batchSize;
+    if (!needsMoreDocs && !needsMoreRegs) return;
+    setLoadingMore(true);
+    const [moreDocs, moreRegs] = await Promise.all([
+      needsMoreDocs
+        ? fetchRemaining<Document>(
+            "documents",
+            "id,registration_id,email,doc_type,file_url,kind,created_at",
+            batchSize,
+            { column: "created_at", ascending: false },
+          )
+        : Promise.resolve([]),
+      needsMoreRegs
+        ? fetchRemaining<Registration>("registrations", registrationColumns, batchSize, {
+            column: "created_at",
+            ascending: false,
+          })
+        : Promise.resolve([]),
+    ]);
+    setDocs((current) => [...current, ...moreDocs]);
+    setRegs((current) => [...current, ...moreRegs]);
+    setLoadingMore(false);
+  }, []);
 
   useEffect(() => {
-    load();
-  }, []);
+    void load();
+  }, [load]);
 
   const findReg = (
     doc: Pick<Document, "registration_id" | "email" | "kind">,
@@ -243,6 +287,19 @@ function AdminBerkas() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [docs, regs, filterKind, filterStatus, q]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [q, filterKind, filterStatus, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(grouped.length / pageSize));
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+  }, [currentPage, totalPages]);
+  const visibleGroups = useMemo(
+    () => grouped.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [grouped, currentPage, pageSize],
+  );
+
   const exportExcel = async () => {
     const data = docs.map((d) => {
       const r = findReg(d);
@@ -315,8 +372,13 @@ function AdminBerkas() {
     });
   };
   const toggleAll = () => {
-    if (selected.size === grouped.length) setSelected(new Set());
-    else setSelected(new Set(grouped.map((g) => g.key)));
+    const pageKeys = visibleGroups.map((g) => g.key);
+    const allPageSelected = pageKeys.length > 0 && pageKeys.every((key) => selected.has(key));
+    setSelected((previous) => {
+      const next = new Set(previous);
+      pageKeys.forEach((key) => (allPageSelected ? next.delete(key) : next.add(key)));
+      return next;
+    });
   };
   const bulkDelete = async () => {
     if (selected.size === 0) return;
@@ -377,6 +439,7 @@ function AdminBerkas() {
           <h1 className="text-2xl font-bold text-foreground">Pengiriman Berkas</h1>
           <p className="text-sm text-muted-foreground">
             {grouped.length} pengirim · {docs.length} berkas total
+            {loadingMore ? " · memuat arsip lama…" : ""}
           </p>
         </div>
         <div className="flex gap-2">
@@ -513,6 +576,16 @@ function AdminBerkas() {
             <option value="approved">Disetujui (Kandidat)</option>
             <option value="rejected">Ditolak</option>
           </select>
+          <select
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+            aria-label="Jumlah data per halaman"
+          >
+            <option value={20}>20 per halaman</option>
+            <option value={50}>50 per halaman</option>
+            <option value={100}>100 per halaman</option>
+          </select>
         </div>
       </Card>
 
@@ -528,7 +601,7 @@ function AdminBerkas() {
         <>
         {/* Mobile: kartu */}
         <div className="grid gap-3 md:hidden">
-          {grouped.map((g) => (
+          {visibleGroups.map((g) => (
             <Card key={g.key} className="rounded-2xl p-3 shadow-soft">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
@@ -577,7 +650,7 @@ function AdminBerkas() {
               <TableRow className="bg-muted/40">
                 <TableHead className="w-10">
                   <Checkbox
-                    checked={grouped.length > 0 && selected.size === grouped.length}
+                    checked={visibleGroups.length > 0 && visibleGroups.every((g) => selected.has(g.key))}
                     onCheckedChange={toggleAll}
                     aria-label="Pilih semua"
                   />
@@ -592,7 +665,7 @@ function AdminBerkas() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {grouped.map((g) => (
+              {visibleGroups.map((g) => (
                 <TableRow
                   key={g.key}
                   className="align-top"
@@ -660,6 +733,34 @@ function AdminBerkas() {
             </TableBody>
           </Table>
         </Card>
+        {totalPages > 1 && (
+          <Card className="flex flex-col gap-3 rounded-2xl px-4 py-3 shadow-soft sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-xs text-muted-foreground">
+              Menampilkan {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, grouped.length)} dari {grouped.length} pengirim
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              >
+                Sebelumnya
+              </Button>
+              <span className="min-w-[92px] text-center text-xs font-semibold">
+                Halaman {currentPage} / {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              >
+                Selanjutnya
+              </Button>
+            </div>
+          </Card>
+        )}
         </>
       )}
 
