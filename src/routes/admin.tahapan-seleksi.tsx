@@ -33,6 +33,7 @@ type Row = {
   token: string | null;
   candidate_status: Status;
   fast_track: boolean | null;
+  payment_status: string | null;
   extra: Record<string, unknown> | null;
 };
 
@@ -65,20 +66,38 @@ function AdminTahapanSeleksi() {
   const [ann, setAnn] = useState<AnnState>({});
   const [saving, setSaving] = useState<string | null>(null);
 
+  const fetchAllRegistrations = async (): Promise<Row[]> => {
+    const result: Row[] = [];
+    const pageSize = 1000;
+    for (let from = 0; ; from += pageSize) {
+      const { data, error } = await supabase
+        .from("registrations")
+        .select(
+          "id, full_name, email, kind, token, candidate_status, fast_track, payment_status, extra",
+        )
+        .order("created_at", { ascending: false })
+        .range(from, from + pageSize - 1);
+      if (error) {
+        toast.error(error.message);
+        break;
+      }
+      const page = (data ?? []) as Row[];
+      result.push(...page);
+      if (page.length < pageSize) break;
+    }
+    return result;
+  };
+
   const load = async () => {
     setLoading(true);
-    const [r, s] = await Promise.all([
-      supabase
-        .from("registrations")
-        .select("id, full_name, email, kind, token, candidate_status, fast_track, extra")
-        .order("created_at", { ascending: false }),
+    const [registrationRows, s] = await Promise.all([
+      fetchAllRegistrations(),
       supabase
         .from("site_settings")
         .select("key, value")
         .in("key", ANNOUNCEMENTS.map((a) => a.key) as string[]),
     ]);
-    if (r.error) toast.error(r.error.message);
-    setRows((r.data ?? []) as Row[]);
+    setRows(registrationRows);
     const next: AnnState = {};
     for (const a of ANNOUNCEMENTS) next[a.key] = { published: false, message: "" };
     for (const row of s.data ?? []) {
@@ -114,10 +133,29 @@ function AdminTahapanSeleksi() {
     toast.success(status === "approved" ? "Ditandai lolos" : "Ditandai tidak lolos");
   };
 
-  // Peserta yang relevan: sudah lolos seleksi administrasi
+  const isPremiumPaid = (row: Row) =>
+    !!row.fast_track &&
+    row.extra?.fast_track_type === "premium" &&
+    (row.payment_status ?? "").toLowerCase() === "paid";
+
+  // Peserta yang relevan: disetujui pada seleksi administrasi atau FT Premium
+  // valid yang memang otomatis lolos administrasi.
   const eligible = useMemo(
-    () => rows.filter((r) => r.candidate_status === "approved"),
+    () => rows.filter((r) => r.candidate_status === "approved" || isPremiumPaid(r)),
     [rows],
+  );
+
+  const trackCounts = useMemo(
+    () => ({
+      regular: eligible.filter((row) => !row.fast_track).length,
+      standard: eligible.filter(
+        (row) => !!row.fast_track && row.extra?.fast_track_type !== "premium",
+      ).length,
+      premium: eligible.filter(
+        (row) => !!row.fast_track && row.extra?.fast_track_type === "premium",
+      ).length,
+    }),
+    [eligible],
   );
 
   const filtered = useMemo(() => {
@@ -194,6 +232,17 @@ function AdminTahapanSeleksi() {
       </div>
 
       <Card className="p-5">
+        <div className="mb-4 flex flex-wrap gap-2 border-b border-border pb-4">
+          <Badge variant="outline" className="border-slate-300 bg-slate-50 text-slate-700">
+            Reguler: {trackCounts.regular}
+          </Badge>
+          <Badge variant="outline" className="border-orange-300 bg-orange-50 text-orange-700">
+            FT Standar: {trackCounts.standard}
+          </Badge>
+          <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700">
+            FT Premium: {trackCounts.premium}
+          </Badge>
+        </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -240,6 +289,7 @@ function AdminTahapanSeleksi() {
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     {r.token ? <TokenBadge token={r.token} /> : null}
                     <Badge variant="outline">{KIND_LABEL[r.kind] ?? r.kind}</Badge>
+                    <TrackBadge row={r} />
                   </div>
                   <div className="mt-3 space-y-2">
                     <div>
@@ -269,6 +319,7 @@ function AdminTahapanSeleksi() {
                   <TableHead>Peserta</TableHead>
                   <TableHead>Kode</TableHead>
                   <TableHead>Kategori</TableHead>
+                  <TableHead>Jalur</TableHead>
                   <TableHead>Tes Potensi Akademik</TableHead>
                   <TableHead>Interview</TableHead>
                 </TableRow>
@@ -286,6 +337,9 @@ function AdminTahapanSeleksi() {
                       <TableCell>{r.token ? <TokenBadge token={r.token} /> : "—"}</TableCell>
                       <TableCell>
                         <Badge variant="outline">{KIND_LABEL[r.kind] ?? r.kind}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <TrackBadge row={r} />
                       </TableCell>
                       <TableCell>
                         <StageCell
@@ -310,6 +364,28 @@ function AdminTahapanSeleksi() {
         </div>
       </Card>
     </div>
+  );
+}
+
+function TrackBadge({ row }: { row: Row }) {
+  if (!row.fast_track) {
+    return (
+      <Badge variant="outline" className="border-slate-300 bg-slate-50 text-slate-700">
+        Reguler
+      </Badge>
+    );
+  }
+  if (row.extra?.fast_track_type === "premium") {
+    return (
+      <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700">
+        FT Premium
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="outline" className="border-orange-300 bg-orange-50 text-orange-700">
+      FT Standar
+    </Badge>
   );
 }
 
