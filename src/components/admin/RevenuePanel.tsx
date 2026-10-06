@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   AlertCircle,
+  CalendarRange,
   Loader2,
   TrendingUp,
   TrendingDown,
@@ -11,6 +13,7 @@ import {
   Wallet,
   Zap,
   Clock,
+  X,
 } from "lucide-react";
 
 type PayRow = {
@@ -72,6 +75,14 @@ const dayLabel = (key: string) =>
     new Date(`${key}T00:00:00Z`),
   );
 
+const fullDayLabel = (key: string) =>
+  new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${key}T00:00:00Z`));
+
 type RangeKey = "all" | 30 | 14 | 7 | 1;
 
 const RANGES: { key: RangeKey; label: string }[] = [
@@ -86,6 +97,8 @@ export function RevenuePanel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [range, setRange] = useState<RangeKey>(14);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [rows, setRows] = useState<{ created_at: string; amount: number; tier: Tier }[]>([]);
   const mountedRef = useRef(true);
   const requestRef = useRef(0);
@@ -94,29 +107,33 @@ export function RevenuePanel() {
     const requestId = ++requestRef.current;
     if (showLoading) setLoading(true);
     setError(null);
-    const since = new Date();
-    since.setDate(since.getDate() - 365);
-    since.setHours(0, 0, 0, 0);
+    // Ambil seluruh riwayat dengan pagination. Sebelumnya query dibatasi 365 hari
+    // dan 5.000 baris sehingga pembayaran lama terlihat seperti hilang.
+    const list: PayRow[] = [];
+    const pageSize = 1000;
+    let from = 0;
+    while (true) {
+      const { data, error: paymentsError } = await supabase
+        .from("payments")
+        .select("id,amount,created_at,registration_id")
+        .eq("status", "paid")
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
+        .range(from, from + pageSize - 1);
 
-    const paymentsResult = await supabase
-      .from("payments")
-      .select("id,amount,created_at,registration_id")
-      .eq("status", "paid")
-      .gte("created_at", since.toISOString())
-      .order("created_at", { ascending: false })
-      .limit(5000);
-
-    const { data: pays, error: paymentsError } = paymentsResult;
-
-    if (paymentsError) {
-      if (mountedRef.current && requestId === requestRef.current) {
-        setError(`Data pendapatan gagal dimuat: ${paymentsError.message}`);
-        setLoading(false);
+      if (paymentsError) {
+        if (mountedRef.current && requestId === requestRef.current) {
+          setError(`Data pendapatan gagal dimuat: ${paymentsError.message}`);
+          setLoading(false);
+        }
+        return;
       }
-      return;
-    }
 
-    const list = (pays || []) as PayRow[];
+      const page = (data || []) as PayRow[];
+      list.push(...page);
+      if (page.length < pageSize) break;
+      from += pageSize;
+    }
     const ids = Array.from(
       new Set(list.map((payment) => payment.registration_id).filter(Boolean)),
     ) as string[];
@@ -199,12 +216,25 @@ export function RevenuePanel() {
     };
   }, [loadRevenue]);
 
+  const todayKey = jakartaKey(new Date());
+  const customRangeActive = Boolean(dateFrom || dateTo);
+  const invalidCustomRange = Boolean(dateFrom && dateTo && dateFrom > dateTo);
+
   const days = useMemo<DayRow[]>(() => {
     const out: DayRow[] = [];
-    const todayKey = jakartaKey(new Date());
+    if (invalidCustomRange) return out;
 
     let startKey: string;
-    if (range !== "all") {
+    let endKey = todayKey;
+    if (customRangeActive) {
+      startKey = dateFrom || (rows.length
+        ? rows.reduce((earliest, row) => {
+            const key = jakartaKey(new Date(row.created_at));
+            return key < earliest ? key : earliest;
+          }, jakartaKey(new Date(rows[0].created_at)))
+        : todayKey);
+      endKey = dateTo || todayKey;
+    } else if (range !== "all") {
       startKey = addDays(todayKey, -(range - 1));
     } else if (rows.length) {
       startKey = rows.reduce(
@@ -218,9 +248,9 @@ export function RevenuePanel() {
       startKey = todayKey;
     }
 
-    const span = Math.max(1, dayDistance(startKey, todayKey) + 1);
-    for (let i = span - 1; i >= 0; i--) {
-      const key = addDays(todayKey, -i);
+    const span = Math.max(1, dayDistance(startKey, endKey) + 1);
+    for (let i = 0; i < span; i++) {
+      const key = addDays(startKey, i);
       out.push({
         key,
         label: dayLabel(key),
@@ -245,10 +275,40 @@ export function RevenuePanel() {
       }
     }
     return out;
-  }, [rows, range]);
+  }, [rows, range, dateFrom, dateTo, customRangeActive, invalidCustomRange, todayKey]);
 
-  const today = days[days.length - 1];
-  const yesterday = days[days.length - 2];
+  const totalsForDay = useCallback(
+    (key: string): DayRow => {
+      const result: DayRow = {
+        key,
+        label: dayLabel(key),
+        total: 0,
+        countStandard: 0,
+        countPremium: 0,
+        amountStandard: 0,
+        amountPremium: 0,
+      };
+      rows.forEach((row) => {
+        if (jakartaKey(new Date(row.created_at)) !== key) return;
+        result.total += row.amount;
+        if (row.tier === "premium") {
+          result.countPremium++;
+          result.amountPremium += row.amount;
+        } else {
+          result.countStandard++;
+          result.amountStandard += row.amount;
+        }
+      });
+      return result;
+    },
+    [rows],
+  );
+
+  const today = useMemo(() => totalsForDay(todayKey), [todayKey, totalsForDay]);
+  const yesterday = useMemo(
+    () => totalsForDay(addDays(todayKey, -1)),
+    [todayKey, totalsForDay],
+  );
   const diff = (today?.total || 0) - (yesterday?.total || 0);
   const pct = yesterday?.total ? Math.round((diff / yesterday.total) * 100) : null;
   const trendUp = diff > 0;
@@ -256,7 +316,21 @@ export function RevenuePanel() {
 
   const totalRange = days.reduce((a, d) => a + d.total, 0);
   const maxDay = Math.max(1, ...days.map((d) => d.total));
-  const rangeLabel = range === "all" ? "Semua" : `${range} Hari`;
+  const rangeLabel = customRangeActive
+    ? dateFrom && dateTo
+      ? `${fullDayLabel(dateFrom)} – ${fullDayLabel(dateTo)}`
+      : dateFrom
+        ? `Sejak ${fullDayLabel(dateFrom)}`
+        : `Sampai ${fullDayLabel(dateTo)}`
+    : range === "all"
+      ? "Semua"
+      : `${range} Hari`;
+  const firstPaymentKey = rows.length
+    ? rows.reduce((earliest, row) => {
+        const key = jakartaKey(new Date(row.created_at));
+        return key < earliest ? key : earliest;
+      }, jakartaKey(new Date(rows[0].created_at)))
+    : null;
 
   if (loading) {
     return (
@@ -284,9 +358,13 @@ export function RevenuePanel() {
         {RANGES.map((r) => (
           <button
             key={String(r.key)}
-            onClick={() => setRange(r.key)}
+            onClick={() => {
+              setRange(r.key);
+              setDateFrom("");
+              setDateTo("");
+            }}
             className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
-              range === r.key
+              range === r.key && !customRangeActive
                 ? "border-primary bg-primary text-primary-foreground"
                 : "bg-white text-muted-foreground hover:border-primary/50 hover:text-foreground"
             }`}
@@ -295,6 +373,67 @@ export function RevenuePanel() {
           </button>
         ))}
       </div>
+
+      <Card className="rounded-2xl border bg-white p-4 shadow-sm">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="space-y-1.5">
+              <label htmlFor="revenue-date-from" className="text-xs font-semibold text-muted-foreground">
+                Dari tanggal
+              </label>
+              <div className="relative">
+                <CalendarRange className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="revenue-date-from"
+                  type="date"
+                  value={dateFrom}
+                  max={dateTo || todayKey}
+                  onChange={(event) => setDateFrom(event.target.value)}
+                  className="w-full pl-9 sm:w-[190px]"
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="revenue-date-to" className="text-xs font-semibold text-muted-foreground">
+                Sampai tanggal
+              </label>
+              <div className="relative">
+                <CalendarRange className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="revenue-date-to"
+                  type="date"
+                  value={dateTo}
+                  min={dateFrom || undefined}
+                  max={todayKey}
+                  onChange={(event) => setDateTo(event.target.value)}
+                  className="w-full pl-9 sm:w-[190px]"
+                />
+              </div>
+            </div>
+            {customRangeActive && (
+              <button
+                type="button"
+                onClick={() => {
+                  setDateFrom("");
+                  setDateTo("");
+                }}
+                className="inline-flex h-10 items-center justify-center gap-1.5 rounded-md border px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <X className="h-3.5 w-3.5" /> Reset tanggal
+              </button>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {rows.length.toLocaleString("id-ID")} pembayaran valid
+            {firstPaymentKey ? ` · data sejak ${fullDayLabel(firstPaymentKey)}` : ""}
+          </p>
+        </div>
+        {invalidCustomRange && (
+          <p className="mt-2 text-xs font-medium text-red-600">
+            Tanggal awal tidak boleh melewati tanggal akhir.
+          </p>
+        )}
+      </Card>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border bg-white p-5">
