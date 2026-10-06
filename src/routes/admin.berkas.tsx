@@ -45,6 +45,7 @@ export const Route = createFileRoute("/admin/berkas")({
 });
 
 type CandidateStatus = "pending" | "approved" | "rejected";
+type BerkasTab = "all" | "fast_pending" | "regular_pending" | "submitted";
 
 type Document = {
   id: string;
@@ -94,6 +95,7 @@ function AdminBerkas() {
   const [q, setQ] = useState("");
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi" | "umum" | "yatim">("all");
   const [filterStatus, setFilterStatus] = useState<"all" | CandidateStatus>("all");
+  const [berkasTab, setBerkasTab] = useState<BerkasTab>("all");
   const [detail, setDetail] = useState<Group | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [admPublished, setAdmPublished] = useState(false);
@@ -229,7 +231,12 @@ function AdminBerkas() {
     (r.extra as Record<string, unknown> | null)?.fast_track_type === "premium" &&
     (r.payment_status || "").toLowerCase() === "paid";
 
-  const grouped = useMemo<Group[]>(() => {
+  const isStandardPaid = (r: Registration): boolean =>
+    !!r.fast_track &&
+    (r.extra as Record<string, unknown> | null)?.fast_track_type !== "premium" &&
+    (r.payment_status || "").toLowerCase() === "paid";
+
+  const allGroups = useMemo<Group[]>(() => {
     const map = new Map<string, Document[]>();
     for (const d of docs) {
       const key = `${d.email.toLowerCase()}__${d.kind}`;
@@ -250,12 +257,13 @@ function AdminBerkas() {
       };
     });
 
-    // Tambahkan peserta Fast Track Premium (sudah bayar) yang belum mengirim berkas
-    // secara manual — mereka lolos berkas secara otomatis.
+    // Tambahkan peserta yang belum mengirim berkas agar dapat dipisahkan lewat tab.
+    // FT Premium tetap dimunculkan sebagai peserta auto-lolos administrasi.
     const existingKeys = new Set(rows.map((r) => r.key));
     const existingRegIds = new Set(rows.map((r) => r.reg?.id).filter(Boolean) as string[]);
     for (const r of regs) {
-      if (!isPremiumPaid(r)) continue;
+      const shouldAppearWithoutDocuments = !r.fast_track || isStandardPaid(r) || isPremiumPaid(r);
+      if (!shouldAppearWithoutDocuments) continue;
       const key = `${r.email.toLowerCase()}__${r.kind}`;
       if (existingKeys.has(key) || existingRegIds.has(r.id)) continue;
       rows.push({
@@ -268,6 +276,45 @@ function AdminBerkas() {
         status: (r.candidate_status ?? "pending") as CandidateStatus,
       });
       existingKeys.add(key);
+      existingRegIds.add(r.id);
+    }
+
+    return rows;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [docs, regs]);
+
+  const berkasCounts = useMemo(
+    () => ({
+      all: allGroups.length,
+      fast_pending: allGroups.filter(
+        (row) => !!row.reg && isStandardPaid(row.reg) && row.items.length === 0,
+      ).length,
+      regular_pending: allGroups.filter(
+        (row) => !!row.reg && !row.reg.fast_track && row.items.length === 0,
+      ).length,
+      submitted: allGroups.filter(
+        (row) => row.items.length > 0 && (!row.reg || !isPremiumPaid(row.reg)),
+      ).length,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [allGroups],
+  );
+
+  const grouped = useMemo<Group[]>(() => {
+    let rows = allGroups;
+
+    if (berkasTab === "fast_pending") {
+      rows = rows.filter(
+        (row) => !!row.reg && isStandardPaid(row.reg) && row.items.length === 0,
+      );
+    } else if (berkasTab === "regular_pending") {
+      rows = rows.filter(
+        (row) => !!row.reg && !row.reg.fast_track && row.items.length === 0,
+      );
+    } else if (berkasTab === "submitted") {
+      rows = rows.filter(
+        (row) => row.items.length > 0 && (!row.reg || !isPremiumPaid(row.reg)),
+      );
     }
 
     if (filterKind !== "all") rows = rows.filter((r) => r.kind === filterKind);
@@ -284,12 +331,11 @@ function AdminBerkas() {
       );
     }
     return rows;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [docs, regs, filterKind, filterStatus, q]);
+  }, [allGroups, berkasTab, filterKind, filterStatus, q]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [q, filterKind, filterStatus, pageSize]);
+  }, [q, filterKind, filterStatus, berkasTab, pageSize]);
 
   const totalPages = Math.max(1, Math.ceil(grouped.length / pageSize));
   useEffect(() => {
@@ -549,6 +595,33 @@ function AdminBerkas() {
       </Card>
 
       <Card className="rounded-2xl p-4 shadow-soft">
+        <div className="mb-4 flex flex-wrap gap-2 border-b border-border pb-4">
+          {(
+            [
+              ["all", "Semua", berkasCounts.all],
+              ["fast_pending", "FT Valid · Belum Kirim Berkas", berkasCounts.fast_pending],
+              ["regular_pending", "Reguler · Belum Kirim Berkas", berkasCounts.regular_pending],
+              ["submitted", "Sudah Kirim Berkas", berkasCounts.submitted],
+            ] as const
+          ).map(([key, label, count]) => (
+            <Button
+              key={key}
+              type="button"
+              size="sm"
+              variant={berkasTab === key ? "default" : "outline"}
+              onClick={() => setBerkasTab(key)}
+              className="gap-1.5"
+            >
+              {label}
+              <Badge
+                variant="secondary"
+                className={berkasTab === key ? "bg-white/20 text-current" : ""}
+              >
+                {count}
+              </Badge>
+            </Button>
+          ))}
+        </div>
         <div className="flex flex-wrap gap-2">
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
