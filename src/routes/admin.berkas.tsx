@@ -453,9 +453,13 @@ function AdminBerkas() {
               Hapus ({selected.size})
             </Button>
           )}
-          <Button onClick={exportExcel}>
+          <Button
+            onClick={exportExcel}
+            disabled={loadingMore}
+            title={loadingMore ? "Tunggu arsip lama selesai dimuat agar hasil export lengkap" : undefined}
+          >
             <Download className="h-4 w-4 mr-1" />
-            Export Excel
+            {loadingMore ? "Menyiapkan data…" : "Export Excel"}
           </Button>
         </div>
       </div>
