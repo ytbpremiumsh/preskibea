@@ -14,6 +14,7 @@ import {
   Clock,
   FileText,
   Zap,
+  ArrowUpRight,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -532,10 +533,10 @@ function AdminOverview() {
               <Link
                 key={it.label}
                 to={it.url as any}
-                className="block transition-transform hover:-translate-y-0.5 active:scale-[0.99]"
+                className="group block rounded-xl outline-none transition-transform hover:-translate-y-1 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
-                <Card className="relative h-full overflow-hidden border bg-white p-5 group">
-                  <div className="absolute top-0 right-0 h-24 w-24 -mr-8 -mt-8 rounded-full bg-primary/5 transition-transform group-hover:scale-110" />
+                <Card className="relative h-full overflow-hidden border bg-white p-5 transition-all duration-200 group-hover:border-primary/30 group-hover:shadow-lg">
+                  <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-primary/5 transition-transform duration-300 group-hover:scale-125" />
                   <div className="relative flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
@@ -550,28 +551,30 @@ function AdminOverview() {
                       </p>
                     </div>
                     <div
-                      className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${it.bg} ${it.color}`}
+                      className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-transform duration-200 group-hover:scale-110 ${it.bg} ${it.color}`}
                     >
                       <it.icon className="h-5 w-5" />
                     </div>
                   </div>
+                  <ArrowUpRight className="absolute bottom-3 right-3 h-3.5 w-3.5 translate-y-1 text-muted-foreground/0 transition-all duration-200 group-hover:translate-y-0 group-hover:text-primary" />
                 </Card>
               </Link>
             ))}
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {/* Category Stats Row */}
             {items.slice(5).map((it) => (
               <Link
                 key={it.label}
                 to={it.url as any}
-                className="block transition-transform hover:-translate-y-0.5 active:scale-[0.99]"
+                className="group block rounded-xl outline-none transition-transform hover:-translate-y-1 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
-                <Card className="h-full border bg-white p-5">
+                <Card className="relative h-full overflow-hidden border bg-white p-4 transition-all duration-200 group-hover:border-primary/30 group-hover:shadow-lg">
+                  <div className="absolute -right-7 -top-7 h-20 w-20 rounded-full bg-primary/[0.035] transition-transform duration-300 group-hover:scale-125" />
                   <div className="flex items-center gap-4">
                     <div
-                      className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${it.bg} ${it.color}`}
+                      className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-transform duration-200 group-hover:scale-110 ${it.bg} ${it.color}`}
                     >
                       <it.icon className="h-5 w-5" />
                     </div>
@@ -588,6 +591,7 @@ function AdminOverview() {
                       </p>
                     </div>
                   </div>
+                  <ArrowUpRight className="absolute bottom-3 right-3 h-3.5 w-3.5 translate-y-1 text-muted-foreground/0 transition-all duration-200 group-hover:translate-y-0 group-hover:text-primary" />
                 </Card>
               </Link>
             ))}
