@@ -393,94 +393,6 @@ export function RevenuePanel() {
           </button>
         </div>
       )}
-      <Card className="rounded-2xl border bg-white p-4 shadow-sm sm:p-5">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-sm font-bold text-foreground">Filter Periode</p>
-              <p className="text-xs text-muted-foreground">Pilih periode cepat atau tentukan tanggal sendiri.</p>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {rows.length.toLocaleString("id-ID")} pembayaran valid
-              {firstPaymentKey ? ` · data sejak ${fullDayLabel(firstPaymentKey)}` : ""}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            {RANGES.map((r) => (
-              <button
-                key={String(r.key)}
-                type="button"
-                onClick={() => {
-                  setRange(r.key);
-                  setDateFrom("");
-                  setDateTo("");
-                }}
-                className={`rounded-lg border px-3.5 py-2 text-xs font-semibold transition-all active:scale-[0.98] ${
-                  range === r.key && !customRangeActive
-                    ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                    : "bg-background text-muted-foreground hover:border-primary/50 hover:bg-primary/5 hover:text-foreground"
-                }`}
-              >
-                {r.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex flex-col gap-3 border-t border-border/70 pt-4 sm:flex-row sm:flex-wrap sm:items-end">
-            <div className="space-y-1.5">
-              <label htmlFor="revenue-date-from" className="text-xs font-semibold text-muted-foreground">
-                Dari tanggal
-              </label>
-              <div className="relative">
-                <CalendarRange className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="revenue-date-from"
-                  type="date"
-                  value={dateFrom}
-                  max={dateTo || todayKey}
-                  onChange={(event) => setDateFrom(event.target.value)}
-                  className="w-full pl-9 sm:w-[190px]"
-                />
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="revenue-date-to" className="text-xs font-semibold text-muted-foreground">
-                Sampai tanggal
-              </label>
-              <div className="relative">
-                <CalendarRange className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="revenue-date-to"
-                  type="date"
-                  value={dateTo}
-                  min={dateFrom || undefined}
-                  max={todayKey}
-                  onChange={(event) => setDateTo(event.target.value)}
-                  className="w-full pl-9 sm:w-[190px]"
-                />
-              </div>
-            </div>
-            {customRangeActive && (
-              <button
-                type="button"
-                onClick={() => {
-                  setDateFrom("");
-                  setDateTo("");
-                }}
-                className="inline-flex h-10 items-center justify-center gap-1.5 rounded-md border px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              >
-                <X className="h-3.5 w-3.5" /> Reset tanggal
-              </button>
-            )}
-          </div>
-        </div>
-        {invalidCustomRange && (
-          <p className="mt-2 text-xs font-medium text-red-600">
-            Tanggal awal tidak boleh melewati tanggal akhir.
-          </p>
-        )}
-      </Card>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border bg-white p-5">
@@ -582,6 +494,95 @@ export function RevenuePanel() {
           </div>
         </Card>
       </div>
+
+      <Card className="rounded-2xl border bg-white p-4 shadow-sm sm:p-5">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-sm font-bold text-foreground">Filter Periode</p>
+              <p className="text-xs text-muted-foreground">Pilih periode cepat atau tentukan tanggal sendiri.</p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {rows.length.toLocaleString("id-ID")} pembayaran valid
+              {firstPaymentKey ? ` · data sejak ${fullDayLabel(firstPaymentKey)}` : ""}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {RANGES.map((r) => (
+              <button
+                key={String(r.key)}
+                type="button"
+                onClick={() => {
+                  setRange(r.key);
+                  setDateFrom("");
+                  setDateTo("");
+                }}
+                className={`rounded-lg border px-3.5 py-2 text-xs font-semibold transition-all active:scale-[0.98] ${
+                  range === r.key && !customRangeActive
+                    ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                    : "bg-background text-muted-foreground hover:border-primary/50 hover:bg-primary/5 hover:text-foreground"
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-3 border-t border-border/70 pt-4 sm:flex-row sm:flex-wrap sm:items-end">
+            <div className="space-y-1.5">
+              <label htmlFor="revenue-date-from" className="text-xs font-semibold text-muted-foreground">
+                Dari tanggal
+              </label>
+              <div className="relative">
+                <CalendarRange className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="revenue-date-from"
+                  type="date"
+                  value={dateFrom}
+                  max={dateTo || todayKey}
+                  onChange={(event) => setDateFrom(event.target.value)}
+                  className="w-full pl-9 sm:w-[190px]"
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="revenue-date-to" className="text-xs font-semibold text-muted-foreground">
+                Sampai tanggal
+              </label>
+              <div className="relative">
+                <CalendarRange className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="revenue-date-to"
+                  type="date"
+                  value={dateTo}
+                  min={dateFrom || undefined}
+                  max={todayKey}
+                  onChange={(event) => setDateTo(event.target.value)}
+                  className="w-full pl-9 sm:w-[190px]"
+                />
+              </div>
+            </div>
+            {customRangeActive && (
+              <button
+                type="button"
+                onClick={() => {
+                  setDateFrom("");
+                  setDateTo("");
+                }}
+                className="inline-flex h-10 items-center justify-center gap-1.5 rounded-md border px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <X className="h-3.5 w-3.5" /> Reset tanggal
+              </button>
+            )}
+          </div>
+        </div>
+        {invalidCustomRange && (
+          <p className="mt-2 text-xs font-medium text-red-600">
+            Tanggal awal tidak boleh melewati tanggal akhir.
+          </p>
+        )}
+      </Card>
 
       <div className="space-y-3">
         <div>
