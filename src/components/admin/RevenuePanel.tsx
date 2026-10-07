@@ -380,7 +380,7 @@ export function RevenuePanel() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {error && (
         <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
@@ -393,29 +393,41 @@ export function RevenuePanel() {
           </button>
         </div>
       )}
-      <div className="flex flex-wrap items-center gap-2">
-        {RANGES.map((r) => (
-          <button
-            key={String(r.key)}
-            onClick={() => {
-              setRange(r.key);
-              setDateFrom("");
-              setDateTo("");
-            }}
-            className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
-              range === r.key && !customRangeActive
-                ? "border-primary bg-primary text-primary-foreground"
-                : "bg-white text-muted-foreground hover:border-primary/50 hover:text-foreground"
-            }`}
-          >
-            {r.label}
-          </button>
-        ))}
-      </div>
+      <Card className="rounded-2xl border bg-white p-4 shadow-sm sm:p-5">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-sm font-bold text-foreground">Filter Periode</p>
+              <p className="text-xs text-muted-foreground">Pilih periode cepat atau tentukan tanggal sendiri.</p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {rows.length.toLocaleString("id-ID")} pembayaran valid
+              {firstPaymentKey ? ` · data sejak ${fullDayLabel(firstPaymentKey)}` : ""}
+            </p>
+          </div>
 
-      <Card className="rounded-2xl border bg-white p-4 shadow-sm">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div className="flex flex-wrap items-center gap-2">
+            {RANGES.map((r) => (
+              <button
+                key={String(r.key)}
+                type="button"
+                onClick={() => {
+                  setRange(r.key);
+                  setDateFrom("");
+                  setDateTo("");
+                }}
+                className={`rounded-lg border px-3.5 py-2 text-xs font-semibold transition-all active:scale-[0.98] ${
+                  range === r.key && !customRangeActive
+                    ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                    : "bg-background text-muted-foreground hover:border-primary/50 hover:bg-primary/5 hover:text-foreground"
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-3 border-t border-border/70 pt-4 sm:flex-row sm:flex-wrap sm:items-end">
             <div className="space-y-1.5">
               <label htmlFor="revenue-date-from" className="text-xs font-semibold text-muted-foreground">
                 Dari tanggal
@@ -462,10 +474,6 @@ export function RevenuePanel() {
               </button>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">
-            {rows.length.toLocaleString("id-ID")} pembayaran valid
-            {firstPaymentKey ? ` · data sejak ${fullDayLabel(firstPaymentKey)}` : ""}
-          </p>
         </div>
         {invalidCustomRange && (
           <p className="mt-2 text-xs font-medium text-red-600">
