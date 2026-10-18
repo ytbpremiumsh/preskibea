@@ -2,6 +2,10 @@ name: Build Android APK
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/android-apk.yml'
   push:
     branches: [main]
     paths:
@@ -11,6 +15,7 @@ on:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       contents: read
     steps:
@@ -24,7 +29,10 @@ jobs:
           java-version: '17'
       - name: Install dependencies
         working-directory: mobile
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
+      - name: Check TypeScript
+        working-directory: mobile
+        run: npm run typecheck
       - name: Create Android project
         working-directory: mobile
         env:
@@ -32,7 +40,7 @@ jobs:
         run: npx expo prebuild --platform android --clean --non-interactive
       - name: Build installable APK
         working-directory: mobile/android
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease -Pandroid.enableMinifyInReleaseBuilds=true -Pandroid.enableShrinkResourcesInReleaseBuilds=true
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
