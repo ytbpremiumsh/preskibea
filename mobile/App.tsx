@@ -956,6 +956,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
                   {tab === "home" ? "Selamat datang kembali 👋" : "PRESTASI KITA ADMIN"}
                 </Text>
                 <Text style={s.headerTitle}>{title}</Text>
+                <Text style={{ color: C.muted, fontSize: 10 }}>Versi {Constants.expoConfig?.version}</Text>
                 <Text style={s.headerDate}>
                   {new Date().toLocaleDateString("id-ID", {
                     timeZone: "Asia/Jakarta",
@@ -1001,7 +1002,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
         animationType="slide"
         onRequestClose={() => setSettingsOpen(false)}
       >
-        <Pressable onPress={() => setSettingsOpen(false)} style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,.35)" }}>
+        <View onTouchEnd={() => setSettingsOpen(false)} style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,.35)" }}>
           <View
             style={{
               backgroundColor: "white",
@@ -1055,7 +1056,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
               <Text style={{ color: "#B42318" }}>Keluar akun</Text>
             </Pressable>
           </View>
-        </Pressable>
+        </View>
       </Modal>
       <DateFilterSheet
         visible={dateSheet}

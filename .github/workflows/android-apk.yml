@@ -61,9 +61,11 @@ jobs:
           '-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1536m -XX:+ExitOnOutOfMemoryError -Dfile.encoding=UTF-8'
           -Pandroid.enableMinifyInReleaseBuilds=true
           -Pandroid.enableShrinkResourcesInReleaseBuilds=true
+      - name: Name APK with version
+        run: cp mobile/android/app/build/outputs/apk/release/app-release.apk mobile/Prestasi-Kita-Admin-v$(node -p "require('./mobile/app.config.js').expo.version").apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: prestasi-kita-admin-apk
-          path: mobile/android/app/build/outputs/apk/release/app-release.apk
+          name: prestasi-kita-admin-${{ github.run_number }}
+          path: mobile/Prestasi-Kita-Admin-v*.apk
           if-no-files-found: error
