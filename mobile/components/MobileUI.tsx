@@ -40,6 +40,7 @@ const money = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n || 0);
 export function Cover({ loading, onContinue }: { loading: boolean; onContinue?: () => void }) {
+  const compact = Dimensions.get("window").height < 700;
   return (
     <LinearGradient colors={["#E8F0FF", "#F2ECFF", "#FCFCFF"]} style={u.cover}>
       <View style={u.coverBrand}>
@@ -51,15 +52,15 @@ export function Cover({ loading, onContinue }: { loading: boolean; onContinue?: 
       </View>
       <View style={{ flex: 1, justifyContent: "center" }}>
         <Text style={u.coverEyebrow}>RUANG KENDALI ANDA</Text>
-        <Text style={u.coverTitle}>
+        <Text style={[u.coverTitle, compact && { fontSize: 30, lineHeight: 36 }]}>
           Semua prestasi.{"\n"}
           <Text style={{ color: theme.primary }}>Satu kendali.</Text>
         </Text>
         <Text style={u.coverSub}>
           Pantau peserta dan pendapatan.{"\n"}Lebih teratur, lebih mudah.
         </Text>
-        <View style={{ alignItems: "center", marginVertical: 24 }}>
-          <Svg width="300" height="225" viewBox="0 0 300 225">
+        <View style={{ alignItems: "center", marginVertical: compact ? 14 : 24 }}>
+          <Svg width={compact ? 260 : 300} height={compact ? 180 : 225} viewBox="0 0 300 225">
             <Defs>
               <SvgGradient id="cover" x1="0" y1="0" x2="1" y2="1">
                 <Stop offset="0" stopColor="#9586FF" />
@@ -639,7 +640,7 @@ const u = StyleSheet.create({
     backgroundColor: "#FFFFFF0D",
   },
   metric: {
-    width: "48%",
+    width: "47%",
     flexGrow: 1,
     padding: 16,
     borderRadius: 22,
