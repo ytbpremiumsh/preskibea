@@ -6,6 +6,7 @@ import {
   matchesDate,
   filterLabel,
   selectionPoints,
+  selectionRange,
   jakartaDay,
 } from "./lib/finance";
 import {
@@ -453,23 +454,29 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
   const [pushState, setPushState] = useState<PushState | null>(null);
   const [lastSync, setLastSync] = useState<Date | null>(null);
   const [dataError, setDataError] = useState<string | null>(null);
-  const cacheKey = `prestasi-kita-dashboard-v1:${session.user.id}`;
-  const loadingRef = useRef(false),
+  const filterKey = JSON.stringify(filter);
+  const cacheKey = `prestasi-kita-dashboard-v2:${session.user.id}:${filterKey}`;
+  const [historyStart, setHistoryStart] = useState<string | undefined>();
+  const activeCacheKey = useRef(cacheKey);
+  activeCacheKey.current = cacheKey;
+  const loadingRef = useRef<string | false>(false),
     reloadRef = useRef(false),
     baselineRef = useRef(false);
   const seenPayments = useRef(new Set<string>());
   const load = useCallback(async (quiet = false) => {
-    if (loadingRef.current) {
+    if (loadingRef.current === cacheKey) {
       reloadRef.current = true;
       return;
     }
-    loadingRef.current = true;
+    loadingRef.current = cacheKey;
     if (!quiet) setLoading(true);
     try {
       do {
         reloadRef.current = false;
         const now = new Date();
         const day = periodRange("day", now);
+        const range = selectionRange(JSON.parse(filterKey) as DateFilter, now);
+        const registrationStart = new Date(Math.min(range.start.getTime(), day.start.getTime() - 86400000));
         const all: Payment[] = [];
         const pageSize = 1000;
         const loadPayments = async () => {
@@ -477,14 +484,15 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
           while (true) {
             const { data, error } = await supabase
               .from("payments")
-              .select("id,registration_id,amount,status,provider,created_at")
+              .select("id,registration_id,amount,status,provider,created_at,registration:registrations(id,full_name,token,kind,created_at,fast_track,extra)")
               .in("status", PAID_STATUSES)
-              .lte("created_at", now.toISOString())
+              .gte("created_at", range.start.toISOString())
+              .lt("created_at", range.end.toISOString())
               .order("created_at", { ascending: false })
               .order("id", { ascending: false })
               .range(offset, offset + pageSize - 1);
             if (error) throw error;
-            all.push(...((data ?? []) as Payment[]));
+            all.push(...((data ?? []) as unknown as Payment[]));
             if ((data ?? []).length < pageSize) break;
             offset += pageSize;
           }
@@ -498,7 +506,8 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
               .select(
                 "id,full_name,token,kind,created_at,fast_track,fast_track_type:extra->>fast_track_type",
               )
-              .lte("created_at", now.toISOString())
+              .gte("created_at", registrationStart.toISOString())
+              .lt("created_at", new Date(Math.max(range.end.getTime(), day.end.getTime())).toISOString())
               .order("created_at", { ascending: false })
               .order("id", { ascending: false })
               .range(regOffset, regOffset + pageSize - 1);
@@ -513,17 +522,25 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
             regOffset += pageSize;
           }
         };
-        await Promise.all([loadPayments(), loadRegistrations()]);
+        const [, , countResult, firstResult] = await Promise.all([
+          loadPayments(), loadRegistrations(),
+          supabase.from("registrations").select("id", { count: "exact", head: true }),
+          supabase.from("registrations").select("created_at").order("created_at", { ascending: true }).limit(1),
+        ]);
+        if (countResult.error) throw countResult.error;
+        if (firstResult.error) throw firstResult.error;
         const map = new Map(rs.map((r) => [r.id, r]));
-        if (!mounted.current) break;
-        const mapped = all.map((p) => ({ ...p, registration: map.get(p.registration_id) }));
+        if (!mounted.current || activeCacheKey.current !== cacheKey) break;
+        const mapped = all.map((p) => ({ ...p, registration: p.registration ?? map.get(p.registration_id) }));
         const fresh = baselineRef.current
           ? mapped.filter((p) => !seenPayments.current.has(p.id))
           : [];
         mapped.forEach((p) => seenPayments.current.add(p.id));
         baselineRef.current = true;
         setRegs(rs);
-        setTotal(rs.length);
+        setTotal(countResult.count ?? rs.length);
+        const first = firstResult.data?.[0]?.created_at;
+        setHistoryStart(first ? jakartaDay(new Date(first)) : undefined);
         setToday(
           rs.filter((r) => new Date(r.created_at) >= day.start && new Date(r.created_at) < day.end)
             .length,
@@ -539,7 +556,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
         setDataError(null);
         const syncedAt = new Date();
         setLastSync(syncedAt);
-        void AsyncStorage.setItem(cacheKey, JSON.stringify({ payments: all, regs: rs, syncedAt: syncedAt.toISOString() })).catch(() => {});
+        void AsyncStorage.setItem(cacheKey, JSON.stringify({ payments: mapped, regs: rs, total: countResult.count, first, syncedAt: syncedAt.toISOString() })).catch(() => {});
         setLoading(false);
         // Only payments discovered after the initial snapshot generate local alerts.
         for (const payment of fresh) {
@@ -566,22 +583,24 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
                   : null,
             }).catch((error) => console.warn("Notifikasi lokal gagal", error));
         }
-      } while (reloadRef.current && mounted.current);
+      } while (reloadRef.current && mounted.current && activeCacheKey.current === cacheKey);
     } catch (error) {
-      if (mounted.current)
+      if (mounted.current && activeCacheKey.current === cacheKey)
         setDataError(
           `Sinkronisasi gagal: ${(error as { message?: string }).message ?? String(error)}. Data terakhir tetap ditampilkan.`,
         );
     } finally {
-      loadingRef.current = false;
-      if (mounted.current) {
+      if (loadingRef.current === cacheKey) loadingRef.current = false;
+      if (mounted.current && activeCacheKey.current === cacheKey) {
         setLoading(false);
         setRefreshing(false);
       }
     }
-  }, [cacheKey]);
+  }, [cacheKey, filterKey]);
   useEffect(() => {
     mounted.current = true;
+    baselineRef.current = false;
+    setLoading(true);
     let debounce: ReturnType<typeof setTimeout> | undefined;
     let disposed = false;
     const setupPush = async () => {
@@ -612,11 +631,12 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
             const ps = cached.payments as Payment[];
             const map = new Map(rs.map(r => [r.id, r]));
             setRegs(rs);
-            setTotal(rs.length);
+            setTotal(cached.total ?? rs.length);
+            setHistoryStart(cached.first ? jakartaDay(new Date(cached.first)) : undefined);
             const day = periodRange("day", new Date());
             setToday(rs.filter(r => new Date(r.created_at) >= day.start && new Date(r.created_at) < day.end).length);
             setYesterday(rs.filter(r => new Date(r.created_at).getTime() >= day.start.getTime() - 86400000 && new Date(r.created_at) < day.start).length);
-            setPayments(ps.map(p => ({ ...p, registration: map.get(p.registration_id) })));
+            setPayments(ps.map(p => ({ ...p, registration: p.registration ?? map.get(p.registration_id) })));
             setLastSync(new Date(cached.syncedAt));
             setLoading(false);
           }
@@ -677,8 +697,8 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
     const dates = [...regs.map((r) => r.created_at), ...payments.map((p) => p.created_at)]
       .filter(Boolean)
       .sort();
-    return dates[0] ? jakartaDay(new Date(dates[0])) : undefined;
-  }, [regs, payments]);
+    return historyStart ?? (dates[0] ? jakartaDay(new Date(dates[0])) : undefined);
+  }, [regs, payments, historyStart]);
   const selectedLabel = filterLabel(filter, lastSync ?? new Date(), firstDate);
   const filteredRegs = useMemo(
     () => regs.filter((r) => matchesDate(r.created_at, filter, lastSync ?? new Date(), firstDate)),
@@ -1186,7 +1206,8 @@ export default function App() {
           .update({ active: false, updated_at: new Date().toISOString() })
           .eq("user_id", session.user.id);
         await supabase.auth.signOut();
-        await AsyncStorage.removeItem(`prestasi-kita-dashboard-v1:${session.user.id}`);
+        const keys = await AsyncStorage.getAllKeys();
+        await Promise.all(keys.filter(key => key.startsWith(`prestasi-kita-dashboard-v2:${session.user.id}:`) || key === `prestasi-kita-dashboard-v1:${session.user.id}`).map(key => AsyncStorage.removeItem(key)));
         setSession(null);
       }}
     />

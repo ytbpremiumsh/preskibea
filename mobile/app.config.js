@@ -24,7 +24,7 @@ module.exports = {
   expo: {
     name: "Prestasi Kita Admin",
     slug: "prestasi-kita-admin",
-    version: "1.4.0",
+    version: "1.4.1",
     orientation: "portrait",
     runtimeVersion: { policy: "fingerprint" },
     updates: {
@@ -40,7 +40,7 @@ module.exports = {
     android: {
       package: "com.prestasikita.admin",
       ...(hasFirebase ? { googleServicesFile } : {}),
-      versionCode: 11,
+      versionCode: 12,
       adaptiveIcon: {
         foregroundImage: "./assets/prestasi-kita-icon.png",
         backgroundColor: "#FFFFFF",
