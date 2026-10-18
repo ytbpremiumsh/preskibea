@@ -24,6 +24,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
+import * as Updates from "expo-updates";
 import * as Notifications from "expo-notifications";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { createClient, Session } from "@supabase/supabase-js";
@@ -406,6 +407,37 @@ function ListHeading({ title, sub, empty }: { title: string; sub: string; empty:
 function Dashboard({ session, logout }: { session: Session; logout: () => void }) {
   const [tab, setTab] = useState<Tab>("home");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const checkUpdate = async () => {
+    if (updating) return;
+    if (!Updates.isEnabled) {
+      Alert.alert("Pembaruan belum terhubung", "Hubungkan proyek Expo EAS sebelum pembaruan langsung dapat digunakan.");
+      return;
+    }
+    setUpdating(true);
+    try {
+      const result = await Updates.checkForUpdateAsync();
+      if (!result.isAvailable) {
+        Alert.alert("Aplikasi terbaru", "Tidak ada pembaruan baru.");
+        return;
+      }
+      await Updates.fetchUpdateAsync();
+      Alert.alert("Pembaruan siap", "Mulai ulang untuk menggunakan pembaruan?", [
+        { text: "Nanti", style: "cancel" },
+        { text: "Mulai ulang", onPress: () => { void Updates.reloadAsync(); } },
+      ]);
+    } catch {
+      Alert.alert("Pembaruan gagal", "Periksa koneksi lalu coba lagi. Versi saat ini tetap dapat digunakan.");
+    } finally { setUpdating(false); }
+  };
+  useEffect(() => {
+    let active = true;
+    if (Updates.isEnabled) void Updates.checkForUpdateAsync().then(result => {
+      if (active) setUpdateAvailable(result.isAvailable);
+    }).catch(() => {});
+    return () => { active = false; };
+  }, []);
   const [filter, setFilter] = useState<DateFilter>({ period: "day" });
   const [dateSheet, setDateSheet] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -421,6 +453,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
   const [pushState, setPushState] = useState<PushState | null>(null);
   const [lastSync, setLastSync] = useState<Date | null>(null);
   const [dataError, setDataError] = useState<string | null>(null);
+  const cacheKey = `prestasi-kita-dashboard-v1:${session.user.id}`;
   const loadingRef = useRef(false),
     reloadRef = useRef(false),
     baselineRef = useRef(false);
@@ -438,7 +471,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
         const now = new Date();
         const day = periodRange("day", now);
         const all: Payment[] = [];
-        const pageSize = 500;
+        const pageSize = 1000;
         const loadPayments = async () => {
           let offset = 0;
           while (true) {
@@ -504,7 +537,9 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
         );
         setPayments(mapped);
         setDataError(null);
-        setLastSync(new Date());
+        const syncedAt = new Date();
+        setLastSync(syncedAt);
+        void AsyncStorage.setItem(cacheKey, JSON.stringify({ payments: all, regs: rs, syncedAt: syncedAt.toISOString() })).catch(() => {});
         setLoading(false);
         // Only payments discovered after the initial snapshot generate local alerts.
         for (const payment of fresh) {
@@ -544,7 +579,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
         setRefreshing(false);
       }
     }
-  }, []);
+  }, [cacheKey]);
   useEffect(() => {
     mounted.current = true;
     let debounce: ReturnType<typeof setTimeout> | undefined;
@@ -567,7 +602,29 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
     void setupPush().catch((error) =>
       setPushState({ local: false, remote: false, message: String(error) }),
     );
-    void load();
+    const restoreAndLoad = async () => {
+      try {
+        const raw = await AsyncStorage.getItem(cacheKey);
+        if (raw && !disposed) {
+          const cached = JSON.parse(raw);
+          if (Array.isArray(cached.payments) && Array.isArray(cached.regs) && Date.now() - new Date(cached.syncedAt).getTime() < 86400000) {
+            const rs = cached.regs as Registration[];
+            const ps = cached.payments as Payment[];
+            const map = new Map(rs.map(r => [r.id, r]));
+            setRegs(rs);
+            setTotal(rs.length);
+            const day = periodRange("day", new Date());
+            setToday(rs.filter(r => new Date(r.created_at) >= day.start && new Date(r.created_at) < day.end).length);
+            setYesterday(rs.filter(r => new Date(r.created_at).getTime() >= day.start.getTime() - 86400000 && new Date(r.created_at) < day.start).length);
+            setPayments(ps.map(p => ({ ...p, registration: map.get(p.registration_id) })));
+            setLastSync(new Date(cached.syncedAt));
+            setLoading(false);
+          }
+        }
+      } catch { /* A damaged cache must not block the live request. */ }
+      if (!disposed) void load(true);
+    };
+    void restoreAndLoad();
     const channel = supabase
       .channel(`mobile-admin-${session.user.id}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "payments" }, refresh)
@@ -577,7 +634,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
       });
     const poll = setInterval(() => {
       if (AppState.currentState === "active" && !loadingRef.current) void load(true);
-    }, 15000);
+    }, 60000);
     const notification = Notifications.addNotificationReceivedListener(refresh);
     const tap = Notifications.addNotificationResponseReceivedListener(() => {
       setTab("valid");
@@ -604,7 +661,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
       tokenListener.remove();
       void supabase.removeChannel(channel);
     };
-  }, [load, session.user.id]);
+  }, [load, session.user.id, cacheKey]);
 
   const toggle = async (v: boolean) => {
     setSound(v);
@@ -986,6 +1043,11 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
               onDates={() => setDateSheet(true)}
               label={selectedLabel}
             />
+            {updateAvailable && (
+              <Pressable disabled={updating} onPress={() => void checkUpdate()} style={{ padding: 14, backgroundColor: C.soft, borderRadius: 12, marginBottom: 12 }}>
+                <Text style={{ color: C.blue, fontWeight: "700" }}>{updating ? "Mengunduh pembaruan…" : "Versi baru tersedia · Update sekarang"}</Text>
+              </Pressable>
+            )}
             {dataError && <Text style={{ color: "#B42318", marginBottom: 12 }}>{dataError}</Text>}
             <Text style={{ color: C.muted, fontSize: 11, marginBottom: 8 }}>
               {lastSync
@@ -1013,6 +1075,9 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
             }}
           >
             <Text style={s.cardTitle}>Notifikasi pembayaran</Text>
+            <Pressable disabled={updating} onPress={() => void checkUpdate()}>
+              <Text style={{ color: C.blue, fontWeight: "700" }}>{updating ? "Mengunduh pembaruan…" : updateAvailable ? "Update sekarang" : "Cek pembaruan aplikasi"}</Text>
+            </Pressable>
             <Text style={{ color: C.muted }}>
               {pushState?.message ?? "Memeriksa notifikasi..."}
             </Text>
@@ -1121,6 +1186,7 @@ export default function App() {
           .update({ active: false, updated_at: new Date().toISOString() })
           .eq("user_id", session.user.id);
         await supabase.auth.signOut();
+        await AsyncStorage.removeItem(`prestasi-kita-dashboard-v1:${session.user.id}`);
         setSession(null);
       }}
     />
