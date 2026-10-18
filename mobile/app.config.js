@@ -24,7 +24,7 @@ module.exports = {
   expo: {
     name: "Prestasi Kita Admin",
     slug: "prestasi-kita-admin",
-    version: "1.2.1",
+    version: "1.3.0",
     orientation: "portrait",
     icon: "./assets/prestasi-kita-icon.png",
     userInterfaceStyle: "light",
@@ -32,7 +32,7 @@ module.exports = {
     android: {
       package: "com.prestasikita.admin",
       ...(hasFirebase ? { googleServicesFile } : {}),
-      versionCode: 7,
+      versionCode: 8,
       adaptiveIcon: {
         foregroundImage: "./assets/prestasi-kita-icon.png",
         backgroundColor: "#FFFFFF",
@@ -50,6 +50,7 @@ module.exports = {
         },
       ],
       "expo-secure-store",
+      "@react-native-community/datetimepicker",
     ],
     extra: {
       hasFirebase,

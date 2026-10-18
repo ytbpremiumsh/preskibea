@@ -1,5 +1,25 @@
 import "react-native-url-polyfill/auto";
-import { Period, PAID_STATUSES, periodRange, inPeriod, chartPoints } from "./lib/finance";
+import {
+  PAID_STATUSES,
+  periodRange,
+  DateFilter,
+  matchesDate,
+  filterLabel,
+  selectionPoints,
+  jakartaDay,
+} from "./lib/finance";
+import {
+  Cover,
+  HeroCard,
+  MetricCard,
+  FilterBar,
+  DateFilterSheet,
+  TrendChart,
+  Breakdown,
+  BottomNav,
+  LoadingCards,
+} from "./components/MobileUI";
+import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Constants from "expo-constants";
@@ -68,14 +88,14 @@ const supabase = createClient(X.supabaseUrl ?? "", X.supabasePublishableKey ?? "
   },
 });
 const C = {
-  blue: "#2463EB",
-  dark: "#1849B6",
-  soft: "#EDF3FF",
+  blue: "#6554F5",
+  dark: "#5045CE",
+  soft: "#EEEAFE",
   navy: "#14213D",
   text: "#182035",
   muted: "#7B8498",
   line: "#E8EBF2",
-  page: "#F3F6FC",
+  page: "#F7F8FD",
   white: "#FFF",
   green: "#20B77A",
   greenSoft: "#E9FAF3",
@@ -171,19 +191,17 @@ async function registerPush(uid: string, enabled: boolean): Promise<PushState> {
     };
   try {
     const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
-    const { error } = await supabase
-      .from("admin_push_devices")
-      .upsert(
-        {
-          user_id: uid,
-          push_token: token,
-          platform: Platform.OS,
-          sound_enabled: enabled,
-          active: true,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "push_token" },
-      );
+    const { error } = await supabase.from("admin_push_devices").upsert(
+      {
+        user_id: uid,
+        push_token: token,
+        platform: Platform.OS,
+        sound_enabled: enabled,
+        active: true,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "push_token" },
+    );
     if (error) throw error;
     return {
       remote: true,
@@ -201,18 +219,7 @@ async function registerPush(uid: string, enabled: boolean): Promise<PushState> {
 }
 
 function Splash() {
-  return (
-    <View style={s.splash}>
-      <ExpoStatusBar style="dark" />
-      <View style={s.splashLogo}>
-        <Image source={require("./assets/prestasi-kita-icon.png")} style={s.logo} />
-      </View>
-      <Text style={s.splashTitle}>Prestasi Kita</Text>
-      <Text style={s.splashSub}>Admin Financial Dashboard</Text>
-      <ActivityIndicator color={C.blue} size="large" style={{ marginTop: 30 }} />
-      <Text style={s.loadingText}>Menyiapkan data terbaru...</Text>
-    </View>
-  );
+  return <Cover loading />;
 }
 
 function Login({ done }: { done: (x: Session) => void }) {
@@ -294,37 +301,33 @@ function Login({ done }: { done: (x: Session) => void }) {
           onPress={submit}
           style={[s.loginButton, busy && { opacity: 0.65 }]}
         >
-          {busy ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <>
-              <Text style={s.loginButtonText}>Masuk</Text>
-              <Ionicons name="arrow-forward" size={19} color="white" />
-            </>
-          )}
+          <LinearGradient
+            colors={["#806CF7", "#535CE0"]}
+            style={{
+              height: 53,
+              width: "100%",
+              borderRadius: 16,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 9,
+            }}
+          >
+            {busy ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <>
+                <Text style={s.loginButtonText}>Masuk ke ruang kendali</Text>
+                <Ionicons name="arrow-forward" size={19} color="white" />
+              </>
+            )}
+          </LinearGradient>
         </Pressable>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
-function Segment({ value, set }: { value: Period; set: (v: Period) => void }) {
-  return (
-    <View style={s.segment}>
-      {(["day", "week", "month"] as Period[]).map((v) => (
-        <Pressable
-          key={v}
-          onPress={() => set(v)}
-          style={[s.segmentItem, value === v && s.segmentActive]}
-        >
-          <Text style={[s.segmentText, value === v && s.segmentTextActive]}>
-            {v === "day" ? "Harian" : v === "week" ? "Mingguan" : "Bulanan"}
-          </Text>
-        </Pressable>
-      ))}
-    </View>
-  );
-}
 function Badge({ r }: { r?: Registration }) {
   const t = tier(r),
     p = t === "FT Premium",
@@ -400,94 +403,11 @@ function ListHeading({ title, sub, empty }: { title: string; sub: string; empty:
   );
 }
 
-function Mini({
-  icon,
-  label,
-  value,
-  color,
-  bg,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  value: string;
-  color: string;
-  bg: string;
-}) {
-  return (
-    <View style={s.mini}>
-      <View style={[s.miniIcon, { backgroundColor: bg }]}>
-        <Ionicons name={icon} size={20} color={color} />
-      </View>
-      <Text style={s.miniValue}>{value}</Text>
-      <Text style={s.miniLabel}>{label}</Text>
-    </View>
-  );
-}
-
-function Chart({ payments, period }: { payments: Payment[]; period: Period }) {
-  const pts = chartPoints(payments, period);
-  const max = Math.max(...pts.map((p) => p.total), 1);
-  return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator
-      contentContainerStyle={{ paddingBottom: 8 }}
-    >
-      <View style={[s.chart, { width: Math.max(300, pts.length * 42) }]}>
-        {pts.map((p, i) => (
-          <View key={i} style={s.chartCol}>
-            <Text style={s.chartNum}>{p.total ? `${Math.round(p.total / 1000)}k` : "0"}</Text>
-            <View style={s.chartTrack}>
-              <View
-                style={[
-                  s.chartBar,
-                  {
-                    height: Math.max(2, (p.total / max) * 100),
-                    backgroundColor: i === pts.length - 1 ? C.gold : C.blue,
-                  },
-                ]}
-              />
-            </View>
-            <Text style={s.chartLabel}>{p.label}</Text>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
-  );
-}
-
-function Nav({ tab, set }: { tab: Tab; set: (v: Tab) => void }) {
-  const items: [Tab, keyof typeof Ionicons.glyphMap, string][] = [
-    ["home", "grid", "Dashboard"],
-    ["statistics", "stats-chart", "Statistik"],
-    ["valid", "shield-checkmark", "Valid"],
-    ["participants", "people", "Peserta"],
-  ];
-  return (
-    <View style={s.nav}>
-      {items.map(([k, i, l]) => (
-        <Pressable
-          key={k}
-          accessibilityRole="tab"
-          accessibilityLabel={l}
-          accessibilityState={{ selected: tab === k }}
-          onPress={() => set(k)}
-          style={s.navItem}
-        >
-          <View style={[s.navIcon, tab === k && s.navActive]}>
-            <Ionicons name={i} size={23} color={tab === k ? "white" : "#9AA3B4"} />
-          </View>
-          <Text style={[s.navText, tab === k && { color: C.dark }]}>{l}</Text>
-        </Pressable>
-      ))}
-    </View>
-  );
-}
-
 function Dashboard({ session, logout }: { session: Session; logout: () => void }) {
   const [tab, setTab] = useState<Tab>("home");
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [period, setPeriod] = useState<Period>("day");
+  const [filter, setFilter] = useState<DateFilter>({ period: "all" });
+  const [dateSheet, setDateSheet] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [regs, setRegs] = useState<Registration[]>([]);
   const [total, setTotal] = useState(0);
@@ -516,10 +436,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
       do {
         reloadRef.current = false;
         const now = new Date();
-        const month = periodRange("month", now),
-          week = periodRange("week", now),
-          day = periodRange("day", now);
-        const since = new Date(Math.min(month.start.getTime(), week.start.getTime()));
+        const day = periodRange("day", now);
         const all: Payment[] = [];
         let offset = 0;
         const pageSize = 500;
@@ -528,7 +445,6 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
             .from("payments")
             .select("id,registration_id,amount,status,provider,created_at")
             .in("status", PAID_STATUSES)
-            .gte("created_at", since.toISOString())
             .lte("created_at", now.toISOString())
             .order("created_at", { ascending: false })
             .order("id", { ascending: false })
@@ -538,42 +454,29 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
           if ((data ?? []).length < pageSize) break;
           offset += pageSize;
         }
-        const [rr, tr, dr, yr] = await Promise.all([
-          supabase
-            .from("registrations")
-            .select(
-              "id,full_name,token,kind,email,created_at,fast_track,payment_status,status,extra",
-            )
-            .order("created_at", { ascending: false })
-            .limit(300),
-          supabase.from("registrations").select("id", { count: "exact", head: true }),
-          supabase
-            .from("registrations")
-            .select("id", { count: "exact", head: true })
-            .gte("created_at", day.start.toISOString())
-            .lt("created_at", day.end.toISOString()),
-          supabase
-            .from("registrations")
-            .select("id", { count: "exact", head: true })
-            .gte("created_at", new Date(day.start.getTime() - 86400000).toISOString())
-            .lt("created_at", day.start.toISOString()),
-        ]);
-        for (const result of [rr, tr, dr, yr]) if (result.error) throw result.error;
-        const rs = (rr.data ?? []) as Registration[],
-          map = new Map(rs.map((r) => [r.id, r]));
-        const missing = [
-          ...new Set(all.map((p) => p.registration_id).filter((id) => !map.has(id))),
-        ];
-        for (let i = 0; i < missing.length; i += 200) {
+        const rs: Registration[] = [];
+        let regOffset = 0;
+        while (true) {
           const { data, error } = await supabase
             .from("registrations")
             .select(
-              "id,full_name,token,kind,email,created_at,fast_track,payment_status,status,extra",
+              "id,full_name,token,kind,created_at,fast_track,fast_track_type:extra->>fast_track_type",
             )
-            .in("id", missing.slice(i, i + 200));
+            .lte("created_at", now.toISOString())
+            .order("created_at", { ascending: false })
+            .order("id", { ascending: false })
+            .range(regOffset, regOffset + pageSize - 1);
           if (error) throw error;
-          (data ?? []).forEach((r) => map.set(r.id, r as Registration));
+          rs.push(
+            ...((data ?? []).map((r) => ({
+              ...r,
+              extra: { fast_track_type: r.fast_track_type },
+            })) as unknown as Registration[]),
+          );
+          if ((data ?? []).length < pageSize) break;
+          regOffset += pageSize;
         }
+        const map = new Map(rs.map((r) => [r.id, r]));
         if (!mounted.current) break;
         const mapped = all.map((p) => ({ ...p, registration: map.get(p.registration_id) }));
         const fresh = baselineRef.current
@@ -582,9 +485,18 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
         mapped.forEach((p) => seenPayments.current.add(p.id));
         baselineRef.current = true;
         setRegs(rs);
-        setTotal(tr.count ?? 0);
-        setToday(dr.count ?? 0);
-        setYesterday(yr.count ?? 0);
+        setTotal(rs.length);
+        setToday(
+          rs.filter((r) => new Date(r.created_at) >= day.start && new Date(r.created_at) < day.end)
+            .length,
+        );
+        setYesterday(
+          rs.filter(
+            (r) =>
+              new Date(r.created_at).getTime() >= day.start.getTime() - 86400000 &&
+              new Date(r.created_at) < day.start,
+          ).length,
+        );
         setPayments(mapped);
         setDataError(null);
         setLastSync(new Date());
@@ -658,7 +570,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
         if (status === "SUBSCRIBED") refresh();
       });
     const poll = setInterval(() => {
-      if (AppState.currentState === "active") void load(true);
+      if (AppState.currentState === "active" && !loadingRef.current) void load(true);
     }, 15000);
     const notification = Notifications.addNotificationReceivedListener(refresh);
     const tap = Notifications.addNotificationResponseReceivedListener(() => {
@@ -698,8 +610,25 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
       .update({ sound_enabled: v, updated_at: new Date().toISOString() })
       .eq("user_id", session.user.id);
   };
+  const firstDate = useMemo(() => {
+    const dates = [...regs.map((r) => r.created_at), ...payments.map((p) => p.created_at)]
+      .filter(Boolean)
+      .sort();
+    return dates[0] ? jakartaDay(new Date(dates[0])) : undefined;
+  }, [regs, payments]);
+  const selectedLabel = filterLabel(filter, lastSync ?? new Date(), firstDate);
+  const filteredRegs = useMemo(
+    () => regs.filter((r) => matchesDate(r.created_at, filter, lastSync ?? new Date(), firstDate)),
+    [regs, filter, lastSync, firstDate],
+  );
+  const points = useMemo(
+    () => selectionPoints(payments, filter, lastSync ?? new Date(), firstDate),
+    [payments, filter, lastSync, firstDate],
+  );
   const { fp, income, standard, premium, validCount } = useMemo(() => {
-    const fp = payments.filter((p) => inPeriod(p.created_at, period, lastSync ?? new Date()));
+    const fp = payments.filter((p) =>
+      matchesDate(p.created_at, filter, lastSync ?? new Date(), firstDate),
+    );
     const unique = new Map<string, Registration>();
     fp.forEach((p) => {
       if (p.registration) unique.set(p.registration.id, p.registration);
@@ -712,85 +641,137 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
       standard: valid.filter((r) => tier(r) === "FT Standard").length,
       premium: valid.filter((r) => tier(r) === "FT Premium").length,
     };
-  }, [payments, period, lastSync]);
+  }, [payments, filter, lastSync, firstDate]);
   const title =
     tab === "home"
-      ? "Dashboard Utama"
+      ? "Ringkasan Anda"
       : tab === "statistics"
-        ? "Statistik Pendapatan"
+        ? "Statistik pendapatan"
         : tab === "valid"
-          ? "Peserta Valid"
-          : "Seluruh Pendaftar";
+          ? "Pembayaran valid"
+          : "Ruang peserta";
+  const breakdown = [
+    {
+      label: "FT Standard",
+      amount: fp
+        .filter((p) => tier(p.registration) === "FT Standard")
+        .reduce((a, p) => a + Number(p.amount || 0), 0),
+      color: "#7564ED",
+    },
+    {
+      label: "FT Premium",
+      amount: fp
+        .filter((p) => tier(p.registration) === "FT Premium")
+        .reduce((a, p) => a + Number(p.amount || 0), 0),
+      color: "#E9A45E",
+    },
+    {
+      label: "Reguler / lainnya",
+      amount: fp
+        .filter((p) => !p.registration || tier(p.registration) === "Reguler")
+        .reduce((a, p) => a + Number(p.amount || 0), 0),
+      color: "#69CDB5",
+    },
+  ];
+  const Section = ({
+    title,
+    action,
+    onPress,
+  }: {
+    title: string;
+    action?: string;
+    onPress?: () => void;
+  }) => (
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 22,
+        marginBottom: 12,
+      }}
+    >
+      <Text style={s.cardTitle}>{title}</Text>
+      {action && (
+        <Pressable onPress={onPress}>
+          <Text style={{ fontSize: 11, color: C.blue, fontWeight: "700" }}>{action} →</Text>
+        </Pressable>
+      )}
+    </View>
+  );
   const body = () => {
-    if (loading)
-      return (
-        <View style={s.loading}>
-          <ActivityIndicator size="large" color={C.blue} />
-          <Text style={s.loadingText}>Mengambil data terbaru...</Text>
-        </View>
-      );
+    if (loading) return <LoadingCards />;
     if (tab === "home")
       return (
         <>
-          <View style={s.balance}>
-            <View style={s.balanceTop}>
-              <Text style={s.balanceLabel}>Total Pendapatan</Text>
-              <Text style={s.balanceBrand}>PRESTASI KITA</Text>
-            </View>
-            <Text style={s.balanceValue}>{rupiah(income)}</Text>
-            <View style={s.balanceBottom}>
-              <View>
-                <Text style={s.balanceSmall}>PESERTA VALID</Text>
-                <Text style={s.balanceCount}>{validCount} peserta</Text>
-              </View>
-              <Ionicons name="wallet" size={29} color="white" />
-            </View>
-          </View>
-          <Segment value={period} set={setPeriod} />
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={s.quick}
-          >
-            <Mini
-              icon="people"
-              color={C.blue}
-              bg={C.soft}
-              label="Total Pendaftar"
-              value={String(total)}
+          <HeroCard
+            label="Total pendapatan"
+            value={rupiah(income)}
+            detail={`${validCount} peserta valid · ${fp.length} transaksi`}
+          />
+          <Section title="Sekilas aktivitas" />
+          <View style={s.metricGrid}>
+            <MetricCard
+              label="Pendaftar dalam periode"
+              value={String(filteredRegs.length)}
+              icon="people-outline"
+              tint="#4A86E8"
+              bg="#EAF2FF"
             />
-            <Mini
-              icon="person-add"
-              color={C.purple}
-              bg="#F1EDFF"
-              label="Pendaftar Hari Ini"
-              value={String(today)}
+            <MetricCard
+              label="Peserta valid"
+              value={String(validCount)}
+              icon="checkmark-circle-outline"
+              tint="#24AB7B"
+              bg="#E5F8F0"
             />
-            <Mini
-              icon="time"
-              color="#1781A8"
-              bg="#E8F7FC"
-              label="Pendaftar Kemarin"
-              value={String(yesterday)}
-            />
-            <Mini
-              icon="flash"
-              color={C.gold}
-              bg={C.goldSoft}
-              label="FT Standard"
-              value={String(standard)}
-            />
-            <Mini
-              icon="diamond"
-              color={C.green}
-              bg={C.greenSoft}
-              label="FT Premium"
+            <MetricCard label="FT Standard valid" value={String(standard)} icon="flash-outline" />
+            <MetricCard
+              label="FT Premium valid"
               value={String(premium)}
+              icon="diamond-outline"
+              tint="#D18E32"
+              bg="#FFF4DE"
             />
-          </ScrollView>
+          </View>
+          <Section title="Akses cepat" />
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            {[
+              {
+                title: "Pilih tanggal",
+                icon: "calendar-outline",
+                action: () => setDateSheet(true),
+              },
+              {
+                title: "Lihat peserta",
+                icon: "people-outline",
+                action: () => setTab("participants"),
+              },
+            ].map((item) => (
+              <Pressable key={item.title} onPress={item.action} style={s.quickAction}>
+                <View style={s.quickIcon}>
+                  <Ionicons name={item.icon as any} size={21} color={C.blue} />
+                </View>
+                <Text style={s.quickLabel}>{item.title}</Text>
+                <Ionicons name="chevron-forward" size={14} color={C.muted} />
+              </Pressable>
+            ))}
+          </View>
+          <View style={s.card}>
+            <View style={s.cardHead}>
+              <View style={{ flex: 1 }}>
+                <Text style={s.cardTitle}>Tren pendapatan</Text>
+                <Text style={s.cardSub}>Ringkasan dari periode terpilih</Text>
+              </View>
+              <Pressable onPress={() => setTab("statistics")}>
+                <Ionicons name="arrow-forward-circle-outline" size={26} color={C.blue} />
+              </Pressable>
+            </View>
+            <TrendChart points={points} />
+          </View>
           <ListHeading
-            title="Pembayaran Terbaru"
-            sub="Transaksi berhasil terbaru"
+            title="Pembayaran terbaru"
+            sub={`${fp.length} transaksi dalam periode terpilih`}
             empty={!fp.length}
           />
         </>
@@ -798,30 +779,51 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
     if (tab === "statistics")
       return (
         <>
-          <Segment value={period} set={setPeriod} />
+          <HeroCard
+            label="Pendapatan dalam periode"
+            value={rupiah(income)}
+            detail={`${fp.length} transaksi berhasil`}
+            icon="stats-chart-outline"
+          />
           <View style={s.card}>
             <View style={s.cardHead}>
-              <View>
-                <Text style={s.cardTitle}>Grafik Pendapatan</Text>
-                <Text style={s.cardSub}>Periode WIB yang sama dengan total pendapatan</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={s.cardTitle}>Perjalanan pendapatan</Text>
+                <Text style={s.cardSub}>
+                  {filter.period === "all"
+                    ? "Sejak pendaftaran hingga sekarang"
+                    : "Sesuai rentang tanggal yang dipilih"}
+                </Text>
               </View>
-              <Ionicons name="analytics" size={23} color={C.blue} />
+              <View style={s.live}>
+                <View style={s.liveDot} />
+                <Text style={s.liveText}>LIVE</Text>
+              </View>
             </View>
-            <Chart payments={payments} period={period} />
+            <TrendChart points={points} />
           </View>
-          <View style={s.summary}>
-            <View style={s.summaryBox}>
-              <Text style={s.summaryLabel}>TOTAL PENDAPATAN</Text>
-              <Text style={s.summaryAmount}>{rupiah(income)}</Text>
-            </View>
-            <View style={s.summaryBox}>
-              <Text style={s.summaryLabel}>TRANSAKSI VALID</Text>
-              <Text style={s.summaryNumber}>{fp.length}</Text>
-            </View>
+          <View style={[s.metricGrid, { marginTop: 14 }]}>
+            <MetricCard
+              label="Transaksi berhasil"
+              value={String(fp.length)}
+              icon="receipt-outline"
+            />
+            <MetricCard
+              label="Rata-rata transaksi"
+              value={rupiah(fp.length ? income / fp.length : 0)}
+              icon="analytics-outline"
+              tint="#24AB7B"
+              bg="#E5F8F0"
+            />
+          </View>
+          <View style={s.card}>
+            <Text style={s.cardTitle}>Komposisi pendapatan</Text>
+            <Text style={s.cardSub}>Berdasarkan kategori peserta</Text>
+            <Breakdown rows={breakdown} />
           </View>
           <ListHeading
-            title="Riwayat Transaksi"
-            sub="Transaksi berhasil terbaru"
+            title="Riwayat transaksi"
+            sub={`${fp.length} transaksi · ${validCount} peserta valid`}
             empty={!fp.length}
           />
         </>
@@ -829,47 +831,71 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
     if (tab === "valid")
       return (
         <>
-          <Segment value={period} set={setPeriod} />
-          <View style={s.validHero}>
-            <View>
-              <Text style={s.heroLabel}>Peserta valid periode ini</Text>
-              <Text style={s.heroNumber}>{validCount}</Text>
-            </View>
-            <View>
-              <Text style={s.heroTier}>Standard {standard}</Text>
-              <Text style={s.heroTier}>Premium {premium}</Text>
-            </View>
+          <HeroCard
+            label="Peserta terverifikasi"
+            value={`${validCount} peserta`}
+            detail="Pembayaran berhasil dalam periode terpilih"
+            icon="shield-checkmark-outline"
+          />
+          <View style={[s.metricGrid, { marginTop: 16 }]}>
+            <MetricCard label="FT Standard" value={String(standard)} icon="flash-outline" />
+            <MetricCard
+              label="FT Premium"
+              value={String(premium)}
+              icon="diamond-outline"
+              tint="#D18E32"
+              bg="#FFF4DE"
+            />
+          </View>
+          <View style={s.infoNote}>
+            <Ionicons name="checkmark-circle" size={18} color={C.green} />
+            <Text style={s.infoText}>
+              Jumlah peserta dihitung unik. Setiap transaksi tetap tercatat di bawah.
+            </Text>
           </View>
           <ListHeading
-            title="Fast Track Standard & Premium"
-            sub="Pembayaran terverifikasi"
+            title="Pembayaran terverifikasi"
+            sub={`${fp.length} transaksi · ${selectedLabel}`}
             empty={!fp.length}
           />
         </>
       );
     return (
       <>
-        <View style={s.partHero}>
-          <Text style={s.heroLabel}>Total seluruh pendaftar</Text>
-          <Text style={s.partNumber}>{total}</Text>
-          <Text style={s.partSub}>
-            {today} hari ini · {yesterday} kemarin
+        <HeroCard
+          label="Pendaftar dalam periode"
+          value={`${filteredRegs.length} peserta`}
+          detail={`${total} total pendaftar sejak awal`}
+          icon="people-outline"
+        />
+        <View style={[s.metricGrid, { marginTop: 16 }]}>
+          <MetricCard
+            label="Pendaftar hari ini"
+            value={String(today)}
+            icon="person-add-outline"
+            tint="#4A86E8"
+            bg="#EAF2FF"
+          />
+          <MetricCard
+            label="Pendaftar kemarin"
+            value={String(yesterday)}
+            icon="time-outline"
+            tint="#24AB7B"
+            bg="#E5F8F0"
+          />
+        </View>
+        <View style={s.infoNote}>
+          <Ionicons name="calendar-outline" size={18} color={C.blue} />
+          <Text style={s.infoText}>
+            Daftar difilter menurut tanggal pendaftaran, sedangkan pendapatan menurut tanggal
+            transaksi.
           </Text>
         </View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={s.chips}
-        >
-          {["Reguler", "FT Standard", "FT Premium"].map((t) => (
-            <View key={t} style={s.chip}>
-              <Text style={s.chipText}>
-                {t} {regs.filter((r) => tier(r) === t).length}
-              </Text>
-            </View>
-          ))}
-        </ScrollView>
-        <ListHeading title="Pendaftar Terbaru" sub="300 pendaftar terbaru" empty={!regs.length} />
+        <ListHeading
+          title="Daftar peserta"
+          sub={`${filteredRegs.length} pendaftar · urutan terbaru`}
+          empty={!filteredRegs.length}
+        />
       </>
     );
   };
@@ -877,16 +903,15 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
     <SafeAreaView style={s.page}>
       <ExpoStatusBar style="dark" />
       <FlatList<Payment | Registration>
-        data={loading ? [] : tab === "participants" ? regs : fp}
+        data={loading ? [] : tab === "participants" ? filteredRegs : fp}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View
             style={{
               backgroundColor: C.white,
               paddingHorizontal: 17,
-              borderLeftWidth: 1,
-              borderRightWidth: 1,
-              borderColor: C.line,
+              borderRadius: 18,
+              marginBottom: 7,
             }}
           >
             {"registration_id" in item ? <PaymentRow p={item} /> : <RegistrationRow r={item} />}
@@ -924,7 +949,9 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
             )}
             <View style={s.header}>
               <View style={{ flex: 1 }}>
-                <Text style={s.eyebrow}>PRESTASI KITA ADMIN</Text>
+                <Text style={s.headerGreeting}>
+                  {tab === "home" ? "Selamat datang kembali 👋" : "PRESTASI KITA ADMIN"}
+                </Text>
                 <Text style={s.headerTitle}>{title}</Text>
                 <Text style={s.headerDate}>
                   {new Date().toLocaleDateString("id-ID", {
@@ -936,14 +963,25 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
                   })}
                 </Text>
               </View>
-              <Pressable style={s.headerBtn} onPress={() => setSettingsOpen(true)}>
+              <Pressable
+                accessibilityLabel="Pengaturan notifikasi"
+                style={s.headerBtn}
+                onPress={() => setSettingsOpen(true)}
+              >
                 <Ionicons
-                  name={sound ? "notifications" : "notifications-off"}
+                  name={sound ? "notifications-outline" : "notifications-off-outline"}
                   size={21}
-                  color={C.blue}
+                  color={C.navy}
                 />
+                <View style={s.notificationDot} />
               </Pressable>
             </View>
+            <FilterBar
+              filter={filter}
+              onChange={setFilter}
+              onDates={() => setDateSheet(true)}
+              label={selectedLabel}
+            />
             {pushState && !pushState.remote && (
               <Pressable
                 onPress={() => setSettingsOpen(true)}
@@ -954,7 +992,9 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
                   marginBottom: 12,
                 }}
               >
-                <Text style={{ color: C.navy, fontSize: 12 }}>{pushState.message}</Text>
+                <Text style={{ color: C.navy, fontSize: 12 }}>
+                  Notifikasi latar belakang perlu disiapkan. Ketuk untuk melihat status.
+                </Text>
               </Pressable>
             )}
             {dataError && <Text style={{ color: "#B42318", marginBottom: 12 }}>{dataError}</Text>}
@@ -1032,7 +1072,14 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
           </View>
         </View>
       </Modal>
-      <Nav tab={tab} set={setTab} />
+      <DateFilterSheet
+        visible={dateSheet}
+        onClose={() => setDateSheet(false)}
+        onApply={setFilter}
+        filter={filter}
+        firstDate={firstDate}
+      />
+      <BottomNav tab={tab} onTab={setTab} onFilter={() => setDateSheet(true)} />
     </SafeAreaView>
   );
 }
@@ -1040,27 +1087,45 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [init, setInit] = useState(true);
+  const [showCover, setShowCover] = useState(false);
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
-      let valid: Session | null = null;
-      if (data.session) {
-        const { data: role } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", data.session.user.id)
-          .eq("role", "admin")
-          .maybeSingle();
-        if (role) valid = data.session;
-      }
-      setSession(valid);
-      setInit(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(async ({ data }) => {
+        setShowCover((await AsyncStorage.getItem("prestasi-kita-cover-seen")) !== "true");
+        let valid: Session | null = null;
+        if (data.session) {
+          const { data: role } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", data.session.user.id)
+            .eq("role", "admin")
+            .maybeSingle();
+          if (role) valid = data.session;
+        }
+        setSession(valid);
+        setInit(false);
+      })
+      .catch(() => {
+        setSession(null);
+        setInit(false);
+      });
     const { data } = supabase.auth.onAuthStateChange((_e, n) => {
       if (!n) setSession(null);
     });
     return () => data.subscription.unsubscribe();
   }, []);
   if (init) return <Splash />;
+  if (showCover)
+    return (
+      <Cover
+        loading={false}
+        onContinue={() => {
+          void AsyncStorage.setItem("prestasi-kita-cover-seen", "true");
+          setShowCover(false);
+        }}
+      />
+    );
   if (!session) return <Login done={setSession} />;
   return (
     <Dashboard
@@ -1078,27 +1143,54 @@ export default function App() {
 }
 
 const s = StyleSheet.create({
+  metricGrid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
+  quickAction: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: C.line,
+    backgroundColor: "white",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  quickIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 11,
+    backgroundColor: C.soft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  quickLabel: { flex: 1, fontSize: 11, fontWeight: "700", color: C.navy },
+  infoNote: {
+    marginTop: 16,
+    padding: 13,
+    borderRadius: 16,
+    backgroundColor: "#EEEDFC",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 9,
+  },
+  infoText: { flex: 1, color: C.muted, fontSize: 11, lineHeight: 17 },
+  headerGreeting: { fontSize: 12, color: C.muted, marginBottom: 5 },
+  notificationDot: {
+    position: "absolute",
+    right: 11,
+    top: 10,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#F4A78E",
+  },
   page: { flex: 1, backgroundColor: C.page },
   content: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
     paddingTop: Platform.OS === "android" ? (StatusBar.currentHeight ?? 24) + 14 : 18,
     paddingBottom: 120,
   },
-  splash: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "white" },
-  splashLogo: {
-    width: 118,
-    height: 118,
-    borderRadius: 34,
-    overflow: "hidden",
-    shadowColor: C.blue,
-    shadowOpacity: 0.18,
-    shadowRadius: 22,
-    elevation: 8,
-  },
   logo: { width: "100%", height: "100%", resizeMode: "cover" },
-  splashTitle: { marginTop: 24, color: C.navy, fontSize: 28, fontWeight: "900" },
-  splashSub: { marginTop: 5, color: C.muted, fontSize: 12, letterSpacing: 0.8 },
-  loadingText: { marginTop: 12, color: C.muted, fontSize: 11 },
   login: {
     flex: 1,
     justifyContent: "center",
@@ -1146,10 +1238,9 @@ const s = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 12,
-    marginBottom: 17,
+    marginBottom: 0,
   },
-  eyebrow: { color: C.blue, fontSize: 11, fontWeight: "900", letterSpacing: 1.3 },
-  headerTitle: { marginTop: 5, color: C.navy, fontSize: 25, fontWeight: "900" },
+  headerTitle: { marginTop: 5, color: C.navy, fontSize: 26, fontWeight: "800" },
   headerDate: { marginTop: 4, color: C.muted, fontSize: 11 },
   headerBtn: {
     width: 45,
@@ -1161,65 +1252,8 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: C.line,
   },
-  balance: {
-    height: 188,
-    padding: 21,
-    borderRadius: 27,
-    backgroundColor: C.blue,
-    shadowColor: C.blue,
-    shadowOpacity: 0.24,
-    shadowRadius: 16,
-    elevation: 2,
-  },
-  balanceTop: { flexDirection: "row", justifyContent: "space-between" },
-  balanceLabel: { color: "rgba(255,255,255,.82)", fontSize: 12, fontWeight: "700" },
-  balanceBrand: { color: "white", fontSize: 11, fontWeight: "900" },
-  balanceValue: { marginTop: 20, color: "white", fontSize: 31, fontWeight: "900" },
-  balanceBottom: {
-    marginTop: "auto",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-  },
-  balanceSmall: { color: "rgba(255,255,255,.66)", fontSize: 10, fontWeight: "800" },
-  balanceCount: { marginTop: 3, color: "white", fontSize: 13, fontWeight: "800" },
-  segment: {
-    marginTop: 17,
-    padding: 4,
-    flexDirection: "row",
-    borderRadius: 15,
-    backgroundColor: "#E9EDF5",
-  },
-  segmentItem: {
-    flex: 1,
-    height: 36,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 12,
-  },
-  segmentActive: { backgroundColor: "white", elevation: 2 },
-  segmentText: { color: C.muted, fontSize: 10, fontWeight: "800" },
-  segmentTextActive: { color: C.dark },
-  quick: { gap: 11, paddingVertical: 17 },
-  mini: {
-    width: 126,
-    padding: 14,
-    borderRadius: 19,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: C.line,
-  },
-  miniIcon: {
-    width: 39,
-    height: 39,
-    borderRadius: 13,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  miniValue: { marginTop: 12, color: C.navy, fontSize: 21, fontWeight: "900" },
-  miniLabel: { marginTop: 3, color: C.muted, fontSize: 12, fontWeight: "700" },
   card: {
-    marginTop: 16,
+    marginTop: 18,
     padding: 17,
     borderRadius: 24,
     backgroundColor: "white",
@@ -1232,7 +1266,7 @@ const s = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 12,
   },
-  cardTitle: { color: C.navy, fontSize: 15, fontWeight: "900" },
+  cardTitle: { color: C.navy, fontSize: 15, fontWeight: "800" },
   cardSub: { marginTop: 3, color: C.muted, fontSize: 12 },
   live: {
     flexDirection: "row",
@@ -1245,13 +1279,12 @@ const s = StyleSheet.create({
   },
   liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: C.green },
   liveText: { color: C.green, fontSize: 10, fontWeight: "900" },
-  innerList: { maxHeight: 365 },
   row: {
     minHeight: 72,
     paddingVertical: 11,
     flexDirection: "row",
     alignItems: "center",
-    borderBottomWidth: 1,
+    borderBottomWidth: 0,
     borderBottomColor: "#F0F2F6",
   },
   avatar: {
@@ -1267,64 +1300,13 @@ const s = StyleSheet.create({
   rowTitle: { color: C.text, fontSize: 14, fontWeight: "900" },
   rowSub: { marginTop: 3, color: C.muted, fontSize: 12 },
   rowDate: { marginTop: 3, color: "#A0A7B6", fontSize: 11 },
-  rowRight: { maxWidth: 130, alignItems: "flex-end" },
-  income: { marginBottom: 5, color: C.green, fontSize: 10.5, fontWeight: "900" },
+  rowRight: { maxWidth: 125, alignItems: "flex-end" },
+  income: { marginBottom: 5, color: C.green, fontSize: 12, fontWeight: "800" },
   badge: { paddingHorizontal: 7, paddingVertical: 4, borderRadius: 9 },
   premium: { backgroundColor: C.goldSoft },
   standard: { backgroundColor: C.soft },
   regular: { backgroundColor: "#F1F3F6" },
   badgeText: { fontSize: 10, fontWeight: "900" },
-  chart: { height: 175, flexDirection: "row", alignItems: "flex-end", gap: 6 },
-  chartCol: { flex: 1, alignItems: "center" },
-  chartNum: { height: 17, color: C.muted, fontSize: 10, fontWeight: "700" },
-  chartTrack: {
-    width: "62%",
-    height: 105,
-    justifyContent: "flex-end",
-    overflow: "hidden",
-    borderRadius: 8,
-    backgroundColor: "#F0F3F8",
-  },
-  chartBar: { width: "100%", borderRadius: 8 },
-  chartLabel: { marginTop: 7, color: C.muted, fontSize: 11, fontWeight: "700" },
-  summary: { marginTop: 14, flexDirection: "row", gap: 10 },
-  summaryBox: {
-    flex: 1,
-    minHeight: 95,
-    padding: 15,
-    borderRadius: 20,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: C.line,
-  },
-  summaryLabel: { color: C.muted, fontSize: 10, fontWeight: "900" },
-  summaryAmount: { marginTop: 12, color: C.dark, fontSize: 17, fontWeight: "900" },
-  summaryNumber: { marginTop: 9, color: C.green, fontSize: 25, fontWeight: "900" },
-  validHero: {
-    marginTop: 16,
-    padding: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderRadius: 23,
-    backgroundColor: C.navy,
-  },
-  heroLabel: { color: "rgba(255,255,255,.68)", fontSize: 10 },
-  heroNumber: { marginTop: 5, color: "white", fontSize: 32, fontWeight: "900" },
-  heroTier: { marginVertical: 4, color: "white", fontSize: 10, fontWeight: "800" },
-  partHero: { padding: 21, borderRadius: 24, backgroundColor: C.blue },
-  partNumber: { marginTop: 5, color: "white", fontSize: 36, fontWeight: "900" },
-  partSub: { marginTop: 5, color: "white", fontSize: 11, fontWeight: "700" },
-  chips: { gap: 8, paddingTop: 13 },
-  chip: {
-    paddingHorizontal: 13,
-    paddingVertical: 9,
-    borderRadius: 20,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: C.line,
-  },
-  chipText: { color: C.text, fontSize: 12, fontWeight: "800" },
   notice: {
     marginBottom: 14,
     padding: 14,
@@ -1348,35 +1330,6 @@ const s = StyleSheet.create({
   },
   noticeTitle: { color: "white", fontSize: 12, fontWeight: "900" },
   noticeBody: { marginTop: 3, color: "rgba(255,255,255,.88)", fontSize: 10 },
-  nav: {
-    position: "absolute",
-    left: 14,
-    right: 14,
-    bottom: Platform.OS === "ios" ? 20 : 13,
-    height: 76,
-    paddingHorizontal: 7,
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 25,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: C.line,
-    shadowColor: C.navy,
-    shadowOpacity: 0.13,
-    shadowRadius: 17,
-    elevation: 12,
-  },
-  navItem: { flex: 1, minHeight: 60, justifyContent: "center", alignItems: "center" },
-  navIcon: {
-    width: 46,
-    height: 36,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 13,
-  },
-  navActive: { backgroundColor: C.blue },
-  navText: { marginTop: 4, color: "#667085", fontSize: 11, fontWeight: "800" },
-  loading: { height: 420, alignItems: "center", justifyContent: "center" },
   empty: { height: 160, alignItems: "center", justifyContent: "center" },
   emptyText: { marginTop: 9, color: C.muted, fontSize: 11, fontWeight: "700" },
 });
