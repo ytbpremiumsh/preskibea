@@ -1,70 +1,1407 @@
-import 'react-native-url-polyfill/auto';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons } from '@expo/vector-icons';
-import Constants from 'expo-constants';
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
-import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
-import { createClient, Session } from '@supabase/supabase-js';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, AppState, Image, KeyboardAvoidingView, Platform, Pressable, RefreshControl, SafeAreaView, ScrollView, StatusBar, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import "react-native-url-polyfill/auto";
+import {
+  PAID_STATUSES,
+  periodRange,
+  DateFilter,
+  matchesDate,
+  filterLabel,
+  selectionPoints,
+  selectionRange,
+  jakartaDay,
+} from "./lib/finance";
+import {
+  Cover,
+  HeroCard,
+  MetricCard,
+  FilterBar,
+  DateFilterSheet,
+  TrendChart,
+  Breakdown,
+  BottomNav,
+  LoadingCards,
+} from "./components/MobileUI";
+import { LinearGradient } from "expo-linear-gradient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import Constants from "expo-constants";
+import * as Device from "expo-device";
+import * as Updates from "expo-updates";
+import * as Notifications from "expo-notifications";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import { createClient, Session } from "@supabase/supabase-js";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Modal,
+  AppState,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  RefreshControl,
+  FlatList,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Linking,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
-type Period = 'day' | 'week' | 'month';
-type Tab = 'home' | 'statistics' | 'valid' | 'participants';
-type Registration = { id:string; full_name:string; token:string; kind:string; email:string; created_at:string; fast_track:boolean; payment_status:string|null; status:string|null; extra:Record<string,unknown>|null };
-type Payment = { id:string; registration_id:string; amount:number; status:string; provider:string|null; created_at:string; registration?:Registration };
-type Extra = { supabaseUrl?:string; supabasePublishableKey?:string; easProjectId?:string };
+type Tab = "home" | "statistics" | "valid" | "participants";
+type Registration = {
+  id: string;
+  full_name: string;
+  token: string;
+  kind: string;
+  email: string;
+  created_at: string;
+  fast_track: boolean;
+  payment_status: string | null;
+  status: string | null;
+  extra: Record<string, unknown> | null;
+};
+type Payment = {
+  id: string;
+  registration_id: string;
+  amount: number;
+  status: string;
+  provider: string | null;
+  created_at: string;
+  registration?: Registration;
+};
+type Extra = {
+  supabaseUrl?: string;
+  supabasePublishableKey?: string;
+  easProjectId?: string;
+  hasFirebase?: boolean;
+};
 
-const X=(Constants.expoConfig?.extra??{}) as Extra;
-const supabase=createClient(X.supabaseUrl??'',X.supabasePublishableKey??'',{auth:{storage:AsyncStorage,autoRefreshToken:true,persistSession:true,detectSessionInUrl:false}});
-const C={blue:'#4D7DF3',dark:'#315FCC',soft:'#EDF3FF',navy:'#14213D',text:'#182035',muted:'#7B8498',line:'#E8EBF2',page:'#F5F7FB',white:'#FFF',green:'#20B77A',greenSoft:'#E9FAF3',gold:'#F4AE2B',goldSoft:'#FFF6E3',purple:'#8267DE'};
-const SOUND_KEY='prestasi-kita-notification-sound'; let soundOn=true;
-Notifications.setNotificationHandler({handleNotification:async()=>({shouldPlaySound:soundOn,shouldSetBadge:true,shouldShowBanner:true,shouldShowList:true})});
-const rupiah=(n:number)=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n||0);
-const kind=(v?:string)=>({prestasi:'Prestasi',ekonomi:'Ekonomi',umum:'Umum',yatim:'Yatim'}[v??'']??v??'-');
-const tier=(r?:Registration)=>!r?.fast_track?'Reguler':r.extra?.fast_track_type==='premium'?'FT Premium':'FT Standard';
-const date=(v:string)=>new Date(v).toLocaleString('id-ID',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-function startOf(p:Period){const d=new Date();if(p==='day')d.setHours(0,0,0,0);if(p==='week'){const n=d.getDay()||7;d.setDate(d.getDate()-n+1);d.setHours(0,0,0,0)}if(p==='month'){d.setDate(1);d.setHours(0,0,0,0)}return d}
+const X = (Constants.expoConfig?.extra ?? {}) as Extra;
+const supabase = createClient(X.supabaseUrl ?? "", X.supabasePublishableKey ?? "", {
+  auth: {
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+});
+const C = {
+  blue: "#6554F5",
+  dark: "#5045CE",
+  soft: "#EEEAFE",
+  navy: "#14213D",
+  text: "#182035",
+  muted: "#7B8498",
+  line: "#E8EBF2",
+  page: "#F7F8FD",
+  white: "#FFF",
+  green: "#20B77A",
+  greenSoft: "#E9FAF3",
+  gold: "#F4AE2B",
+  goldSoft: "#FFF6E3",
+  purple: "#8267DE",
+};
+const SOUND_KEY = "prestasi-kita-notification-sound";
+let soundOn = true;
+const displayedPayments = new Set<string>();
+Notifications.setNotificationHandler({
+  handleNotification: async (notification) => {
+    const id = notification.request.content.data?.payment_id as string | undefined;
+    const duplicate = Boolean(id && displayedPayments.has(id));
+    if (id) {
+      displayedPayments.add(id);
+      if (displayedPayments.size > 2000)
+        displayedPayments.delete(displayedPayments.values().next().value!);
+    }
+    return {
+      shouldPlaySound: !duplicate && soundOn,
+      shouldSetBadge: !duplicate,
+      shouldShowBanner: !duplicate,
+      shouldShowList: !duplicate,
+    };
+  },
+});
 
-async function channels(){if(Platform.OS!=='android')return;await Notifications.setNotificationChannelAsync('payments_sound',{name:'Pembayaran dengan suara',importance:Notifications.AndroidImportance.MAX,vibrationPattern:[0,250,150,350],sound:'default',enableVibrate:true});await Notifications.setNotificationChannelAsync('payments_silent',{name:'Pembayaran tanpa suara',importance:Notifications.AndroidImportance.DEFAULT,sound:null,enableVibrate:false})}
-async function registerPush(uid:string,enabled:boolean){if(!Device.isDevice)return false;await channels();let {status}=await Notifications.getPermissionsAsync();if(status!=='granted')status=(await Notifications.requestPermissionsAsync()).status;if(status!=='granted')return false;if(!X.easProjectId)return true;const token=(await Notifications.getExpoPushTokenAsync({projectId:X.easProjectId})).data;const{error}=await supabase.from('admin_push_devices').upsert({user_id:uid,push_token:token,platform:Platform.OS,sound_enabled:enabled,active:true,updated_at:new Date().toISOString()},{onConflict:'push_token'});if(error)throw error;return true}
+const rupiah = (n: number) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(n || 0);
+const kind = (v?: string) =>
+  ({ prestasi: "Prestasi", ekonomi: "Ekonomi", umum: "Umum", yatim: "Yatim" })[v ?? ""] ?? v ?? "-";
+const tier = (r?: Registration) =>
+  !r?.fast_track
+    ? "Reguler"
+    : r.extra?.fast_track_type === "premium"
+      ? "FT Premium"
+      : "FT Standard";
+const date = (v: string) =>
+  new Date(v).toLocaleString("id-ID", {
+    timeZone: "Asia/Jakarta",
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-function Splash(){return <View style={s.splash}><ExpoStatusBar style="dark"/><View style={s.splashLogo}><Image source={require('./assets/prestasi-kita-icon.png')} style={s.logo}/></View><Text style={s.splashTitle}>Prestasi Kita</Text><Text style={s.splashSub}>Admin Financial Dashboard</Text><ActivityIndicator color={C.blue} size="large" style={{marginTop:30}}/><Text style={s.loadingText}>Menyiapkan data terbaru...</Text></View>}
+async function channels() {
+  if (Platform.OS !== "android") return;
+  await Notifications.setNotificationChannelAsync("payments_sound", {
+    name: "Pembayaran dengan suara",
+    importance: Notifications.AndroidImportance.MAX,
+    vibrationPattern: [0, 250, 150, 350],
+    sound: "default",
+    enableVibrate: true,
+  });
+  await Notifications.setNotificationChannelAsync("payments_silent", {
+    name: "Pembayaran tanpa suara",
+    importance: Notifications.AndroidImportance.DEFAULT,
+    sound: null,
+    enableVibrate: false,
+  });
+}
+type PushState = { remote: boolean; local: boolean; message: string };
+async function registerPush(uid: string, enabled: boolean): Promise<PushState> {
+  await channels();
+  let permission = await Notifications.getPermissionsAsync();
+  if (permission.status !== "granted" && permission.canAskAgain)
+    permission = await Notifications.requestPermissionsAsync();
+  if (permission.status !== "granted")
+    return {
+      remote: false,
+      local: false,
+      message: "Notifikasi diblokir. Aktifkan izin di Pengaturan Android.",
+    };
+  if (!Device.isDevice)
+    return {
+      remote: false,
+      local: true,
+      message: "Tes push memerlukan perangkat Android dengan Google Play Services.",
+    };
+  const projectId = X.easProjectId || Constants.easConfig?.projectId;
+  if (!projectId || !X.hasFirebase)
+    return {
+      remote: false,
+      local: true,
+      message:
+        "Notifikasi saat aplikasi tertutup belum aktif: konfigurasi Expo/Firebase belum lengkap.",
+    };
+  try {
+    const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+    const { error } = await supabase.from("admin_push_devices").upsert(
+      {
+        user_id: uid,
+        push_token: token,
+        platform: Platform.OS,
+        sound_enabled: enabled,
+        active: true,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "push_token" },
+    );
+    if (error) throw error;
+    return {
+      remote: true,
+      local: true,
+      message:
+        "Perangkat terdaftar untuk push. Pengiriman latar belakang memerlukan kredensial FCM aktif di Expo.",
+    };
+  } catch (error) {
+    return {
+      remote: false,
+      local: true,
+      message: `Pendaftaran push gagal: ${error instanceof Error ? error.message : String(error)}`,
+    };
+  }
+}
 
-function Login({done}:{done:(x:Session)=>void}){const[email,setEmail]=useState('');const[password,setPassword]=useState('');const[hide,setHide]=useState(true);const[busy,setBusy]=useState(false);const submit=async()=>{if(!email.trim()||!password)return Alert.alert('Data belum lengkap','Masukkan email dan kata sandi admin.');setBusy(true);const{data,error}=await supabase.auth.signInWithPassword({email:email.trim(),password});if(error||!data.session){setBusy(false);return Alert.alert('Login gagal',error?.message??'Sesi tidak ditemukan.')}const{data:role}=await supabase.from('user_roles').select('role').eq('user_id',data.session.user.id).eq('role','admin').maybeSingle();if(!role){await supabase.auth.signOut();setBusy(false);return Alert.alert('Akses ditolak','Akun ini bukan administrator.')}setBusy(false);done(data.session)};return <KeyboardAvoidingView behavior={Platform.OS==='ios'?'padding':undefined} style={s.login}><ExpoStatusBar style="dark"/><View style={s.loginLogo}><Image source={require('./assets/prestasi-kita-icon.png')} style={s.logo}/></View><Text style={s.loginTitle}>Selamat datang kembali</Text><Text style={s.loginSub}>Pantau pendapatan dan peserta Prestasi Kita dalam satu aplikasi.</Text><View style={s.loginCard}><Text style={s.inputLabel}>Email administrator</Text><View style={s.inputWrap}><Ionicons name="mail-outline" size={19} color={C.muted}/><TextInput autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} placeholder="admin@prestasikita.com" placeholderTextColor="#A4ABBA" style={s.input}/></View><Text style={[s.inputLabel,{marginTop:15}]}>Kata sandi</Text><View style={s.inputWrap}><Ionicons name="lock-closed-outline" size={19} color={C.muted}/><TextInput autoCapitalize="none" value={password} onChangeText={setPassword} onSubmitEditing={submit} placeholder="Kata sandi" placeholderTextColor="#A4ABBA" secureTextEntry={hide} style={s.input}/><Pressable onPress={()=>setHide(v=>!v)}><Ionicons name={hide?'eye-outline':'eye-off-outline'} size={20} color={C.muted}/></Pressable></View><Pressable onPress={submit} style={s.loginButton}>{busy?<ActivityIndicator color="white"/>:<><Text style={s.loginButtonText}>Masuk</Text><Ionicons name="arrow-forward" size={19} color="white"/></>}</Pressable></View></KeyboardAvoidingView>}
+function Splash() {
+  return <Cover loading />;
+}
 
-function Segment({value,set}:{value:Period;set:(v:Period)=>void}){return <View style={s.segment}>{(['day','week','month'] as Period[]).map(v=><Pressable key={v} onPress={()=>set(v)} style={[s.segmentItem,value===v&&s.segmentActive]}><Text style={[s.segmentText,value===v&&s.segmentTextActive]}>{v==='day'?'Harian':v==='week'?'Mingguan':'Bulanan'}</Text></Pressable>)}</View>}
-function Badge({r}:{r?:Registration}){const t=tier(r),p=t==='FT Premium',f=t==='FT Standard';return <View style={[s.badge,p?s.premium:f?s.standard:s.regular]}><Text style={[s.badgeText,{color:p?'#B87300':f?C.dark:C.muted}]}>{t}</Text></View>}
-function PaymentRow({p}:{p:Payment}){return <View style={s.row}><View style={[s.avatar,{backgroundColor:C.greenSoft}]}><Ionicons name="checkmark" size={19} color={C.green}/></View><View style={s.rowMain}><Text numberOfLines={1} style={s.rowTitle}>{p.registration?.full_name??'Peserta'}</Text><Text numberOfLines={1} style={s.rowSub}>{p.registration?.token??'-'} · {kind(p.registration?.kind)}</Text><Text style={s.rowDate}>{date(p.created_at)}</Text></View><View style={s.rowRight}><Text style={s.income}>+{rupiah(p.amount)}</Text><Badge r={p.registration}/></View></View>}
-function RegistrationRow({r}:{r:Registration}){return <View style={s.row}><View style={s.avatar}><Text style={s.avatarText}>{r.full_name?.slice(0,1).toUpperCase()||'P'}</Text></View><View style={s.rowMain}><Text numberOfLines={1} style={s.rowTitle}>{r.full_name}</Text><Text numberOfLines={1} style={s.rowSub}>{r.token} · {kind(r.kind)}</Text><Text style={s.rowDate}>{date(r.created_at)}</Text></View><Badge r={r}/></View>}
-function ListCard({title,sub,children,empty}:{title:string;sub:string;children:React.ReactNode;empty:boolean}){return <View style={s.card}><View style={s.cardHead}><View><Text style={s.cardTitle}>{title}</Text><Text style={s.cardSub}>{sub}</Text></View><View style={s.live}><View style={s.liveDot}/><Text style={s.liveText}>LIVE</Text></View></View>{empty?<View style={s.empty}><Ionicons name="file-tray-outline" size={34} color="#B3BAC8"/><Text style={s.emptyText}>Belum ada data</Text></View>:<ScrollView nestedScrollEnabled showsVerticalScrollIndicator style={s.innerList}>{children}</ScrollView>}</View>}
-function Mini({icon,label,value,color,bg}:{icon:keyof typeof Ionicons.glyphMap;label:string;value:string;color:string;bg:string}){return <View style={s.mini}><View style={[s.miniIcon,{backgroundColor:bg}]}><Ionicons name={icon} size={20} color={color}/></View><Text style={s.miniValue}>{value}</Text><Text style={s.miniLabel}>{label}</Text></View>}
+function Login({ done }: { done: (x: Session) => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [hide, setHide] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const submit = async () => {
+    if (busy) return;
+    if (!email.trim() || !password)
+      return Alert.alert("Data belum lengkap", "Masukkan email dan kata sandi admin.");
+    setBusy(true);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    if (error || !data.session) {
+      setBusy(false);
+      return Alert.alert("Login gagal", error?.message ?? "Sesi tidak ditemukan.");
+    }
+    const { data: role } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", data.session.user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!role) {
+      await supabase.auth.signOut();
+      setBusy(false);
+      return Alert.alert("Akses ditolak", "Akun ini bukan administrator.");
+    }
+    setBusy(false);
+    done(data.session);
+  };
+  return (
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={s.login}>
+      <ExpoStatusBar style="dark" />
+      <View style={s.loginLogo}>
+        <Image source={require("./assets/prestasi-kita-icon.png")} style={s.logo} />
+      </View>
+      <Text style={s.loginTitle}>Selamat datang kembali</Text>
+      <Text style={s.loginSub}>
+        Pantau pendapatan dan peserta Prestasi Kita dalam satu aplikasi.
+      </Text>
+      <View style={s.loginCard}>
+        <Text style={s.inputLabel}>Email administrator</Text>
+        <View style={s.inputWrap}>
+          <Ionicons name="mail-outline" size={19} color={C.muted} />
+          <TextInput
+            autoCapitalize="none"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+            placeholder="admin@prestasikita.com"
+            placeholderTextColor="#A4ABBA"
+            style={s.input}
+          />
+        </View>
+        <Text style={[s.inputLabel, { marginTop: 15 }]}>Kata sandi</Text>
+        <View style={s.inputWrap}>
+          <Ionicons name="lock-closed-outline" size={19} color={C.muted} />
+          <TextInput
+            autoCapitalize="none"
+            value={password}
+            onChangeText={setPassword}
+            onSubmitEditing={submit}
+            placeholder="Kata sandi"
+            placeholderTextColor="#A4ABBA"
+            secureTextEntry={hide}
+            style={s.input}
+          />
+          <Pressable onPress={() => setHide((v) => !v)}>
+            <Ionicons name={hide ? "eye-outline" : "eye-off-outline"} size={20} color={C.muted} />
+          </Pressable>
+        </View>
+        <Pressable
+          disabled={busy}
+          accessibilityRole="button"
+          onPress={submit}
+          style={[s.loginButton, busy && { opacity: 0.65 }]}
+        >
+          <LinearGradient
+            colors={["#806CF7", "#535CE0"]}
+            style={{
+              height: 53,
+              width: "100%",
+              borderRadius: 16,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 9,
+            }}
+          >
+            {busy ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <>
+                <Text style={s.loginButtonText}>Masuk ke ruang kendali</Text>
+                <Ionicons name="arrow-forward" size={19} color="white" />
+              </>
+            )}
+          </LinearGradient>
+        </Pressable>
+      </View>
+    </KeyboardAvoidingView>
+  );
+}
 
-function Chart({payments,period}:{payments:Payment[];period:Period}){const pts=useMemo(()=>{const count=period==='day'?8:period==='week'?7:6;return Array.from({length:count},(_,i)=>{const now=new Date();let from=new Date(),to=new Date(),label='';if(period==='day'){const h=Math.floor(now.getHours()/3)*3-(count-1-i)*3;from=new Date(now);from.setHours(h,0,0,0);to=new Date(from);to.setHours(from.getHours()+3);label=String((h+24)%24).padStart(2,'0')}else if(period==='week'){from=new Date(now);from.setDate(now.getDate()-(count-1-i));from.setHours(0,0,0,0);to=new Date(from);to.setDate(from.getDate()+1);label=from.toLocaleDateString('id-ID',{weekday:'short'}).slice(0,3)}else{from=new Date(now.getFullYear(),now.getMonth()-(count-1-i),1);to=new Date(from.getFullYear(),from.getMonth()+1,1);label=from.toLocaleDateString('id-ID',{month:'short'}).slice(0,3)}const total=payments.filter(p=>{const d=new Date(p.created_at);return d>=from&&d<to}).reduce((a,p)=>a+Number(p.amount||0),0);return{label,total}})},[payments,period]);const max=Math.max(...pts.map(p=>p.total),1);return <View style={s.chart}>{pts.map((p,i)=><View key={`${p.label}${i}`} style={s.chartCol}><Text style={s.chartNum}>{p.total?`${Math.round(p.total/1000)}k`:'0'}</Text><View style={s.chartTrack}><View style={[s.chartBar,{height:Math.max(6,(p.total/max)*100),backgroundColor:i===pts.length-1?C.gold:C.blue}]}/></View><Text style={s.chartLabel}>{p.label}</Text></View>)}</View>}
-function Nav({tab,set}:{tab:Tab;set:(v:Tab)=>void}){const items:[Tab,keyof typeof Ionicons.glyphMap,string][]=[['home','grid','Dashboard'],['statistics','stats-chart','Statistik'],['valid','shield-checkmark','Valid'],['participants','people','Peserta']];return <View style={s.nav}>{items.map(([k,i,l])=><Pressable key={k} onPress={()=>set(k)} style={s.navItem}><View style={[s.navIcon,tab===k&&s.navActive]}><Ionicons name={i} size={21} color={tab===k?'white':'#9AA3B4'}/></View><Text style={[s.navText,tab===k&&{color:C.dark}]}>{l}</Text></Pressable>)}</View>}
+function Badge({ r }: { r?: Registration }) {
+  const t = tier(r),
+    p = t === "FT Premium",
+    f = t === "FT Standard";
+  return (
+    <View style={[s.badge, p ? s.premium : f ? s.standard : s.regular]}>
+      <Text style={[s.badgeText, { color: p ? "#B87300" : f ? C.dark : C.muted }]}>{t}</Text>
+    </View>
+  );
+}
+function PaymentRow({ p }: { p: Payment }) {
+  return (
+    <View style={s.row}>
+      <View style={[s.avatar, { backgroundColor: C.greenSoft }]}>
+        <Ionicons name="checkmark" size={19} color={C.green} />
+      </View>
+      <View style={s.rowMain}>
+        <Text numberOfLines={1} style={s.rowTitle}>
+          {p.registration?.full_name ?? "Peserta"}
+        </Text>
+        <Text numberOfLines={1} style={s.rowSub}>
+          {p.registration?.token ?? "-"} · {kind(p.registration?.kind)}
+        </Text>
+        <Text style={s.rowDate}>{date(p.created_at)}</Text>
+      </View>
+      <View style={s.rowRight}>
+        <Text style={s.income}>+{rupiah(p.amount)}</Text>
+        <Badge r={p.registration} />
+      </View>
+    </View>
+  );
+}
+function RegistrationRow({ r }: { r: Registration }) {
+  return (
+    <View style={s.row}>
+      <View style={s.avatar}>
+        <Text style={s.avatarText}>{r.full_name?.slice(0, 1).toUpperCase() || "P"}</Text>
+      </View>
+      <View style={s.rowMain}>
+        <Text numberOfLines={1} style={s.rowTitle}>
+          {r.full_name}
+        </Text>
+        <Text numberOfLines={1} style={s.rowSub}>
+          {r.token} · {kind(r.kind)}
+        </Text>
+        <Text style={s.rowDate}>{date(r.created_at)}</Text>
+      </View>
+      <Badge r={r} />
+    </View>
+  );
+}
+function ListHeading({ title, sub, empty }: { title: string; sub: string; empty: boolean }) {
+  return (
+    <View
+      style={[
+        s.card,
+        { borderBottomLeftRadius: empty ? 24 : 0, borderBottomRightRadius: empty ? 24 : 0 },
+      ]}
+    >
+      <View style={s.cardHead}>
+        <View style={{ flex: 1 }}>
+          <Text style={s.cardTitle}>{title}</Text>
+          <Text style={s.cardSub}>{sub}</Text>
+        </View>
+      </View>
+      {empty && (
+        <View style={s.empty}>
+          <Ionicons name="file-tray-outline" size={34} color="#B3BAC8" />
+          <Text style={s.emptyText}>Belum ada data</Text>
+        </View>
+      )}
+    </View>
+  );
+}
 
-function Dashboard({session,logout}:{session:Session;logout:()=>void}){const[tab,setTab]=useState<Tab>('home');const[period,setPeriod]=useState<Period>('day');const[payments,setPayments]=useState<Payment[]>([]);const[regs,setRegs]=useState<Registration[]>([]);const[total,setTotal]=useState(0);const[today,setToday]=useState(0);const[yesterday,setYesterday]=useState(0);const[loading,setLoading]=useState(true);const[refreshing,setRefreshing]=useState(false);const[sound,setSound]=useState(true);const[notice,setNotice]=useState<string|null>(null);const mounted=useRef(true);
- const load=useCallback(async(quiet=false)=>{if(!quiet)setLoading(true);const since=new Date();since.setMonth(since.getMonth()-7);const now=new Date();const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Jakarta',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);const part=(t:string)=>Number(parts.find(p=>p.type===t)?.value||0);const todayUtc=new Date(Date.UTC(part('year'),part('month')-1,part('day'),-7));const tomorrowUtc=new Date(todayUtc);tomorrowUtc.setUTCDate(tomorrowUtc.getUTCDate()+1);const yesterdayUtc=new Date(todayUtc);yesterdayUtc.setUTCDate(yesterdayUtc.getUTCDate()-1);const[pr,rr,tr,dr,yr]=await Promise.all([supabase.from('payments').select('id,registration_id,amount,status,provider,created_at').in('status',['paid','success','SUCCESS','settlement','SETTLEMENT']).gte('created_at',since.toISOString()).order('created_at',{ascending:false}).limit(2000),supabase.from('registrations').select('id,full_name,token,kind,email,created_at,fast_track,payment_status,status,extra').order('created_at',{ascending:false}).limit(300),supabase.from('registrations').select('id',{count:'exact',head:true}),supabase.from('registrations').select('id',{count:'exact',head:true}).gte('created_at',todayUtc.toISOString()).lt('created_at',tomorrowUtc.toISOString()),supabase.from('registrations').select('id',{count:'exact',head:true}).gte('created_at',yesterdayUtc.toISOString()).lt('created_at',todayUtc.toISOString())]);if(pr.error||rr.error||dr.error||yr.error){if(mounted.current){setLoading(false);setRefreshing(false)}return Alert.alert('Data gagal dimuat',pr.error?.message??rr.error?.message??dr.error?.message??yr.error?.message??'Terjadi kesalahan.')}const rs=(rr.data??[]) as Registration[];const map=new Map(rs.map(r=>[r.id,r]));const missing=Array.from(new Set((pr.data??[]).map(p=>p.registration_id).filter(id=>!map.has(id))));for(let i=0;i<missing.length;i+=200){const{data}=await supabase.from('registrations').select('id,full_name,token,kind,email,created_at,fast_track,payment_status,status,extra').in('id',missing.slice(i,i+200));(data??[]).forEach(r=>map.set(r.id,r as Registration))}if(mounted.current){setRegs(rs);setTotal(tr.count??rs.length);setToday(dr.count??0);setYesterday(yr.count??0);setPayments(((pr.data??[]) as Payment[]).map(p=>({...p,registration:map.get(p.registration_id)})));setLoading(false);setRefreshing(false)}},[]);
- useEffect(()=>{mounted.current=true;AsyncStorage.getItem(SOUND_KEY).then(v=>{const enabled=v!=='false';soundOn=enabled;setSound(enabled);registerPush(session.user.id,enabled).catch(console.warn)});channels();load();const ch=supabase.channel(`mobile-admin-${session.user.id}`).on('postgres_changes',{event:'INSERT',schema:'public',table:'payments',filter:'status=eq.paid'},async e=>{await load(true);const row=e.new as Payment;const{data:registration}=await supabase.from('registrations').select('full_name').eq('id',row.registration_id).maybeSingle();const name=registration?.full_name||'Peserta';const message=`${rupiah(Number(row.amount))} berhasil diverifikasi dari ${name}.`;setNotice(message);setTimeout(()=>{if(mounted.current)setNotice(null)},5000);await Notifications.scheduleNotificationAsync({content:{title:'Pembayaran baru masuk 💰',body:message,sound:soundOn?'default':undefined,priority:Notifications.AndroidNotificationPriority.MAX,data:{type:'payment_paid',registration_id:row.registration_id}},trigger:Platform.OS==='android'?{channelId:soundOn?'payments_sound':'payments_silent'}:null})}).on('postgres_changes',{event:'INSERT',schema:'public',table:'registrations'},()=>load(true)).subscribe();const app=AppState.addEventListener('change',v=>{if(v==='active')load(true)});return()=>{mounted.current=false;app.remove();supabase.removeChannel(ch)}},[load,session.user.id]);
- const toggle=async(v:boolean)=>{setSound(v);soundOn=v;await AsyncStorage.setItem(SOUND_KEY,String(v));await channels();await supabase.from('admin_push_devices').update({sound_enabled:v,updated_at:new Date().toISOString()}).eq('user_id',session.user.id)};
- const fp=payments.filter(p=>new Date(p.created_at)>=startOf(period));const income=fp.reduce((a,p)=>a+Number(p.amount||0),0);const valid=fp.map(p=>p.registration).filter(Boolean) as Registration[];const standard=valid.filter(r=>tier(r)==='FT Standard').length,premium=valid.filter(r=>tier(r)==='FT Premium').length;const title=tab==='home'?'Dashboard Utama':tab==='statistics'?'Statistik Pendapatan':tab==='valid'?'Peserta Valid':'Seluruh Pendaftar';
- const body=()=>{if(loading)return <View style={s.loading}><ActivityIndicator size="large" color={C.blue}/><Text style={s.loadingText}>Mengambil data terbaru...</Text></View>;if(tab==='home')return <><View style={s.balance}><View style={s.balanceTop}><Text style={s.balanceLabel}>Total Pendapatan</Text><Text style={s.balanceBrand}>PRESTASI KITA</Text></View><Text style={s.balanceValue}>{rupiah(income)}</Text><View style={s.balanceBottom}><View><Text style={s.balanceSmall}>PESERTA VALID</Text><Text style={s.balanceCount}>{fp.length} peserta</Text></View><Ionicons name="wallet" size={29} color="white"/></View></View><Segment value={period} set={setPeriod}/><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.quick}><Mini icon="people" color={C.blue} bg={C.soft} label="Total Pendaftar" value={String(total)}/><Mini icon="person-add" color={C.purple} bg="#F1EDFF" label="Pendaftar Hari Ini" value={String(today)}/><Mini icon="time" color="#1781A8" bg="#E8F7FC" label="Pendaftar Kemarin" value={String(yesterday)}/><Mini icon="flash" color={C.gold} bg={C.goldSoft} label="FT Standard" value={String(standard)}/><Mini icon="diamond" color={C.green} bg={C.greenSoft} label="FT Premium" value={String(premium)}/></ScrollView><ListCard title="Pembayaran Terbaru" sub="Daftar scroll di dalam card" empty={!fp.length}>{fp.slice(0,40).map(p=><PaymentRow key={p.id} p={p}/>)}</ListCard></>;
- if(tab==='statistics')return <><Segment value={period} set={setPeriod}/><View style={s.card}><View style={s.cardHead}><View><Text style={s.cardTitle}>Grafik Pendapatan</Text><Text style={s.cardSub}>Ringkasan transaksi berhasil</Text></View><Ionicons name="analytics" size={23} color={C.blue}/></View><Chart payments={payments} period={period}/></View><View style={s.summary}><View style={s.summaryBox}><Text style={s.summaryLabel}>TOTAL PENDAPATAN</Text><Text style={s.summaryAmount}>{rupiah(income)}</Text></View><View style={s.summaryBox}><Text style={s.summaryLabel}>TRANSAKSI VALID</Text><Text style={s.summaryNumber}>{fp.length}</Text></View></View><ListCard title="Riwayat Transaksi" sub="Scroll di dalam card" empty={!fp.length}>{fp.slice(0,60).map(p=><PaymentRow key={p.id} p={p}/>)}</ListCard></>;
- if(tab==='valid')return <><Segment value={period} set={setPeriod}/><View style={s.validHero}><View><Text style={s.heroLabel}>Peserta valid periode ini</Text><Text style={s.heroNumber}>{fp.length}</Text></View><View><Text style={s.heroTier}>Standard  {standard}</Text><Text style={s.heroTier}>Premium  {premium}</Text></View></View><ListCard title="Fast Track Standard & Premium" sub="Pembayaran terverifikasi" empty={!fp.length}>{fp.slice(0,80).map(p=><PaymentRow key={p.id} p={p}/>)}</ListCard></>;
- return <><View style={s.partHero}><Text style={s.heroLabel}>Total seluruh pendaftar</Text><Text style={s.partNumber}>{total}</Text><Text style={s.partSub}>{today} hari ini · {yesterday} kemarin</Text></View><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>{['Reguler','FT Standard','FT Premium'].map(t=><View key={t} style={s.chip}><Text style={s.chipText}>{t} {regs.filter(r=>tier(r)===t).length}</Text></View>)}</ScrollView><ListCard title="Pendaftar Terbaru" sub="300 data terbaru · scroll di dalam card" empty={!regs.length}>{regs.map(r=><RegistrationRow key={r.id} r={r}/>)}</ListCard></>};
- return <SafeAreaView style={s.page}><ExpoStatusBar style="dark"/><ScrollView contentContainerStyle={s.content} refreshControl={<RefreshControl refreshing={refreshing} colors={[C.blue]} onRefresh={()=>{setRefreshing(true);load(true)}}/>}>{notice&&<View style={s.notice}><View style={s.noticeIcon}><Ionicons name="wallet" size={21} color="white"/></View><View style={{flex:1}}><Text style={s.noticeTitle}>Pembayaran baru masuk</Text><Text style={s.noticeBody}>{notice}</Text></View><Pressable onPress={()=>setNotice(null)}><Ionicons name="close" size={20} color="white"/></Pressable></View>}<View style={s.header}><View style={{flex:1}}><Text style={s.eyebrow}>PRESTASI KITA ADMIN</Text><Text style={s.headerTitle}>{title}</Text><Text style={s.headerDate}>{new Date().toLocaleDateString('id-ID',{timeZone:'Asia/Jakarta',weekday:'long',day:'numeric',month:'long',year:'numeric'})}</Text></View><Pressable style={s.headerBtn} onPress={()=>Alert.alert('Pengaturan','Kelola notifikasi atau keluar.',[{text:'Tes notifikasi',onPress:async()=>{const ok=await registerPush(session.user.id,sound);if(!ok)return Alert.alert('Izin diperlukan','Aktifkan izin notifikasi Prestasi Kita di pengaturan Android.');const message=`${rupiah(0)} berhasil diverifikasi dari Peserta Dummy.`;setNotice(message);setTimeout(()=>{if(mounted.current)setNotice(null)},5000);await Notifications.scheduleNotificationAsync({content:{title:'Pembayaran baru masuk 💰',body:message,sound:sound?'default':undefined,priority:Notifications.AndroidNotificationPriority.MAX,data:{type:'payment_paid_test',amount:0}},trigger:Platform.OS==='android'?{channelId:sound?'payments_sound':'payments_silent'}:null})}},{text:sound?'Matikan suara':'Aktifkan suara',onPress:()=>toggle(!sound)},{text:'Keluar',style:'destructive',onPress:logout},{text:'Batal',style:'cancel'}])}><Ionicons name={sound?'notifications':'notifications-off'} size={21} color={C.blue}/></Pressable></View>{body()}</ScrollView><Nav tab={tab} set={setTab}/></SafeAreaView>}
+function Dashboard({ session, logout }: { session: Session; logout: () => void }) {
+  const [tab, setTab] = useState<Tab>("home");
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const checkUpdate = async () => {
+    if (updating) return;
+    if (!Updates.isEnabled) {
+      Alert.alert("Pembaruan belum terhubung", "Hubungkan proyek Expo EAS sebelum pembaruan langsung dapat digunakan.");
+      return;
+    }
+    setUpdating(true);
+    try {
+      const result = await Updates.checkForUpdateAsync();
+      if (!result.isAvailable) {
+        Alert.alert("Aplikasi terbaru", "Tidak ada pembaruan baru.");
+        return;
+      }
+      await Updates.fetchUpdateAsync();
+      Alert.alert("Pembaruan siap", "Mulai ulang untuk menggunakan pembaruan?", [
+        { text: "Nanti", style: "cancel" },
+        { text: "Mulai ulang", onPress: () => { void Updates.reloadAsync(); } },
+      ]);
+    } catch {
+      Alert.alert("Pembaruan gagal", "Periksa koneksi lalu coba lagi. Versi saat ini tetap dapat digunakan.");
+    } finally { setUpdating(false); }
+  };
+  useEffect(() => {
+    let active = true;
+    if (Updates.isEnabled) void Updates.checkForUpdateAsync().then(result => {
+      if (active) setUpdateAvailable(result.isAvailable);
+    }).catch(() => {});
+    return () => { active = false; };
+  }, []);
+  const [filter, setFilter] = useState<DateFilter>({ period: "day" });
+  const [dateSheet, setDateSheet] = useState(false);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [regs, setRegs] = useState<Registration[]>([]);
+  const [total, setTotal] = useState(0);
+  const [today, setToday] = useState(0);
+  const [yesterday, setYesterday] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [sound, setSound] = useState(true);
+  const [notice, setNotice] = useState<string | null>(null);
+  const mounted = useRef(true);
+  const [pushState, setPushState] = useState<PushState | null>(null);
+  const [lastSync, setLastSync] = useState<Date | null>(null);
+  const [dataError, setDataError] = useState<string | null>(null);
+  const filterKey = JSON.stringify(filter);
+  const cacheKey = `prestasi-kita-dashboard-v2:${session.user.id}:${filterKey}`;
+  const [historyStart, setHistoryStart] = useState<string | undefined>();
+  const activeCacheKey = useRef(cacheKey);
+  activeCacheKey.current = cacheKey;
+  const loadingRef = useRef<string | false>(false),
+    reloadRef = useRef(false),
+    baselineRef = useRef(false);
+  const seenPayments = useRef(new Set<string>());
+  const load = useCallback(async (quiet = false) => {
+    if (loadingRef.current === cacheKey) {
+      reloadRef.current = true;
+      return;
+    }
+    loadingRef.current = cacheKey;
+    if (!quiet) setLoading(true);
+    try {
+      do {
+        reloadRef.current = false;
+        const now = new Date();
+        const day = periodRange("day", now);
+        const range = selectionRange(JSON.parse(filterKey) as DateFilter, now);
+        const registrationStart = new Date(Math.min(range.start.getTime(), day.start.getTime() - 86400000));
+        const all: Payment[] = [];
+        const pageSize = 1000;
+        const loadPayments = async () => {
+          let offset = 0;
+          while (true) {
+            const { data, error } = await supabase
+              .from("payments")
+              .select("id,registration_id,amount,status,provider,created_at,registration:registrations(id,full_name,token,kind,created_at,fast_track,extra)")
+              .in("status", PAID_STATUSES)
+              .gte("created_at", range.start.toISOString())
+              .lt("created_at", range.end.toISOString())
+              .order("created_at", { ascending: false })
+              .order("id", { ascending: false })
+              .range(offset, offset + pageSize - 1);
+            if (error) throw error;
+            all.push(...((data ?? []) as unknown as Payment[]));
+            if ((data ?? []).length < pageSize) break;
+            offset += pageSize;
+          }
+        };
+        const rs: Registration[] = [];
+        const loadRegistrations = async () => {
+          let regOffset = 0;
+          while (true) {
+            const { data, error } = await supabase
+              .from("registrations")
+              .select(
+                "id,full_name,token,kind,created_at,fast_track,fast_track_type:extra->>fast_track_type",
+              )
+              .gte("created_at", registrationStart.toISOString())
+              .lt("created_at", new Date(Math.max(range.end.getTime(), day.end.getTime())).toISOString())
+              .order("created_at", { ascending: false })
+              .order("id", { ascending: false })
+              .range(regOffset, regOffset + pageSize - 1);
+            if (error) throw error;
+            rs.push(
+              ...((data ?? []).map((r) => ({
+                ...r,
+                extra: { fast_track_type: r.fast_track_type },
+              })) as unknown as Registration[]),
+            );
+            if ((data ?? []).length < pageSize) break;
+            regOffset += pageSize;
+          }
+        };
+        const [, , countResult, firstResult] = await Promise.all([
+          loadPayments(), loadRegistrations(),
+          supabase.from("registrations").select("id", { count: "exact", head: true }),
+          supabase.from("registrations").select("created_at").order("created_at", { ascending: true }).limit(1),
+        ]);
+        if (countResult.error) throw countResult.error;
+        if (firstResult.error) throw firstResult.error;
+        const map = new Map(rs.map((r) => [r.id, r]));
+        if (!mounted.current || activeCacheKey.current !== cacheKey) break;
+        const mapped = all.map((p) => ({ ...p, registration: p.registration ?? map.get(p.registration_id) }));
+        const fresh = baselineRef.current
+          ? mapped.filter((p) => !seenPayments.current.has(p.id))
+          : [];
+        mapped.forEach((p) => seenPayments.current.add(p.id));
+        baselineRef.current = true;
+        setRegs(rs);
+        setTotal(countResult.count ?? rs.length);
+        const first = firstResult.data?.[0]?.created_at;
+        setHistoryStart(first ? jakartaDay(new Date(first)) : undefined);
+        setToday(
+          rs.filter((r) => new Date(r.created_at) >= day.start && new Date(r.created_at) < day.end)
+            .length,
+        );
+        setYesterday(
+          rs.filter(
+            (r) =>
+              new Date(r.created_at).getTime() >= day.start.getTime() - 86400000 &&
+              new Date(r.created_at) < day.start,
+          ).length,
+        );
+        setPayments(mapped);
+        setDataError(null);
+        const syncedAt = new Date();
+        setLastSync(syncedAt);
+        void AsyncStorage.setItem(cacheKey, JSON.stringify({ payments: mapped, regs: rs, total: countResult.count, first, syncedAt: syncedAt.toISOString() })).catch(() => {});
+        setLoading(false);
+        // Only payments discovered after the initial snapshot generate local alerts.
+        for (const payment of fresh) {
+          const message = `${rupiah(Number(payment.amount))} berhasil diverifikasi dari ${payment.registration?.full_name || "Peserta"}.`;
+          setNotice(message);
+          const permission = await Notifications.getPermissionsAsync();
+          if (permission.status === "granted")
+            await Notifications.scheduleNotificationAsync({
+              identifier: `payment-${payment.id}`,
+              content: {
+                title: "Pembayaran valid",
+                body: message,
+                sound: soundOn ? "default" : undefined,
+                priority: Notifications.AndroidNotificationPriority.MAX,
+                data: {
+                  type: "payment_paid",
+                  payment_id: payment.id,
+                  registration_id: payment.registration_id,
+                },
+              },
+              trigger:
+                Platform.OS === "android"
+                  ? { channelId: soundOn ? "payments_sound" : "payments_silent" }
+                  : null,
+            }).catch((error) => console.warn("Notifikasi lokal gagal", error));
+        }
+      } while (reloadRef.current && mounted.current && activeCacheKey.current === cacheKey);
+    } catch (error) {
+      if (mounted.current && activeCacheKey.current === cacheKey)
+        setDataError(
+          `Sinkronisasi gagal: ${(error as { message?: string }).message ?? String(error)}. Data terakhir tetap ditampilkan.`,
+        );
+    } finally {
+      if (loadingRef.current === cacheKey) loadingRef.current = false;
+      if (mounted.current && activeCacheKey.current === cacheKey) {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    }
+  }, [cacheKey, filterKey]);
+  useEffect(() => {
+    mounted.current = true;
+    baselineRef.current = false;
+    setLoading(true);
+    let debounce: ReturnType<typeof setTimeout> | undefined;
+    let disposed = false;
+    const setupPush = async () => {
+      const value = await AsyncStorage.getItem(SOUND_KEY);
+      if (disposed) return;
+      const enabled = value !== "false";
+      soundOn = enabled;
+      setSound(enabled);
+      const result = await registerPush(session.user.id, enabled);
+      if (!disposed) setPushState(result);
+    };
+    const refresh = () => {
+      if (debounce) clearTimeout(debounce);
+      debounce = setTimeout(() => {
+        void load(true);
+      }, 350);
+    };
+    void setupPush().catch((error) =>
+      setPushState({ local: false, remote: false, message: String(error) }),
+    );
+    const restoreAndLoad = async () => {
+      try {
+        const raw = await AsyncStorage.getItem(cacheKey);
+        if (raw && !disposed) {
+          const cached = JSON.parse(raw);
+          if (Array.isArray(cached.payments) && Array.isArray(cached.regs) && Date.now() - new Date(cached.syncedAt).getTime() < 86400000) {
+            const rs = cached.regs as Registration[];
+            const ps = cached.payments as Payment[];
+            const map = new Map(rs.map(r => [r.id, r]));
+            setRegs(rs);
+            setTotal(cached.total ?? rs.length);
+            setHistoryStart(cached.first ? jakartaDay(new Date(cached.first)) : undefined);
+            const day = periodRange("day", new Date());
+            setToday(rs.filter(r => new Date(r.created_at) >= day.start && new Date(r.created_at) < day.end).length);
+            setYesterday(rs.filter(r => new Date(r.created_at).getTime() >= day.start.getTime() - 86400000 && new Date(r.created_at) < day.start).length);
+            setPayments(ps.map(p => ({ ...p, registration: p.registration ?? map.get(p.registration_id) })));
+            setLastSync(new Date(cached.syncedAt));
+            setLoading(false);
+          }
+        }
+      } catch { /* A damaged cache must not block the live request. */ }
+      if (!disposed) void load(true);
+    };
+    void restoreAndLoad();
+    const channel = supabase
+      .channel(`mobile-admin-${session.user.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "payments" }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "registrations" }, refresh)
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED" && baselineRef.current) refresh();
+      });
+    const poll = setInterval(() => {
+      if (AppState.currentState === "active" && !loadingRef.current) void load(true);
+    }, 60000);
+    const notification = Notifications.addNotificationReceivedListener(refresh);
+    const tap = Notifications.addNotificationResponseReceivedListener(() => {
+      setTab("valid");
+      void load(true);
+    });
+    const tokenListener = Notifications.addPushTokenListener(() => {
+      void setupPush();
+    });
+    const app = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        supabase.auth.startAutoRefresh();
+        void load(true);
+        void setupPush();
+      } else supabase.auth.stopAutoRefresh();
+    });
+    return () => {
+      disposed = true;
+      mounted.current = false;
+      if (debounce) clearTimeout(debounce);
+      clearInterval(poll);
+      app.remove();
+      notification.remove();
+      tap.remove();
+      tokenListener.remove();
+      void supabase.removeChannel(channel);
+    };
+  }, [load, session.user.id, cacheKey]);
 
-export default function App(){const[session,setSession]=useState<Session|null>(null);const[init,setInit]=useState(true);useEffect(()=>{const started=Date.now();supabase.auth.getSession().then(async({data})=>{let valid:Session|null=null;if(data.session){const{data:role}=await supabase.from('user_roles').select('role').eq('user_id',data.session.user.id).eq('role','admin').maybeSingle();if(role)valid=data.session}setTimeout(()=>{setSession(valid);setInit(false)},Math.max(0,1600-(Date.now()-started)))});const{data}=supabase.auth.onAuthStateChange((_e,n)=>{if(!n)setSession(null)});return()=>data.subscription.unsubscribe()},[]);if(init)return <Splash/>;if(!session)return <Login done={setSession}/>;return <Dashboard session={session} logout={async()=>{await supabase.from('admin_push_devices').update({active:false,updated_at:new Date().toISOString()}).eq('user_id',session.user.id);await supabase.auth.signOut();setSession(null)}}/>}
+  const toggle = async (v: boolean) => {
+    setSound(v);
+    soundOn = v;
+    await AsyncStorage.setItem(SOUND_KEY, String(v));
+    await channels();
+    await supabase
+      .from("admin_push_devices")
+      .update({ sound_enabled: v, updated_at: new Date().toISOString() })
+      .eq("user_id", session.user.id);
+  };
+  const firstDate = useMemo(() => {
+    const dates = [...regs.map((r) => r.created_at), ...payments.map((p) => p.created_at)]
+      .filter(Boolean)
+      .sort();
+    return historyStart ?? (dates[0] ? jakartaDay(new Date(dates[0])) : undefined);
+  }, [regs, payments, historyStart]);
+  const selectedLabel = filterLabel(filter, lastSync ?? new Date(), firstDate);
+  const filteredRegs = useMemo(
+    () => regs.filter((r) => matchesDate(r.created_at, filter, lastSync ?? new Date(), firstDate)),
+    [regs, filter, lastSync, firstDate],
+  );
+  const points = useMemo(
+    () => selectionPoints(payments, filter, lastSync ?? new Date(), firstDate),
+    [payments, filter, lastSync, firstDate],
+  );
+  const { fp, income, standard, premium, validCount } = useMemo(() => {
+    const fp = payments.filter((p) =>
+      matchesDate(p.created_at, filter, lastSync ?? new Date(), firstDate),
+    );
+    const unique = new Map<string, Registration>();
+    fp.forEach((p) => {
+      if (p.registration) unique.set(p.registration.id, p.registration);
+    });
+    const valid = [...unique.values()];
+    return {
+      fp,
+      income: fp.reduce((a, p) => a + Number(p.amount || 0), 0),
+      validCount: unique.size,
+      standard: valid.filter((r) => tier(r) === "FT Standard").length,
+      premium: valid.filter((r) => tier(r) === "FT Premium").length,
+    };
+  }, [payments, filter, lastSync, firstDate]);
+  const title =
+    tab === "home"
+      ? "Ringkasan Anda"
+      : tab === "statistics"
+        ? "Statistik pendapatan"
+        : tab === "valid"
+          ? "Pembayaran valid"
+          : "Ruang peserta";
+  const breakdown = [
+    {
+      label: "FT Standard",
+      amount: fp
+        .filter((p) => tier(p.registration) === "FT Standard")
+        .reduce((a, p) => a + Number(p.amount || 0), 0),
+      color: "#7564ED",
+    },
+    {
+      label: "FT Premium",
+      amount: fp
+        .filter((p) => tier(p.registration) === "FT Premium")
+        .reduce((a, p) => a + Number(p.amount || 0), 0),
+      color: "#E9A45E",
+    },
+    {
+      label: "Reguler / lainnya",
+      amount: fp
+        .filter((p) => !p.registration || tier(p.registration) === "Reguler")
+        .reduce((a, p) => a + Number(p.amount || 0), 0),
+      color: "#69CDB5",
+    },
+  ];
+  const Section = ({
+    title,
+    action,
+    onPress,
+  }: {
+    title: string;
+    action?: string;
+    onPress?: () => void;
+  }) => (
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 22,
+        marginBottom: 12,
+      }}
+    >
+      <Text style={s.cardTitle}>{title}</Text>
+      {action && (
+        <Pressable onPress={onPress}>
+          <Text style={{ fontSize: 11, color: C.blue, fontWeight: "700" }}>{action} →</Text>
+        </Pressable>
+      )}
+    </View>
+  );
+  const body = () => {
+    if (loading) return <LoadingCards />;
+    if (tab === "home")
+      return (
+        <>
+          <HeroCard
+            label="Total pendapatan"
+            value={rupiah(income)}
+            detail={`${validCount} peserta valid · ${fp.length} transaksi`}
+          />
+          <Section title="Sekilas aktivitas" />
+          <View style={s.metricGrid}>
+            <MetricCard
+              label="Pendaftar dalam periode"
+              value={String(filteredRegs.length)}
+              icon="people-outline"
+              tint="#4A86E8"
+              bg="#EAF2FF"
+            />
+            <MetricCard
+              label="Peserta valid"
+              value={String(validCount)}
+              icon="checkmark-circle-outline"
+              tint="#24AB7B"
+              bg="#E5F8F0"
+            />
+            <MetricCard label="FT Standard valid" value={String(standard)} icon="flash-outline" />
+            <MetricCard
+              label="FT Premium valid"
+              value={String(premium)}
+              icon="diamond-outline"
+              tint="#D18E32"
+              bg="#FFF4DE"
+            />
+          </View>
+          <Section title="Akses cepat" />
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            {[
+              {
+                title: "Pilih tanggal",
+                icon: "calendar-outline",
+                action: () => setDateSheet(true),
+              },
+              {
+                title: "Lihat peserta",
+                icon: "people-outline",
+                action: () => setTab("participants"),
+              },
+            ].map((item) => (
+              <Pressable key={item.title} onPress={item.action} style={s.quickAction}>
+                <View style={s.quickIcon}>
+                  <Ionicons name={item.icon as any} size={21} color={C.blue} />
+                </View>
+                <Text style={s.quickLabel}>{item.title}</Text>
+                <Ionicons name="chevron-forward" size={14} color={C.muted} />
+              </Pressable>
+            ))}
+          </View>
+          <View style={s.card}>
+            <View style={s.cardHead}>
+              <View style={{ flex: 1 }}>
+                <Text style={s.cardTitle}>Tren pendapatan</Text>
+                <Text style={s.cardSub}>Ringkasan dari periode terpilih</Text>
+              </View>
+              <Pressable onPress={() => setTab("statistics")}>
+                <Ionicons name="arrow-forward-circle-outline" size={26} color={C.blue} />
+              </Pressable>
+            </View>
+            <TrendChart points={points} />
+          </View>
+          <ListHeading
+            title="Pembayaran terbaru"
+            sub={`${fp.length} transaksi dalam periode terpilih`}
+            empty={!fp.length}
+          />
+        </>
+      );
+    if (tab === "statistics")
+      return (
+        <>
+          <HeroCard
+            label="Pendapatan dalam periode"
+            value={rupiah(income)}
+            detail={`${fp.length} transaksi berhasil`}
+            icon="stats-chart-outline"
+          />
+          <View style={s.card}>
+            <View style={s.cardHead}>
+              <View style={{ flex: 1 }}>
+                <Text style={s.cardTitle}>Perjalanan pendapatan</Text>
+                <Text style={s.cardSub}>
+                  {filter.period === "all"
+                    ? "Sejak pendaftaran hingga sekarang"
+                    : "Sesuai rentang tanggal yang dipilih"}
+                </Text>
+              </View>
+              <View style={s.live}>
+                <View style={s.liveDot} />
+                <Text style={s.liveText}>LIVE</Text>
+              </View>
+            </View>
+            <TrendChart points={points} />
+          </View>
+          <View style={[s.metricGrid, { marginTop: 14 }]}>
+            <MetricCard
+              label="Transaksi berhasil"
+              value={String(fp.length)}
+              icon="receipt-outline"
+            />
+            <MetricCard
+              label="Rata-rata transaksi"
+              value={rupiah(fp.length ? income / fp.length : 0)}
+              icon="analytics-outline"
+              tint="#24AB7B"
+              bg="#E5F8F0"
+            />
+          </View>
+          <View style={s.card}>
+            <Text style={s.cardTitle}>Komposisi pendapatan</Text>
+            <Text style={s.cardSub}>Berdasarkan kategori peserta</Text>
+            <Breakdown rows={breakdown} />
+          </View>
+          <ListHeading
+            title="Riwayat transaksi"
+            sub={`${fp.length} transaksi · ${validCount} peserta valid`}
+            empty={!fp.length}
+          />
+        </>
+      );
+    if (tab === "valid")
+      return (
+        <>
+          <HeroCard
+            label="Peserta terverifikasi"
+            value={`${validCount} peserta`}
+            detail="Pembayaran berhasil dalam periode terpilih"
+            icon="shield-checkmark-outline"
+          />
+          <View style={[s.metricGrid, { marginTop: 16 }]}>
+            <MetricCard label="FT Standard" value={String(standard)} icon="flash-outline" />
+            <MetricCard
+              label="FT Premium"
+              value={String(premium)}
+              icon="diamond-outline"
+              tint="#D18E32"
+              bg="#FFF4DE"
+            />
+          </View>
+          <View style={s.infoNote}>
+            <Ionicons name="checkmark-circle" size={18} color={C.green} />
+            <Text style={s.infoText}>
+              Jumlah peserta dihitung unik. Setiap transaksi tetap tercatat di bawah.
+            </Text>
+          </View>
+          <ListHeading
+            title="Pembayaran terverifikasi"
+            sub={`${fp.length} transaksi · ${selectedLabel}`}
+            empty={!fp.length}
+          />
+        </>
+      );
+    return (
+      <>
+        <HeroCard
+          label="Pendaftar dalam periode"
+          value={`${filteredRegs.length} peserta`}
+          detail={`${total} total pendaftar sejak awal`}
+          icon="people-outline"
+        />
+        <View style={[s.metricGrid, { marginTop: 16 }]}>
+          <MetricCard
+            label="Pendaftar hari ini"
+            value={String(today)}
+            icon="person-add-outline"
+            tint="#4A86E8"
+            bg="#EAF2FF"
+          />
+          <MetricCard
+            label="Pendaftar kemarin"
+            value={String(yesterday)}
+            icon="time-outline"
+            tint="#24AB7B"
+            bg="#E5F8F0"
+          />
+        </View>
+        <View style={s.infoNote}>
+          <Ionicons name="calendar-outline" size={18} color={C.blue} />
+          <Text style={s.infoText}>
+            Daftar difilter menurut tanggal pendaftaran, sedangkan pendapatan menurut tanggal
+            transaksi.
+          </Text>
+        </View>
+        <ListHeading
+          title="Daftar peserta"
+          sub={`${filteredRegs.length} pendaftar · urutan terbaru`}
+          empty={!filteredRegs.length}
+        />
+      </>
+    );
+  };
+  return (
+    <SafeAreaView style={s.page}>
+      <ExpoStatusBar style="dark" />
+      <FlatList<Payment | Registration>
+        data={loading ? [] : tab === "participants" ? filteredRegs : fp}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View
+            style={{
+              backgroundColor: C.white,
+              paddingHorizontal: 17,
+              borderRadius: 18,
+              marginBottom: 7,
+            }}
+          >
+            {"registration_id" in item ? <PaymentRow p={item} /> : <RegistrationRow r={item} />}
+          </View>
+        )}
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={5}
+        contentContainerStyle={s.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            colors={[C.blue]}
+            onRefresh={() => {
+              setRefreshing(true);
+              load(true);
+            }}
+          />
+        }
+        ListHeaderComponent={
+          <>
+            {notice && (
+              <Pressable style={s.notice} onPress={() => setNotice(null)} accessibilityRole="button" accessibilityLabel="Tutup notifikasi pembayaran">
+                <View style={s.noticeIcon}>
+                  <Ionicons name="wallet" size={21} color="white" />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.noticeTitle}>Pembayaran baru masuk</Text>
+                  <Text style={s.noticeBody}>{notice}</Text>
+                </View>
+              </Pressable>
+            )}
+            <View style={s.header}>
+              <View style={{ flex: 1 }}>
+                <Text style={s.headerGreeting}>
+                  {tab === "home" ? "Selamat datang kembali 👋" : "PRESTASI KITA ADMIN"}
+                </Text>
+                <Text style={s.headerTitle}>{title}</Text>
+                <Text style={{ color: C.muted, fontSize: 10 }}>Versi {Constants.expoConfig?.version}</Text>
+                <Text style={s.headerDate}>
+                  {new Date().toLocaleDateString("id-ID", {
+                    timeZone: "Asia/Jakarta",
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </Text>
+              </View>
+              <Pressable
+                accessibilityLabel="Pengaturan notifikasi"
+                style={s.headerBtn}
+                onPress={() => setSettingsOpen(true)}
+              >
+                <Ionicons
+                  name={sound ? "notifications-outline" : "notifications-off-outline"}
+                  size={21}
+                  color={C.navy}
+                />
+                <View style={s.notificationDot} />
+              </Pressable>
+            </View>
+            <FilterBar
+              filter={filter}
+              onChange={setFilter}
+              onDates={() => setDateSheet(true)}
+              label={selectedLabel}
+            />
+            {updateAvailable && (
+              <Pressable disabled={updating} onPress={() => void checkUpdate()} style={{ padding: 14, backgroundColor: C.soft, borderRadius: 12, marginBottom: 12 }}>
+                <Text style={{ color: C.blue, fontWeight: "700" }}>{updating ? "Mengunduh pembaruan…" : "Versi baru tersedia · Update sekarang"}</Text>
+              </Pressable>
+            )}
+            {dataError && <Text style={{ color: "#B42318", marginBottom: 12 }}>{dataError}</Text>}
+            <Text style={{ color: C.muted, fontSize: 11, marginBottom: 8 }}>
+              {lastSync
+                ? `Diperbarui ${lastSync.toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta" })} WIB · otomatis saat aplikasi aktif`
+                : "Menghubungkan data..."}
+            </Text>
+            {body()}
+          </>
+        }
+      />
+      <Modal
+        visible={settingsOpen}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setSettingsOpen(false)}
+      >
+        <View onTouchEnd={() => setSettingsOpen(false)} style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,.35)" }}>
+          <View
+            style={{
+              backgroundColor: "white",
+              padding: 24,
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              gap: 16,
+            }}
+          >
+            <Text style={s.cardTitle}>Notifikasi pembayaran</Text>
+            <Pressable disabled={updating} onPress={() => void checkUpdate()}>
+              <Text style={{ color: C.blue, fontWeight: "700" }}>{updating ? "Mengunduh pembaruan…" : updateAvailable ? "Update sekarang" : "Cek pembaruan aplikasi"}</Text>
+            </Pressable>
+            <Text style={{ color: C.muted }}>
+              {pushState?.message ?? "Memeriksa notifikasi..."}
+            </Text>
+            <Pressable
+              style={s.loginButton}
+              onPress={async () => {
+                await channels();
+                const permission = await Notifications.requestPermissionsAsync();
+                if (permission.status !== "granted")
+                  return Alert.alert(
+                    "Izin notifikasi",
+                    "Aktifkan izin melalui Pengaturan Android.",
+                  );
+                await Notifications.scheduleNotificationAsync({
+                  content: {
+                    title: "Tes notifikasi pembayaran",
+                    body: "Ikon putih dan notifikasi lokal berhasil ditampilkan.",
+                    sound: sound ? "default" : undefined,
+                  },
+                  trigger:
+                    Platform.OS === "android"
+                      ? { channelId: sound ? "payments_sound" : "payments_silent" }
+                      : null,
+                });
+              }}
+            >
+              <Text style={s.loginButtonText}>Tes notifikasi lokal</Text>
+            </Pressable>
+            <Pressable
+              onPress={async () => setPushState(await registerPush(session.user.id, sound))}
+            >
+              <Text style={{ color: C.blue }}>Daftarkan ulang push</Text>
+            </Pressable>
+            <Pressable onPress={() => void Linking.openSettings()}>
+              <Text style={{ color: C.blue }}>Buka izin notifikasi Android</Text>
+            </Pressable>
+            <Pressable onPress={() => void toggle(!sound)}>
+              <Text style={{ color: C.blue }}>{sound ? "Matikan suara" : "Aktifkan suara"}</Text>
+            </Pressable>
+            <Pressable onPress={logout}>
+              <Text style={{ color: "#B42318" }}>Keluar akun</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+      <DateFilterSheet
+        visible={dateSheet}
+        onClose={() => setDateSheet(false)}
+        onApply={setFilter}
+        filter={filter}
+        firstDate={firstDate}
+      />
+      <BottomNav tab={tab} onTab={setTab} onFilter={() => setDateSheet(true)} />
+    </SafeAreaView>
+  );
+}
 
-const s=StyleSheet.create({
- page:{flex:1,backgroundColor:C.page},content:{paddingHorizontal:18,paddingTop:Platform.OS==='android'?(StatusBar.currentHeight??24)+14:18,paddingBottom:120},splash:{flex:1,alignItems:'center',justifyContent:'center',backgroundColor:'white'},splashLogo:{width:118,height:118,borderRadius:34,overflow:'hidden',shadowColor:C.blue,shadowOpacity:.18,shadowRadius:22,elevation:8},logo:{width:'100%',height:'100%',resizeMode:'cover'},splashTitle:{marginTop:24,color:C.navy,fontSize:28,fontWeight:'900'},splashSub:{marginTop:5,color:C.muted,fontSize:12,letterSpacing:.8},loadingText:{marginTop:12,color:C.muted,fontSize:11},
- login:{flex:1,justifyContent:'center',paddingHorizontal:24,paddingTop:Platform.OS==='android'?StatusBar.currentHeight:0,backgroundColor:C.page},loginLogo:{width:76,height:76,borderRadius:24,overflow:'hidden'},loginTitle:{marginTop:24,color:C.navy,fontSize:28,fontWeight:'900'},loginSub:{marginTop:8,color:C.muted,fontSize:13,lineHeight:20},loginCard:{marginTop:25,padding:20,borderRadius:25,backgroundColor:'white',borderWidth:1,borderColor:C.line},inputLabel:{marginBottom:7,color:C.text,fontSize:11,fontWeight:'800'},inputWrap:{height:52,paddingHorizontal:14,flexDirection:'row',alignItems:'center',gap:10,borderRadius:15,backgroundColor:'#F9FAFC',borderWidth:1,borderColor:C.line},input:{flex:1,height:'100%',color:C.text},loginButton:{height:53,marginTop:22,flexDirection:'row',gap:9,alignItems:'center',justifyContent:'center',borderRadius:16,backgroundColor:C.blue},loginButtonText:{color:'white',fontWeight:'900'},
- header:{minHeight:80,flexDirection:'row',alignItems:'flex-start',gap:12,marginBottom:17},eyebrow:{color:C.blue,fontSize:9,fontWeight:'900',letterSpacing:1.3},headerTitle:{marginTop:5,color:C.navy,fontSize:25,fontWeight:'900'},headerDate:{marginTop:4,color:C.muted,fontSize:11},headerBtn:{width:45,height:45,alignItems:'center',justifyContent:'center',borderRadius:15,backgroundColor:'white',borderWidth:1,borderColor:C.line},
- balance:{height:188,padding:21,borderRadius:27,backgroundColor:C.blue,shadowColor:C.blue,shadowOpacity:.24,shadowRadius:16,elevation:7},balanceTop:{flexDirection:'row',justifyContent:'space-between'},balanceLabel:{color:'rgba(255,255,255,.82)',fontSize:12,fontWeight:'700'},balanceBrand:{color:'white',fontSize:9,fontWeight:'900'},balanceValue:{marginTop:20,color:'white',fontSize:31,fontWeight:'900'},balanceBottom:{marginTop:'auto',flexDirection:'row',justifyContent:'space-between',alignItems:'flex-end'},balanceSmall:{color:'rgba(255,255,255,.66)',fontSize:8,fontWeight:'800'},balanceCount:{marginTop:3,color:'white',fontSize:13,fontWeight:'800'},
- segment:{marginTop:17,padding:4,flexDirection:'row',borderRadius:15,backgroundColor:'#E9EDF5'},segmentItem:{flex:1,height:36,alignItems:'center',justifyContent:'center',borderRadius:12},segmentActive:{backgroundColor:'white',elevation:2},segmentText:{color:C.muted,fontSize:10,fontWeight:'800'},segmentTextActive:{color:C.dark},quick:{gap:11,paddingVertical:17},mini:{width:126,padding:14,borderRadius:19,backgroundColor:'white',borderWidth:1,borderColor:C.line},miniIcon:{width:39,height:39,borderRadius:13,alignItems:'center',justifyContent:'center'},miniValue:{marginTop:12,color:C.navy,fontSize:21,fontWeight:'900'},miniLabel:{marginTop:3,color:C.muted,fontSize:9.5,fontWeight:'700'},
- card:{marginTop:16,padding:17,borderRadius:24,backgroundColor:'white',borderWidth:1,borderColor:C.line},cardHead:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginBottom:12},cardTitle:{color:C.navy,fontSize:15,fontWeight:'900'},cardSub:{marginTop:3,color:C.muted,fontSize:9.5},live:{flexDirection:'row',alignItems:'center',gap:5,paddingHorizontal:8,paddingVertical:5,borderRadius:20,backgroundColor:C.greenSoft},liveDot:{width:6,height:6,borderRadius:3,backgroundColor:C.green},liveText:{color:C.green,fontSize:8,fontWeight:'900'},innerList:{maxHeight:365},
- row:{minHeight:72,paddingVertical:11,flexDirection:'row',alignItems:'center',borderBottomWidth:1,borderBottomColor:'#F0F2F6'},avatar:{width:41,height:41,borderRadius:14,alignItems:'center',justifyContent:'center',backgroundColor:C.soft},avatarText:{color:C.dark,fontWeight:'900'},rowMain:{flex:1,minWidth:0,marginHorizontal:10},rowTitle:{color:C.text,fontSize:12,fontWeight:'900'},rowSub:{marginTop:3,color:C.muted,fontSize:9.5},rowDate:{marginTop:3,color:'#A0A7B6',fontSize:8.5},rowRight:{maxWidth:130,alignItems:'flex-end'},income:{marginBottom:5,color:C.green,fontSize:10.5,fontWeight:'900'},badge:{paddingHorizontal:7,paddingVertical:4,borderRadius:9},premium:{backgroundColor:C.goldSoft},standard:{backgroundColor:C.soft},regular:{backgroundColor:'#F1F3F6'},badgeText:{fontSize:7.5,fontWeight:'900'},
- chart:{height:175,flexDirection:'row',alignItems:'flex-end',gap:6},chartCol:{flex:1,alignItems:'center'},chartNum:{height:17,color:C.muted,fontSize:7.5,fontWeight:'700'},chartTrack:{width:'62%',height:105,justifyContent:'flex-end',overflow:'hidden',borderRadius:8,backgroundColor:'#F0F3F8'},chartBar:{width:'100%',borderRadius:8},chartLabel:{marginTop:7,color:C.muted,fontSize:8.5,fontWeight:'700'},summary:{marginTop:14,flexDirection:'row',gap:10},summaryBox:{flex:1,minHeight:95,padding:15,borderRadius:20,backgroundColor:'white',borderWidth:1,borderColor:C.line},summaryLabel:{color:C.muted,fontSize:8,fontWeight:'900'},summaryAmount:{marginTop:12,color:C.dark,fontSize:17,fontWeight:'900'},summaryNumber:{marginTop:9,color:C.green,fontSize:25,fontWeight:'900'},
- validHero:{marginTop:16,padding:20,flexDirection:'row',alignItems:'center',justifyContent:'space-between',borderRadius:23,backgroundColor:C.navy},heroLabel:{color:'rgba(255,255,255,.68)',fontSize:10},heroNumber:{marginTop:5,color:'white',fontSize:32,fontWeight:'900'},heroTier:{marginVertical:4,color:'white',fontSize:10,fontWeight:'800'},partHero:{padding:21,borderRadius:24,backgroundColor:C.blue},partNumber:{marginTop:5,color:'white',fontSize:36,fontWeight:'900'},partSub:{marginTop:5,color:'white',fontSize:11,fontWeight:'700'},chips:{gap:8,paddingTop:13},chip:{paddingHorizontal:13,paddingVertical:9,borderRadius:20,backgroundColor:'white',borderWidth:1,borderColor:C.line},chipText:{color:C.text,fontSize:9.5,fontWeight:'800'},
- notice:{marginBottom:14,padding:14,flexDirection:'row',alignItems:'center',gap:11,borderRadius:18,backgroundColor:C.green,shadowColor:C.green,shadowOpacity:.25,shadowRadius:12,elevation:6},noticeIcon:{width:40,height:40,borderRadius:13,alignItems:'center',justifyContent:'center',backgroundColor:'rgba(255,255,255,.18)'},noticeTitle:{color:'white',fontSize:12,fontWeight:'900'},noticeBody:{marginTop:3,color:'rgba(255,255,255,.88)',fontSize:10},nav:{position:'absolute',left:14,right:14,bottom:Platform.OS==='ios'?20:13,height:76,paddingHorizontal:7,flexDirection:'row',alignItems:'center',borderRadius:25,backgroundColor:'white',borderWidth:1,borderColor:C.line,shadowColor:C.navy,shadowOpacity:.13,shadowRadius:17,elevation:12},navItem:{flex:1,alignItems:'center'},navIcon:{width:38,height:34,alignItems:'center',justifyContent:'center',borderRadius:13},navActive:{backgroundColor:C.blue},navText:{marginTop:3,color:'#9AA3B4',fontSize:7.5,fontWeight:'800'},loading:{height:420,alignItems:'center',justifyContent:'center'},empty:{height:160,alignItems:'center',justifyContent:'center'},emptyText:{marginTop:9,color:C.muted,fontSize:11,fontWeight:'700'}
+export default function App() {
+  const [session, setSession] = useState<Session | null>(null);
+  const [init, setInit] = useState(true);
+  const [showCover, setShowCover] = useState(false);
+  useEffect(() => {
+    Promise.all([supabase.auth.getSession(), AsyncStorage.getItem("prestasi-kita-cover-seen")])
+      .then(async ([{ data }, coverSeen]) => {
+        setShowCover(coverSeen !== "true");
+        let valid: Session | null = null;
+        if (data.session) {
+          const { data: role } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", data.session.user.id)
+            .eq("role", "admin")
+            .maybeSingle();
+          if (role) valid = data.session;
+        }
+        setSession(valid);
+        setInit(false);
+      })
+      .catch(() => {
+        setSession(null);
+        setInit(false);
+      });
+    const { data } = supabase.auth.onAuthStateChange((_e, n) => {
+      if (!n) setSession(null);
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
+  if (init) return <Splash />;
+  if (showCover)
+    return (
+      <Cover
+        loading={false}
+        onContinue={() => {
+          void AsyncStorage.setItem("prestasi-kita-cover-seen", "true");
+          setShowCover(false);
+        }}
+      />
+    );
+  if (!session) return <Login done={setSession} />;
+  return (
+    <Dashboard
+      session={session}
+      logout={async () => {
+        await supabase
+          .from("admin_push_devices")
+          .update({ active: false, updated_at: new Date().toISOString() })
+          .eq("user_id", session.user.id);
+        await supabase.auth.signOut();
+        const keys = await AsyncStorage.getAllKeys();
+        await Promise.all(keys.filter(key => key.startsWith(`prestasi-kita-dashboard-v2:${session.user.id}:`) || key === `prestasi-kita-dashboard-v1:${session.user.id}`).map(key => AsyncStorage.removeItem(key)));
+        setSession(null);
+      }}
+    />
+  );
+}
+
+const s = StyleSheet.create({
+  metricGrid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
+  quickAction: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: C.line,
+    backgroundColor: "white",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  quickIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 11,
+    backgroundColor: C.soft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  quickLabel: { flex: 1, fontSize: 11, fontWeight: "700", color: C.navy },
+  infoNote: {
+    marginTop: 16,
+    padding: 13,
+    borderRadius: 16,
+    backgroundColor: "#EEEDFC",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 9,
+  },
+  infoText: { flex: 1, color: C.muted, fontSize: 11, lineHeight: 17 },
+  headerGreeting: { fontSize: 12, color: C.muted, marginBottom: 5 },
+  notificationDot: {
+    position: "absolute",
+    right: 11,
+    top: 10,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#F4A78E",
+  },
+  page: { flex: 1, backgroundColor: C.page },
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === "android" ? (StatusBar.currentHeight ?? 24) + 14 : 18,
+    paddingBottom: 120,
+  },
+  logo: { width: "100%", height: "100%", resizeMode: "cover" },
+  login: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    backgroundColor: C.page,
+  },
+  loginLogo: { width: 76, height: 76, borderRadius: 24, overflow: "hidden" },
+  loginTitle: { marginTop: 24, color: C.navy, fontSize: 28, fontWeight: "900" },
+  loginSub: { marginTop: 8, color: C.muted, fontSize: 13, lineHeight: 20 },
+  loginCard: {
+    marginTop: 25,
+    padding: 20,
+    borderRadius: 25,
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: C.line,
+  },
+  inputLabel: { marginBottom: 7, color: C.text, fontSize: 11, fontWeight: "800" },
+  inputWrap: {
+    height: 52,
+    paddingHorizontal: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderRadius: 15,
+    backgroundColor: "#F9FAFC",
+    borderWidth: 1,
+    borderColor: C.line,
+  },
+  input: { flex: 1, height: "100%", color: C.text },
+  loginButton: {
+    height: 53,
+    marginTop: 22,
+    flexDirection: "row",
+    gap: 9,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 16,
+    backgroundColor: C.blue,
+  },
+  loginButtonText: { color: "white", fontWeight: "900" },
+  header: {
+    minHeight: 80,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    marginBottom: 0,
+  },
+  headerTitle: { marginTop: 5, color: C.navy, fontSize: 26, fontWeight: "800" },
+  headerDate: { marginTop: 4, color: C.muted, fontSize: 11 },
+  headerBtn: {
+    width: 45,
+    height: 45,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 15,
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: C.line,
+  },
+  card: {
+    marginTop: 18,
+    padding: 17,
+    borderRadius: 24,
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: C.line,
+  },
+  cardHead: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  cardTitle: { color: C.navy, fontSize: 15, fontWeight: "800" },
+  cardSub: { marginTop: 3, color: C.muted, fontSize: 12 },
+  live: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 20,
+    backgroundColor: C.greenSoft,
+  },
+  liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: C.green },
+  liveText: { color: C.green, fontSize: 10, fontWeight: "900" },
+  row: {
+    minHeight: 72,
+    paddingVertical: 11,
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 0,
+    borderBottomColor: "#F0F2F6",
+  },
+  avatar: {
+    width: 41,
+    height: 41,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.soft,
+  },
+  avatarText: { color: C.dark, fontWeight: "900" },
+  rowMain: { flex: 1, minWidth: 0, marginHorizontal: 10 },
+  rowTitle: { color: C.text, fontSize: 14, fontWeight: "900" },
+  rowSub: { marginTop: 3, color: C.muted, fontSize: 12 },
+  rowDate: { marginTop: 3, color: "#A0A7B6", fontSize: 11 },
+  rowRight: { maxWidth: 125, alignItems: "flex-end" },
+  income: { marginBottom: 5, color: C.green, fontSize: 12, fontWeight: "800" },
+  badge: { paddingHorizontal: 7, paddingVertical: 4, borderRadius: 9 },
+  premium: { backgroundColor: C.goldSoft },
+  standard: { backgroundColor: C.soft },
+  regular: { backgroundColor: "#F1F3F6" },
+  badgeText: { fontSize: 10, fontWeight: "900" },
+  notice: {
+    marginBottom: 14,
+    padding: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 11,
+    borderRadius: 18,
+    backgroundColor: C.green,
+    shadowColor: C.green,
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  noticeIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,.18)",
+  },
+  noticeTitle: { color: "white", fontSize: 12, fontWeight: "900" },
+  noticeBody: { marginTop: 3, color: "rgba(255,255,255,.88)", fontSize: 10 },
+  empty: { height: 160, alignItems: "center", justifyContent: "center" },
+  emptyText: { marginTop: 9, color: C.muted, fontSize: 11, fontWeight: "700" },
 });
