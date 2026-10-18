@@ -30,14 +30,30 @@ jobs:
       - name: Install dependencies
         working-directory: mobile
         run: npm ci --no-audit --no-fund
+      - name: Configure optional Android push credentials
+        working-directory: mobile
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          node - <<'NODE'
+          const fs = require("fs");
+          const raw = process.env.GOOGLE_SERVICES_JSON;
+          if (raw) {
+            const config = JSON.parse(raw);
+            if (!config.client?.some(c => c.client_info?.android_client_info?.package_name === "com.prestasikita.admin")) throw new Error("Firebase Android package mismatch");
+            fs.writeFileSync("google-services.json", JSON.stringify(config));
+          } else {
+            console.log("::warning::Firebase config missing: background payment push is unavailable. Local foreground notifications remain available.");
+          }
+          NODE
       - name: Check TypeScript
         working-directory: mobile
-        run: npm run typecheck
+        run: npm run typecheck && npm run test:finance
       - name: Create Android project
         working-directory: mobile
         env:
           EXPO_PUBLIC_EAS_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_EAS_PROJECT_ID }}
-        run: npx expo prebuild --platform android --clean --non-interactive
+        run: CI=1 npx expo prebuild --platform android --clean
       - name: Build installable APK
         working-directory: mobile/android
         run: ./gradlew assembleRelease -Pandroid.enableMinifyInReleaseBuilds=true -Pandroid.enableShrinkResourcesInReleaseBuilds=true

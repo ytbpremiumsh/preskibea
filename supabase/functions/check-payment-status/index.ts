@@ -83,14 +83,11 @@ async function sendTelegramPaymentNotification(
     message = message.replace(new RegExp(`\\{${key}\\}`, "g"), value);
   }
 
-  const response = await fetch(
-    `https://api.telegram.org/bot${config.bot_token}/sendMessage`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: config.chat_id, text: message }),
-    },
-  );
+  const response = await fetch(`https://api.telegram.org/bot${config.bot_token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: config.chat_id, text: message }),
+  });
   const responseBody = await response.text();
   if (!response.ok) {
     throw new Error(`Telegram API gagal [${response.status}]: ${responseBody}`);
@@ -115,7 +112,6 @@ serve(async (req) => {
     const alreadyNotified = (reg.extra as any)?.telegram_notified === true;
     if (reg.payment_status === "paid" && alreadyNotified) return json({ status: "paid" });
 
-
     // Ask Doku directly (fallback when webhook is delayed / not delivered)
     const { data: settings } = await supabaseAdmin
       .from("site_settings")
@@ -123,7 +119,8 @@ serve(async (req) => {
       .in("key", ["doku_config"]);
 
     const cfg = settings?.find((s) => s.key === "doku_config")?.value as any;
-    if (!cfg?.client_id || !cfg?.secret_key) return json({ status: reg.payment_status || "pending" });
+    if (!cfg?.client_id || !cfg?.secret_key)
+      return json({ status: reg.payment_status || "pending" });
 
     const baseUrl = cfg.is_production ? "https://api.doku.com" : "https://api-sandbox.doku.com";
 
@@ -140,8 +137,7 @@ serve(async (req) => {
       const target = `/orders/v1/status/${invoiceNumber}`;
       const requestId = crypto.randomUUID();
       const timestamp = new Date().toISOString().slice(0, 19) + "Z";
-      const signaturePayload =
-        `Client-Id:${cfg.client_id}\nRequest-Id:${requestId}\nRequest-Timestamp:${timestamp}\nRequest-Target:${target}`;
+      const signaturePayload = `Client-Id:${cfg.client_id}\nRequest-Id:${requestId}\nRequest-Timestamp:${timestamp}\nRequest-Target:${target}`;
       const signature = `HMACSHA256=${await hmacBase64(cfg.secret_key, signaturePayload)}`;
       const res = await fetch(`${baseUrl}${target}`, {
         method: "GET",
@@ -149,7 +145,7 @@ serve(async (req) => {
           "Client-Id": cfg.client_id,
           "Request-Id": requestId,
           "Request-Timestamp": timestamp,
-          "Signature": signature,
+          Signature: signature,
         },
       });
       if (!res.ok) {
@@ -182,7 +178,6 @@ serve(async (req) => {
       return json({ status: reg.payment_status || "pending", doku_status: txStatus });
     }
 
-
     const isPremium = (reg.extra as any)?.fast_track_type === "premium";
     const updates: Record<string, any> = { payment_status: "paid", status: "approved" };
     if (isPremium) {
@@ -202,17 +197,23 @@ serve(async (req) => {
 
     if (firstTransition) {
       try {
-        await supabaseAdmin.from("payments").insert({
-          registration_id: reg.id,
-          amount: Number(body?.order?.amount) || 0,
-          status: "paid",
-          external_id: token,
-          provider: "doku",
-        });
+        const { data: recordedPayment, error: paymentError } = await supabaseAdmin
+          .from("payments")
+          .insert({
+            registration_id: reg.id,
+            amount: Number(body?.order?.amount) || 0,
+            status: "paid",
+            external_id: token,
+            provider: "doku",
+          })
+          .select("id")
+          .single();
+        if (paymentError) throw paymentError;
         const { error: pushError } = await supabaseAdmin.functions.invoke(
           "send-admin-payment-push",
           {
             body: {
+              payment_id: recordedPayment.id,
               amount: Number(body?.order?.amount) || 0,
               provider: "doku",
               registration: {
@@ -235,7 +236,9 @@ serve(async (req) => {
       // Atomic claim: cegah notifikasi Telegram ganda (webhook vs polling)
       const { data: claimed } = await supabaseAdmin
         .from("registrations")
-        .update({ extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: true } })
+        .update({
+          extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: true },
+        })
         .eq("id", reg.id)
         .or("extra->>telegram_notified.is.null,extra->>telegram_notified.neq.true")
         .select("id")
@@ -256,15 +259,18 @@ serve(async (req) => {
           console.error("Telegram notification failed:", (e as Error).message);
           await supabaseAdmin
             .from("registrations")
-            .update({ extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: false } })
+            .update({
+              extra: {
+                ...((reg.extra as Record<string, unknown>) || {}),
+                telegram_notified: false,
+              },
+            })
             .eq("id", reg.id);
         }
       }
     }
 
-
     if (!firstTransition) return json({ status: "paid" });
-
 
     try {
       await supabaseAdmin.functions.invoke("send-whatsapp", {

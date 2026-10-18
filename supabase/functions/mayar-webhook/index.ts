@@ -6,7 +6,8 @@ import { encodeHex } from "https://deno.land/std@0.224.0/encoding/hex.ts";
 const cors = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-mayar-signature, x-webhook-signature, signature, request-id, request-timestamp",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-mayar-signature, x-webhook-signature, signature, request-id, request-timestamp",
 };
 
 const supabaseAdmin = createClient(
@@ -14,25 +15,26 @@ const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
-const SECOND_APP_WEBHOOK_URL = "https://tvingnpdeueufagssdte.supabase.co/functions/v1/mayar-webhook";
+const SECOND_APP_WEBHOOK_URL =
+  "https://tvingnpdeueufagssdte.supabase.co/functions/v1/mayar-webhook";
 
-async function verifyAulaaSignature(rawBody: string, signature: string, secret: string): Promise<boolean> {
+async function verifyAulaaSignature(
+  rawBody: string,
+  signature: string,
+  secret: string,
+): Promise<boolean> {
   if (!signature || !secret) return false;
-  
+
   const key = await crypto.subtle.importKey(
     "raw",
     new TextEncoder().encode(secret),
     { name: "HMAC", hash: "SHA-256" },
     false,
-    ["sign"]
+    ["sign"],
   );
-  
-  const sigBuffer = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    new TextEncoder().encode(rawBody)
-  );
-  
+
+  const sigBuffer = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(rawBody));
+
   const expectedSignature = encodeHex(new Uint8Array(sigBuffer));
   return signature === expectedSignature;
 }
@@ -91,7 +93,7 @@ async function sendTelegramPaymentNotification(
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
-  
+
   try {
     const rawBody = await req.text();
     let body;
@@ -116,12 +118,12 @@ serve(async (req) => {
           "Content-Type": "application/json",
           "X-Mayar-Signature": req.headers.get("X-Mayar-Signature") || "",
           "X-Webhook-Signature": req.headers.get("X-Webhook-Signature") || "",
-          "Signature": req.headers.get("Signature") || "",
+          Signature: req.headers.get("Signature") || "",
           "Request-Id": req.headers.get("Request-Id") || "",
           "Request-Timestamp": req.headers.get("Request-Timestamp") || "",
         },
         body: rawBody,
-      }).catch(err => console.error("Error forwarding to second app:", err.message));
+      }).catch((err) => console.error("Error forwarding to second app:", err.message));
     } catch (forwardErr) {
       console.error("Forwarding exception:", forwardErr.message);
     }
@@ -140,7 +142,7 @@ serve(async (req) => {
         .select("value")
         .eq("key", "aulaa_config")
         .maybeSingle();
-      
+
       const secret = (settings?.value as any)?.webhook_secret;
       if (secret) {
         isSignatureValid = await verifyAulaaSignature(rawBody, aulaaSignature, secret);
@@ -152,37 +154,40 @@ serve(async (req) => {
         .select("value")
         .eq("key", "doku_config")
         .maybeSingle();
-      
+
       const secret = (settings?.value as any)?.secret_key;
       const clientId = (settings?.value as any)?.client_id;
-      
+
       if (secret && clientId) {
         const requestId = req.headers.get("request-id");
         const timestamp = req.headers.get("request-timestamp");
-        const target = "/functions/v1/mayar-webhook"; 
+        const target = "/functions/v1/mayar-webhook";
         const dokuTarget = "/checkout/v1/payment/notify"; // Standard Doku notify path if forwarded
-        
-        const digestBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(rawBody));
+
+        const digestBuffer = await crypto.subtle.digest(
+          "SHA-256",
+          new TextEncoder().encode(rawBody),
+        );
         const digest = btoa(String.fromCharCode(...new Uint8Array(digestBuffer)));
-        
+
         const signaturePayload = `Client-Id:${clientId}\nRequest-Id:${requestId}\nRequest-Timestamp:${timestamp}\nRequest-Target:${target}\nDigest:${digest}`;
-        
+
         const key = await crypto.subtle.importKey(
           "raw",
           new TextEncoder().encode(secret),
           { name: "HMAC", hash: "SHA-256" },
           false,
-          ["sign"]
+          ["sign"],
         );
-        
+
         const sigBuffer = await crypto.subtle.sign(
           "HMAC",
           key,
-          new TextEncoder().encode(signaturePayload)
+          new TextEncoder().encode(signaturePayload),
         );
         const expectedSignature = `HMACSHA256=${btoa(String.fromCharCode(...new Uint8Array(sigBuffer)))}`;
-        
-        isSignatureValid = (dokuSignature === expectedSignature);
+
+        isSignatureValid = dokuSignature === expectedSignature;
       }
     }
 
@@ -198,8 +203,13 @@ serve(async (req) => {
     let email, status, tokenFromExtra, paymentAmount, externalId;
 
     if (provider === "mayar") {
-      email = (body?.customer?.email || body?.email || body?.data?.customer?.email || body?.data?.email)?.trim();
-      status = body?.status || body?.data?.status; 
+      email = (
+        body?.customer?.email ||
+        body?.email ||
+        body?.data?.customer?.email ||
+        body?.data?.email
+      )?.trim();
+      status = body?.status || body?.data?.status;
       tokenFromExtra = body?.extraData?.noCustomer || body?.data?.extraData?.noCustomer;
       paymentAmount = body?.amount || body?.data?.amount;
       externalId = body?.id || body?.data?.id;
@@ -215,7 +225,7 @@ serve(async (req) => {
       tokenFromExtra = body?.order?.invoice_number;
       paymentAmount = body?.order?.amount;
       externalId = body?.order?.invoice_number;
-      
+
       if (status === "SUCCESS") status = "paid";
     }
 
@@ -223,126 +233,140 @@ serve(async (req) => {
     if (typeof tokenFromExtra === "string") tokenFromExtra = tokenFromExtra.replace(/-R\d+$/i, "");
 
     const normalizedStatus = String(status || "").toLowerCase();
-    if (["success", "paid", "settlement"].includes(normalizedStatus) || body?.event === "payment.success" || body?.data?.event === "payment.success") {
-       console.log(`Processing successful payment (${provider}), token: ${tokenFromExtra}`);
+    if (
+      ["success", "paid", "settlement"].includes(normalizedStatus) ||
+      body?.event === "payment.success" ||
+      body?.data?.event === "payment.success"
+    ) {
+      console.log(`Processing successful payment (${provider}), token: ${tokenFromExtra}`);
 
+      let q = supabaseAdmin
+        .from("registrations")
+        .select("id, token, full_name, email, whatsapp, kind, extra")
+        .eq("fast_track", true)
+        .eq("payment_status", "pending")
+        .order("created_at", { ascending: false });
 
-       let q = supabaseAdmin
-         .from("registrations")
-         .select("id, token, full_name, email, whatsapp, kind, extra")
-         .eq("fast_track", true)
-         .eq("payment_status", "pending")
-         .order("created_at", { ascending: false });
+      if (tokenFromExtra) {
+        q = q.eq("token", tokenFromExtra);
+      } else if (email) {
+        q = q.eq("email", email);
+      }
 
-       if (tokenFromExtra) {
-         q = q.eq("token", tokenFromExtra);
-       } else if (email) {
-         q = q.eq("email", email);
-       }
+      const { data: reg } = await q.limit(1).maybeSingle();
 
-       const { data: reg } = await q.limit(1).maybeSingle();
+      if (reg) {
+        const isPremium = (reg.extra as any)?.fast_track_type === "premium";
+        const updates: Record<string, any> = {
+          payment_status: "paid",
+          status: "approved",
+        };
+        if (isPremium) {
+          updates.candidate_status = "approved";
+        }
 
-        if (reg) {
-          const isPremium = (reg.extra as any)?.fast_track_type === "premium";
-          const updates: Record<string, any> = { 
-            payment_status: "paid", 
-            status: "approved" 
-          };
-          if (isPremium) {
-            updates.candidate_status = "approved";
-          }
+        await supabaseAdmin.from("registrations").update(updates).eq("id", reg.id);
 
-          await supabaseAdmin
-            .from("registrations")
-            .update(updates)
-            .eq("id", reg.id);
-         
-         console.log(`Registration ${reg.token} marked as paid.`);
+        console.log(`Registration ${reg.token} marked as paid.`);
 
-          // Atomic claim: hanya satu proses yang boleh mengirim notifikasi Telegram
-          const { data: claimed } = await supabaseAdmin
-            .from("registrations")
-            .update({ extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: true } })
-            .eq("id", reg.id)
-            .or("extra->>telegram_notified.is.null,extra->>telegram_notified.neq.true")
-            .select("id")
-            .maybeSingle();
+        // Atomic claim: hanya satu proses yang boleh mengirim notifikasi Telegram
+        const { data: claimed } = await supabaseAdmin
+          .from("registrations")
+          .update({
+            extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: true },
+          })
+          .eq("id", reg.id)
+          .or("extra->>telegram_notified.is.null,extra->>telegram_notified.neq.true")
+          .select("id")
+          .maybeSingle();
 
-          if (claimed) {
-            try {
-              await sendTelegramPaymentNotification(reg, Number(paymentAmount) || 0, provider);
-            } catch (telErr) {
-              console.error("Telegram notification failed:", telErr.message);
-              // lepas klaim agar bisa dicoba lagi nanti
-              await supabaseAdmin
-                .from("registrations")
-                .update({ extra: { ...((reg.extra as Record<string, unknown>) || {}), telegram_notified: false } })
-                .eq("id", reg.id);
-            }
-          } else {
-            console.log(`Telegram notification skipped (already sent) for ${reg.token}`);
-          }
-
-
-         try {
-           await supabaseAdmin.from("payments").insert({
-             registration_id: reg.id,
-             amount: Number(paymentAmount) || 0,
-             // Semua status sukses provider disimpan konsisten agar laporan
-             // pendapatan tidak melewatkan SUCCESS/settlement.
-             status: "paid",
-             external_id: externalId,
-             provider: provider,
-           });
-           const { error: pushError } = await supabaseAdmin.functions.invoke(
-             "send-admin-payment-push",
-             {
-               body: {
-                 amount: Number(paymentAmount) || 0,
-                 provider,
-                 registration: {
-                   id: reg.id,
-                   full_name: reg.full_name,
-                   token: reg.token,
-                   kind: reg.kind,
-                   tier: isPremium ? "premium" : "standard",
-                 },
-               },
-             },
-           );
-           if (pushError) console.error("admin push failed", pushError.message);
-         } catch (payErr) {
-           console.error("Failed to record payment:", payErr.message);
-         }
-
+        if (claimed) {
           try {
-            await supabaseAdmin.functions.invoke("send-whatsapp", {
-              body: {
-                type: "pendaftaran_sukses",
-                full_name: reg.full_name,
-                email: reg.email,
-                whatsapp: reg.whatsapp,
-                kind: reg.kind,
-                token: reg.token,
-              },
-            });
-
-            await supabaseAdmin.functions.invoke("notify-user", {
-              body: {
-                type: "registration",
-                full_name: reg.full_name,
-                email: reg.email,
-                token: reg.token,
-                kind: reg.kind,
-                status: "approved"
-              },
-            });
-          } catch (err) {
-            console.error("Failed to send success notifications:", err.message);
+            await sendTelegramPaymentNotification(reg, Number(paymentAmount) || 0, provider);
+          } catch (telErr) {
+            console.error("Telegram notification failed:", telErr.message);
+            // lepas klaim agar bisa dicoba lagi nanti
+            await supabaseAdmin
+              .from("registrations")
+              .update({
+                extra: {
+                  ...((reg.extra as Record<string, unknown>) || {}),
+                  telegram_notified: false,
+                },
+              })
+              .eq("id", reg.id);
           }
-       } else {
-         console.log(`No matching pending fast-track registration found for token ${tokenFromExtra} / email ${email}.`);
-       }
+        } else {
+          console.log(`Telegram notification skipped (already sent) for ${reg.token}`);
+        }
+
+        try {
+          const { data: recordedPayment, error: paymentError } = await supabaseAdmin
+            .from("payments")
+            .insert({
+              registration_id: reg.id,
+              amount: Number(paymentAmount) || 0,
+              // Semua status sukses provider disimpan konsisten agar laporan
+              // pendapatan tidak melewatkan SUCCESS/settlement.
+              status: "paid",
+              external_id: externalId,
+              provider: provider,
+            })
+            .select("id")
+            .single();
+          if (paymentError) throw paymentError;
+          const { error: pushError } = await supabaseAdmin.functions.invoke(
+            "send-admin-payment-push",
+            {
+              body: {
+                payment_id: recordedPayment.id,
+                amount: Number(paymentAmount) || 0,
+                provider,
+                registration: {
+                  id: reg.id,
+                  full_name: reg.full_name,
+                  token: reg.token,
+                  kind: reg.kind,
+                  tier: isPremium ? "premium" : "standard",
+                },
+              },
+            },
+          );
+          if (pushError) console.error("admin push failed", pushError.message);
+        } catch (payErr) {
+          console.error("Failed to record payment:", payErr.message);
+        }
+
+        try {
+          await supabaseAdmin.functions.invoke("send-whatsapp", {
+            body: {
+              type: "pendaftaran_sukses",
+              full_name: reg.full_name,
+              email: reg.email,
+              whatsapp: reg.whatsapp,
+              kind: reg.kind,
+              token: reg.token,
+            },
+          });
+
+          await supabaseAdmin.functions.invoke("notify-user", {
+            body: {
+              type: "registration",
+              full_name: reg.full_name,
+              email: reg.email,
+              token: reg.token,
+              kind: reg.kind,
+              status: "approved",
+            },
+          });
+        } catch (err) {
+          console.error("Failed to send success notifications:", err.message);
+        }
+      } else {
+        console.log(
+          `No matching pending fast-track registration found for token ${tokenFromExtra} / email ${email}.`,
+        );
+      }
     }
 
     return new Response(JSON.stringify({ received: true, provider }), {
@@ -354,12 +378,12 @@ serve(async (req) => {
     try {
       await supabaseAdmin.from("site_settings").insert({
         key: `webhook_error_${Date.now()}`,
-        value: { error: e.message, stack: e.stack, time: new Date().toISOString() }
+        value: { error: e.message, stack: e.stack, time: new Date().toISOString() },
       });
     } catch (logErr) {
       console.error("Failed to log error to DB:", logErr.message);
     }
-    
+
     return new Response(JSON.stringify({ error: e.message }), {
       status: 500,
       headers: { ...cors, "Content-Type": "application/json" },
