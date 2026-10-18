@@ -56,7 +56,11 @@ jobs:
         run: CI=1 npx expo prebuild --platform android --clean
       - name: Build installable APK
         working-directory: mobile/android
-        run: ./gradlew assembleRelease -Pandroid.enableMinifyInReleaseBuilds=true -Pandroid.enableShrinkResourcesInReleaseBuilds=true
+        run: >-
+          ./gradlew assembleRelease --no-daemon --max-workers=2
+          '-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1536m -XX:+ExitOnOutOfMemoryError -Dfile.encoding=UTF-8'
+          -Pandroid.enableMinifyInReleaseBuilds=true
+          -Pandroid.enableShrinkResourcesInReleaseBuilds=true
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
