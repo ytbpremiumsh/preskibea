@@ -406,7 +406,7 @@ function ListHeading({ title, sub, empty }: { title: string; sub: string; empty:
 function Dashboard({ session, logout }: { session: Session; logout: () => void }) {
   const [tab, setTab] = useState<Tab>("home");
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [filter, setFilter] = useState<DateFilter>({ period: "all" });
+  const [filter, setFilter] = useState<DateFilter>({ period: "day" });
   const [dateSheet, setDateSheet] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [regs, setRegs] = useState<Registration[]>([]);
@@ -438,44 +438,49 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
         const now = new Date();
         const day = periodRange("day", now);
         const all: Payment[] = [];
-        let offset = 0;
         const pageSize = 500;
-        while (true) {
-          const { data, error } = await supabase
-            .from("payments")
-            .select("id,registration_id,amount,status,provider,created_at")
-            .in("status", PAID_STATUSES)
-            .lte("created_at", now.toISOString())
-            .order("created_at", { ascending: false })
-            .order("id", { ascending: false })
-            .range(offset, offset + pageSize - 1);
-          if (error) throw error;
-          all.push(...((data ?? []) as Payment[]));
-          if ((data ?? []).length < pageSize) break;
-          offset += pageSize;
-        }
+        const loadPayments = async () => {
+          let offset = 0;
+          while (true) {
+            const { data, error } = await supabase
+              .from("payments")
+              .select("id,registration_id,amount,status,provider,created_at")
+              .in("status", PAID_STATUSES)
+              .lte("created_at", now.toISOString())
+              .order("created_at", { ascending: false })
+              .order("id", { ascending: false })
+              .range(offset, offset + pageSize - 1);
+            if (error) throw error;
+            all.push(...((data ?? []) as Payment[]));
+            if ((data ?? []).length < pageSize) break;
+            offset += pageSize;
+          }
+        };
         const rs: Registration[] = [];
-        let regOffset = 0;
-        while (true) {
-          const { data, error } = await supabase
-            .from("registrations")
-            .select(
-              "id,full_name,token,kind,created_at,fast_track,fast_track_type:extra->>fast_track_type",
-            )
-            .lte("created_at", now.toISOString())
-            .order("created_at", { ascending: false })
-            .order("id", { ascending: false })
-            .range(regOffset, regOffset + pageSize - 1);
-          if (error) throw error;
-          rs.push(
-            ...((data ?? []).map((r) => ({
-              ...r,
-              extra: { fast_track_type: r.fast_track_type },
-            })) as unknown as Registration[]),
-          );
-          if ((data ?? []).length < pageSize) break;
-          regOffset += pageSize;
-        }
+        const loadRegistrations = async () => {
+          let regOffset = 0;
+          while (true) {
+            const { data, error } = await supabase
+              .from("registrations")
+              .select(
+                "id,full_name,token,kind,created_at,fast_track,fast_track_type:extra->>fast_track_type",
+              )
+              .lte("created_at", now.toISOString())
+              .order("created_at", { ascending: false })
+              .order("id", { ascending: false })
+              .range(regOffset, regOffset + pageSize - 1);
+            if (error) throw error;
+            rs.push(
+              ...((data ?? []).map((r) => ({
+                ...r,
+                extra: { fast_track_type: r.fast_track_type },
+              })) as unknown as Registration[]),
+            );
+            if ((data ?? []).length < pageSize) break;
+            regOffset += pageSize;
+          }
+        };
+        await Promise.all([loadPayments(), loadRegistrations()]);
         const map = new Map(rs.map((r) => [r.id, r]));
         if (!mounted.current) break;
         const mapped = all.map((p) => ({ ...p, registration: map.get(p.registration_id) }));
@@ -500,6 +505,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
         setPayments(mapped);
         setDataError(null);
         setLastSync(new Date());
+        setLoading(false);
         // Only payments discovered after the initial snapshot generate local alerts.
         for (const payment of fresh) {
           const message = `${rupiah(Number(payment.amount))} berhasil diverifikasi dari ${payment.registration?.full_name || "Peserta"}.`;
@@ -567,7 +573,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
       .on("postgres_changes", { event: "*", schema: "public", table: "payments" }, refresh)
       .on("postgres_changes", { event: "*", schema: "public", table: "registrations" }, refresh)
       .subscribe((status) => {
-        if (status === "SUBSCRIBED") refresh();
+        if (status === "SUBSCRIBED" && baselineRef.current) refresh();
       });
     const poll = setInterval(() => {
       if (AppState.currentState === "active" && !loadingRef.current) void load(true);
@@ -934,7 +940,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
         ListHeaderComponent={
           <>
             {notice && (
-              <View style={s.notice}>
+              <Pressable style={s.notice} onPress={() => setNotice(null)} accessibilityRole="button" accessibilityLabel="Tutup notifikasi pembayaran">
                 <View style={s.noticeIcon}>
                   <Ionicons name="wallet" size={21} color="white" />
                 </View>
@@ -942,10 +948,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
                   <Text style={s.noticeTitle}>Pembayaran baru masuk</Text>
                   <Text style={s.noticeBody}>{notice}</Text>
                 </View>
-                <Pressable onPress={() => setNotice(null)}>
-                  <Ionicons name="close" size={20} color="white" />
-                </Pressable>
-              </View>
+              </Pressable>
             )}
             <View style={s.header}>
               <View style={{ flex: 1 }}>
@@ -982,21 +985,6 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
               onDates={() => setDateSheet(true)}
               label={selectedLabel}
             />
-            {pushState && !pushState.remote && (
-              <Pressable
-                onPress={() => setSettingsOpen(true)}
-                style={{
-                  padding: 12,
-                  borderRadius: 12,
-                  backgroundColor: C.goldSoft,
-                  marginBottom: 12,
-                }}
-              >
-                <Text style={{ color: C.navy, fontSize: 12 }}>
-                  Notifikasi latar belakang perlu disiapkan. Ketuk untuk melihat status.
-                </Text>
-              </Pressable>
-            )}
             {dataError && <Text style={{ color: "#B42318", marginBottom: 12 }}>{dataError}</Text>}
             <Text style={{ color: C.muted, fontSize: 11, marginBottom: 8 }}>
               {lastSync
@@ -1013,7 +1001,7 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
         animationType="slide"
         onRequestClose={() => setSettingsOpen(false)}
       >
-        <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,.35)" }}>
+        <Pressable onPress={() => setSettingsOpen(false)} style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,.35)" }}>
           <View
             style={{
               backgroundColor: "white",
@@ -1066,11 +1054,8 @@ function Dashboard({ session, logout }: { session: Session; logout: () => void }
             <Pressable onPress={logout}>
               <Text style={{ color: "#B42318" }}>Keluar akun</Text>
             </Pressable>
-            <Pressable onPress={() => setSettingsOpen(false)}>
-              <Text style={{ fontWeight: "700", paddingVertical: 12 }}>Tutup</Text>
-            </Pressable>
           </View>
-        </View>
+        </Pressable>
       </Modal>
       <DateFilterSheet
         visible={dateSheet}
@@ -1089,10 +1074,9 @@ export default function App() {
   const [init, setInit] = useState(true);
   const [showCover, setShowCover] = useState(false);
   useEffect(() => {
-    supabase.auth
-      .getSession()
-      .then(async ({ data }) => {
-        setShowCover((await AsyncStorage.getItem("prestasi-kita-cover-seen")) !== "true");
+    Promise.all([supabase.auth.getSession(), AsyncStorage.getItem("prestasi-kita-cover-seen")])
+      .then(async ([{ data }, coverSeen]) => {
+        setShowCover(coverSeen !== "true");
         let valid: Session | null = null;
         if (data.session) {
           const { data: role } = await supabase
