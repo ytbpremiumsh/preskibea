@@ -31,6 +31,7 @@ import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
 import { Route as AdminBrandingRouteImport } from './routes/admin.branding'
 import { Route as AdminEmailTemplateRouteImport } from './routes/admin.email-template'
 import { Route as AdminEsaiRouteImport } from './routes/admin.esai'
+import { Route as AdminFastTrackBelumBayarRouteImport } from './routes/admin.fast-track-belum-bayar'
 import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
 import { Route as AdminIklanKustomRouteImport } from './routes/admin.iklan-kustom'
 import { Route as AdminIntegrasiRouteImport } from './routes/admin.integrasi'
@@ -178,6 +179,12 @@ const AdminEsaiRoute = AdminEsaiRouteImport.update({
   path: '/esai',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFastTrackBelumBayarRoute =
+  AdminFastTrackBelumBayarRouteImport.update({
+    id: '/fast-track-belum-bayar',
+    path: '/fast-track-belum-bayar',
+    getParentRoute: () => AdminRoute,
+  } as any)
 const AdminFormulirRoute = AdminFormulirRouteImport.update({
   id: '/formulir',
   path: '/formulir',
@@ -381,6 +388,7 @@ export interface FileRoutesByFullPath {
   '/admin/branding': typeof AdminBrandingRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/esai': typeof AdminEsaiRoute
+  '/admin/fast-track-belum-bayar': typeof AdminFastTrackBelumBayarRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
   '/admin/integrasi': typeof AdminIntegrasiRoute
@@ -440,6 +448,7 @@ export interface FileRoutesByTo {
   '/admin/branding': typeof AdminBrandingRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/esai': typeof AdminEsaiRoute
+  '/admin/fast-track-belum-bayar': typeof AdminFastTrackBelumBayarRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
   '/admin/integrasi': typeof AdminIntegrasiRoute
@@ -497,6 +506,7 @@ export interface FileRoutesById {
   '/admin/branding': typeof AdminBrandingRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/esai': typeof AdminEsaiRoute
+  '/admin/fast-track-belum-bayar': typeof AdminFastTrackBelumBayarRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/iklan-kustom': typeof AdminIklanKustomRoute
   '/admin/integrasi': typeof AdminIntegrasiRoute
@@ -559,6 +569,7 @@ export interface FileRouteTypes {
     | '/admin/branding'
     | '/admin/email-template'
     | '/admin/esai'
+    | '/admin/fast-track-belum-bayar'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
     | '/admin/integrasi'
@@ -618,6 +629,7 @@ export interface FileRouteTypes {
     | '/admin/branding'
     | '/admin/email-template'
     | '/admin/esai'
+    | '/admin/fast-track-belum-bayar'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
     | '/admin/integrasi'
@@ -674,6 +686,7 @@ export interface FileRouteTypes {
     | '/admin/branding'
     | '/admin/email-template'
     | '/admin/esai'
+    | '/admin/fast-track-belum-bayar'
     | '/admin/formulir'
     | '/admin/iklan-kustom'
     | '/admin/integrasi'
@@ -896,6 +909,13 @@ declare module '@tanstack/react-router' {
       path: '/esai'
       fullPath: '/admin/esai'
       preLoaderRoute: typeof AdminEsaiRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/fast-track-belum-bayar': {
+      id: '/admin/fast-track-belum-bayar'
+      path: '/fast-track-belum-bayar'
+      fullPath: '/admin/fast-track-belum-bayar'
+      preLoaderRoute: typeof AdminFastTrackBelumBayarRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/formulir': {
@@ -1163,6 +1183,7 @@ interface AdminRouteChildren {
   AdminBrandingRoute: typeof AdminBrandingRoute
   AdminEmailTemplateRoute: typeof AdminEmailTemplateRoute
   AdminEsaiRoute: typeof AdminEsaiRoute
+  AdminFastTrackBelumBayarRoute: typeof AdminFastTrackBelumBayarRoute
   AdminFormulirRoute: typeof AdminFormulirRoute
   AdminIklanKustomRoute: typeof AdminIklanKustomRoute
   AdminIntegrasiRoute: typeof AdminIntegrasiRoute
@@ -1190,6 +1211,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBrandingRoute: AdminBrandingRoute,
   AdminEmailTemplateRoute: AdminEmailTemplateRoute,
   AdminEsaiRoute: AdminEsaiRoute,
+  AdminFastTrackBelumBayarRoute: AdminFastTrackBelumBayarRoute,
   AdminFormulirRoute: AdminFormulirRoute,
   AdminIklanKustomRoute: AdminIklanKustomRoute,
   AdminIntegrasiRoute: AdminIntegrasiRoute,
