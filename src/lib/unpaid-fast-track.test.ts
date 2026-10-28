@@ -1,4 +1,5 @@
 import test from "node:test";
+import { matchesRegistrationDate } from "./unpaid-fast-track.ts";
 import assert from "node:assert/strict";
 import {
   unpaidFastTrack,
@@ -76,6 +77,31 @@ test("paid ledger overrides stale registration status and matches across scholar
   ];
   assert.deepEqual(
     unpaidFastTrack(rows, [{ registration_id: "a", status: "Settlement" }]).map((r) => r.id),
+    ["c"],
+  );
+});
+
+test("date filter includes both WIB dates and supports open bounds", () => {
+  assert.equal(matchesRegistrationDate("2026-10-27T17:00:00Z", "2026-10-28", "2026-10-28"), true);
+  assert.equal(
+    matchesRegistrationDate("2026-10-28T16:59:59.999Z", "2026-10-28", "2026-10-28"),
+    true,
+  );
+  assert.equal(matchesRegistrationDate("2026-10-28T17:00:00Z", "2026-10-28", "2026-10-28"), false);
+  assert.equal(matchesRegistrationDate("2026-10-27T16:59:59Z", "2026-10-28", ""), false);
+  assert.equal(matchesRegistrationDate("2026-10-27T17:00:00Z", "", "2026-10-28"), true);
+  assert.equal(matchesRegistrationDate("2026-10-28T00:00:00Z", "2026-10-29", "2026-10-28"), false);
+});
+test("date filtering cannot reintroduce an unpaid duplicate paid outside the period", () => {
+  const rows = [
+    row("a", { payment_status: "paid", created_at: "2026-10-01T00:00:00Z" }),
+    row("b", { email: "a@example.com" }),
+    row("c"),
+  ];
+  assert.deepEqual(
+    unpaidFastTrack(rows, [])
+      .filter((r) => matchesRegistrationDate(r.created_at, "2026-10-28", "2026-10-28"))
+      .map((r) => r.id),
     ["c"],
   );
 });

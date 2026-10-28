@@ -55,7 +55,7 @@ const groups: { label: string; items: Item[] }[] = [
     label: "Pendaftaran",
     items: [
       { title: "Pendaftar", url: "/admin/pendaftar", icon: Users },
-      { title: "Fast Track Belum Bayar", url: "/admin/fast-track-belum-bayar", icon: CreditCard },
+      { title: "FT Belum Bayar", url: "/admin/fast-track-belum-bayar", icon: CreditCard },
       { title: "Pengiriman Esai", url: "/admin/esai", icon: PenLine },
       { title: "Pengiriman Berkas", url: "/admin/berkas", icon: FolderArchive },
       { title: "Tahapan Seleksi", url: "/admin/tahapan-seleksi", icon: ListChecks },

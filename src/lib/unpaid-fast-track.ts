@@ -57,3 +57,11 @@ export function unpaidFastTrack(
       !(normalizedWhatsapp(row.whatsapp) && paidPhones.has(normalizedWhatsapp(row.whatsapp))),
   );
 }
+
+/** Compare registration dates in WIB; both selected dates are inclusive. */
+export function matchesRegistrationDate(createdAt: string, from: string, to: string): boolean {
+  const time = new Date(createdAt).getTime();
+  if (!Number.isFinite(time) || (from && to && from > to)) return false;
+  const day = new Date(time + 7 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  return (!from || day >= from) && (!to || day <= to);
+}

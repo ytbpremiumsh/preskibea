@@ -5,9 +5,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, RefreshCw, Search } from "lucide-react";
+import { toast } from "sonner";
+import { Download, Loader2, RefreshCw, Search } from "lucide-react";
 import {
   fastTrackTier,
+  matchesRegistrationDate,
   normalizedEmail,
   normalizedWhatsapp,
   unpaidFastTrack,
@@ -33,6 +35,10 @@ function UnpaidFastTrackPage() {
   const [tier, setTier] = useState("all");
   const [sort, setSort] = useState("email");
   const [page, setPage] = useState(1);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [exporting, setExporting] = useState(false);
+  const invalidRange = Boolean(dateFrom && dateTo && dateFrom > dateTo);
   const refreshAction = useRef<() => void>(() => {});
 
   useEffect(() => {
@@ -132,10 +138,14 @@ function UnpaidFastTrackPage() {
     () => (snapshot ? unpaidFastTrack(snapshot.registrations, snapshot.payments) : []),
     [snapshot],
   );
+  const dateRows = useMemo(
+    () => unpaid.filter((row) => matchesRegistrationDate(row.created_at, dateFrom, dateTo)),
+    [unpaid, dateFrom, dateTo],
+  );
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
     const phoneQuery = normalizedWhatsapp(search);
-    return unpaid
+    return dateRows
       .filter(
         (row) =>
           (tier === "all" || fastTrackTier(row) === tier) &&
@@ -156,7 +166,7 @@ function UnpaidFastTrackPage() {
           a.id.localeCompare(b.id)
         );
       });
-  }, [unpaid, tier, search, sort]);
+  }, [dateRows, tier, search, sort]);
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, pages);
   const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
@@ -165,23 +175,67 @@ function UnpaidFastTrackPage() {
     setPage(1);
   }, []);
 
+  const exportData = async () => {
+    if (exporting || busy || error || invalidRange || !filtered.length) return;
+    setExporting(true);
+    try {
+      const { exportRowsToXlsx } = await import("@/lib/excel-export");
+      await exportRowsToXlsx(
+        filtered.map((row) => ({
+          Nama: row.full_name,
+          Token: row.token ?? "",
+          Email: row.email ?? "",
+          WhatsApp: row.whatsapp ?? "",
+          "Fast Track": fastTrackTier(row) === "premium" ? "FT Premium" : "FT Standar",
+          Kategori: row.kind,
+          "Tanggal daftar (WIB)": new Date(row.created_at).toLocaleString("id-ID", {
+            timeZone: "Asia/Jakarta",
+          }),
+          "Status pembayaran": "Belum bayar",
+        })),
+        "FT Belum Bayar",
+        `FT-Belum-Bayar-${dateFrom || "awal"}-${dateTo || "terbaru"}.xlsx`,
+      );
+      toast.success(`${filtered.length} pendaftaran berhasil diekspor`);
+    } catch {
+      toast.error("Gagal mengunduh data. Silakan coba lagi.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Fast Track Belum Bayar</h1>
+          <h1 className="text-2xl font-bold">FT Belum Bayar</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Pendaftar Fast Track Reguler/Standard dan Premium yang belum membayar.
+            Pendaftar FT Standar dan FT Premium yang belum membayar.
           </p>
         </div>
-        <Button variant="outline" onClick={() => refreshAction.current()} disabled={busy}>
-          {busy ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <RefreshCw className="mr-2 h-4 w-4" />
-          )}
-          Segarkan
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            onClick={() => void exportData()}
+            disabled={
+              busy || exporting || !snapshot || Boolean(error) || invalidRange || !filtered.length
+            }
+          >
+            {exporting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="mr-2 h-4 w-4" />
+            )}
+            {exporting ? "Mengekspor…" : "Unduh Excel"}
+          </Button>
+          <Button variant="outline" onClick={() => refreshAction.current()} disabled={busy}>
+            {busy ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
+            Segarkan
+          </Button>
+        </div>
       </div>
       <Card className="p-4 text-sm text-muted-foreground">
         Peserta dengan pembayaran Fast Track berhasil tidak ditampilkan, termasuk pendaftaran lain
@@ -199,9 +253,9 @@ function UnpaidFastTrackPage() {
       )}
       <div className="grid gap-3 sm:grid-cols-3">
         {[
-          ["Semua belum bayar", unpaid.length],
-          ["Reguler / Standard", unpaid.filter((r) => fastTrackTier(r) === "standard").length],
-          ["Premium", unpaid.filter((r) => fastTrackTier(r) === "premium").length],
+          ["Belum bayar sesuai tanggal", dateRows.length],
+          ["FT Standar", dateRows.filter((r) => fastTrackTier(r) === "standard").length],
+          ["FT Premium", dateRows.filter((r) => fastTrackTier(r) === "premium").length],
         ].map(([label, count]) => (
           <Card key={label} className="p-4">
             <p className="text-sm text-muted-foreground">{label}</p>
@@ -230,8 +284,8 @@ function UnpaidFastTrackPage() {
             onChange={(e) => change(setTier, e.target.value)}
           >
             <option value="all">Semua Fast Track</option>
-            <option value="standard">Reguler / Standard</option>
-            <option value="premium">Premium</option>
+            <option value="standard">FT Standar</option>
+            <option value="premium">FT Premium</option>
           </select>
           <select
             aria-label="Urutkan peserta"
@@ -242,6 +296,46 @@ function UnpaidFastTrackPage() {
             <option value="email">Urutkan: Email</option>
             <option value="whatsapp">Urutkan: WhatsApp</option>
           </select>
+        </div>
+        <div className="flex flex-wrap items-end gap-3 border-b p-4">
+          <label className="space-y-1 text-sm">
+            <span>Dari tanggal daftar</span>
+            <Input
+              type="date"
+              value={dateFrom}
+              max={dateTo || undefined}
+              onChange={(e) => change(setDateFrom, e.target.value)}
+            />
+          </label>
+          <label className="space-y-1 text-sm">
+            <span>Sampai tanggal daftar</span>
+            <Input
+              type="date"
+              value={dateTo}
+              min={dateFrom || undefined}
+              onChange={(e) => change(setDateTo, e.target.value)}
+            />
+          </label>
+          <Button
+            variant="outline"
+            disabled={!dateFrom && !dateTo}
+            onClick={() => {
+              setDateFrom("");
+              setDateTo("");
+              setPage(1);
+            }}
+          >
+            Semua tanggal
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            Tanggal pendaftaran dalam WIB. Ekspor memuat seluruh hasil filter, bukan hanya halaman
+            ini.
+          </p>
+          {invalidRange && (
+            <p role="alert" className="w-full text-sm text-destructive">
+              Tanggal akhir harus sama dengan atau setelah tanggal awal.
+            </p>
+          )}
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
@@ -282,8 +376,15 @@ function UnpaidFastTrackPage() {
                     <td className="p-4">{row.email || "—"}</td>
                     <td className="whitespace-nowrap p-4">{row.whatsapp || "—"}</td>
                     <td className="p-4">
-                      <Badge variant="outline">
-                        {fastTrackTier(row) === "premium" ? "Premium" : "Reguler / Standard"}
+                      <Badge
+                        variant="outline"
+                        className={
+                          fastTrackTier(row) === "premium"
+                            ? "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
+                            : "border-violet-300 bg-violet-50 text-violet-800 dark:border-violet-700 dark:bg-violet-950 dark:text-violet-200"
+                        }
+                      >
+                        {fastTrackTier(row) === "premium" ? "FT Premium" : "FT Standar"}
                       </Badge>
                     </td>
                     <td className="p-4 capitalize">{row.kind}</td>
