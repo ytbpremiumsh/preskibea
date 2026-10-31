@@ -21,7 +21,7 @@ export const Route = createFileRoute("/cek-status")({
   component: CekStatusPage,
 });
 
-type StatusData = {
+export type StatusData = {
   full_name: string;
   kind: "prestasi" | "ekonomi" | "umum" | "yatim";
   status: "pending" | "approved" | "rejected";
@@ -149,7 +149,7 @@ function CekStatusPage() {
 }
 
 
-function StatusResult({ data }: { data: StatusData }) {
+export function StatusResult({ data }: { data: StatusData }) {
   const jenis = data.kind === "prestasi" ? "Beasiswa Prestasi" : data.kind === "ekonomi" ? "Beasiswa Ekonomi" : data.kind === "yatim" ? "Beasiswa Yatim" : "Beasiswa Umum";
   const berkasTo = data.kind === "prestasi" ? "/berkas/prestasi/upload" : data.kind === "ekonomi" ? "/berkas/ekonomi/upload" : data.kind === "yatim" ? "/berkas/yatim/upload" : "/berkas/umum/upload";
   const hasDocs = data.docs.total > 0;

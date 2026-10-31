@@ -28,3 +28,6 @@ project_id = "ltmfvbcazebowndigkyi"
     verify_jwt = true
 
 
+
+[functions.peserta-kendala]
+verify_jwt = false
