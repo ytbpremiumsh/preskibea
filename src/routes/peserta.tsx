@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   AlertCircle,
+  ArrowLeft,
+  ChevronRight,
+  MessageCircle,
   ArrowRight,
   Gift,
   Loader2,
@@ -14,6 +17,7 @@ import { isValidToken, normalizeToken } from "@/lib/token";
 import {
   DEFAULT_PESERTA_SETTINGS,
   normalizePesertaSettings,
+  whatsappChannelUrl,
   type PesertaSettings,
 } from "@/lib/peserta-settings";
 import { StatusResult, type StatusData } from "./cek-status";
@@ -27,14 +31,14 @@ export const Route = createFileRoute("/peserta")({
   }),
   component: PesertaPage,
 });
-type Tab = "status" | "benefits";
+type Menu = "status" | "benefits";
 function PesertaPage() {
   const [settings, setSettings] = useState<PesertaSettings>(DEFAULT_PESERTA_SETTINGS);
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [settingsError, setSettingsError] = useState(false);
   const [tokenInput, setTokenInput] = useState("");
   const [data, setData] = useState<StatusData | null>(null);
-  const [tab, setTab] = useState<Tab>("status");
+  const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   useEffect(() => {
@@ -58,13 +62,7 @@ function PesertaPage() {
       active = false;
     };
   }, []);
-  const enabledTabs: { id: Tab; label: string; enabled: boolean; icon: typeof UserRound }[] = [
-    { id: "status", label: "Tahapan Saya", enabled: settings.status_enabled, icon: ShieldCheck },
-    { id: "benefits", label: "Benefit", enabled: settings.benefits_enabled, icon: Gift },
-  ];
-  const selected =
-    enabledTabs.find((item) => item.id === tab && item.enabled)?.id ??
-    enabledTabs.find((item) => item.enabled)?.id;
+  const channelUrl = whatsappChannelUrl(settings.whatsapp_channel_url);
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     const normalized = normalizeToken(tokenInput);
@@ -156,45 +154,115 @@ function PesertaPage() {
               <button
                 onClick={() => {
                   setData(null);
-                  setTab("status");
+                  setSelectedMenu(null);
                 }}
                 className="inline-flex items-center gap-2 rounded-xl border border-white/40 px-4 py-2 text-sm font-semibold"
               >
                 <LogOut size={16} /> Keluar
               </button>
             </div>
-            <div className="flex flex-wrap gap-2" role="tablist" aria-label="Menu peserta">
-              {enabledTabs
-                .filter((item) => item.enabled)
-                .map((item) => (
-                  <button
-                    key={item.id}
-                    role="tab"
-                    aria-selected={selected === item.id}
-                    onClick={() => setTab(item.id)}
-                    className={`inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold ${selected === item.id ? "bg-primary text-primary-foreground" : "border bg-background text-foreground"}`}
-                  >
-                    <item.icon size={16} />
-                    {item.label}
-                  </button>
-                ))}
-            </div>
-            {!selected && (
-              <div className="rounded-2xl border bg-background p-6 text-muted-foreground">
-                Menu peserta sedang tidak tersedia.
-              </div>
-            )}
-            {selected === "status" && <StatusResult data={data} />}
-            {selected === "benefits" && (
-              <section className="rounded-3xl border bg-background p-6 shadow-sm md:p-8">
-                <div className="flex items-center gap-3 text-primary">
-                  <Gift />
-                  <h2 className="text-xl font-bold text-foreground">{settings.benefits_title}</h2>
+            {selectedMenu === null && (
+              <section aria-label="Menu peserta" className="space-y-4">
+                <div>
+                  <h2 className="text-xl font-bold">Menu Peserta</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Pilih menu untuk melihat informasi beasiswa Anda.
+                  </p>
                 </div>
-                <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-muted-foreground">
-                  {settings.benefits_text}
-                </p>
+                {!settings.status_enabled && !settings.benefits_enabled && (
+                  <div className="rounded-2xl border bg-background p-6 text-muted-foreground">
+                    Menu peserta sedang tidak tersedia.
+                  </div>
+                )}
+                <div className="grid gap-4 md:grid-cols-2">
+                  {settings.status_enabled && (
+                    <button
+                      onClick={() => setSelectedMenu("status")}
+                      className="group flex min-h-44 items-start gap-4 rounded-3xl border bg-background p-6 text-left shadow-sm transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    >
+                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                        <ShieldCheck size={22} />
+                      </span>
+                      <span className="flex-1">
+                        <span className="block text-lg font-bold">Tahapan</span>
+                        <span className="mt-2 block text-sm leading-6 text-muted-foreground">
+                          Lihat perkembangan pendaftaran dan hasil seleksi Anda.
+                        </span>
+                        <span className="mt-4 inline-flex items-center text-sm font-semibold text-primary">
+                          Lihat tahapan <ChevronRight size={16} />
+                        </span>
+                      </span>
+                    </button>
+                  )}
+                  {settings.benefits_enabled && (
+                    <article className="min-h-44 rounded-3xl border bg-background p-6 shadow-sm transition hover:border-primary/40 hover:shadow-md">
+                      <button
+                        onClick={() => setSelectedMenu("benefits")}
+                        className="flex w-full items-start gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      >
+                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
+                          <Gift size={22} />
+                        </span>
+                        <span className="flex-1">
+                          <span className="block text-lg font-bold">Benefit</span>
+                          <span className="mt-2 block text-sm leading-6 text-muted-foreground">
+                            Temukan informasi benefit untuk peserta.
+                          </span>
+                          <span className="mt-4 inline-flex items-center text-sm font-semibold text-primary">
+                            Lihat benefit <ChevronRight size={16} />
+                          </span>
+                        </span>
+                      </button>
+                      {channelUrl && (
+                        <a
+                          href={channelUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100"
+                        >
+                          <MessageCircle size={16} /> Channel WhatsApp <ArrowRight size={15} />
+                        </a>
+                      )}
+                    </article>
+                  )}
+                </div>
               </section>
+            )}
+            {selectedMenu !== null && (
+              <div className="space-y-4">
+                <button
+                  onClick={() => setSelectedMenu(null)}
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+                >
+                  <ArrowLeft size={16} /> Kembali ke menu
+                </button>
+                {selectedMenu === "status" && settings.status_enabled && (
+                  <StatusResult data={data} />
+                )}
+                {selectedMenu === "benefits" && settings.benefits_enabled && (
+                  <section className="rounded-3xl border bg-background p-6 shadow-sm md:p-8">
+                    <div className="flex items-center gap-3 text-primary">
+                      <Gift />
+                      <h2 className="text-xl font-bold text-foreground">
+                        {settings.benefits_title}
+                      </h2>
+                    </div>
+                    <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-muted-foreground">
+                      {settings.benefits_text}
+                    </p>
+                    {channelUrl && (
+                      <a
+                        href={channelUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700"
+                      >
+                        <MessageCircle size={16} /> Buka Channel WhatsApp <ArrowRight size={16} />
+                      </a>
+                    )}
+                  </section>
+                )}
+              </div>
             )}
           </div>
         )}

@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   DEFAULT_PESERTA_SETTINGS,
   normalizePesertaSettings,
+  whatsappChannelUrl,
   type PesertaSettings,
 } from "@/lib/peserta-settings";
 
@@ -45,6 +46,15 @@ function DashboardPesertaAdmin() {
     setSettings((s) => ({ ...s, [key]: value }));
   const save = async () => {
     if (saving || loadError) return;
+    if (
+      settings.whatsapp_channel_url.trim() &&
+      !whatsappChannelUrl(settings.whatsapp_channel_url)
+    ) {
+      toast.error(
+        "Masukkan tautan channel WhatsApp yang valid, misalnya https://whatsapp.com/channel/…",
+      );
+      return;
+    }
     setSaving(true);
     const { error } = await supabase
       .from("site_settings")
@@ -89,7 +99,7 @@ function DashboardPesertaAdmin() {
               />
             </label>
             <div className="space-y-4 border-y py-5">
-              <h3 className="font-semibold">Aktifkan tab</h3>
+              <h3 className="font-semibold">Aktifkan menu</h3>
               {(
                 [
                   ["status_enabled", "Tahapan Saya"],
@@ -121,6 +131,19 @@ function DashboardPesertaAdmin() {
                 onChange={(e) => set("benefits_text", e.target.value)}
                 placeholder="Masukkan rincian benefit peserta"
               />
+            </label>
+            <label className="block space-y-2 text-sm font-semibold">
+              URL Channel WhatsApp
+              <Input
+                type="url"
+                placeholder="https://whatsapp.com/channel/..."
+                value={settings.whatsapp_channel_url}
+                maxLength={2048}
+                onChange={(e) => set("whatsapp_channel_url", e.target.value)}
+              />
+              <span className="block text-xs font-normal text-muted-foreground">
+                Kosongkan jika belum ada channel. Tautan akan muncul pada menu Benefit.
+              </span>
             </label>
             <Button onClick={() => void save()} disabled={saving}>
               {saving ? (
