@@ -33,7 +33,7 @@ function UnpaidFastTrackPage() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [tier, setTier] = useState("all");
-  const [sort, setSort] = useState("email");
+  const [sort, setSort] = useState("oldest");
   const [page, setPage] = useState(1);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
@@ -156,6 +156,12 @@ function UnpaidFastTrackPage() {
             (phoneQuery.length >= 3 && normalizedWhatsapp(row.whatsapp).includes(phoneQuery))),
       )
       .sort((a, b) => {
+        if (sort === "oldest") {
+          return (
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime() ||
+            a.id.localeCompare(b.id)
+          );
+        }
         const left =
           sort === "whatsapp" ? normalizedWhatsapp(a.whatsapp) : normalizedEmail(a.email);
         const right =
@@ -293,6 +299,7 @@ function UnpaidFastTrackPage() {
             value={sort}
             onChange={(e) => change(setSort, e.target.value)}
           >
+            <option value="oldest">Urutkan: Tanggal terlama</option>
             <option value="email">Urutkan: Email</option>
             <option value="whatsapp">Urutkan: WhatsApp</option>
           </select>
