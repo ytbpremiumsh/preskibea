@@ -20,6 +20,7 @@ import { Route as CekStatusRouteImport } from './routes/cek-status'
 import { Route as DaftarRouteImport } from './routes/daftar'
 import { Route as EsaiRouteImport } from './routes/esai'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PesertaRouteImport } from './routes/peserta'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAdsenseRouteImport } from './routes/admin.adsense'
@@ -29,6 +30,7 @@ import { Route as AdminArtikelRouteImport } from './routes/admin.artikel'
 import { Route as AdminBagikanPosterRouteImport } from './routes/admin.bagikan-poster'
 import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
 import { Route as AdminBrandingRouteImport } from './routes/admin.branding'
+import { Route as AdminDashboardPesertaRouteImport } from './routes/admin.dashboard-peserta'
 import { Route as AdminEmailTemplateRouteImport } from './routes/admin.email-template'
 import { Route as AdminEsaiRouteImport } from './routes/admin.esai'
 import { Route as AdminFastTrackBelumBayarRouteImport } from './routes/admin.fast-track-belum-bayar'
@@ -124,6 +126,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PesertaRoute = PesertaRouteImport.update({
+  id: '/peserta',
+  path: '/peserta',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TentangRoute = TentangRouteImport.update({
   id: '/tentang',
   path: '/tentang',
@@ -167,6 +174,11 @@ const AdminBerkasRoute = AdminBerkasRouteImport.update({
 const AdminBrandingRoute = AdminBrandingRouteImport.update({
   id: '/branding',
   path: '/branding',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDashboardPesertaRoute = AdminDashboardPesertaRouteImport.update({
+  id: '/dashboard-peserta',
+  path: '/dashboard-peserta',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminEmailTemplateRoute = AdminEmailTemplateRouteImport.update({
@@ -378,6 +390,7 @@ export interface FileRoutesByFullPath {
   '/daftar': typeof DaftarRoute
   '/esai': typeof EsaiRoute
   '/login': typeof LoginRoute
+  '/peserta': typeof PesertaRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
   '/admin/ai-balasan': typeof AdminAiBalasanRoute
@@ -386,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
+  '/admin/dashboard-peserta': typeof AdminDashboardPesertaRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/esai': typeof AdminEsaiRoute
   '/admin/fast-track-belum-bayar': typeof AdminFastTrackBelumBayarRoute
@@ -438,6 +452,7 @@ export interface FileRoutesByTo {
   '/daftar': typeof DaftarRoute
   '/esai': typeof EsaiRoute
   '/login': typeof LoginRoute
+  '/peserta': typeof PesertaRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
   '/admin/ai-balasan': typeof AdminAiBalasanRoute
@@ -446,6 +461,7 @@ export interface FileRoutesByTo {
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
+  '/admin/dashboard-peserta': typeof AdminDashboardPesertaRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/esai': typeof AdminEsaiRoute
   '/admin/fast-track-belum-bayar': typeof AdminFastTrackBelumBayarRoute
@@ -496,6 +512,7 @@ export interface FileRoutesById {
   '/daftar': typeof DaftarRoute
   '/esai': typeof EsaiRoute
   '/login': typeof LoginRoute
+  '/peserta': typeof PesertaRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
   '/admin/ai-balasan': typeof AdminAiBalasanRoute
@@ -504,6 +521,7 @@ export interface FileRoutesById {
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
+  '/admin/dashboard-peserta': typeof AdminDashboardPesertaRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/esai': typeof AdminEsaiRoute
   '/admin/fast-track-belum-bayar': typeof AdminFastTrackBelumBayarRoute
@@ -559,6 +577,7 @@ export interface FileRouteTypes {
     | '/daftar'
     | '/esai'
     | '/login'
+    | '/peserta'
     | '/tentang'
     | '/admin/adsense'
     | '/admin/ai-balasan'
@@ -567,6 +586,7 @@ export interface FileRouteTypes {
     | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/branding'
+    | '/admin/dashboard-peserta'
     | '/admin/email-template'
     | '/admin/esai'
     | '/admin/fast-track-belum-bayar'
@@ -619,6 +639,7 @@ export interface FileRouteTypes {
     | '/daftar'
     | '/esai'
     | '/login'
+    | '/peserta'
     | '/tentang'
     | '/admin/adsense'
     | '/admin/ai-balasan'
@@ -627,6 +648,7 @@ export interface FileRouteTypes {
     | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/branding'
+    | '/admin/dashboard-peserta'
     | '/admin/email-template'
     | '/admin/esai'
     | '/admin/fast-track-belum-bayar'
@@ -676,6 +698,7 @@ export interface FileRouteTypes {
     | '/daftar'
     | '/esai'
     | '/login'
+    | '/peserta'
     | '/tentang'
     | '/admin/adsense'
     | '/admin/ai-balasan'
@@ -684,6 +707,7 @@ export interface FileRouteTypes {
     | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/branding'
+    | '/admin/dashboard-peserta'
     | '/admin/email-template'
     | '/admin/esai'
     | '/admin/fast-track-belum-bayar'
@@ -738,6 +762,7 @@ export interface RootRouteChildren {
   DaftarRoute: typeof DaftarRoute
   EsaiRoute: typeof EsaiRoute
   LoginRoute: typeof LoginRoute
+  PesertaRoute: typeof PesertaRoute
   TentangRoute: typeof TentangRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
   BerkasEkonomiRoute: typeof BerkasEkonomiRouteWithChildren
@@ -834,6 +859,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/peserta': {
+      id: '/peserta'
+      path: '/peserta'
+      fullPath: '/peserta'
+      preLoaderRoute: typeof PesertaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tentang': {
       id: '/tentang'
       path: '/tentang'
@@ -895,6 +927,13 @@ declare module '@tanstack/react-router' {
       path: '/branding'
       fullPath: '/admin/branding'
       preLoaderRoute: typeof AdminBrandingRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/dashboard-peserta': {
+      id: '/admin/dashboard-peserta'
+      path: '/dashboard-peserta'
+      fullPath: '/admin/dashboard-peserta'
+      preLoaderRoute: typeof AdminDashboardPesertaRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/email-template': {
@@ -1181,6 +1220,7 @@ interface AdminRouteChildren {
   AdminBagikanPosterRoute: typeof AdminBagikanPosterRoute
   AdminBerkasRoute: typeof AdminBerkasRoute
   AdminBrandingRoute: typeof AdminBrandingRoute
+  AdminDashboardPesertaRoute: typeof AdminDashboardPesertaRoute
   AdminEmailTemplateRoute: typeof AdminEmailTemplateRoute
   AdminEsaiRoute: typeof AdminEsaiRoute
   AdminFastTrackBelumBayarRoute: typeof AdminFastTrackBelumBayarRoute
@@ -1209,6 +1249,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBagikanPosterRoute: AdminBagikanPosterRoute,
   AdminBerkasRoute: AdminBerkasRoute,
   AdminBrandingRoute: AdminBrandingRoute,
+  AdminDashboardPesertaRoute: AdminDashboardPesertaRoute,
   AdminEmailTemplateRoute: AdminEmailTemplateRoute,
   AdminEsaiRoute: AdminEsaiRoute,
   AdminFastTrackBelumBayarRoute: AdminFastTrackBelumBayarRoute,
@@ -1299,6 +1340,7 @@ const rootRouteChildren: RootRouteChildren = {
   DaftarRoute: DaftarRoute,
   EsaiRoute: EsaiRoute,
   LoginRoute: LoginRoute,
+  PesertaRoute: PesertaRoute,
   TentangRoute: TentangRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
   BerkasEkonomiRoute: BerkasEkonomiRouteWithChildren,

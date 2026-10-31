@@ -9,6 +9,7 @@ const nav = [
   { to: "/artikel", label: "Artikel" },
   { to: "/tentang", label: "Tentang" },
   { to: "/cek-status", label: "Cek Status" },
+  { to: "/peserta", label: "Dashboard Peserta" },
 ] as const;
 
 export function SiteHeader() {
