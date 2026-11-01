@@ -185,6 +185,7 @@ serve(async (req) => {
   if (req.method !== "POST")
     return new Response("Method not allowed", { status: 405, headers: cors });
 
+  let logId: string | undefined;
   try {
     const body = await req.json();
     const parsed = Input.safeParse(body);
@@ -195,8 +196,28 @@ serve(async (req) => {
       );
     }
     const data = parsed.data;
+    // Internal service calls can send transactional mail; signed-in admins can send tests only.
+    const bearer = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "") ?? "";
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const internal = Boolean(serviceKey && bearer === serviceKey);
+    if (!internal) {
+      const { data: auth, error: authError } = await supabaseAdmin.auth.getUser(bearer);
+      if (authError || !auth.user || !data._isTest) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...cors, "Content-Type": "application/json" } });
+      }
+      const { data: role, error: roleError } = await supabaseAdmin.from("user_roles").select("user_id").eq("user_id", auth.user.id).eq("role", "admin").maybeSingle();
+      if (roleError || !role) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...cors, "Content-Type": "application/json" } });
+      }
+    }
     const recipient = data.recipientEmail.toLowerCase();
     const props = data.templateData ?? {};
+    const { data: log, error: logError } = await supabaseAdmin.from("email_send_log").insert({
+      template_name: data.templateName, recipient_email: recipient, status: "pending",
+      metadata: { is_test: Boolean(data._isTest) },
+    }).select("id").single();
+    if (logError) console.error("Unable to create email log:", logError.message);
+    logId = log?.id;
 
     // Test mode: pakai subject & html dari body
     let subject: string;
@@ -234,6 +255,12 @@ serve(async (req) => {
       text,
     });
 
+    if (logId) {
+      const { error } = await supabaseAdmin.from("email_send_log")
+        .update({ status: result.sent ? "sent" : "suppressed", error_message: result.sent ? null : result.reason })
+        .eq("id", logId);
+      if (error) console.error("Unable to update email log:", error.message);
+    }
     if (!result.sent) {
       console.log(`Email skipped for label=${data.templateName}: ${result.reason}`);
       return new Response(JSON.stringify({ ok: true, skipped: result.reason }), {
@@ -250,6 +277,12 @@ serve(async (req) => {
   } catch (e) {
     const err = e as Error & { code?: string; status?: number };
     console.error(`send-app-email failed [${err.code ?? "unknown"}]: ${err.message}`);
+    if (logId) {
+      const { error } = await supabaseAdmin.from("email_send_log")
+        .update({ status: "failed", error_message: String(err.code ?? "send_failed").slice(0, 200) })
+        .eq("id", logId);
+      if (error) console.error("Unable to update email log:", error.message);
+    }
     if (err.code === "domain_not_verified") {
       return new Response(
         JSON.stringify({ ok: true, sent: false, pending: "domain_verification" }),
