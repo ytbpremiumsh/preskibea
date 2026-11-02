@@ -4,12 +4,8 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { EmailAPIError, sendLovableEmail } from "npm:@lovable.dev/email-js@0.1.0";
-
-const cors = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeaders as cors } from "npm:@supabase/supabase-js@2/cors";
+import { canSendEmail, safeEmailFailure } from "../_shared/email-safety.ts";
 
 const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -27,14 +23,14 @@ const CUSTOMIZABLE: Record<string, string> = {
 };
 
 const Input = z.object({
-  templateName: z.string().min(1).max(100),
+  templateName: z.enum(["registration-confirmation", "berkas-confirmation", "esai-confirmation"]),
   recipientEmail: z.string().email(),
   idempotencyKey: z.string().min(1).max(200).optional(),
-  templateData: z.record(z.string(), z.any()).optional(),
+  templateData: z.record(z.string(), z.unknown()).optional(),
   // Mode test (dari halaman admin Email Template)
   _isTest: z.boolean().optional(),
-  subject: z.string().optional(),
-  html: z.string().optional(),
+  subject: z.string().max(500).optional(),
+  html: z.string().max(100000).optional(),
 });
 
 function escapeHtml(s: string) {
@@ -185,6 +181,7 @@ serve(async (req) => {
   if (req.method !== "POST")
     return new Response("Method not allowed", { status: 405, headers: cors });
 
+  let logId: string | undefined;
   try {
     const body = await req.json();
     const parsed = Input.safeParse(body);
@@ -195,8 +192,36 @@ serve(async (req) => {
       );
     }
     const data = parsed.data;
+    // Internal service calls can send transactional mail; signed-in admins can send tests only.
+    const bearer = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "") ?? "";
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const internal = Boolean(serviceKey && bearer === serviceKey);
+    let authenticatedAdmin = false;
+    if (!internal || data._isTest) {
+      const { data: auth, error: authError } = await supabaseAdmin.auth.getUser(bearer);
+      if (authError || !auth.user || !data._isTest) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...cors, "Content-Type": "application/json" } });
+      }
+      const { data: role, error: roleError } = await supabaseAdmin.from("user_roles").select("user_id").eq("user_id", auth.user.id).eq("role", "admin").maybeSingle();
+      if (roleError || !role) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...cors, "Content-Type": "application/json" } });
+      }
+      authenticatedAdmin = true;
+    }
+    if (!canSendEmail(internal, Boolean(data._isTest), authenticatedAdmin)) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...cors, "Content-Type": "application/json" } });
+    }
     const recipient = data.recipientEmail.toLowerCase();
     const props = data.templateData ?? {};
+    const { data: log, error: logError } = await supabaseAdmin.from("email_send_log").insert({
+      template_name: data.templateName, recipient_email: recipient, status: "pending",
+      metadata: { is_test: Boolean(data._isTest), idempotency_key: data.idempotencyKey ?? null },
+    }).select("id").single();
+    if (logError) throw Object.assign(new Error("Log unavailable"), { code: "log_unavailable" });
+    logId = log?.id;
+    if (data._isTest && (!data.subject?.trim() || !data.html?.trim())) {
+      throw Object.assign(new Error("Invalid test content"), { code: "invalid_test_content", status: 400 });
+    }
 
     // Test mode: pakai subject & html dari body
     let subject: string;
@@ -234,6 +259,12 @@ serve(async (req) => {
       text,
     });
 
+    if (logId) {
+      const { error } = await supabaseAdmin.from("email_send_log")
+        .update({ status: result.sent ? "sent" : "suppressed", error_message: result.sent ? null : safeEmailFailure(result.reason).message })
+        .eq("id", logId);
+      if (error) console.error("Unable to update email log:", error.message);
+    }
     if (!result.sent) {
       console.log(`Email skipped for label=${data.templateName}: ${result.reason}`);
       return new Response(JSON.stringify({ ok: true, skipped: result.reason }), {
@@ -249,7 +280,14 @@ serve(async (req) => {
     });
   } catch (e) {
     const err = e as Error & { code?: string; status?: number };
-    console.error(`send-app-email failed [${err.code ?? "unknown"}]: ${err.message}`);
+    const failure = safeEmailFailure(err.code, err.status);
+    console.error(`send-app-email failed [${failure.code}]`);
+    if (logId) {
+      const { error } = await supabaseAdmin.from("email_send_log")
+        .update({ status: "failed", error_message: failure.message })
+        .eq("id", logId);
+      if (error) console.error("Unable to update email log:", error.message);
+    }
     if (err.code === "domain_not_verified") {
       return new Response(
         JSON.stringify({ ok: true, sent: false, pending: "domain_verification" }),
@@ -259,8 +297,8 @@ serve(async (req) => {
         },
       );
     }
-    return new Response(JSON.stringify({ error: err.message, code: err.code ?? null }), {
-      status: 500,
+    return new Response(JSON.stringify({ error: failure.message, code: failure.code }), {
+      status: err.status === 400 ? 400 : 500,
       headers: { ...cors, "Content-Type": "application/json" },
     });
   }

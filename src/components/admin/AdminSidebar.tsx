@@ -87,6 +87,7 @@ const groups: { label: string; items: Item[] }[] = [
       { title: "Logo Situs", url: "/admin/branding", icon: ImageIcon },
       { title: "Widget Home", url: "/admin/widgets", icon: LayoutDashboard },
       { title: "Template Email", url: "/admin/email-template", icon: Mail },
+      { title: "Log Email", url: "/admin/log-email", icon: Mail },
       { title: "Keamanan (2FA)", url: "/admin/keamanan", icon: ShieldCheck },
       { title: "AdSense", url: "/admin/adsense", icon: Megaphone },
       { title: "Iklan Kustom", url: "/admin/iklan-kustom", icon: Megaphone },
