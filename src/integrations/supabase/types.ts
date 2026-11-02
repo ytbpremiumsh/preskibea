@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.15"
   }
   public: {
     Tables: {
@@ -402,6 +402,65 @@ export type Database = {
           },
         ]
       }
+      peserta_rate_limits: {
+        Row: {
+          attempts: number
+          key: string
+          window_start: string
+        }
+        Insert: {
+          attempts: number
+          key: string
+          window_start: string
+        }
+        Update: {
+          attempts?: number
+          key?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      peserta_reports: {
+        Row: {
+          admin_reply: string | null
+          created_at: string
+          id: string
+          image_path: string | null
+          message: string
+          registration_id: string
+          status: string
+          subject: string
+        }
+        Insert: {
+          admin_reply?: string | null
+          created_at?: string
+          id?: string
+          image_path?: string | null
+          message: string
+          registration_id: string
+          status?: string
+          subject: string
+        }
+        Update: {
+          admin_reply?: string | null
+          created_at?: string
+          id?: string
+          image_path?: string | null
+          message?: string
+          registration_id?: string
+          status?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "peserta_reports_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       registrations: {
         Row: {
           additional_docs_url: string | null
@@ -675,6 +734,7 @@ export type Database = {
         }
         Returns: number
       }
+      peserta_rate_limit: { Args: { p_key: string }; Returns: boolean }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
