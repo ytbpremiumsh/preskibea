@@ -28,6 +28,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin/branding": "Logo Situs",
   "/admin/widgets": "Widget Home",
   "/admin/email-template": "Template Email",
+  "/admin/log-email": "Log Email",
   "/admin/keamanan": "Keamanan (2FA)",
   "/admin/adsense": "AdSense",
   "/admin/iklan-kustom": "Iklan Kustom",

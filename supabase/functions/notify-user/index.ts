@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -9,6 +8,13 @@ const corsHeaders = {
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
 
+  const expected = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const authorization = req.headers.get("Authorization") ?? "";
+  if (!expected || authorization !== `Bearer ${expected}`) {
+    return new Response(JSON.stringify({ error: "Forbidden" }), {
+      status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
   try {
     const { type, full_name, email, token, kind, status, whatsapp, count } = await req.json()
 
