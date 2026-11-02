@@ -1,12 +1,22 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { z } from "https://esm.sh/zod@3.23.8";
+import { notificationKey } from "../_shared/email-safety.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+const Input = z.object({
+  type: z.enum(["registration", "berkas", "esai"]),
+  full_name: z.string().min(1).max(255),
+  email: z.string().email(),
+  token: z.string().min(1).max(100),
+  kind: z.enum(["prestasi", "ekonomi", "umum", "yatim"]),
+  status: z.string().max(100).optional(),
+  whatsapp: z.string().max(30).optional(),
+  count: z.number().int().nonnegative().optional(),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
+  if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
 
   const expected = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const authorization = req.headers.get("Authorization") ?? "";
@@ -16,13 +26,9 @@ serve(async (req) => {
     });
   }
   try {
-    const { type, full_name, email, token, kind, status, whatsapp, count } = await req.json()
-
-    if (!email || !token) {
-      throw new Error("Missing required fields: email and token")
-    }
-
-    console.log(`Attempting to send ${type} email to ${email} for ${full_name}`);
+    const parsed = Input.safeParse(await req.json());
+    if (!parsed.success) return new Response(JSON.stringify({ error: "Data pemberitahuan tidak valid" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const { type, full_name, email, token, kind, status, whatsapp, count } = parsed.data;
 
     // Unified email sending logic that prioritizes custom templates from site_settings
     const typeMap: Record<string, string> = {
@@ -44,6 +50,7 @@ serve(async (req) => {
       body: JSON.stringify({
         templateName,
         recipientEmail: email,
+        idempotencyKey: notificationKey(type, token, status, count),
         templateData: {
           full_name,
           token,
@@ -67,9 +74,8 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown email error"
-    console.error("Email error:", message)
-    return new Response(JSON.stringify({ error: message }), {
+    console.error("Notification request failed");
+    return new Response(JSON.stringify({ error: "Pemberitahuan email gagal diproses" }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
