@@ -238,7 +238,7 @@ function PilihTipePage() {
             </div>
 
             <div className="relative pt-3">
-              <span className="absolute -top-1 right-4 z-10 inline-flex items-center gap-1.5 rounded-full bg-red-600 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-white shadow-sm motion-safe:animate-pulse">
+              <span className="absolute -top-1 right-4 z-10 inline-flex items-center gap-1.5 rounded-full bg-emerald-800 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-white shadow-sm motion-safe:animate-pulse">
                 <span className="h-1.5 w-1.5 rounded-full bg-white" /> Terbatas
               </span>
             <Link
