@@ -89,7 +89,7 @@ function AdminReports() {
       ) : !visible.length ? (
         <p className="py-12 text-center text-muted-foreground">Tidak ada laporan kendala.</p>
       ) : (
-        <div className="grid items-start gap-5 xl:grid-cols-2">
+        <div className="grid auto-rows-fr items-stretch gap-5 xl:grid-cols-2">
           {visible.map((report) => (
             <ReportEditor key={report.id} report={report} onSaved={load} />
           ))}
@@ -123,7 +123,7 @@ function ReportEditor({
     }
   };
   return (
-    <article className="min-w-0 space-y-4 rounded-md border bg-card p-5">
+    <article className="flex min-w-0 flex-col gap-4 overflow-hidden rounded-xl border bg-card p-5">
       <div>
         <span
           className={`mb-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${reportStage(report) === "resolved" ? "bg-emerald-100 text-emerald-800" : reportStage(report) === "progress" ? "bg-blue-100 text-blue-800" : "bg-amber-100 text-amber-800"}`}
@@ -149,7 +149,7 @@ function ReportEditor({
       </div>
       <p className="whitespace-pre-wrap break-words text-sm leading-6">{report.message}</p>
       {report.image_url && (
-        <div className="space-y-3">
+        <div className="min-w-0 space-y-3">
           <Button type="button" variant="outline" size="sm" aria-expanded={showImage} onClick={() => setShowImage((visible) => !visible)}>
             {showImage ? "Sembunyikan gambar" : "Tampilkan gambar"}
           </Button>
@@ -158,7 +158,7 @@ function ReportEditor({
               <img
                 src={report.image_url}
                 alt={`Screenshot ${report.subject}`}
-                className="max-h-64 max-w-full rounded-md border object-contain"
+                className="block max-h-64 w-full rounded-md border bg-muted/30 object-contain"
               />
             </a>
           )}
@@ -173,7 +173,7 @@ function ReportEditor({
           className="min-h-24 w-full rounded-md border bg-background p-3 font-normal"
         />
       </label>
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div className="mt-auto flex flex-wrap items-end justify-between gap-3">
         <label className="space-y-2 text-sm font-medium">
           Status
           <select
