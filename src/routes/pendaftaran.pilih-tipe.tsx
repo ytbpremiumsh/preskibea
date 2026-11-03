@@ -143,7 +143,7 @@ function PilihTipePage() {
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
-                <span className="inline-block rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 leading-relaxed text-amber-950"><strong className="font-bold">E-Book</strong> Menjemput Beasiswa Impian ke Kampus Dunia Senilai <strong className="font-bold">Rp 79.000,-</strong></span>
+                <span className="inline-block rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 leading-relaxed text-amber-950"><strong className="font-bold">E-Book</strong> Menjemput Beasiswa Impian ke Kampus Dunia Senilai <strong className="font-bold">Rp 79.000,-</strong> <span className="inline-flex rounded-full bg-amber-600 px-2 py-0.5 align-middle text-[10px] font-bold uppercase leading-none text-white">Benefit</span></span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-[var(--gold)] shrink-0" />
@@ -222,7 +222,7 @@ function PilihTipePage() {
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
-                <span className="inline-block rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 leading-relaxed text-emerald-950"><strong className="font-bold">E-Book</strong> Menjemput Beasiswa Impian ke Kampus Dunia Senilai <strong className="font-bold">Rp 79.000,-</strong></span>
+                <span className="inline-block rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 leading-relaxed text-emerald-950"><strong className="font-bold">E-Book</strong> Menjemput Beasiswa Impian ke Kampus Dunia Senilai <strong className="font-bold">Rp 79.000,-</strong> <span className="inline-flex rounded-full bg-emerald-600 px-2 py-0.5 align-middle text-[10px] font-bold uppercase leading-none text-white">Benefit</span></span>
               </li>
               <li className="flex items-center gap-3 text-sm text-foreground/80">
                 <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
