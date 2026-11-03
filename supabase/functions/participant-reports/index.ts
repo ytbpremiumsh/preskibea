@@ -1,7 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { z } from "npm:zod@3";
-import { REPORT_IMAGE_LIMIT, imageExtension } from "../_shared/report-rules.ts";
+import { REPORT_IMAGE_LIMIT, imageExtension, canAccessReport } from "../_shared/report-rules.ts";
 
 const schema = z.object({
   action: z.enum(["list", "create", "admin-list", "admin-update"]),
@@ -16,7 +16,7 @@ const schema = z.object({
 const response = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "POST") return response({ error: "Méthode non autorisée" }, 405);
+  if (req.method !== "POST") return response({ error: "Metode tidak diizinkan." }, 405);
   try {
     if (Number(req.headers.get("content-length") || 0) > 8 * 1024 * 1024) return response({ error: "Screenshot terlalu besar." }, 413);
     const parsed = schema.safeParse(await req.json());
@@ -73,13 +73,14 @@ Deno.serve(async (req) => {
       if (!data) return response({ error: "Tiket tidak ditemukan." }, 404);
       return response({ ok: true });
     }
-    let query = db.from("peserta_reports").select(admin ? "*, registrations(full_name, token)" : "id,subject,message,status,admin_reply,image_path,created_at").order("created_at", { ascending: false }).limit(200);
+    let query = db.from("peserta_reports").select(admin ? "*, registrations(full_name, token)" : "id,registration_id,subject,message,status,admin_reply,image_path,created_at").order("created_at", { ascending: false }).limit(200);
     if (!admin && registrationId) query = query.eq("registration_id", registrationId);
     const { data, error } = await query;
     if (error) throw error;
     const reports = await Promise.all((data || []).map(async (row) => {
+      if (!canAccessReport(row.registration_id, registrationId, admin)) throw new Error("access_denied");
       const image = row.image_path ? await db.storage.from("peserta-kendala").createSignedUrl(row.image_path, 600) : null;
-      const { image_path: _path, ...report } = row;
+      const { image_path: _path, registration_id: _owner, ...report } = row;
       return { ...report, image_url: image?.data?.signedUrl || null };
     }));
     return response({ ok: true, reports });
