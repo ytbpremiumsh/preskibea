@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { reportRequest, reportStage } from "@/lib/reports";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
@@ -105,6 +107,31 @@ const groups: { label: string; items: Item[] }[] = [
 ];
 
 export function AdminSidebar() {
+  const [newReports, setNewReports] = useState(0);
+  useEffect(() => {
+    let active = true;
+    const refresh = async () => {
+      try {
+        const result = await reportRequest({ action: "admin-list" });
+        if (active)
+          setNewReports((result.reports || []).filter((r) => reportStage(r) === "new").length);
+      } catch {
+        /* Keep the last known count when the network is unavailable. */
+      }
+    };
+    void refresh();
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible") void refresh();
+    }, 30000);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("reports-updated", refresh);
+    return () => {
+      active = false;
+      clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("reports-updated", refresh);
+    };
+  }, []);
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const currentPath = useRouterState({ select: (s) => s.location.pathname });
@@ -113,7 +140,10 @@ export function AdminSidebar() {
     url === "/admin" ? currentPath === "/admin" : currentPath.startsWith(url);
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border/60 bg-sidebar shadow-xl md:shadow-none">
+    <Sidebar
+      collapsible="icon"
+      className="border-r border-sidebar-border/60 bg-sidebar shadow-xl md:shadow-none"
+    >
       <SidebarHeader className="border-b border-sidebar-border/60 bg-gradient-to-br from-primary/5 via-transparent to-transparent">
         <div className="flex items-center gap-3 px-2 py-3">
           <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/70 text-primary-foreground shadow-lg shadow-primary/30 ring-1 ring-primary/20">
@@ -125,9 +155,7 @@ export function AdminSidebar() {
               <p className="text-sm font-bold tracking-tight text-sidebar-foreground">
                 Admin Panel
               </p>
-              <p className="text-[11px] font-medium text-sidebar-foreground/60">
-                Prestasi Kita
-              </p>
+              <p className="text-[11px] font-medium text-sidebar-foreground/60">Prestasi Kita</p>
             </div>
           )}
         </div>
@@ -174,6 +202,14 @@ export function AdminSidebar() {
                           {!collapsed && (
                             <>
                               <span className="flex-1 text-sm">{item.title}</span>
+                              {item.url === "/admin/laporan-kendala" && newReports > 0 && (
+                                <span
+                                  aria-label={`${newReports} laporan baru`}
+                                  className="rounded-full bg-red-600 px-2 py-0.5 text-xs font-bold text-white"
+                                >
+                                  {newReports >= 200 ? "200+" : newReports}
+                                </span>
+                              )}
                               <ChevronRight
                                 className={cn(
                                   "h-3.5 w-3.5 opacity-0 transition-all duration-200 -translate-x-1",
