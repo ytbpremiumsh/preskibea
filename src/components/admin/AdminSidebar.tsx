@@ -110,10 +110,12 @@ export function AdminSidebar() {
   const [newReports, setNewReports] = useState(0);
   useEffect(() => {
     let active = true;
+    let requestVersion = 0;
     const refresh = async () => {
+      const version = ++requestVersion;
       try {
         const result = await reportRequest({ action: "admin-list" });
-        if (active)
+        if (active && version === requestVersion)
           setNewReports((result.reports || []).filter((r) => reportStage(r) === "new").length);
       } catch {
         /* Keep the last known count when the network is unavailable. */
@@ -124,12 +126,21 @@ export function AdminSidebar() {
       if (document.visibilityState === "visible") void refresh();
     }, 30000);
     window.addEventListener("focus", refresh);
-    window.addEventListener("reports-updated", refresh);
+    const onReportsUpdated = (event: Event) => {
+      const count = (event as CustomEvent<{ newCount?: number }>).detail?.newCount;
+      if (typeof count === "number") {
+        requestVersion += 1;
+        setNewReports(count);
+      } else {
+        void refresh();
+      }
+    };
+    window.addEventListener("reports-updated", onReportsUpdated);
     return () => {
       active = false;
       clearInterval(timer);
       window.removeEventListener("focus", refresh);
-      window.removeEventListener("reports-updated", refresh);
+      window.removeEventListener("reports-updated", onReportsUpdated);
     };
   }, []);
   const { state } = useSidebar();

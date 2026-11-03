@@ -10,14 +10,16 @@ function AdminReports() {
   const [reports, setReports] = useState<ParticipantReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState<"new" | "progress" | "resolved">("new");
   const [search, setSearch] = useState("");
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
       const data = await reportRequest({ action: "admin-list" });
-      setReports(data.reports || []);
+      const nextReports = data.reports || [];
+      setReports(nextReports);
+      window.dispatchEvent(new CustomEvent("reports-updated", { detail: { newCount: nextReports.filter((r) => reportStage(r) === "new").length } }));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Gagal memuat laporan.");
     } finally {
@@ -29,7 +31,7 @@ function AdminReports() {
   }, [load]);
   const visible = reports.filter(
     (r) =>
-      (filter === "all" || reportStage(r) === filter) &&
+      reportStage(r) === filter &&
       `${r.subject} ${r.registrations?.full_name} ${r.registrations?.token}`
         .toLowerCase()
         .includes(search.toLowerCase()),
@@ -58,17 +60,25 @@ function AdminReports() {
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-md"
         />
-        <select
-          aria-label="Filter status laporan"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="rounded-md border bg-background px-3 py-2 text-sm"
-        >
-          <option value="all">Semua status</option>
-          <option value="new">Baru</option>
-          <option value="progress">Sedang berjalan</option>
-          <option value="resolved">Selesai</option>
-        </select>
+
+      </div>
+      <div role="tablist" aria-label="Kategori laporan" className="flex flex-wrap gap-2 border-b pb-3">
+        {([
+          ["new", "Baru"],
+          ["progress", "Dalam Proses"],
+          ["resolved", "Selesai"],
+        ] as const).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            role="tab"
+            aria-selected={filter === value}
+            onClick={() => setFilter(value)}
+            className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${filter === value ? "bg-primary text-primary-foreground" : "border bg-background text-muted-foreground hover:text-foreground"}`}
+          >
+            {label} <span className="ml-1 opacity-75">({reports.filter((r) => reportStage(r) === value).length})</span>
+          </button>
+        ))}
       </div>
       {loading ? (
         <Loader2 className="animate-spin" />
@@ -104,7 +114,6 @@ function ReportEditor({
     try {
       await reportRequest({ action: "admin-update", id: report.id, status, admin_reply: reply });
       toast.success("Tanggapan dan status tersimpan.");
-      window.dispatchEvent(new Event("reports-updated"));
       await onSaved();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Gagal menyimpan.");
@@ -121,7 +130,7 @@ function ReportEditor({
           {reportStage(report) === "resolved"
             ? "Selesai"
             : reportStage(report) === "progress"
-              ? "Sedang berjalan"
+              ? "Dalam Proses"
               : "Baru"}
         </span>
         <div className="flex items-start gap-2">
