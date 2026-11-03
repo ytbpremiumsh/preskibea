@@ -12,6 +12,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin/analytics": "Google Analytics",
   "/admin/pendaftar": "Data Pendaftar",
   "/admin/dashboard-peserta": "Dashboard Peserta",
+  "/admin/laporan-kendala": "Laporan Kendala",
   "/admin/fast-track-belum-bayar": "FT Belum Bayar",
   "/admin/esai": "Pengiriman Esai",
   "/admin/berkas": "Pengiriman Berkas",
