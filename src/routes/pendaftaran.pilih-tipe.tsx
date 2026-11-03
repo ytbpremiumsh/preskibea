@@ -238,7 +238,7 @@ function PilihTipePage() {
             </div>
 
             <div className="relative pt-3">
-              <span className="absolute -top-1 right-4 z-10 inline-flex items-center gap-1.5 rounded-full bg-emerald-700 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-white shadow-sm motion-safe:animate-blink-emerald">
+              <span className="absolute -top-1 right-4 z-10 inline-flex items-center gap-1.5 rounded-full bg-red-600 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-white shadow-sm motion-safe:animate-pulse">
                 <span className="h-1.5 w-1.5 rounded-full bg-white" /> Terbatas
               </span>
             <Link
@@ -246,7 +246,7 @@ function PilihTipePage() {
               search={{ type: "fast_track", ft_type: "premium" } as any}
               className="btn-block inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-base font-bold shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all group bg-emerald-500 text-white"
             >
-              <span>Pilih Premium <span className="font-medium">· Kuota sisa 8</span></span> <Zap size={18} className="shrink-0 fill-current transition-transform group-hover:scale-110" />
+              <span>Pilih Premium</span> <Zap size={18} className="shrink-0 fill-current transition-transform group-hover:scale-110" />
             </Link>
             </div>
           </div>
