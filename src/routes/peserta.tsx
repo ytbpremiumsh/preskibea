@@ -1,17 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import {
-  AlertCircle,
-  ArrowLeft,
-  ChevronRight,
-  MessageCircle,
-  ArrowRight,
-  Gift,
-  Loader2,
-  LogOut,
-  ShieldCheck,
-  UserRound,
-} from "lucide-react";
+import { AlertCircle, ArrowRight, Gift, Loader2, LogOut, MessageCircle, ShieldCheck, UserRound } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ParticipantReports } from "@/components/ParticipantReports";
+import { kindLabel } from "@/lib/token";
 import { supabase } from "@/integrations/supabase/client";
 import { isValidToken, normalizeToken } from "@/lib/token";
 import {
@@ -31,14 +24,12 @@ export const Route = createFileRoute("/peserta")({
   }),
   component: PesertaPage,
 });
-type Menu = "status" | "benefits";
 function PesertaPage() {
   const [settings, setSettings] = useState<PesertaSettings>(DEFAULT_PESERTA_SETTINGS);
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [settingsError, setSettingsError] = useState(false);
   const [tokenInput, setTokenInput] = useState("");
   const [data, setData] = useState<StatusData | null>(null);
-  const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   useEffect(() => {
@@ -87,185 +78,37 @@ function PesertaPage() {
     }
   };
   return (
-    <main className="min-h-[70vh] bg-muted/30 py-10 md:py-14">
-      <div className="container-page mx-auto max-w-5xl">
-        <Link to="/" className="text-sm font-semibold text-primary hover:underline">
-          ← Kembali ke beranda
-        </Link>
-        {settingsLoading ? (
-          <div className="mx-auto mt-16 text-center text-sm text-muted-foreground">
-            <Loader2 className="mx-auto mb-3 h-6 w-6 animate-spin" />
-            Menyiapkan dashboard…
-          </div>
-        ) : settingsError ? (
-          <div
-            role="alert"
-            className="mx-auto mt-8 max-w-lg rounded-2xl border border-destructive/30 bg-background p-6 text-sm text-destructive"
-          >
-            Pengaturan dashboard belum dapat dimuat. Silakan muat ulang halaman.
-          </div>
-        ) : !data ? (
-          <div className="mx-auto mt-8 max-w-lg rounded-3xl border border-border bg-background p-6 shadow-sm md:p-9">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-              <UserRound />
-            </div>
+    <main className="min-h-[70vh] bg-muted/30 py-8 md:py-10">
+      <div className="mx-auto w-full max-w-[1440px] px-4 md:px-8 xl:px-12">
+        <Link to="/" className="text-sm font-semibold text-primary hover:underline">← Kembali ke beranda</Link>
+        {settingsLoading ? <div className="mt-16 text-center text-sm text-muted-foreground"><Loader2 className="mx-auto mb-3 h-6 w-6 animate-spin" />Menyiapkan dashboard…</div>
+          : settingsError ? <p role="alert" className="mt-8 text-destructive">Pengaturan dashboard belum dapat dimuat. Silakan muat ulang halaman.</p>
+          : !data ? <div className="mx-auto my-10 max-w-lg rounded-lg border bg-background p-6 shadow-sm md:p-9">
+            <UserRound className="h-10 w-10 text-primary" />
             <h1 className="mt-5 text-3xl font-bold">{settings.title}</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Masukkan token pendaftaran untuk masuk ke dashboard peserta.
-            </p>
+            <p className="mt-2 text-sm text-muted-foreground">Masuk dengan kode pendaftaran Anda.</p>
             <form onSubmit={login} className="mt-6 space-y-4">
-              <label className="block text-sm font-semibold">
-                Token pendaftaran
-                <input
-                  autoComplete="off"
-                  value={tokenInput}
-                  onChange={(e) => setTokenInput(e.target.value.toUpperCase())}
-                  placeholder="PK-PRE-XXXXXX"
-                  maxLength={24}
-                  className="mt-2 w-full rounded-xl border bg-background px-4 py-3 font-mono text-sm outline-none focus:ring-2 focus:ring-primary/40"
-                />
-              </label>
-              {problem && (
-                <p role="alert" className="flex items-center gap-2 text-sm text-destructive">
-                  <AlertCircle size={16} />
-                  {problem}
-                </p>
-              )}
-              <button
-                disabled={busy}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-50"
-              >
-                {busy ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}{" "}
-                Masuk Dashboard
-              </button>
+              <label className="block space-y-2 text-sm font-semibold">Kode pendaftaran<Input required autoComplete="off" value={tokenInput} onChange={(e) => setTokenInput(e.target.value.toUpperCase())} placeholder="PK-PRE-XXXXXX" maxLength={40} className="h-12 font-mono" /></label>
+              {problem && <p role="alert" className="flex items-center gap-2 text-sm text-destructive"><AlertCircle size={16} />{problem}</p>}
+              <Button type="submit" disabled={busy} className="h-11 w-full">{busy ? <Loader2 className="animate-spin" /> : <ArrowRight />}Masuk Dashboard</Button>
             </form>
-            <p className="mt-4 text-xs text-muted-foreground">
-              Token bersifat pribadi. Jangan bagikan kepada orang lain.
-            </p>
-          </div>
-        ) : (
-          <div className="mt-6 space-y-6">
-            <div className="flex flex-wrap items-start justify-between gap-3 rounded-3xl bg-primary p-6 text-primary-foreground md:p-8">
-              <div>
-                <p className="text-sm opacity-80">Selamat datang, {data.full_name}</p>
-                <h1 className="mt-1 text-2xl font-bold md:text-3xl">{settings.title}</h1>
-                <p className="mt-2 max-w-xl text-sm opacity-90">{settings.welcome}</p>
-              </div>
-              <button
-                onClick={() => {
-                  setData(null);
-                  setSelectedMenu(null);
-                }}
-                className="inline-flex items-center gap-2 rounded-xl border border-white/40 px-4 py-2 text-sm font-semibold"
-              >
-                <LogOut size={16} /> Keluar
-              </button>
+            <p className="mt-4 text-xs text-muted-foreground">Kode bersifat pribadi. Jangan bagikan kepada orang lain.</p>
+          </div> : <div className="mt-8 space-y-8">
+            <header className="flex flex-wrap items-start justify-between gap-4 border-b pb-6">
+              <div><p className="text-sm font-semibold text-primary">PRESTASI KITA · PESERTA</p><h1 className="mt-2 text-3xl font-bold">{settings.title}</h1><p className="mt-2 text-muted-foreground">Selamat datang, {data.full_name}</p><p className="mt-2 text-sm text-muted-foreground">{settings.welcome}</p></div>
+              <Button variant="outline" onClick={() => setData(null)}><LogOut />Keluar</Button>
+            </header>
+            <div className="grid gap-6 border-b pb-6 sm:grid-cols-3">
+              <div><p className="text-xs font-semibold uppercase text-muted-foreground">Kode pendaftaran</p><p className="mt-2 break-all font-mono font-bold">{data.token}</p></div>
+              <div><p className="text-xs font-semibold uppercase text-muted-foreground">Jalur beasiswa</p><p className="mt-2 font-bold">{kindLabel(data.kind)}</p></div>
+              <div><p className="text-xs font-semibold uppercase text-muted-foreground">Program</p><p className="mt-2 font-bold">{data.fast_track ? "Fast Track" : "Reguler"}</p></div>
             </div>
-            {selectedMenu === null && (
-              <section aria-label="Menu peserta" className="space-y-4">
-                <div>
-                  <h2 className="text-xl font-bold">Menu Peserta</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Pilih menu untuk melihat informasi beasiswa Anda.
-                  </p>
-                </div>
-                {!settings.status_enabled && !settings.benefits_enabled && (
-                  <div className="rounded-2xl border bg-background p-6 text-muted-foreground">
-                    Menu peserta sedang tidak tersedia.
-                  </div>
-                )}
-                <div className="grid gap-4 md:grid-cols-2">
-                  {settings.status_enabled && (
-                    <button
-                      onClick={() => setSelectedMenu("status")}
-                      className="group flex min-h-44 items-start gap-4 rounded-3xl border bg-background p-6 text-left shadow-sm transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                    >
-                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                        <ShieldCheck size={22} />
-                      </span>
-                      <span className="flex-1">
-                        <span className="block text-lg font-bold">Tahapan</span>
-                        <span className="mt-2 block text-sm leading-6 text-muted-foreground">
-                          Lihat perkembangan pendaftaran dan hasil seleksi Anda.
-                        </span>
-                        <span className="mt-4 inline-flex items-center text-sm font-semibold text-primary">
-                          Lihat tahapan <ChevronRight size={16} />
-                        </span>
-                      </span>
-                    </button>
-                  )}
-                  {settings.benefits_enabled && (
-                    <article className="min-h-44 rounded-3xl border bg-background p-6 shadow-sm transition hover:border-primary/40 hover:shadow-md">
-                      <button
-                        onClick={() => setSelectedMenu("benefits")}
-                        className="flex w-full items-start gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      >
-                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
-                          <Gift size={22} />
-                        </span>
-                        <span className="flex-1">
-                          <span className="block text-lg font-bold">Benefit</span>
-                          <span className="mt-2 block text-sm leading-6 text-muted-foreground">
-                            Temukan informasi benefit untuk peserta.
-                          </span>
-                          <span className="mt-4 inline-flex items-center text-sm font-semibold text-primary">
-                            Lihat benefit <ChevronRight size={16} />
-                          </span>
-                        </span>
-                      </button>
-                      {channelUrl && (
-                        <a
-                          href={channelUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-4 inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100"
-                        >
-                          <MessageCircle size={16} /> Channel WhatsApp <ArrowRight size={15} />
-                        </a>
-                      )}
-                    </article>
-                  )}
-                </div>
-              </section>
-            )}
-            {selectedMenu !== null && (
-              <div className="space-y-4">
-                <button
-                  onClick={() => setSelectedMenu(null)}
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
-                >
-                  <ArrowLeft size={16} /> Kembali ke menu
-                </button>
-                {selectedMenu === "status" && settings.status_enabled && (
-                  <StatusResult data={data} />
-                )}
-                {selectedMenu === "benefits" && settings.benefits_enabled && (
-                  <section className="rounded-3xl border bg-background p-6 shadow-sm md:p-8">
-                    <div className="flex items-center gap-3 text-primary">
-                      <Gift />
-                      <h2 className="text-xl font-bold text-foreground">
-                        {settings.benefits_title}
-                      </h2>
-                    </div>
-                    <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-muted-foreground">
-                      {settings.benefits_text}
-                    </p>
-                    {channelUrl && (
-                      <a
-                        href={channelUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700"
-                      >
-                        <MessageCircle size={16} /> Buka Channel WhatsApp <ArrowRight size={16} />
-                      </a>
-                    )}
-                  </section>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+            <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_300px]">
+              <div className="min-w-0">{settings.status_enabled && <section><h2 className="flex items-center gap-3 text-xl font-bold"><ShieldCheck className="text-primary" />Tahapan Seleksi</h2><StatusResult data={data} /></section>}</div>
+              {settings.benefits_enabled && <aside className="min-w-0 border-t border-gold pt-5 xl:border-t-4"><h2 className="flex items-center gap-2 text-lg font-bold"><Gift className="text-gold" />{settings.benefits_title}</h2><p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-muted-foreground">{settings.benefits_text}</p>{channelUrl && <Button asChild className="mt-5 max-w-full"><a href={channelUrl} target="_blank" rel="noopener noreferrer"><MessageCircle />Channel WhatsApp<ArrowRight /></a></Button>}</aside>}
+            </div>
+            <ParticipantReports key={data.token} token={data.token} />
+          </div>}
       </div>
     </main>
   );

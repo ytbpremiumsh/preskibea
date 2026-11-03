@@ -40,6 +40,7 @@ import { Route as AdminIntegrasiRouteImport } from './routes/admin.integrasi'
 import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
 import { Route as AdminKeamananRouteImport } from './routes/admin.keamanan'
 import { Route as AdminKodeKustomRouteImport } from './routes/admin.kode-kustom'
+import { Route as AdminLaporanKendalaRouteImport } from './routes/admin.laporan-kendala'
 import { Route as AdminLogEmailRouteImport } from './routes/admin.log-email'
 import { Route as AdminMaintenanceRouteImport } from './routes/admin.maintenance'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
@@ -226,6 +227,11 @@ const AdminKeamananRoute = AdminKeamananRouteImport.update({
 const AdminKodeKustomRoute = AdminKodeKustomRouteImport.update({
   id: '/kode-kustom',
   path: '/kode-kustom',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLaporanKendalaRoute = AdminLaporanKendalaRouteImport.update({
+  id: '/laporan-kendala',
+  path: '/laporan-kendala',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminLogEmailRoute = AdminLogEmailRouteImport.update({
@@ -415,6 +421,7 @@ export interface FileRoutesByFullPath {
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
+  '/admin/laporan-kendala': typeof AdminLaporanKendalaRoute
   '/admin/log-email': typeof AdminLogEmailRoute
   '/admin/maintenance': typeof AdminMaintenanceRoute
   '/admin/media': typeof AdminMediaRoute
@@ -478,6 +485,7 @@ export interface FileRoutesByTo {
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
+  '/admin/laporan-kendala': typeof AdminLaporanKendalaRoute
   '/admin/log-email': typeof AdminLogEmailRoute
   '/admin/maintenance': typeof AdminMaintenanceRoute
   '/admin/media': typeof AdminMediaRoute
@@ -539,6 +547,7 @@ export interface FileRoutesById {
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
+  '/admin/laporan-kendala': typeof AdminLaporanKendalaRoute
   '/admin/log-email': typeof AdminLogEmailRoute
   '/admin/maintenance': typeof AdminMaintenanceRoute
   '/admin/media': typeof AdminMediaRoute
@@ -605,6 +614,7 @@ export interface FileRouteTypes {
     | '/admin/kandidat'
     | '/admin/keamanan'
     | '/admin/kode-kustom'
+    | '/admin/laporan-kendala'
     | '/admin/log-email'
     | '/admin/maintenance'
     | '/admin/media'
@@ -668,6 +678,7 @@ export interface FileRouteTypes {
     | '/admin/kandidat'
     | '/admin/keamanan'
     | '/admin/kode-kustom'
+    | '/admin/laporan-kendala'
     | '/admin/log-email'
     | '/admin/maintenance'
     | '/admin/media'
@@ -728,6 +739,7 @@ export interface FileRouteTypes {
     | '/admin/kandidat'
     | '/admin/keamanan'
     | '/admin/kode-kustom'
+    | '/admin/laporan-kendala'
     | '/admin/log-email'
     | '/admin/maintenance'
     | '/admin/media'
@@ -1011,6 +1023,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminKodeKustomRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/laporan-kendala': {
+      id: '/admin/laporan-kendala'
+      path: '/laporan-kendala'
+      fullPath: '/admin/laporan-kendala'
+      preLoaderRoute: typeof AdminLaporanKendalaRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/log-email': {
       id: '/admin/log-email'
       path: '/log-email'
@@ -1249,6 +1268,7 @@ interface AdminRouteChildren {
   AdminKandidatRoute: typeof AdminKandidatRoute
   AdminKeamananRoute: typeof AdminKeamananRoute
   AdminKodeKustomRoute: typeof AdminKodeKustomRoute
+  AdminLaporanKendalaRoute: typeof AdminLaporanKendalaRoute
   AdminLogEmailRoute: typeof AdminLogEmailRoute
   AdminMaintenanceRoute: typeof AdminMaintenanceRoute
   AdminMediaRoute: typeof AdminMediaRoute
@@ -1279,6 +1299,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminKandidatRoute: AdminKandidatRoute,
   AdminKeamananRoute: AdminKeamananRoute,
   AdminKodeKustomRoute: AdminKodeKustomRoute,
+  AdminLaporanKendalaRoute: AdminLaporanKendalaRoute,
   AdminLogEmailRoute: AdminLogEmailRoute,
   AdminMaintenanceRoute: AdminMaintenanceRoute,
   AdminMediaRoute: AdminMediaRoute,
