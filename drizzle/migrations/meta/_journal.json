@@ -8,6 +8,13 @@
       "when": 1793590976484,
       "tag": "0000_admin_email_log",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793669514338,
+      "tag": "0001_participant_report_access",
+      "breakpoints": true
     }
   ]
 }
