@@ -109,6 +109,7 @@ function ReportEditor({
   const [reply, setReply] = useState(report.admin_reply || "");
   const [status, setStatus] = useState(report.status);
   const [saving, setSaving] = useState(false);
+  const [showImage, setShowImage] = useState(false);
   const save = async () => {
     setSaving(true);
     try {
@@ -148,13 +149,20 @@ function ReportEditor({
       </div>
       <p className="whitespace-pre-wrap break-words text-sm leading-6">{report.message}</p>
       {report.image_url && (
-        <a href={report.image_url} target="_blank" rel="noopener noreferrer">
-          <img
-            src={report.image_url}
-            alt={`Screenshot ${report.subject}`}
-            className="max-h-64 max-w-full rounded-md border object-contain"
-          />
-        </a>
+        <div className="space-y-3">
+          <Button type="button" variant="outline" size="sm" aria-expanded={showImage} onClick={() => setShowImage((visible) => !visible)}>
+            {showImage ? "Sembunyikan gambar" : "Tampilkan gambar"}
+          </Button>
+          {showImage && (
+            <a href={report.image_url} target="_blank" rel="noopener noreferrer">
+              <img
+                src={report.image_url}
+                alt={`Screenshot ${report.subject}`}
+                className="max-h-64 max-w-full rounded-md border object-contain"
+              />
+            </a>
+          )}
+        </div>
       )}
       <label className="block space-y-2 text-sm font-medium">
         Tanggapan admin
