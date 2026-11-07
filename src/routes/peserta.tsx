@@ -33,6 +33,8 @@ export const Route = createFileRoute("/peserta")({
   }),
   component: PesertaPage,
 });
+const SESSION_KEY = "peserta_session_token";
+const TAB_KEY = "peserta_active_tab";
 function PesertaPage() {
   const [settings, setSettings] = useState<PesertaSettings>(DEFAULT_PESERTA_SETTINGS);
   const [settingsLoading, setSettingsLoading] = useState(true);
@@ -63,7 +65,16 @@ function PesertaPage() {
       active = false;
     };
   }, []);
-  const channelUrl = whatsappChannelUrl(settings.whatsapp_channel_url);
+  useEffect(() => {
+    const saved = localStorage.getItem(SESSION_KEY);
+    if (saved && isValidToken(saved)) void enter(saved);
+    const tab = localStorage.getItem(TAB_KEY);
+    if (tab === "tahapan" || tab === "benefit" || tab === "laporan") setMenu(tab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (menu !== "home") localStorage.setItem(TAB_KEY, menu);
+  }, [menu]);
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     const normalized = normalizeToken(tokenInput);
@@ -71,6 +82,10 @@ function PesertaPage() {
       setProblem("Format token tidak valid. Contoh: PK-PRE-7F3K9D");
       return;
     }
+    await enter(normalized);
+  };
+  const channelUrl = whatsappChannelUrl(settings.whatsapp_channel_url);
+  const enter = async (normalized: string) => {
     setBusy(true);
     setProblem(null);
     try {
@@ -81,7 +96,9 @@ function PesertaPage() {
         throw new Error("Token tidak ditemukan atau layanan sedang tidak tersedia.");
       setData(result.data as StatusData);
       setTokenInput("");
+      localStorage.setItem(SESSION_KEY, normalized);
     } catch (err) {
+      localStorage.removeItem(SESSION_KEY);
       setProblem((err as Error).message);
     } finally {
       setBusy(false);
@@ -93,7 +110,7 @@ function PesertaPage() {
         <Link to="/" className="text-sm font-semibold text-primary hover:underline">
           ← Kembali ke beranda
         </Link>
-        {settingsLoading ? (
+        {settingsLoading || (busy && !data && !tokenInput) ? (
           <div className="mt-16 text-center text-sm text-muted-foreground">
             <Loader2 className="mx-auto mb-3 h-6 w-6 animate-spin" />
             Menyiapkan dashboard…
@@ -149,6 +166,8 @@ function PesertaPage() {
                 variant="outline"
                 onClick={() => {
                   setData(null);
+                  localStorage.removeItem(SESSION_KEY);
+                  localStorage.removeItem(TAB_KEY);
                   setMenu("home");
                 }}
               >
