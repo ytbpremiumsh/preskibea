@@ -420,6 +420,41 @@ export type Database = {
         }
         Relationships: []
       }
+      peserta_report_messages: {
+        Row: {
+          created_at: string
+          id: string
+          image_path: string | null
+          message: string
+          report_id: string
+          sender: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_path?: string | null
+          message: string
+          report_id: string
+          sender: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_path?: string | null
+          message?: string
+          report_id?: string
+          sender?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "peserta_report_messages_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "peserta_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       peserta_reports: {
         Row: {
           admin_reply: string | null
