@@ -3,6 +3,7 @@ import { CheckCircle2, ImagePlus, Loader2, MessageSquare, RefreshCw, Send, X } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { ReportThread } from "@/components/ReportThread";
 import { reportRequest, reportStage, type ParticipantReport } from "@/lib/reports";
 
 export function ParticipantReports({ token }: { token: string }) {
@@ -16,6 +17,7 @@ export function ParticipantReports({ token }: { token: string }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const hasActive = reports.some((r) => r.status === "open");
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -43,6 +45,10 @@ export function ParticipantReports({ token }: { token: string }) {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!subject.trim() || !message.trim() || sending) return;
+    if (hasActive) {
+      toast.error("Masih ada tiket aktif. Silakan balas di tiket tersebut.");
+      return;
+    }
     setSending(true);
     try {
       const image = file
@@ -90,6 +96,11 @@ export function ParticipantReports({ token }: { token: string }) {
           className="space-y-4 rounded-2xl border bg-card p-5 shadow-sm md:p-6"
         >
           <h3 className="font-semibold">Kirim laporan baru</h3>
+          {hasActive && (
+            <p className="rounded-md border border-primary/20 bg-primary/5 p-3 text-sm">
+              Anda masih memiliki tiket aktif. Lanjutkan percakapan dengan membalas di tiket tersebut sampai selesai.
+            </p>
+          )}
           <label className="block space-y-2 text-sm font-medium">
             Judul kendala
             <Input
@@ -163,7 +174,7 @@ export function ParticipantReports({ token }: { token: string }) {
               <p className="mt-1 break-all text-xs text-muted-foreground">{file?.name}</p>
             </div>
           )}
-          <Button type="submit" disabled={sending || !subject.trim() || !message.trim()}>
+          <Button type="submit" disabled={hasActive || sending || !subject.trim() || !message.trim()}>
             {sending ? <Loader2 className="animate-spin" /> : <Send />}Kirim laporan
           </Button>
         </form>
@@ -242,13 +253,11 @@ export function ParticipantReports({ token }: { token: string }) {
                       />
                     </a>
                   )}
-                  {report.admin_reply && (
-                    <div className="mt-4 rounded-xl border border-primary/15 bg-primary/5 p-4">
-                      <p className="text-xs font-bold text-primary">Tanggapan admin</p>
-                      <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-6">
-                        {report.admin_reply}
-                      </p>
-                    </div>
+                  <ReportThread messages={report.messages} />
+                  {report.status === "open" ? (
+                    <ReplyBox token={token} id={report.id} onSent={load} />
+                  ) : (
+                    <p className="mt-3 text-xs text-muted-foreground">Tiket selesai. Buat laporan baru bila masih ada kendala.</p>
                   )}
                 </article>
               ))
@@ -256,5 +265,72 @@ export function ParticipantReports({ token }: { token: string }) {
         </div>
       </div>
     </section>
+  );
+}
+
+function ReplyBox({ token, id, onSent }: { token: string; id: string; onSent: () => Promise<void> }) {
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const ref = useRef<HTMLInputElement>(null);
+  const send = async () => {
+    if (!text.trim() || busy) return;
+    setBusy(true);
+    try {
+      const image = file
+        ? await new Promise<string>((resolve, reject) => {
+            const r = new FileReader();
+            r.onload = () => resolve(String(r.result).split(",")[1] || "");
+            r.onerror = reject;
+            r.readAsDataURL(file);
+          })
+        : undefined;
+      await reportRequest({ action: "reply", token, id, message: text.trim(), image });
+      setText("");
+      setFile(null);
+      if (ref.current) ref.current.value = "";
+      await onSent();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Balasan gagal dikirim.");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="mt-4 space-y-2">
+      <textarea
+        aria-label="Balas tiket"
+        maxLength={4000}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Tulis balasan…"
+        className="min-h-20 w-full rounded-md border bg-background p-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      />
+      <input
+        ref={ref}
+        type="file"
+        aria-label="Screenshot balasan"
+        accept="image/jpeg,image/png,image/webp"
+        className="sr-only"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f && (!["image/jpeg", "image/png", "image/webp"].includes(f.type) || f.size > 5 * 1024 * 1024)) {
+            toast.error("Gunakan JPG, PNG, atau WebP maksimal 5 MB.");
+            e.target.value = "";
+            return;
+          }
+          setFile(f || null);
+        }}
+      />
+      <div className="flex flex-wrap items-center gap-2">
+        <Button type="button" size="sm" variant="outline" onClick={() => ref.current?.click()}>
+          <ImagePlus />
+          {file ? file.name.slice(0, 20) : "Screenshot"}
+        </Button>
+        <Button type="button" size="sm" disabled={busy || !text.trim()} onClick={() => void send()}>
+          {busy ? <Loader2 className="animate-spin" /> : <Send />}Kirim balasan
+        </Button>
+      </div>
+    </div>
   );
 }

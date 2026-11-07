@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
     }
     if (body.action === "admin-update") {
       if (!body.id || !body.status || body.admin_reply === undefined) return response({ error: "Data tanggapan tidak lengkap." }, 400);
-      const { data, error } = await db.from("peserta_reports").update({ status: body.status, admin_reply: body.admin_reply || null }).eq("id", body.id).select("id").maybeSingle();
+      const { data, error } = await db.from("peserta_reports").update(body.admin_reply ? { status: body.status, admin_reply: body.admin_reply } : { status: body.status }).eq("id", body.id).select("id").maybeSingle();
       if (error) throw error;
       if (!data) return response({ error: "Tiket tidak ditemukan." }, 404);
       if (body.admin_reply) {
