@@ -4,6 +4,7 @@ import { Loader2, MessageSquare, RefreshCw, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { reportRequest, reportStage, type ParticipantReport } from "@/lib/reports";
+import { ReportThread } from "@/components/ReportThread";
 import { toast } from "sonner";
 export const Route = createFileRoute("/admin/laporan-kendala")({ component: AdminReports });
 function AdminReports() {
@@ -106,14 +107,15 @@ function ReportEditor({
   report: ParticipantReport;
   onSaved: () => Promise<void>;
 }) {
-  const [reply, setReply] = useState(report.admin_reply || "");
+  const [reply, setReply] = useState("");
   const [status, setStatus] = useState(report.status);
   const [saving, setSaving] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const save = async () => {
     setSaving(true);
     try {
-      await reportRequest({ action: "admin-update", id: report.id, status, admin_reply: reply });
+      await reportRequest({ action: "admin-update", id: report.id, status, admin_reply: reply.trim() });
+      setReply("");
       toast.success("Tanggapan dan status tersimpan.");
       await onSaved();
     } catch (e) {
@@ -164,8 +166,9 @@ function ReportEditor({
           )}
         </div>
       )}
+      <ReportThread messages={report.messages} />
       <label className="block space-y-2 text-sm font-medium">
-        Tanggapan admin
+        Balas peserta
         <textarea
           value={reply}
           maxLength={4000}
@@ -187,7 +190,7 @@ function ReportEditor({
           </select>
         </label>
         <Button disabled={saving} onClick={() => void save()}>
-          {saving ? <Loader2 className="animate-spin" /> : <Save />}Simpan tanggapan
+          {saving ? <Loader2 className="animate-spin" /> : <Save />}Kirim balasan & simpan
         </Button>
       </div>
     </article>
