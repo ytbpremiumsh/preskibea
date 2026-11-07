@@ -1,3 +1,4 @@
+import { reportRequest } from "@/lib/reports";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/peserta")({
 });
 const SESSION_KEY = "peserta_session_token";
 const TAB_KEY = "peserta_active_tab";
+const SEEN_KEY = "peserta_reports_seen";
 function PesertaPage() {
   const [settings, setSettings] = useState<PesertaSettings>(DEFAULT_PESERTA_SETTINGS);
   const [settingsLoading, setSettingsLoading] = useState(true);
@@ -84,6 +86,35 @@ function PesertaPage() {
     }
     await enter(normalized);
   };
+  const [unread, setUnread] = useState(0);
+  useEffect(() => {
+    if (!data) return;
+    let alive = true;
+    const check = async () => {
+      if (menu === "laporan") {
+        localStorage.setItem(SEEN_KEY, new Date().toISOString());
+        setUnread(0);
+        return;
+      }
+      try {
+        const r = await reportRequest({ action: "list", token: data.token });
+        const seen = localStorage.getItem(SEEN_KEY) || "";
+        const n = (r.reports || []).reduce(
+          (sum, rep) => sum + (rep.messages || []).filter((m) => m.sender === "admin" && m.created_at > seen).length,
+          0,
+        );
+        if (alive) setUnread(n);
+      } catch {
+        /* abaikan */
+      }
+    };
+    void check();
+    const t = window.setInterval(check, 60000);
+    return () => {
+      alive = false;
+      window.clearInterval(t);
+    };
+  }, [data, menu]);
   const channelUrl = whatsappChannelUrl(settings.whatsapp_channel_url);
   const enter = async (normalized: string) => {
     setBusy(true);
@@ -216,6 +247,11 @@ function PesertaPage() {
                     >
                       <Icon className="h-4 w-4" />
                       {label}
+                      {value === "laporan" && unread > 0 && (
+                        <span className="rounded-full bg-destructive px-2 py-0.5 text-xs font-bold text-destructive-foreground" aria-label={`${unread} balasan baru`}>
+                          {unread}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
