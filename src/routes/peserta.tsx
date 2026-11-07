@@ -174,66 +174,45 @@ function PesertaPage() {
                 <p className="mt-2 font-bold">{data.fast_track ? "Fast Track" : "Reguler"}</p>
               </div>
             </div>
-            {menu === "home" ? (
-              <section>
-                <h2 className="mb-4 text-xl font-bold">Menu Peserta</h2>
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {settings.status_enabled && (
+            <div role="tablist" aria-label="Menu peserta" className="flex gap-1 overflow-x-auto border-b">
+              {([
+                ["tahapan", "Tahapan Seleksi", ShieldCheck, settings.status_enabled],
+                ["benefit", "Benefit", Gift, settings.benefits_enabled],
+                ["laporan", "Laporan Kendala", MessageCircle, true],
+              ] as const)
+                .filter((t) => t[3])
+                .map(([value, label, Icon]) => {
+                  const active =
+                    menu === value ||
+                    (menu === "home" &&
+                      value === (settings.status_enabled ? "tahapan" : settings.benefits_enabled ? "benefit" : "laporan"));
+                  return (
                     <button
-                      onClick={() => setMenu("tahapan")}
-                      className="rounded-2xl border bg-background p-6 text-left shadow-sm hover:border-primary"
+                      key={value}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      onClick={() => setMenu(value)}
+                      className={`-mb-px flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition-colors ${active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
                     >
-                      <ShieldCheck className="mb-4 text-primary" />
-                      <span className="block font-bold">Tahapan Seleksi</span>
-                      <span className="mt-2 block text-sm text-muted-foreground">
-                        Pantau perkembangan seleksi Anda.
-                      </span>
+                      <Icon className="h-4 w-4" />
+                      {label}
                     </button>
-                  )}
-                  {settings.benefits_enabled && (
-                    <button
-                      onClick={() => setMenu("benefit")}
-                      className="rounded-2xl border bg-background p-6 text-left shadow-sm hover:border-primary"
-                    >
-                      <Gift className="mb-4 text-primary" />
-                      <span className="block font-bold">Benefit</span>
-                      <span className="mt-2 block text-sm text-muted-foreground">
-                        Lihat benefit dan channel WhatsApp peserta.
-                      </span>
-                    </button>
-                  )}
-                  <button
-                    onClick={() => setMenu("laporan")}
-                    className="rounded-2xl border bg-background p-6 text-left shadow-sm hover:border-primary"
-                  >
-                    <MessageCircle className="mb-4 text-primary" />
-                    <span className="block font-bold">Laporan Kendala</span>
-                    <span className="mt-2 block text-sm text-muted-foreground">
-                      Kirim dan pantau laporan kendala.
-                    </span>
-                  </button>
-                </div>
-              </section>
-            ) : (
+                  );
+                })}
+            </div>
+            {(() => {
+              const tab = menu === "home" ? (settings.status_enabled ? "tahapan" : settings.benefits_enabled ? "benefit" : "laporan") : menu;
+              return (
               <div className="space-y-5">
-                <Button variant="outline" onClick={() => setMenu("home")}>
-                  ← Kembali ke menu
-                </Button>
-                {menu === "tahapan" && settings.status_enabled && (
+                {tab === "tahapan" && settings.status_enabled && (
                   <section>
-                    <h2 className="flex items-center gap-3 text-xl font-bold">
-                      <ShieldCheck className="text-primary" />
-                      Tahapan Seleksi
-                    </h2>
                     <StatusResult data={data} />
                   </section>
                 )}
-                {menu === "benefit" && settings.benefits_enabled && (
-                  <section className="rounded-2xl border bg-background p-6">
-                    <h2 className="flex items-center gap-2 text-xl font-bold">
-                      <Gift className="text-primary" />
-                      {settings.benefits_title}
-                    </h2>
+                {tab === "benefit" && settings.benefits_enabled && (
+                  <section>
+                    <h2 className="text-xl font-bold">{settings.benefits_title}</h2>
                     <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-muted-foreground">
                       {settings.benefits_text}
                     </p>
@@ -248,9 +227,10 @@ function PesertaPage() {
                     )}
                   </section>
                 )}
-                {menu === "laporan" && <ParticipantReports key={data.token} token={data.token} />}
+                {tab === "laporan" && <ParticipantReports key={data.token} token={data.token} />}
               </div>
-            )}
+              );
+            })()}
           </div>
         )}
       </div>
