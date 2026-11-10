@@ -13,8 +13,8 @@ const supabaseAdmin = createClient(
 );
 
 const SITE_NAME = "Prestasi Kita";
-const SENDER_DOMAIN = "notify.email.atskolla.com";
-const FROM_DOMAIN = "email.atskolla.com";
+const SENDER_DOMAIN = "notify.mailing.prestasikita.com";
+const FROM_DOMAIN = "notify.mailing.prestasikita.com";
 
 const CUSTOMIZABLE: Record<string, string> = {
   "registration-confirmation": "email_template_registration",
