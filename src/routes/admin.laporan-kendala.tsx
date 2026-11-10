@@ -114,12 +114,17 @@ function ReportEditor({
   const save = async () => {
     setSaving(true);
     try {
-      const result = await reportRequest({ action: "admin-update", id: report.id, status, admin_reply: reply.trim() });
+      const message = reply.trim();
+      const result = await reportRequest({ action: "admin-update", id: report.id, status, admin_reply: message });
       setReply("");
-      if (result.email_notification === "failed") {
+      if (message && result.email_notification === "failed") {
         toast.warning("Tanggapan tersimpan, tetapi email pemberitahuan belum terkirim.");
+      } else if (message && result.email_notification !== "sent") {
+        toast.warning("Tanggapan tersimpan, tetapi status email belum dapat dipastikan. Periksa pembaruan fungsi dan Log Email.");
+      } else if (message) {
+        toast.success("Tanggapan tersimpan dan email diterima layanan pengiriman.");
       } else {
-        toast.success("Tanggapan dan status tersimpan.");
+        toast.success("Status laporan tersimpan.");
       }
       await onSaved();
     } catch (e) {
