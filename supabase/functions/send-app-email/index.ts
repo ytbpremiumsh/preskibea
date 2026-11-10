@@ -141,7 +141,7 @@ function defaultBody(templateName: string, props: Record<string, unknown>) {
   if (templateName === "ticket-reply") {
     return {
       subject: "Ada balasan untuk laporan kendala Anda — Prestasi Kita",
-      html: applyPlaceholders(TICKET_REPLY_HTML, { ...props, full_name: p.full_name || "Peserta" }),
+      html: applyPlaceholders(TICKET_REPLY_HTML, { ...props, fullName: p.full_name || "Peserta" }),
     };
   }
   if (templateName === "berkas-confirmation") {
