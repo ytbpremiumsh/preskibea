@@ -2,32 +2,10 @@ import { useEffect, useState } from "react";
 import { reportRequest, reportStage } from "@/lib/reports";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard,
-  Users,
-  FileEdit,
-  FileText,
-  FolderArchive,
-  Settings,
-  Megaphone,
-  Code2,
-  MessageCircle,
-  Bot,
-  ShieldCheck,
-  ChevronRight,
-  Trophy,
-  Heart,
-  Server,
-  Globe,
-  BarChart3,
-  Share2,
-  Image as ImageIcon,
-  Mail,
-  HardDrive,
-  Rocket,
-  Wrench,
-  CreditCard,
-  PenLine,
-  ListChecks,
+  LayoutDashboard, BarChart3, Users, MonitorSmartphone, LifeBuoy, Wallet, PenLine,
+  FolderArchive, ListChecks, Trophy, FileText, FileEdit, Share2, HardDrive,
+  MessageCircle, Bot, Mail, MailSearch, Settings, CreditCard, Palette, LayoutGrid,
+  ShieldCheck, Megaphone, BadgeDollarSign, Code2, Rocket, Wrench, ChevronRight,
 } from "lucide-react";
 import {
   Sidebar,
@@ -54,12 +32,17 @@ const groups: { label: string; items: Item[] }[] = [
     ],
   },
   {
-    label: "Pendaftaran",
+    label: "Peserta",
     items: [
       { title: "Pendaftar", url: "/admin/pendaftar", icon: Users },
-      { title: "Dashboard Peserta", url: "/admin/dashboard-peserta", icon: Users },
-      { title: "Laporan Kendala", url: "/admin/laporan-kendala", icon: MessageCircle },
-      { title: "FT Belum Bayar", url: "/admin/fast-track-belum-bayar", icon: CreditCard },
+      { title: "Dashboard Peserta", url: "/admin/dashboard-peserta", icon: MonitorSmartphone },
+      { title: "Laporan Kendala", url: "/admin/laporan-kendala", icon: LifeBuoy },
+      { title: "FT Belum Bayar", url: "/admin/fast-track-belum-bayar", icon: Wallet },
+    ],
+  },
+  {
+    label: "Seleksi",
+    items: [
       { title: "Pengiriman Esai", url: "/admin/esai", icon: PenLine },
       { title: "Pengiriman Berkas", url: "/admin/berkas", icon: FolderArchive },
       { title: "Tahapan Seleksi", url: "/admin/tahapan-seleksi", icon: ListChecks },
@@ -67,7 +50,7 @@ const groups: { label: string; items: Item[] }[] = [
     ],
   },
   {
-    label: "Konten & Formulir",
+    label: "Konten",
     items: [
       { title: "Artikel", url: "/admin/artikel", icon: FileText },
       { title: "Formulir", url: "/admin/formulir", icon: FileEdit },
@@ -80,19 +63,23 @@ const groups: { label: string; items: Item[] }[] = [
     items: [
       { title: "WhatsApp", url: "/admin/whatsapp", icon: MessageCircle },
       { title: "Balasan AI", url: "/admin/ai-balasan", icon: Bot },
+      { title: "Template Email", url: "/admin/email-template", icon: Mail },
+      { title: "Log Email", url: "/admin/log-email", icon: MailSearch },
     ],
   },
   {
-    label: "Integrasi & Pengaturan",
+    label: "Tampilan Situs",
     items: [
       { title: "Pengaturan Situs", url: "/admin/pengaturan", icon: Settings },
+      { title: "Logo Situs", url: "/admin/branding", icon: Palette },
+      { title: "Widget Home", url: "/admin/widgets", icon: LayoutGrid },
+    ],
+  },
+  {
+    label: "Iklan & Integrasi",
+    items: [
       { title: "Integrasi Pembayaran", url: "/admin/integrasi", icon: CreditCard },
-      { title: "Logo Situs", url: "/admin/branding", icon: ImageIcon },
-      { title: "Widget Home", url: "/admin/widgets", icon: LayoutDashboard },
-      { title: "Template Email", url: "/admin/email-template", icon: Mail },
-      { title: "Log Email", url: "/admin/log-email", icon: Mail },
-      { title: "Keamanan (2FA)", url: "/admin/keamanan", icon: ShieldCheck },
-      { title: "AdSense", url: "/admin/adsense", icon: Megaphone },
+      { title: "AdSense", url: "/admin/adsense", icon: BadgeDollarSign },
       { title: "Iklan Kustom", url: "/admin/iklan-kustom", icon: Megaphone },
       { title: "Kode & Performa", url: "/admin/kode-kustom", icon: Code2 },
     ],
@@ -100,6 +87,7 @@ const groups: { label: string; items: Item[] }[] = [
   {
     label: "Sistem",
     items: [
+      { title: "Keamanan (2FA)", url: "/admin/keamanan", icon: ShieldCheck },
       { title: "Sistem Update", url: "/admin/sistem-update", icon: Rocket },
       { title: "Mode Maintenance", url: "/admin/maintenance", icon: Wrench },
     ],
