@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
       // The ticket reply is already saved; email failure must not lose the reply.
       try {
         const { data: participant, error: lookupError } = await db.from("registrations")
-          .select("email").eq("id", data.registration_id).maybeSingle();
+          .select("email,full_name,token").eq("id", data.registration_id).maybeSingle();
         if (lookupError || !participant?.email) throw new Error("recipient_unavailable");
         const { data: result, error: sendError } = await db.functions.invoke("send-app-email", {
           headers: { Authorization: `Bearer ${key}`, apikey: key! },
@@ -104,6 +104,7 @@ Deno.serve(async (req) => {
             templateName: "ticket-reply",
             recipientEmail: participant.email,
             idempotencyKey: `ticket-reply-${message.id}`,
+            templateData: { fullName: participant.full_name ?? "", token: participant.token ?? "", reply_message: String(body.admin_reply).slice(0, 2000) },
           },
         });
         if (sendError || !result?.sent) {

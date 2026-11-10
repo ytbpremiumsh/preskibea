@@ -20,7 +20,38 @@ const CUSTOMIZABLE: Record<string, string> = {
   "registration-confirmation": "email_template_registration",
   "berkas-confirmation": "email_template_berkas",
   "esai-confirmation": "email_template_esai",
+  "ticket-reply": "email_template_ticket_reply",
 };
+
+const TICKET_REPLY_HTML = `<div style="background:#f4f1fb;padding:32px 12px;font-family:Arial,Helvetica,sans-serif;color:#1a1530">
+  <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 12px 32px rgba(61,28,107,0.12)">
+    <div style="background:linear-gradient(135deg,#3d1c6b 0%,#5B2A9E 60%,#7c4dcc 100%);background-color:#5B2A9E;padding:32px 32px 28px;text-align:left">
+      <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:0.5px">{{site_name}}</p>
+      <p style="margin:6px 0 0;font-size:11px;color:#e8dcff;letter-spacing:2px;text-transform:uppercase">Pusat Bantuan Peserta</p>
+    </div>
+    <div style="padding:32px">
+      <div style="display:inline-block;background:#fff4d6;border-radius:999px;padding:6px 14px;margin-bottom:18px">
+        <span style="font-size:11px;font-weight:800;color:#8a5a00;letter-spacing:1px">💬 BALASAN BARU DARI ADMIN</span>
+      </div>
+      <h2 style="margin:0 0 12px;font-size:22px;color:#1a1530">Halo, {{full_name}}!</h2>
+      <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#4a4560">Tim {{site_name}} telah menanggapi laporan kendala Anda. Berikut isi balasannya:</p>
+      <div style="background:#faf8ff;border-left:4px solid #5B2A9E;border-radius:12px;padding:18px 20px;margin:0 0 20px">
+        <p style="margin:0 0 8px;font-size:11px;font-weight:800;color:#5B2A9E;letter-spacing:1.5px;text-transform:uppercase">Pesan Admin</p>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#1a1530;white-space:pre-line">{{reply_message}}</p>
+      </div>
+      <table role="presentation" width="100%" style="border-collapse:collapse;margin:0 0 24px;font-size:13px">
+        <tr><td style="padding:8px 0;color:#7c7c87">Kode Pendaftar</td><td style="padding:8px 0;text-align:right;font-family:monospace;font-weight:800;color:#3d1c6b">{{token}}</td></tr>
+      </table>
+      <div style="text-align:center;margin:28px 0 8px">
+        <a href="https://www.prestasikita.com/peserta" style="display:inline-block;background:#5B2A9E;color:#ffffff;text-decoration:none;font-weight:800;font-size:15px;padding:14px 30px;border-radius:12px">Lihat &amp; Balas di Dashboard</a>
+      </div>
+      <p style="margin:16px 0 0;font-size:12px;line-height:1.6;color:#7c7c87;text-align:center">Masuk dengan kode pendaftar Anda, lalu buka tab <strong>Laporan Kendala</strong>.</p>
+    </div>
+    <div style="background:#faf8ff;border-top:1px solid #ece9f5;padding:18px 32px;text-align:center">
+      <p style="margin:0;font-size:11px;color:#a09bb0">© {{year}} {{site_name}} · Email ini dikirim otomatis, mohon tidak membalas email ini.</p>
+    </div>
+  </div>
+</div>`;
 
 const Input = z.object({
   templateName: z.enum(["registration-confirmation", "berkas-confirmation", "esai-confirmation", "ticket-reply"]),
@@ -64,6 +95,7 @@ function buildPlaceholders(props: Record<string, unknown>) {
     count: String((props.count ?? "") as string | number),
     site_name: String((props.site_name ?? "Prestasi Kita") as string),
     year: String(new Date().getFullYear()),
+    reply_message: String((props.reply_message ?? "") as string),
   };
 }
 
@@ -109,13 +141,7 @@ function defaultBody(templateName: string, props: Record<string, unknown>) {
   if (templateName === "ticket-reply") {
     return {
       subject: "Ada balasan untuk laporan kendala Anda — Prestasi Kita",
-      html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px">
-  <h2>Balasan laporan kendala</h2>
-  <p>Tim Prestasi Kita telah membalas laporan kendala Anda.</p>
-  <p>Silakan masuk ke Dashboard Peserta dan buka menu Laporan Kendala untuk melihat balasan.</p>
-  <p><a href="https://www.prestasikita.com/peserta">Buka Dashboard Peserta</a></p>
-  <p>© ${p.year} Prestasi Kita</p>
-</div>`,
+      html: applyPlaceholders(TICKET_REPLY_HTML, { ...props, fullName: p.full_name || "Peserta" }),
     };
   }
   if (templateName === "berkas-confirmation") {
@@ -246,6 +272,7 @@ serve(async (req) => {
         kind: "prestasi",
         whatsapp: "08123456789",
         count: 5,
+        reply_message: "Terima kasih atas laporannya. Kendala sudah kami perbaiki, silakan coba kembali.",
         ...props,
       };
       subject = applyPlaceholders(data.subject, sampleProps);
