@@ -68,14 +68,18 @@ function PesertaPage() {
     };
   }, []);
   useEffect(() => {
-    const saved = localStorage.getItem(SESSION_KEY);
+    // Hapus sesi lama yang tersimpan lintas tab/browser yang sama.
+    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(TAB_KEY);
+    localStorage.removeItem(SEEN_KEY);
+    const saved = sessionStorage.getItem(SESSION_KEY);
     if (saved && isValidToken(saved)) void enter(saved);
-    const tab = localStorage.getItem(TAB_KEY);
+    const tab = sessionStorage.getItem(TAB_KEY);
     if (tab === "tahapan" || tab === "benefit" || tab === "laporan") setMenu(tab);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
-    if (menu !== "home") localStorage.setItem(TAB_KEY, menu);
+    if (menu !== "home") sessionStorage.setItem(TAB_KEY, menu);
   }, [menu]);
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,13 +96,13 @@ function PesertaPage() {
     let alive = true;
     const check = async () => {
       if (menu === "laporan") {
-        localStorage.setItem(SEEN_KEY, new Date().toISOString());
+        sessionStorage.setItem(SEEN_KEY, new Date().toISOString());
         setUnread(0);
         return;
       }
       try {
         const r = await reportRequest({ action: "list", token: data.token });
-        const seen = localStorage.getItem(SEEN_KEY) || "";
+        const seen = sessionStorage.getItem(SEEN_KEY) || "";
         const n = (r.reports || []).reduce(
           (sum, rep) => sum + (rep.messages || []).filter((m) => m.sender === "admin" && m.created_at > seen).length,
           0,
@@ -127,9 +131,9 @@ function PesertaPage() {
         throw new Error("Token tidak ditemukan atau layanan sedang tidak tersedia.");
       setData(result.data as StatusData);
       setTokenInput("");
-      localStorage.setItem(SESSION_KEY, normalized);
+      sessionStorage.setItem(SESSION_KEY, normalized);
     } catch (err) {
-      localStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem(SESSION_KEY);
       setProblem((err as Error).message);
     } finally {
       setBusy(false);
@@ -197,8 +201,8 @@ function PesertaPage() {
                 variant="outline"
                 onClick={() => {
                   setData(null);
-                  localStorage.removeItem(SESSION_KEY);
-                  localStorage.removeItem(TAB_KEY);
+                  sessionStorage.removeItem(SESSION_KEY);
+                  sessionStorage.removeItem(TAB_KEY);
                   setMenu("home");
                 }}
               >
