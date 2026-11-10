@@ -81,7 +81,7 @@ function AdminPendaftar() {
   const [totals, setTotals] = useState({
     prestasi: 0, ekonomi: 0, umum: 0, yatim: 0, fast: 0,
     standard: 0, standardPaid: 0, premium: 0, premiumPaid: 0,
-    paid: 0, unpaid: 0, total: 0,
+    paid: 0, unpaid: 0, total: 0, today: 0, yesterday: 0,
   });
 
   // Handle URL params for filtering from Dashboard
@@ -120,7 +120,11 @@ function AdminPendaftar() {
       if (filters) query = filters(query);
       return query;
     };
-    const [total, prestasi, ekonomi, umum, yatim, fast, premium, paid, standardPaid, premiumPaid] = await Promise.all([
+    // Batas hari mengikuti waktu Jakarta (UTC+7).
+    const jkt = new Date(Date.now() + 7 * 3600_000);
+    const todayStart = new Date(Date.UTC(jkt.getUTCFullYear(), jkt.getUTCMonth(), jkt.getUTCDate()) - 7 * 3600_000);
+    const yesterdayStart = new Date(todayStart.getTime() - 24 * 3600_000);
+    const [total, prestasi, ekonomi, umum, yatim, fast, premium, paid, standardPaid, premiumPaid, today, yesterday] = await Promise.all([
       count(),
       count((q) => q.eq("kind", "prestasi")),
       count((q) => q.eq("kind", "ekonomi")),
@@ -131,6 +135,8 @@ function AdminPendaftar() {
       count((q) => q.eq("payment_status", "paid")),
       count((q) => q.eq("fast_track", true).eq("payment_status", "paid").or("extra->>fast_track_type.is.null,extra->>fast_track_type.neq.premium")),
       count((q) => q.eq("fast_track", true).eq("payment_status", "paid").eq("extra->>fast_track_type", "premium")),
+      count((q) => q.gte("created_at", todayStart.toISOString())),
+      count((q) => q.gte("created_at", yesterdayStart.toISOString()).lt("created_at", todayStart.toISOString())),
     ]);
     const totalCount = total.count ?? 0;
     const fastCount = fast.count ?? 0;
@@ -149,6 +155,8 @@ function AdminPendaftar() {
       unpaid: Math.max(0, totalCount - paidCount),
       standardPaid: standardPaid.count ?? 0,
       premiumPaid: premiumPaid.count ?? 0,
+      today: today.count ?? 0,
+      yesterday: yesterday.count ?? 0,
     });
   }, []);
 
@@ -454,12 +462,20 @@ function AdminPendaftar() {
           className="border-2 border-primary/20 shadow-soft p-5"
         />
         <StatCard
-          label="Berkas di Halaman"
-          value={counts.submitted}
+          label="Pendaftar Hari Ini"
+          value={totals.today}
           icon={<FileCheck className="h-6 w-6" />}
           gradient="bg-white"
           iconBg="bg-sky-500/10 text-sky-600 border border-sky-500/20"
           className="border-2 border-sky-500/20 shadow-soft p-5"
+        />
+        <StatCard
+          label="Pendaftar Kemarin"
+          value={totals.yesterday}
+          icon={<Clock className="h-6 w-6" />}
+          gradient="bg-white"
+          iconBg="bg-slate-500/10 text-slate-600 border border-slate-500/20"
+          className="border-2 border-slate-500/20 shadow-soft p-5"
         />
         <StatCard
           label="Fast Track"
@@ -468,14 +484,6 @@ function AdminPendaftar() {
           gradient="bg-white"
           iconBg="bg-amber-500/10 text-amber-600 border border-amber-500/20"
           className="border-2 border-amber-500/20 shadow-soft p-5"
-        />
-        <StatCard
-          label="Belum di Halaman"
-          value={counts.pending}
-          icon={<Clock className="h-6 w-6" />}
-          gradient="bg-white"
-          iconBg="bg-slate-500/10 text-slate-600 border border-slate-500/20"
-          className="border-2 border-slate-500/20 shadow-soft p-5"
         />
       </div>
 
