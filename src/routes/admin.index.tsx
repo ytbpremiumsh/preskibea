@@ -671,7 +671,25 @@ function AdminOverview() {
                     <tbody>
                       {recent.map((r) => (
                         <tr key={r.id} className="border-t">
-                          <td className="px-3 py-2 font-medium text-foreground">{r.full_name}</td>
+                          <td className="px-3 py-2 font-medium text-foreground">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span>{r.full_name}</span>
+                              {r.fast_track && (
+                                <Badge
+                                  variant="outline"
+                                  className={
+                                    r.extra && typeof r.extra === "object" && !Array.isArray(r.extra) && r.extra.fast_track_type === "premium"
+                                      ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+                                      : "border-amber-300 bg-amber-50 text-amber-800"
+                                  }
+                                >
+                                  {r.extra && typeof r.extra === "object" && !Array.isArray(r.extra) && r.extra.fast_track_type === "premium"
+                                    ? "FT Premium"
+                                    : "FT Standar"}
+                                </Badge>
+                              )}
+                            </div>
+                          </td>
                           <td className="px-3 py-2">
                             <Badge variant="outline" className="capitalize">
                               {r.kind}
