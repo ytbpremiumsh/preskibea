@@ -281,7 +281,7 @@ serve(async (req) => {
   } catch (e) {
     const err = e as Error & { code?: string; status?: number };
     const failure = safeEmailFailure(err.code, err.status);
-    console.error(`send-app-email failed [${failure.code}]`);
+    console.error(`send-app-email failed [${failure.code}] raw_code=${err.code ?? "none"} status=${err.status ?? "none"} name=${err.name} msg=${String(err.message).slice(0, 300)}`);
     if (logId) {
       const { error } = await supabaseAdmin.from("email_send_log")
         .update({ status: "failed", error_message: failure.message })
