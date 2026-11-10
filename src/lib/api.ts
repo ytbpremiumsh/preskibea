@@ -120,11 +120,27 @@ export type SendTestEmailInput = {
 };
 
 export async function sendTestEmail(args: { data: SendTestEmailInput }) {
-  return invoke<{ ok: boolean; messageId?: string }>("send-app-email", {
+  const result = await invoke<{
+    ok: boolean;
+    sent?: boolean;
+    skipped?: string;
+    pending?: string;
+    messageId?: string;
+  }>("send-app-email", {
     ...args.data,
     idempotencyKey: `test-${args.data.templateName}-${Date.now()}`,
     _isTest: true,
   });
+  if (result.pending === "domain_verification") {
+    throw new Error("Email belum terkirim: domain pengirim belum terverifikasi.");
+  }
+  if (result.skipped === "recipient_suppressed") {
+    throw new Error("Email tidak dikirim karena alamat penerima diblokir oleh layanan email.");
+  }
+  if (!result.sent) {
+    throw new Error("Email belum dapat dipastikan terkirim. Periksa Log Email untuk detailnya.");
+  }
+  return result;
 }
 
 // ─── AI Content ─────────────────────────────────────────────────────────────
