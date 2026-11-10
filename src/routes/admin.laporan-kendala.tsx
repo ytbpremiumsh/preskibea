@@ -114,9 +114,13 @@ function ReportEditor({
   const save = async () => {
     setSaving(true);
     try {
-      await reportRequest({ action: "admin-update", id: report.id, status, admin_reply: reply.trim() });
+      const result = await reportRequest({ action: "admin-update", id: report.id, status, admin_reply: reply.trim() });
       setReply("");
-      toast.success("Tanggapan dan status tersimpan.");
+      if (result.email_notification === "failed") {
+        toast.warning("Tanggapan tersimpan, tetapi email pemberitahuan belum terkirim.");
+      } else {
+        toast.success("Tanggapan dan status tersimpan.");
+      }
       await onSaved();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Gagal menyimpan.");

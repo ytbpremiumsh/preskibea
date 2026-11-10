@@ -23,7 +23,7 @@ const CUSTOMIZABLE: Record<string, string> = {
 };
 
 const Input = z.object({
-  templateName: z.enum(["registration-confirmation", "berkas-confirmation", "esai-confirmation"]),
+  templateName: z.enum(["registration-confirmation", "berkas-confirmation", "esai-confirmation", "ticket-reply"]),
   recipientEmail: z.string().email(),
   idempotencyKey: z.string().min(1).max(200).optional(),
   templateData: z.record(z.string(), z.unknown()).optional(),
@@ -106,6 +106,18 @@ async function loadCustomTemplate(templateName: string) {
 
 function defaultBody(templateName: string, props: Record<string, unknown>) {
   const p = buildPlaceholders(props);
+  if (templateName === "ticket-reply") {
+    return {
+      subject: "Ada balasan untuk laporan kendala Anda — Prestasi Kita",
+      html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px">
+  <h2>Balasan laporan kendala</h2>
+  <p>Tim Prestasi Kita telah membalas laporan kendala Anda.</p>
+  <p>Silakan masuk ke Dashboard Peserta dan buka menu Laporan Kendala untuk melihat balasan.</p>
+  <p><a href="https://www.prestasikita.com/peserta">Buka Dashboard Peserta</a></p>
+  <p>© ${p.year} Prestasi Kita</p>
+</div>`,
+    };
+  }
   if (templateName === "berkas-confirmation") {
     return {
       subject: `Berkas ${p.kind_label} Berhasil Diterima`,

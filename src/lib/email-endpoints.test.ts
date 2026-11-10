@@ -33,9 +33,9 @@ function sender(admin: boolean) {
   );
   return {
     logs, count: () => deliveries,
-    request: async (bearer: string, isTest: boolean) => {
+    request: async (bearer: string, isTest: boolean, templateName = "registration-confirmation") => {
       if (!handler) throw new Error("Handler not registered");
-      return handler(new Request("https://local.invalid", { method: "POST", headers: { Authorization: `Bearer ${bearer}`, "Content-Type": "application/json" }, body: JSON.stringify({ templateName: "registration-confirmation", recipientEmail: "no-delivery@example.invalid", _isTest: isTest, subject: "Test", html: "<p>Test</p>", idempotencyKey: "unit-test-event" }) }));
+      return handler(new Request("https://local.invalid", { method: "POST", headers: { Authorization: `Bearer ${bearer}`, "Content-Type": "application/json" }, body: JSON.stringify({ templateName, recipientEmail: "no-delivery@example.invalid", _isTest: isTest, subject: "Test", html: "<p>Test</p>", idempotencyKey: "unit-test-event" }) }));
     },
   };
 }
@@ -64,4 +64,14 @@ test("internal FT Standard and Premium confirmations reach provider mock and rec
     assert.equal(app.logs[0]?.status, "sent");
     assert.equal(app.count(), 1);
   }
+});
+
+test("ticket reply notification requires internal authorization and records delivery", async () => {
+  const app = sender(false);
+  assert.equal((await app.request("ordinary-user-session", false, "ticket-reply")).status, 403);
+  assert.equal(app.count(), 0);
+  assert.equal((await app.request("internal-test-only", false, "ticket-reply")).status, 200);
+  assert.equal(app.count(), 1);
+  assert.equal(app.logs[0]?.template_name, "ticket-reply");
+  assert.equal(app.logs[0]?.status, "sent");
 });

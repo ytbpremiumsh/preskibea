@@ -85,14 +85,32 @@ Deno.serve(async (req) => {
     }
     if (body.action === "admin-update") {
       if (!body.id || !body.status || body.admin_reply === undefined) return response({ error: "Data tanggapan tidak lengkap." }, 400);
-      const { data, error } = await db.from("peserta_reports").update(body.admin_reply ? { status: body.status, admin_reply: body.admin_reply } : { status: body.status }).eq("id", body.id).select("id").maybeSingle();
+      const { data, error } = await db.from("peserta_reports").update(body.admin_reply ? { status: body.status, admin_reply: body.admin_reply } : { status: body.status }).eq("id", body.id).select("id,registration_id").maybeSingle();
       if (error) throw error;
       if (!data) return response({ error: "Tiket tidak ditemukan." }, 404);
-      if (body.admin_reply) {
-        const { error: mErr } = await db.from("peserta_report_messages").insert({ report_id: body.id, sender: "admin", message: body.admin_reply });
-        if (mErr) throw mErr;
+      if (!body.admin_reply) return response({ ok: true });
+      const { data: message, error: mErr } = await db.from("peserta_report_messages")
+        .insert({ report_id: body.id, sender: "admin", message: body.admin_reply })
+        .select("id").single();
+      if (mErr || !message) throw mErr || new Error("message_not_saved");
+      // The ticket reply is already saved; email failure must not lose the reply.
+      try {
+        const { data: participant, error: lookupError } = await db.from("registrations")
+          .select("email").eq("id", data.registration_id).maybeSingle();
+        if (lookupError || !participant?.email) throw new Error("recipient_unavailable");
+        const { data: result, error: sendError } = await db.functions.invoke("send-app-email", {
+          body: {
+            templateName: "ticket-reply",
+            recipientEmail: participant.email,
+            idempotencyKey: `ticket-reply-${message.id}`,
+          },
+        });
+        if (sendError || !result?.sent) throw new Error("email_not_sent");
+        return response({ ok: true, email_notification: "sent" });
+      } catch {
+        console.error("Ticket reply email could not be sent");
+        return response({ ok: true, email_notification: "failed" });
       }
-      return response({ ok: true });
     }
     let query = db.from("peserta_reports").select(admin ? "*, registrations(full_name, token)" : "id,registration_id,subject,message,status,admin_reply,image_path,created_at").order("created_at", { ascending: false }).limit(200);
     if (!admin && registrationId) query = query.eq("registration_id", registrationId);

@@ -24,7 +24,7 @@ export async function reportRequest(body: Record<string, unknown>) {
     throw new Error(detail?.error || "Laporan belum dapat diproses. Silakan coba lagi.");
   }
   if (!data?.ok) throw new Error(data?.error || "Laporan belum dapat diproses.");
-  return data as { ok: boolean; reports?: ParticipantReport[]; id?: string };
+  return data as { ok: boolean; reports?: ParticipantReport[]; id?: string; email_notification?: "sent" | "failed" };
 }
 export function reportStage(r: ParticipantReport): "new" | "progress" | "resolved" {
   return r.status === "resolved" ? "resolved" : r.admin_reply?.trim() || r.messages?.some((m) => m.sender === "admin") ? "progress" : "new";
