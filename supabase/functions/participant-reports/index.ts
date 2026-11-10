@@ -99,13 +99,19 @@ Deno.serve(async (req) => {
           .select("email").eq("id", data.registration_id).maybeSingle();
         if (lookupError || !participant?.email) throw new Error("recipient_unavailable");
         const { data: result, error: sendError } = await db.functions.invoke("send-app-email", {
+          headers: { Authorization: `Bearer ${key}`, apikey: key! },
           body: {
             templateName: "ticket-reply",
             recipientEmail: participant.email,
             idempotencyKey: `ticket-reply-${message.id}`,
           },
         });
-        if (sendError || !result?.sent) throw new Error("email_not_sent");
+        if (sendError || !result?.sent) {
+          let detail = "";
+          try { detail = sendError && "context" in sendError ? String((sendError as { context: Response }).context.status) : String(result?.reason ?? ""); } catch { /* ignore */ }
+          console.error(`Ticket reply email not sent: ${detail}`);
+          throw new Error("email_not_sent");
+        }
         return response({ ok: true, email_notification: "sent" });
       } catch {
         console.error("Ticket reply email could not be sent");

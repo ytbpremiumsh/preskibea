@@ -207,7 +207,8 @@ serve(async (req) => {
     // Internal service calls can send transactional mail; signed-in admins can send tests only.
     const bearer = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "") ?? "";
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    const internal = Boolean(serviceKey && bearer === serviceKey);
+    const apiKeyHeader = req.headers.get("apikey") ?? "";
+    const internal = Boolean(serviceKey && (bearer === serviceKey || apiKeyHeader === serviceKey));
     let authenticatedAdmin = false;
     if (!internal || data._isTest) {
       const { data: auth, error: authError } = await supabaseAdmin.auth.getUser(bearer);
