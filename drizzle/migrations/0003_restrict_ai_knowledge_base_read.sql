@@ -1,0 +1,2 @@
+DROP POLICY IF EXISTS "Authenticated can read ai_knowledge_base" ON public.ai_knowledge_base;
+CREATE POLICY "Admins can read ai_knowledge_base" ON public.ai_knowledge_base FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::app_role));
