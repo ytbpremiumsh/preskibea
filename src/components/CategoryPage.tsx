@@ -5,15 +5,7 @@ import { AdSlot } from "@/components/ads/AdSlot";
 import { RawHtmlWidget } from "@/components/ads/RawHtmlWidget";
 import benefitAsset from "@/assets/benefit-prestasi-kita.webp";
 
-const persyaratan = [
-  "Warga Negara Indonesia (WNI)",
-  "Tinggal di Indonesia",
-  "Pelajar aktif SMP/MTs sederajat",
-  "Pelajar aktif SMA/SMK/MA sederajat",
-  "Mahasiswa aktif atau calon mahasiswa D3–S2",
-  "Tanpa minimal nilai rapor atau IPK",
-  "Mengikuti seluruh persyaratan yang ditetapkan",
-];
+import { scholarshipRequirements as persyaratan } from "@/lib/scholarship-requirements";
 
 
 

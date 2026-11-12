@@ -36,7 +36,7 @@ function DaftarSelector() {
 
       <section className="mt-12 grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
         <CategoryCard
-          to="/beasiswa-prestasi"
+          kind="prestasi"
           icon={<Trophy size={20} />}
           title="Beasiswa Prestasi"
           desc="Untuk pelajar dengan prestasi akademik maupun non-akademik."
@@ -44,7 +44,7 @@ function DaftarSelector() {
           illustration={categoryImages.prestasi || ilustrasiPrestasi}
         />
         <CategoryCard
-          to="/beasiswa-ekonomi"
+          kind="ekonomi"
           icon={<HeartHandshake size={20} />}
           title="Beasiswa Ekonomi"
           desc="Dukungan finansial bagi pelajar dari keluarga prasejahtera."
@@ -52,7 +52,7 @@ function DaftarSelector() {
           illustration={categoryImages.ekonomi || ilustrasiEkonomi}
         />
         <CategoryCard
-          to="/beasiswa-umum"
+          kind="umum"
           icon={<Users size={20} />}
           title="Beasiswa Umum"
           desc="Jalur terbuka untuk semua pelajar & mahasiswa aktif di Indonesia."
@@ -60,7 +60,7 @@ function DaftarSelector() {
           illustration={categoryImages.umum || ilustrasiUmum}
         />
         <CategoryCard
-          to="/beasiswa-yatim"
+          kind="yatim"
           icon={<Heart size={20} />}
           title="Beasiswa Yatim"
           desc="Jalur khusus bagi anak yatim, piatu, dan yatim piatu."
@@ -79,26 +79,26 @@ function DaftarSelector() {
   );
 }
 
-function CategoryCard({ 
-  to, 
-  icon, 
-  title, 
-  desc, 
-  cta, 
-  illustration 
-}: { 
-  to: string; 
-  icon: React.ReactNode; 
-  title: string; 
-  desc: string; 
+function CategoryCard({
+  kind,
+  icon,
+  title,
+  desc,
+  cta,
+  illustration
+}: {
+  kind: "prestasi" | "ekonomi" | "umum" | "yatim";
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
   cta: string;
   illustration: string;
 }) {
   return (
     <div className="card-block group flex flex-col overflow-hidden">
       <div className="aspect-[16/9] w-full overflow-hidden bg-secondary/30 border-b border-border">
-        <img 
-          src={illustration} 
+        <img
+          src={illustration}
           alt={title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={(e) => {
@@ -130,7 +130,8 @@ function CategoryCard({
           {desc}
         </p>
         <Link
-          to={to as any}
+          to="/pendaftaran/pilih-tipe"
+          search={{ kind }}
           className="btn-block mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-soft hover:opacity-95 transition"
         >
           {cta} <ArrowRight size={16} />

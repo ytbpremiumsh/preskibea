@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Zap, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Zap, Clock, ArrowRight, CheckCircle2, FileText, BookOpen } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { scholarshipDetails, scholarshipRequirements } from "@/lib/scholarship-requirements";
 import { Badge } from "@/components/ui/badge";
 import { z } from "zod";
 import { useEffect, useState } from "react";
@@ -48,15 +50,15 @@ function PilihTipePage() {
     <main className="min-h-screen bg-background">
       <section className="relative overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
         <div className="container-page py-16 md:py-20 text-center">
-          <Link to={`/beasiswa-${kind}`} className="text-xs font-semibold text-primary hover:underline">
-            ← Kembali ke Informasi Jalur
+          <Link to="/daftar" className="text-xs font-semibold text-primary hover:underline">
+            ← Kembali pilih kategori
           </Link>
           <div className="mt-6 max-w-2xl mx-auto">
             <h1 className="text-3xl md:text-5xl font-extrabold leading-tight text-foreground">
               Pilih Tipe Pendaftaran
             </h1>
             <p className="mt-4 text-muted-foreground text-lg">
-              Jalur Beasiswa {kindLabel}. Pilih tipe pendaftaran yang sesuai dengan keinginanmu.
+              Kategori yang dipilih: Beasiswa {kindLabel}. Pilih jalur pendaftaran yang sesuai dengan keinginanmu.
             </p>
           </div>
         </div>
@@ -252,7 +254,46 @@ function PilihTipePage() {
           </div>
         </div>
 
-
+        <Dialog>
+          <div className="card-block mx-auto mt-8 flex max-w-7xl flex-col gap-5 border border-primary/15 bg-primary-soft/30 p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary"><FileText size={22} /></div>
+              <div>
+                <h2 className="text-lg font-bold text-foreground">Persyaratan Beasiswa {kindLabel}</h2>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Pastikan kamu memenuhi persyaratan sebelum melanjutkan pendaftaran.</p>
+              </div>
+            </div>
+            <DialogTrigger asChild>
+              <button type="button" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-primary/25 bg-card px-5 py-3 text-sm font-bold text-primary transition hover:bg-primary hover:text-primary-foreground">
+                Lihat persyaratan <ArrowRight size={16} />
+              </button>
+            </DialogTrigger>
+          </div>
+          <DialogContent className="max-h-[85dvh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-2xl p-6 sm:p-8">
+            <DialogHeader>
+              <DialogTitle className="pr-8 text-xl font-bold leading-tight">Persyaratan Beasiswa {kindLabel}</DialogTitle>
+              <DialogDescription className="pt-1 leading-relaxed">{scholarshipDetails[kind].description}</DialogDescription>
+            </DialogHeader>
+            <div className="mt-2">
+              <h3 className="font-bold text-foreground">Persyaratan peserta</h3>
+              <ul className="mt-3 space-y-2.5">
+                {scholarshipRequirements.map((requirement) => (
+                  <li key={requirement} className="flex items-start gap-2.5 text-sm leading-relaxed text-foreground/90">
+                    <CheckCircle2 size={17} className="mt-0.5 shrink-0 text-primary" />
+                    <span>{requirement}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl bg-secondary/60 p-4">
+              <h3 className="flex items-center gap-2 font-bold text-foreground"><BookOpen size={17} className="text-primary" /> Tips persiapan dokumen</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Siapkan dokumen pendukung seperti {scholarshipDetails[kind].documents}</p>
+            </div>
+            <Link to={`/beasiswa-${kind}`} className="inline-flex w-fit items-center gap-2 text-sm font-bold text-primary hover:underline">
+              Lihat informasi lengkap <ArrowRight size={15} />
+            </Link>
+          </DialogContent>
+        </Dialog>
       </section>
     </main>
   );
