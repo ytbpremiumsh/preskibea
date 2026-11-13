@@ -33,7 +33,7 @@ function UnpaidFastTrackPage() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [tier, setTier] = useState("all");
-  const [sort, setSort] = useState("oldest");
+  const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
@@ -156,11 +156,9 @@ function UnpaidFastTrackPage() {
             (phoneQuery.length >= 3 && normalizedWhatsapp(row.whatsapp).includes(phoneQuery))),
       )
       .sort((a, b) => {
-        if (sort === "oldest") {
-          return (
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime() ||
-            a.id.localeCompare(b.id)
-          );
+        if (sort === "newest" || sort === "oldest") {
+          const dateDifference = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          return (sort === "newest" ? -dateDifference : dateDifference) || a.id.localeCompare(b.id);
         }
         const left =
           sort === "whatsapp" ? normalizedWhatsapp(a.whatsapp) : normalizedEmail(a.email);
@@ -299,6 +297,7 @@ function UnpaidFastTrackPage() {
             value={sort}
             onChange={(e) => change(setSort, e.target.value)}
           >
+            <option value="newest">Urutkan: Tanggal terbaru</option>
             <option value="oldest">Urutkan: Tanggal terlama</option>
             <option value="email">Urutkan: Email</option>
             <option value="whatsapp">Urutkan: WhatsApp</option>
@@ -348,7 +347,7 @@ function UnpaidFastTrackPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-muted/50">
               <tr>
-                {["Peserta", "Email", "WhatsApp", "Fast Track", "Kategori", "Terdaftar"].map(
+                {["No.", "Peserta", "Email", "WhatsApp", "Fast Track", "Kategori", "Terdaftar"].map(
                   (title) => (
                     <th key={title} className="whitespace-nowrap p-4 font-medium">
                       {title}
@@ -360,22 +359,23 @@ function UnpaidFastTrackPage() {
             <tbody>
               {!snapshot && busy ? (
                 <tr>
-                  <td colSpan={6} className="p-10 text-center">
+                  <td colSpan={7} className="p-10 text-center">
                     <Loader2 className="mx-auto h-6 w-6 animate-spin" />
                     <p className="mt-2">Memeriksa seluruh pembayaran…</p>
                   </td>
                 </tr>
               ) : !visible.length ? (
                 <tr>
-                  <td colSpan={6} className="p-10 text-center text-muted-foreground">
+                  <td colSpan={7} className="p-10 text-center text-muted-foreground">
                     {error && !snapshot
                       ? "Data belum tersedia. Coba segarkan kembali."
                       : "Tidak ada peserta belum bayar yang sesuai filter."}
                   </td>
                 </tr>
               ) : (
-                visible.map((row) => (
+                visible.map((row, index) => (
                   <tr key={row.id} className="border-t hover:bg-muted/30">
+                    <td className="p-4 text-muted-foreground">{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
                     <td className="p-4">
                       <p className="font-medium">{row.full_name}</p>
                       <p className="text-xs text-muted-foreground">{row.token || "—"}</p>
